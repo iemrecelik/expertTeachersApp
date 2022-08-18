@@ -6680,7 +6680,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     },
     dropRelForm: function dropRelForm(key) {
       console.log(key);
-      this.relFormCount.slice(key, 1);
+      this.relFormCount.splice(key, 1);
+      console.log('-----');
+      console.log(this.relFormCount);
     },
     getDocRelFieldNames: function getDocRelFieldNames(key) {
       return {
@@ -8514,7 +8516,7 @@ var render = function render() {
       },
       on: {
         click: function click($event) {
-          return _vm.dropRelForm(key);
+          return _vm.dropRelForm(val);
         }
       }
     }, [_c("i", {
@@ -8555,7 +8557,55 @@ var render = function render() {
       "aria-expanded": "false",
       "aria-controls": "collapseExample"
     }
-  }, [_vm._v("\n\t\t\t\t\t\tGelişmiş Ekleme\n\t\t\t\t\t")])])], 2)]), _vm._v(" "), _c("button", {
+  }, [_vm._v("\n\t\t\t\t\t\tGelişmiş Ekleme\n\t\t\t\t\t")])]), _vm._v(" "), _c("div", {
+    staticClass: "collapse",
+    attrs: {
+      id: "collapseExample2"
+    }
+  }, [_c("div", {
+    staticClass: "card card-body"
+  }, [_c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    attrs: {
+      "for": "exampleInputEmail1"
+    }
+  }, [_vm._v("Açıklama Ekle")]), _vm._v(" "), _c("textarea", {
+    staticClass: "form-control",
+    staticStyle: {
+      height: "123px"
+    },
+    attrs: {
+      id: "validationTextarea",
+      placeholder: "Açıklama ekleyiniz.",
+      required: ""
+    }
+  }), _vm._v(" "), _c("small", {
+    staticClass: "form-text text-muted",
+    attrs: {
+      id: "emailHelp"
+    }
+  }, [_vm._v("Evrak detaylarını yazınız.")])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    attrs: {
+      "for": "validationCustom04"
+    }
+  }, [_vm._v("Eklemek İstediğiniz Listeyi Seçiniz")]), _vm._v(" "), _c("select", {
+    staticClass: "custom-select",
+    attrs: {
+      id: "validationCustom04",
+      required: ""
+    }
+  }, [_c("option", {
+    attrs: {
+      selected: "",
+      disabled: "",
+      value: ""
+    }
+  }, [_vm._v("Seçiniz...")]), _vm._v(" "), _c("option", [_vm._v("İl komisyonu kararları")]), _vm._v(" "), _c("option", [_vm._v("Sendika davaları")]), _vm._v(" "), _c("option", [_vm._v("Dış kurum uzman öğretmen listesi")])]), _vm._v(" "), _c("div", {
+    staticClass: "invalid-feedback"
+  }, [_vm._v("\n\t\t\t\t\t\t\t\tPlease select a valid state.\n\t\t\t\t\t\t\t")])])])])], 2)]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-primary",
     attrs: {
       type: "submit"

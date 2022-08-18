@@ -45,7 +45,7 @@
 							> -->
 							<button type="button" class="btn btn-tool" 
 								data-card-widget="remove"
-								@click="dropRelForm(key)"
+								@click="dropRelForm(val)"
 							>
                 <i class="fas fa-times"></i>
               </button>
@@ -75,16 +75,6 @@
 						</button>
 					</div>
 				</div>
-				<!-- <p>
-					<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample1" aria-expanded="false" aria-controls="collapseExample">
-						Evrak İlgisi Ekleme
-					</button>
-				</p>
-				
-				<div class="collapse" id="collapseExample1">
-
-					
-				</div> -->
 				
 				<p>
 					<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample2" aria-expanded="false" aria-controls="collapseExample">
@@ -92,7 +82,7 @@
 					</button>
 				</p>
 				
-				<!-- <div class="collapse" id="collapseExample2">
+				<div class="collapse" id="collapseExample2">
 					<div class="card card-body">
 						<div class="form-group">
 							<label for="exampleInputEmail1">Açıklama Ekle</label>
@@ -114,7 +104,7 @@
 						</div>
 						
 					</div>
-				</div> -->
+				</div>
 			</div>
 		</div>
 		<button type="submit" class="btn btn-primary">Submit</button>
@@ -186,7 +176,9 @@ export default {
 		},
 		dropRelForm: function(key) {
 			console.log(key);
-			this.relFormCount.slice(key, 1);
+			this.relFormCount.splice(key, 1);
+			console.log('-----');
+			console.log(this.relFormCount);
 		},
 		getDocRelFieldNames: function(key) {
 
