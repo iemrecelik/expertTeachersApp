@@ -1,0 +1,60 @@
+
+/* Fonts */
+@import url("https://fonts.googleapis.com/css?family=Raleway:300,400,600");
+@import url("https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback");
+
+/* Variables */
+/* @import "variables"; */
+
+/* Bootstrap */
+/* @import '~bootstrap/scss/bootstrap'; */
+@import '~bootstrap/dist/css/bootstrap';
+
+/* ionicons 4.2.4 */
+/* @import './plugins/ionicons-4.2.4/docs/css/ionicons.min.css'; */
+
+/* ionicons 4.5.10 */
+/* @import './plugins/ionicons/docs/css/ionicons.min.css'; */
+/* fontawesome */
+@import './plugins/fontawesome-free/css/all.min.css';
+
+/* Ionicons */
+@import 'https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css';
+
+/* bootstrap-icons */
+@import '~bootstrap-icons/font/bootstrap-icons.css';
+
+
+/* v-tooltip */
+/* @import './plugins/v-tooltip/v-tooltip.scss'; */
+
+/* mixins */
+/* @import 'mixins'; */
+
+/* main css */
+@import './main.css';
+
+/* Overload */
+@import './overload.css'; 
+
+/* Data Tables */
+@import '~datatables.net-bs5/css/dataTables.bootstrap5.min.css';
+@import '~datatables.net-responsive-bs5/css/responsive.bootstrap5.min.css';
+
+/* Loading-btn */
+/* @import './css/loading-btn/loading.css';
+@import './css/loading-btn/loading-btn.css'; */
+
+/* CropperJS */
+/* @import '~cropperjs/dist/cropper.min.css'; */
+
+/* AdminLTE */
+@import './adminlte/dist/css/adminlte.css';
+
+/* @import './css/main.css'; */
+@import '~jquery-ui/themes/base/all.css';
+
+.navbar-laravel {
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+}
