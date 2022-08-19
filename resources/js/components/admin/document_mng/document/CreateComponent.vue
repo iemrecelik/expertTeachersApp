@@ -3,7 +3,8 @@
 <template-component>
 	<error-msg-list-component></error-msg-list-component>
 
-  <form :id="formIDName" @submit.prevent>
+  <!-- <form :id="formIDName" @submit.prevent> -->
+  <form :id="formIDName" method="post" action="/admin/document-management/document/store">
 		<div class="row">
 			<div class="col-12">
 				<div class="form-group">
@@ -82,17 +83,17 @@
 					</button>
 				</p>
 				
-				<div class="collapse" id="collapseExample2">
+				<!-- <div class="collapse" id="collapseExample2">
 					<div class="card card-body">
 						<div class="form-group">
 							<label for="exampleInputEmail1">Açıklama Ekle</label>
-							<textarea class="form-control" id="validationTextarea" placeholder="Açıklama ekleyiniz." required="" style="height: 123px;"></textarea>
+							<textarea class="form-control" id="validationTextarea" placeholder="Açıklama ekleyiniz." required="" style="height: 123px;" name="note"></textarea>
 							<small id="emailHelp" class="form-text text-muted">Evrak detaylarını yazınız.</small>
 						</div>
 						
 						<div class="form-group">
 							<label for="validationCustom04">Eklemek İstediğiniz Listeyi Seçiniz</label>
-							<select class="custom-select" id="validationCustom04" required>
+							<select class="custom-select" id="validationCustom04" required name="list_name">
 								<option selected disabled value="">Seçiniz...</option>
 								<option>İl komisyonu kararları</option>
 								<option>Sendika davaları</option>
@@ -104,7 +105,7 @@
 						</div>
 						
 					</div>
-				</div>
+				</div> -->
 			</div>
 		</div>
 		<button type="submit" class="btn btn-primary">Submit</button>
