@@ -4,7 +4,7 @@
 	<error-msg-list-component></error-msg-list-component>
 
   <!-- <form :id="formIDName" @submit.prevent> -->
-  <form :id="formIDName" method="post" action="/admin/document-management/document/store">
+  <form :id="formIDName" method="post" data action="/admin/document-management/document/store">
 		<div class="row">
 			<div class="col-12">
 				<div class="form-group">
