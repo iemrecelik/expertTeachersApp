@@ -22,12 +22,12 @@ class CreateDcDocumentsTable extends Migration
             $table->text('dc_content');
             $table->string('dc_who_send');
             $table->string('dc_who_receiver');
-            $table->dateTime('dc_date', $precision = 0);
+            $table->integer('dc_date');
             
             $table->unsignedBigInteger('dc_cat_id'); 
             $table->foreign('dc_cat_id')
-                  ->references('id')->on('dc_category')
-                  ->onDelete('cascade');
+                  ->references('id')->on('dc_category');
+                //   ->onDelete('cascade');
             
             $table->timestamps();
         });

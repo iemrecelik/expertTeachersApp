@@ -6637,24 +6637,18 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   data: function data() {
     return {
       categoryList: [],
-      formTitleName: 'deneme',
+      formTitleName: 'document',
       docFieldNames: {
+        itemStatus: 'dc_item_status',
         senderFile: 'dc_sender_file',
         senderAttachFiles: 'dc_sender_attach_files[]',
         sender: 'dc_who_send',
         receiver: 'dc_who_receiver',
         number: 'dc_number',
         subject: 'dc_subject',
+        content: 'dc_content',
+        rawContent: 'dc_raw_content',
         date: 'dc_date'
-      },
-      docRelFieldNames: {
-        senderFile: 'rel_sender_file[]',
-        senderAttachFiles: 'rel_sender_attach_files[][]',
-        sender: 'rel_dc_who_send[]',
-        receiver: 'rel_dc_who_receiver[]',
-        number: 'rel_dc_number[]',
-        subject: 'rel_dc_subject[]',
-        date: 'rel_dc_date[]'
       },
       relFormCount: []
     };
@@ -6667,31 +6661,44 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     pperrors: {
       type: Object,
       required: true
+    },
+    ppsuccess: {
+      type: String,
+      required: false,
+      "default": ''
+    },
+    ppoldinput: {
+      type: Object,
+      required: true,
+      "default": {}
     }
   },
-  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapState)(['routes'])), {}, {
+  computed: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapState)(['routes', 'token'])), {}, {
     formIDName: function formIDName() {
       return this.uniqueDomID(_.toLower(this.formTitleName));
     }
   }),
-  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapMutations)(['setRoutes', 'setErrors'])), {}, {
+  methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapMutations)(['setRoutes', 'setErrors', 'setSucceed', 'setOld'])), {}, {
+    oldValue: function oldValue(fieldName) {
+      return this.$store.state.old[fieldName];
+    },
     addRelForm: function addRelForm() {
       this.relFormCount.push(Date.now());
     },
     dropRelForm: function dropRelForm(key) {
-      console.log(key);
       this.relFormCount.splice(key, 1);
-      console.log('-----');
-      console.log(this.relFormCount);
     },
     getDocRelFieldNames: function getDocRelFieldNames(key) {
       return {
-        senderFile: "rel_sender_file[".concat(key, "]"),
-        senderAttachFiles: "rel_sender_attach_files[".concat(key, "][]"),
+        itemStatus: "rel_dc_item_status[".concat(key, "]"),
+        senderFile: "rel_dc_sender_file[".concat(key, "]"),
+        senderAttachFiles: "rel_dc_sender_attach_files[".concat(key, "][]"),
         sender: "rel_dc_who_send[".concat(key, "]"),
         receiver: "rel_dc_who_receiver[".concat(key, "]"),
         number: "rel_dc_number[".concat(key, "]"),
         subject: "rel_dc_subject[".concat(key, "]"),
+        content: "rel_dc_content[".concat(key, "]]"),
+        rawContent: "rel_dc_raw_content[".concat(key, "]]"),
         date: "rel_dc_date[".concat(key, "]")
       };
     },
@@ -6716,7 +6723,13 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   created: function created() {
     this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
+    this.setSucceed(this.ppsuccess);
     this.getCategory();
+    console.log(this.ppoldinput); // console.log(JSON.parse(this.ppoldinput));
+
+    this.setOld(this.ppoldinput); // console.log('Eski değerler');
+
+    console.log(this.oldValue('dc_cat_id'));
   },
   components: {
     Treeselect: (_riophae_vue_treeselect__WEBPACK_IMPORTED_MODULE_1___default()),
@@ -8454,16 +8467,22 @@ var render = function render() {
   var _vm = this,
       _c = _vm._self._c;
 
-  return _c("template-component", [_c("error-msg-list-component"), _vm._v(" "), _c("form", {
+  return _c("template-component", [_c("error-msg-list-component"), _vm._v(" "), _c("succeed-msg-component"), _vm._v(" "), _c("form", {
     attrs: {
-      id: _vm.formIDName
-    },
-    on: {
-      submit: function submit($event) {
-        $event.preventDefault();
-      }
+      id: _vm.formIDName,
+      method: "post",
+      action: "/admin/document-management/document/store",
+      enctype: "multipart/form-data"
     }
-  }, [_c("div", {
+  }, [_c("input", {
+    attrs: {
+      type: "hidden",
+      name: "_token"
+    },
+    domProps: {
+      value: _vm.token
+    }
+  }), _vm._v(" "), _c("div", {
     staticClass: "row"
   }, [_c("div", {
     staticClass: "col-12"
@@ -8557,55 +8576,7 @@ var render = function render() {
       "aria-expanded": "false",
       "aria-controls": "collapseExample"
     }
-  }, [_vm._v("\n\t\t\t\t\t\tGelişmiş Ekleme\n\t\t\t\t\t")])]), _vm._v(" "), _c("div", {
-    staticClass: "collapse",
-    attrs: {
-      id: "collapseExample2"
-    }
-  }, [_c("div", {
-    staticClass: "card card-body"
-  }, [_c("div", {
-    staticClass: "form-group"
-  }, [_c("label", {
-    attrs: {
-      "for": "exampleInputEmail1"
-    }
-  }, [_vm._v("Açıklama Ekle")]), _vm._v(" "), _c("textarea", {
-    staticClass: "form-control",
-    staticStyle: {
-      height: "123px"
-    },
-    attrs: {
-      id: "validationTextarea",
-      placeholder: "Açıklama ekleyiniz.",
-      required: ""
-    }
-  }), _vm._v(" "), _c("small", {
-    staticClass: "form-text text-muted",
-    attrs: {
-      id: "emailHelp"
-    }
-  }, [_vm._v("Evrak detaylarını yazınız.")])]), _vm._v(" "), _c("div", {
-    staticClass: "form-group"
-  }, [_c("label", {
-    attrs: {
-      "for": "validationCustom04"
-    }
-  }, [_vm._v("Eklemek İstediğiniz Listeyi Seçiniz")]), _vm._v(" "), _c("select", {
-    staticClass: "custom-select",
-    attrs: {
-      id: "validationCustom04",
-      required: ""
-    }
-  }, [_c("option", {
-    attrs: {
-      selected: "",
-      disabled: "",
-      value: ""
-    }
-  }, [_vm._v("Seçiniz...")]), _vm._v(" "), _c("option", [_vm._v("İl komisyonu kararları")]), _vm._v(" "), _c("option", [_vm._v("Sendika davaları")]), _vm._v(" "), _c("option", [_vm._v("Dış kurum uzman öğretmen listesi")])]), _vm._v(" "), _c("div", {
-    staticClass: "invalid-feedback"
-  }, [_vm._v("\n\t\t\t\t\t\t\t\tPlease select a valid state.\n\t\t\t\t\t\t\t")])])])])], 2)]), _vm._v(" "), _c("button", {
+  }, [_vm._v("\n\t\t\t\t\t\tGelişmiş Ekleme\n\t\t\t\t\t")])])], 2)]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-primary",
     attrs: {
       type: "submit"
@@ -8638,12 +8609,51 @@ var render = function render() {
   return _c("div", [_c("input", {
     attrs: {
       type: "hidden",
-      name: "dc_content"
+      name: _vm.fieldNames.content
+    },
+    domProps: {
+      value: _vm.fieldValues.content
+    }
+  }), _vm._v(" "), _c("input", {
+    attrs: {
+      type: "hidden",
+      name: _vm.fieldNames.rawContent
+    },
+    domProps: {
+      value: _vm.fieldValues.rawContent
     }
   }), _vm._v(" "), _c("div", {
     staticClass: "row"
   }, [_c("div", {
-    staticClass: "col-6"
+    staticClass: "col-12"
+  }, [_c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    attrs: {
+      "for": "validationCustom04"
+    }
+  }, [_vm._v("Evrağın Durumu")]), _vm._v(" "), _c("select", {
+    staticClass: "custom-select",
+    attrs: {
+      id: "validationCustom04",
+      required: "",
+      name: _vm.fieldNames.itemStatus
+    }
+  }, [_c("option", {
+    attrs: {
+      selected: "",
+      value: "1"
+    }
+  }, [_vm._v("Giden Evrak")]), _vm._v(" "), _c("option", {
+    attrs: {
+      value: "0"
+    }
+  }, [_vm._v("Gelen Evrak")])]), _vm._v(" "), _c("div", {
+    staticClass: "invalid-feedback"
+  }, [_vm._v("\n\t\t\t\t\tLütfen evrağın durumunu seçiniz.\n\t\t\t\t")])])])]), _vm._v(" "), _c("div", {
+    staticClass: "row"
+  }, [_c("div", {
+    staticClass: "col-3"
   }, [_c("div", {
     staticClass: "form-group"
   }, [_c("label", {
@@ -8666,9 +8676,7 @@ var render = function render() {
     attrs: {
       id: "emailHelp"
     }
-  }, [_vm._v("\n\t\t\t\t\tudf formatındaki evrağı yükleyin.\n\t\t\t\t")])])]), _vm._v(" "), _c("div", {
-    staticClass: "col-6"
-  }, [_c("div", {
+  }, [_vm._v("\n\t\t\t\t\tudf formatındaki evrağı yükleyin.\n\t\t\t\t")])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
   }, [_c("label", {
     attrs: {
@@ -8688,64 +8696,10 @@ var render = function render() {
     attrs: {
       id: "emailHelp"
     }
-  }, [_vm._v("\n\t\t\t\t\t\tBuraya evrakın eklerini ekleyiniz.\n\t\t\t\t")])])])]), _vm._v(" "), _c("div", {
-    staticClass: "row"
+  }, [_vm._v("\n\t\t\t\t\t\t\tBuraya evrakın eklerini ekleyiniz.\n\t\t\t\t\t")])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-5"
   }, [_c("div", {
-    staticClass: "col-6"
-  }, [_c("div", {
-    staticClass: "form-group"
-  }, [_c("label", {
-    attrs: {
-      "for": "exampleInputEmail1"
-    }
-  }, [_vm._v("Gönderen")]), _vm._v(" "), _c("input", {
-    staticClass: "form-control",
-    attrs: {
-      type: "text",
-      id: "exampleInputEmail1",
-      disabled: "",
-      "aria-describedby": "emailHelp",
-      name: _vm.fieldNames.sender
-    },
-    domProps: {
-      value: _vm.fieldValues.sender
-    }
-  }), _vm._v(" "), _c("small", {
-    staticClass: "form-text text-muted",
-    attrs: {
-      id: "emailHelp"
-    }
-  }, [_vm._v("Evrağı gönderen yer.")])])]), _vm._v(" "), _c("div", {
-    staticClass: "col-6"
-  }, [_c("div", {
-    staticClass: "form-group"
-  }, [_c("label", {
-    attrs: {
-      "for": "exampleInputEmail1"
-    }
-  }, [_vm._v("Gönderilen")]), _vm._v(" "), _c("input", {
-    staticClass: "form-control",
-    attrs: {
-      type: "text",
-      id: "exampleInputEmail1",
-      disabled: "",
-      "aria-describedby": "emailHelp",
-      name: _vm.fieldNames.receiver
-    },
-    domProps: {
-      value: _vm.fieldValues.receiver
-    }
-  }), _vm._v(" "), _c("small", {
-    staticClass: "form-text text-muted",
-    attrs: {
-      id: "emailHelp"
-    }
-  }, [_vm._v("\n\t\t\t\t\tEvrağın gönderildiği yer.\n\t\t\t\t")])])])]), _vm._v(" "), _c("div", {
-    staticClass: "row"
-  }, [_c("div", {
-    staticClass: "col-2"
-  }, [_c("div", {
-    staticClass: "form-group"
+    staticClass: "form-group mb-1"
   }, [_c("label", {
     attrs: {
       "for": "exampleInputEmail1"
@@ -8755,46 +8709,14 @@ var render = function render() {
     attrs: {
       type: "text",
       id: "exampleInputEmail1",
-      disabled: "",
+      readonly: "",
       "aria-describedby": "emailHelp",
       name: _vm.fieldNames.number
     },
     domProps: {
       value: _vm.fieldValues.number
     }
-  }), _vm._v(" "), _c("small", {
-    staticClass: "form-text text-muted",
-    attrs: {
-      id: "emailHelp"
-    }
-  }, [_vm._v("\n\t\t\t\t\tEvrağın benzersiz numarası.\n\t\t\t\t")])])]), _vm._v(" "), _c("div", {
-    staticClass: "col-8"
-  }, [_c("div", {
-    staticClass: "form-group"
-  }, [_c("label", {
-    attrs: {
-      "for": "exampleInputEmail1"
-    }
-  }, [_vm._v("Evrak Konusu")]), _vm._v(" "), _c("input", {
-    staticClass: "form-control",
-    attrs: {
-      type: "text",
-      id: "exampleInputEmail1",
-      disabled: "",
-      "aria-describedby": "emailHelp",
-      name: _vm.fieldNames.subject
-    },
-    domProps: {
-      value: _vm.fieldValues.subject
-    }
-  }), _vm._v(" "), _c("small", {
-    staticClass: "form-text text-muted",
-    attrs: {
-      id: "emailHelp"
-    }
-  }, [_vm._v("\n\t\t\t\t\tEvrağın konusunu içerir.\n\t\t\t\t")])])]), _vm._v(" "), _c("div", {
-    staticClass: "col-2"
-  }, [_c("div", {
+  })]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
   }, [_c("label", {
     attrs: {
@@ -8805,7 +8727,7 @@ var render = function render() {
     attrs: {
       type: "text",
       id: "exampleInputEmail1",
-      disabled: "",
+      readonly: "",
       "aria-describedby": "emailHelp",
       name: _vm.fieldNames.date
     },
@@ -8817,7 +8739,78 @@ var render = function render() {
     attrs: {
       id: "emailHelp"
     }
-  }, [_vm._v("\n\t\t\t\t\tEvrağın gönderildiği tarih.\n\t\t\t\t")])])])])]);
+  }, [_vm._v("\n\t\t\t\t\tEvrağın gönderildiği tarih.\n\t\t\t\t")])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    attrs: {
+      "for": "exampleInputEmail1"
+    }
+  }, [_vm._v("Evrak Konusu")]), _vm._v(" "), _c("textarea", {
+    staticClass: "form-control",
+    attrs: {
+      id: "exampleInputEmail1",
+      readonly: "",
+      rows: "4",
+      "aria-describedby": "emailHelp",
+      name: _vm.fieldNames.subject
+    },
+    domProps: {
+      value: _vm.fieldValues.subject.trim()
+    }
+  }), _vm._v(" "), _c("small", {
+    staticClass: "form-text text-muted",
+    attrs: {
+      id: "emailHelp"
+    }
+  }, [_vm._v("\n\t\t\t\t\tEvrağın konusunu içerir.\n\t\t\t\t")])])]), _vm._v(" "), _c("div", {
+    staticClass: "col-4"
+  }, [_c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    attrs: {
+      "for": "exampleInputEmail1"
+    }
+  }, [_vm._v("Gönderen")]), _vm._v(" "), _c("textarea", {
+    staticClass: "form-control",
+    attrs: {
+      id: "exampleInputEmail1",
+      rows: "4",
+      readonly: "",
+      "aria-describedby": "emailHelp",
+      name: _vm.fieldNames.sender
+    },
+    domProps: {
+      value: _vm.fieldValues.sender.trim()
+    }
+  }), _vm._v(" "), _c("small", {
+    staticClass: "form-text text-muted",
+    attrs: {
+      id: "emailHelp"
+    }
+  }, [_vm._v("Evrağı gönderen yer.")])]), _vm._v(" "), _c("div", {
+    staticClass: "form-group"
+  }, [_c("label", {
+    attrs: {
+      "for": "exampleInputEmail1"
+    }
+  }, [_vm._v("Gönderilen")]), _vm._v(" "), _c("textarea", {
+    staticClass: "form-control",
+    attrs: {
+      id: "exampleInputEmail1",
+      rows: "4",
+      readonly: "",
+      "aria-describedby": "emailHelp",
+      name: _vm.fieldNames.receiver
+    },
+    domProps: {
+      value: _vm.fieldValues.receiver.trim()
+    }
+  }), _vm._v(" "), _c("small", {
+    staticClass: "form-text text-muted",
+    attrs: {
+      id: "emailHelp"
+    }
+  }, [_vm._v("\n\t\t\t\t\tEvrağın gönderildiği yer.\n\t\t\t\t")])])])])]);
 };
 
 var staticRenderFns = [];
@@ -31716,7 +31709,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.upload-container {\n\tposition: relative;\n}\n.upload-container input {\n\t/* border: 1px solid #92b0b3;\n\tbackground: #f1f1f1;\n\toutline: 2px dashed #92b0b3;\n\toutline-offset: -10px;\n\tpadding: 100px 0px 100px 250px;\n\ttext-align: center !important;\n\twidth: 500px; */\n\t\n\tborder: 1px solid #92b0b3;\n    background: #f1f1f1;\n    outline: 2px dashed #92b0b3;\n    outline-offset: -10px;\n    padding: 60px 0px 60px 80px;\n    text-align: center !important;\n    width: 330px;\n}\n.upload-container input:hover {\n\tbackground: #ddd;\n}   \n/* .upload-container:before {\n\tposition: absolute;\n\tbottom: 50px;\n\tleft: 245px;\n\tcontent: \" (or) Drag and Drop files here. \";\n\tcolor: #3f8188;\n\tfont-weight: 900;\n}  */\n.upload-btn {\n\tmargin-left: 300px;\n\tpadding: 7px 20px;\n}     \n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.upload-container {\n\tposition: relative;\n}\n.upload-container input {\n\t/* border: 1px solid #92b0b3;\n\tbackground: #f1f1f1;\n\toutline: 2px dashed #92b0b3;\n\toutline-offset: -10px;\n\tpadding: 60px 0px 60px 80px;\n\ttext-align: center !important;\n\twidth: 330px; */\n\n\tborder: 1px solid #92b0b3;\n\tbackground: #f1f1f1;\n\toutline: 2px dashed #92b0b3;\n\toutline-offset: -10px;\n\tpadding: 43px 0px 36px 38px;\n\ttext-align: center !important;\n\twidth: 100%;\n}\n.upload-container input:hover {\n\tbackground: #ddd;\n}   \n/* .upload-container:before {\n\tposition: absolute;\n\tbottom: 50px;\n\tleft: 245px;\n\tcontent: \" (or) Drag and Drop files here. \";\n\tcolor: #3f8188;\n\tfont-weight: 900;\n}  */\n.upload-btn {\n\tmargin-left: 300px;\n\tpadding: 7px 20px;\n}     \n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

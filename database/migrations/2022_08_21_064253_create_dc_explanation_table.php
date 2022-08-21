@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateDcDcRelTable extends Migration
+class CreateDcExplanationTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,16 +13,17 @@ class CreateDcDcRelTable extends Migration
      */
     public function up()
     {
-        Schema::create('dc_sp_rel', function (Blueprint $table) {
+        Schema::create('dc_explanation', function (Blueprint $table) {
             $table->id();
+            $table->string('exp_content');
 
-            $table->unsignedBigInteger('rel_sp_id');
-            $table->foreign('rel_sp_id')
-                  ->references('id')->on('dc_special_list')
+            $table->unsignedBigInteger('user_id');
+            $table->foreign('user_id')
+                  ->references('id')->on('users')
                   ->onDelete('cascade');
-
-            $table->unsignedBigInteger('rel_dc_id');
-            $table->foreign('rel_dc_id')
+                  
+            $table->unsignedBigInteger('dc_id');
+            $table->foreign('dc_id')
                   ->references('id')->on('dc_documents')
                   ->onDelete('cascade');
 
@@ -37,6 +38,6 @@ class CreateDcDcRelTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('dc_dc_rel');
+        Schema::dropIfExists('dc_explanation');
     }
 }

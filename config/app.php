@@ -135,6 +135,8 @@ return [
     */
 
     'providers' => [
+        /* Intervention Image */
+        Intervention\Image\ImageServiceProvider::class,
 
         /*
          * Laravel Framework Service Providers...
@@ -189,6 +191,9 @@ return [
     */
 
     'aliases' => [
+        
+        /* Intervention Image */
+        'Image' => Intervention\Image\Facades\Image::class,
 
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,

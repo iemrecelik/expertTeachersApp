@@ -1,8 +1,31 @@
 <template>
 <div>
-	<input type="hidden" name="dc_content">
+	<input type="hidden" :name="fieldNames.content" :value="fieldValues.content">
+	<input type="hidden" :name="fieldNames.rawContent" :value="fieldValues.rawContent">
+	
 	<div class="row">
-		<div class="col-6">
+		
+		<div class="col-12">
+			<div class="form-group">
+				<label for="validationCustom04">Evrağın Durumu</label>
+				<select id="validationCustom04" 
+					class="custom-select"
+					required 
+					:name="fieldNames.itemStatus"
+				>
+					<option selected value="1">Giden Evrak</option>
+					<option value="0">Gelen Evrak</option>
+				</select>
+				<div class="invalid-feedback">
+					Lütfen evrağın durumunu seçiniz.
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+	<div class="row">
+		<div class="col-3">
 			<div class="form-group">
 
 				<label for="file_upload">Evrak Dosyasını Ekle</label>
@@ -13,58 +36,212 @@
 						@change="uploadForm"
 					/>
 				</div>
-				
 				<small id="emailHelp" class="form-text text-muted">
 					udf formatındaki evrağı yükleyin.
 				</small>
 
 			</div>
+
+			<div class="form-group">
+
+					<label for="file_upload">Evrak Ek(leri)ini Ekle</label>
+					<div class="upload-container">
+						<input type="file" id="file_upload" multiple
+							:name="fieldNames.senderAttachFiles"
+						/>
+					</div>
+					<small id="emailHelp" 
+						class="form-text text-muted">
+							Buraya evrakın eklerini ekleyiniz.
+					</small>
+
+				</div>
 		</div>
 		
-		<div class="col-6">
+		<!-- <div class="col-2">
 			<div class="form-group">
-				
-				<label for="file_upload">Evrak Ek(leri)ini Ekle</label>
-				<div class="upload-container">
-					<input type="file" id="file_upload" multiple
-						:name="fieldNames.senderAttachFiles"
-					/>
+				<div>
+					<label for="file_upload">Evrak Ek(leri)ini Ekle</label>
+					<div class="upload-container">
+						<input type="file" id="file_upload" multiple
+							:name="fieldNames.senderAttachFiles"
+						/>
+					</div>
+					<small id="emailHelp" 
+						class="form-text text-muted">
+							Buraya evrakın eklerini ekleyiniz.
+					</small>
 				</div>
 				
-				<small id="emailHelp" 
-					class="form-text text-muted">
-						Buraya evrakın eklerini ekleyiniz.
-				</small>
+				<div class="mt-2">
+					<label for="exampleInputEmail1">Evrak Tarihi</label>
+					<input type="text" class="form-control" id="exampleInputEmail1" 
+						readonly
+						aria-describedby="emailHelp" 
+						:name="fieldNames.date"
+						:value="fieldValues.date"
+					>
+					<small id="emailHelp" class="form-text text-muted">
+						Evrağın gönderildiği tarih.
+					</small>
+				</div>
 
 			</div>
+		</div> -->
+
+		<div class="col-5">
+
+			<div class="form-group mb-1">
+				<label for="exampleInputEmail1">Evrak Numarası</label>
+				<input type="text" class="form-control" id="exampleInputEmail1" 
+					readonly
+					aria-describedby="emailHelp" 
+					:name="fieldNames.number"
+					:value="fieldValues.number"
+				>
+				<!-- <small id="emailHelp" class="form-text text-muted">
+					Evrağın benzersiz numarası.
+				</small> -->
+			</div>
+
+			<div class="form-group">
+				<label for="exampleInputEmail1">Evrak Tarihi</label>
+				<input type="text" class="form-control" id="exampleInputEmail1" 
+					readonly
+					aria-describedby="emailHelp" 
+					:name="fieldNames.date"
+					:value="fieldValues.date"
+				>
+				<small id="emailHelp" class="form-text text-muted">
+					Evrağın gönderildiği tarih.
+				</small>
+			</div>
+			
+			<div class="form-group">
+				<label for="exampleInputEmail1">Evrak Konusu</label>
+				<!-- <input type="text" class="form-control" id="exampleInputEmail1" 
+					readonly
+					aria-describedby="emailHelp" 
+					:name="fieldNames.subject"
+					:value="fieldValues.subject"
+				> -->
+				<textarea id="exampleInputEmail1" class="form-control" 
+					readonly 
+					rows="4"
+					aria-describedby="emailHelp"
+					:name="fieldNames.subject"
+					:value="fieldValues.subject.trim()" 
+				>
+				</textarea>
+				<small id="emailHelp" class="form-text text-muted">
+					Evrağın konusunu içerir.
+				</small>
+			</div>
+			
 		</div>
-	</div>
-	
-	<div class="row">
-		<div class="col-6">
+
+		<div class="col-4">
 			
 			<div class="form-group">
 				<label for="exampleInputEmail1">Gönderen</label>
+				<!-- <input type="text" class="form-control" id="exampleInputEmail1" 
+					readonly  aria-describedby="emailHelp" 
+					:name="fieldNames.sender"
+					:value="fieldValues.sender"
+				> -->
+				<textarea id="exampleInputEmail1" class="form-control" 
+					rows="4"
+					readonly  
+					aria-describedby="emailHelp" 
+					:name="fieldNames.sender"
+					:value="fieldValues.sender.trim()"
+				>
+				</textarea>
+				<small id="emailHelp" class="form-text text-muted">Evrağı gönderen yer.</small>
+			</div>
+
+			<div class="form-group">
+
+				<label for="exampleInputEmail1">Gönderilen</label>
+				<!-- <input type="text" class="form-control" id="exampleInputEmail1" 
+					readonly 
+					aria-describedby="emailHelp" 
+					:name="fieldNames.receiver"
+					:value="fieldValues.receiver"
+				> -->
+				<textarea id="exampleInputEmail1" class="form-control" 
+					rows="4"
+					readonly
+					aria-describedby="emailHelp" 
+					:name="fieldNames.receiver"
+					:value="fieldValues.receiver.trim()" 
+				>
+				</textarea>
+				<small id="emailHelp" class="form-text text-muted">
+					Evrağın gönderildiği yer.
+				</small>
+
+			</div>
+			
+		</div>
+		
+		<!-- <div class="col-2">
+			<div class="form-group">
+
+				<label for="exampleInputEmail1">Gönderilen</label>
 				<input type="text" class="form-control" id="exampleInputEmail1" 
-					disabled  aria-describedby="emailHelp" 
+					readonly 
+					aria-describedby="emailHelp" 
+					:name="fieldNames.receiver"
+					:value="fieldValues.receiver"
+				>
+				<textarea id="exampleInputEmail1" class="form-control" 
+					rows="8"
+					readonly
+					aria-describedby="emailHelp" 
+					:name="fieldNames.receiver"
+					:value="fieldValues.receiver.trim()" 
+				>
+				</textarea>
+				<small id="emailHelp" class="form-text text-muted">
+					Evrağın gönderildiği yer.
+				</small>
+
+			</div>
+		</div> -->
+		
+	</div>
+	
+	<!-- <div class="row">
+		<div class="col-4">
+			
+			<div class="form-group">
+				<label for="exampleInputEmail1">Gönderen</label>
+				<textarea id="exampleInputEmail1" class="form-control" 
+					rows="1"
+					readonly  
+					aria-describedby="emailHelp" 
 					:name="fieldNames.sender"
 					:value="fieldValues.sender"
 				>
+				</textarea>
 				<small id="emailHelp" class="form-text text-muted">Evrağı gönderen yer.</small>
 			</div>
 			
 		</div>
 		
-		<div class="col-6">
+		<div class="col-4">
 			<div class="form-group">
 
 				<label for="exampleInputEmail1">Gönderilen</label>
-				<input type="text" class="form-control" id="exampleInputEmail1" 
-					disabled 
+				<textarea id="exampleInputEmail1" class="form-control" 
+					rows="1"
+					readonly
 					aria-describedby="emailHelp" 
 					:name="fieldNames.receiver"
-					:value="fieldValues.receiver"
+					:value="fieldValues.receiver" 
 				>
+				</textarea>
 				<small id="emailHelp" class="form-text text-muted">
 					Evrağın gönderildiği yer.
 				</small>
@@ -79,7 +256,7 @@
 			<div class="form-group">
 				<label for="exampleInputEmail1">Evrak Numarası</label>
 				<input type="text" class="form-control" id="exampleInputEmail1" 
-					disabled
+					readonly
 					aria-describedby="emailHelp" 
 					:name="fieldNames.number"
 					:value="fieldValues.number"
@@ -95,12 +272,14 @@
 			
 			<div class="form-group">
 				<label for="exampleInputEmail1">Evrak Konusu</label>
-				<input type="text" class="form-control" id="exampleInputEmail1" 
-					disabled
-					aria-describedby="emailHelp" 
+				<textarea id="exampleInputEmail1" class="form-control" 
+					readonly 
+					rows="1"
+					aria-describedby="emailHelp"
 					:name="fieldNames.subject"
-					:value="fieldValues.subject"
+					:value="fieldValues.subject" 
 				>
+				</textarea>
 				<small id="emailHelp" class="form-text text-muted">
 					Evrağın konusunu içerir.
 				</small>
@@ -113,7 +292,7 @@
 			<div class="form-group">
 				<label for="exampleInputEmail1">Evrak Tarihi</label>
 				<input type="text" class="form-control" id="exampleInputEmail1" 
-					disabled
+					readonly
 					aria-describedby="emailHelp" 
 					:name="fieldNames.date"
 					:value="fieldValues.date"
@@ -124,7 +303,7 @@
 			</div>
 			
 		</div>
-	</div>
+	</div> -->
 </div>
 </template>
 
@@ -161,7 +340,7 @@ export default {
 		...mapMutations([
       'setErrors',
     ]),
-		uploadForm: function(event){      
+		uploadForm: function(event) {
       // let form = $('#' + this.formIDName)[0];
       /* let form = $('#' + this.$parent.$parent.formIDName)[0];
 

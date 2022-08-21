@@ -2,10 +2,14 @@
 
 namespace App\Http\Controllers\Admin\DocumentManagement;
 
+use App\Library\FileUpload;
 use Illuminate\Http\Request;
+use App\Models\Admin\DcFiles;
+use App\Models\Admin\DcAttachFiles;
 use App\Http\Controllers\Controller;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\DocumentManagement\StoreDcDocumentsRequest;
+use App\Models\Admin\DcDocuments;
 
 class DocumentsController extends Controller
 {
@@ -25,9 +29,133 @@ class DocumentsController extends Controller
      * @param  StoreDcDocumentsRequest  $request
      * @return \Illuminate\Http\Response
      */
+    // public function store(Request $request)
     public function store(StoreDcDocumentsRequest $request)
     {
-        $this->uploadFile($request->file('send_dc_file'));
+        $params = $request->all();
+        // dump($params);die;
+        // dump(strtotime($params['dc_date']));die;
+        /* Save Sender Document */
+        $arr = [
+            'dc_item_status'    => $params['dc_item_status'],
+            'dc_cat_id'         => $params['dc_cat_id'],
+            'dc_number'         => $params['dc_number'],
+            'dc_subject'        => $params['dc_subject'],
+            'dc_who_send'       => $params['dc_who_send'],
+            'dc_who_receiver'   => $params['dc_who_receiver'],
+            'dc_subject'        => $params['dc_subject'],
+            'dc_content'        => $params['dc_content'],
+            'dc_raw_content'    => $params['dc_raw_content'],
+            'dc_date'           => strtotime($params['dc_date']),
+        ];
+
+        $this->saveDcDocument(
+            $arr, 
+            [
+                $request->file('dc_sender_file')
+            ], 
+            $request->file('dc_sender_attach_files'),
+        );
+
+        /* Save Relative Document */
+        if (isset($params['rel_dc_number'])) {
+            foreach ($params['rel_dc_number'] as $key => $val) {
+                $arr = [
+                    'dc_item_status'    => $params['rel_dc_item_status'][$key],
+                    'dc_cat_id'         => $params['dc_cat_id'][$key],
+                    'dc_number'         => $params['rel_dc_number'][$key],
+                    'dc_subject'        => $params['rel_dc_subject'][$key],
+                    'dc_who_send'       => $params['rel_dc_who_send'][$key],
+                    'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
+                    'dc_subject'        => $params['rel_dc_subject'][$key],
+                    'dc_content'        => $params['rel_dc_content'][$key],
+                    'dc_raw_content'    => $params['rel_dc_raw_content'][$key],
+                    'dc_date'           => strtotime($params['rel_dc_date'][$key]),
+                ];
+
+                // dump($request->file('rel_dc_sender_file'));die;
+
+                $this->saveDcDocument(
+                    $arr,
+                    [
+                        $request->file('rel_dc_sender_file')[$key]
+                    ],
+                    $request->file('rel_dc_sender_attach_files')[$key],
+                );
+            }
+        }
+
+        $msg = ['succeed' => __('messages.edit_success')];
+        
+        return redirect()->route('admin.document_mng.document.create')
+                        ->with($msg);
+    }
+
+    private function saveDcDocument($params, $dcFile, $dcAttachFiles = null)
+    {
+        // dump($params);die('sss');
+        $dcDocuments = DcDocuments::create($params);
+        // dump($params);die('sss');
+        
+
+        $filesArr = $this->saveFileToStorage(
+            $dcFile, 
+            'DcFiles', 
+            'dc_file_path'
+        );
+        
+        // dump($dcAttachFiles);die;
+        if(isset($dcAttachFiles)) {
+            $attachFilesArr = $this->saveFileToStorage(
+                $dcAttachFiles, 
+                'DcAttachFiles', 
+                'dc_att_file_path'
+            );
+        }
+            
+        /* New images will be saved to databse */
+        if(isset($filesArr))
+            $dcDocuments->dcFiles()->saveMany($filesArr);
+        
+        if(isset($attachFilesArr))
+            $dcDocuments->dcAttachFiles()->saveMany($attachFilesArr);
+    }
+
+    public function uploadFile($file)
+    {
+        dump($file);
+    }
+
+    private function saveFileToStorage($files, $modelName, $filePath)
+    {
+        $fileUpload = new FileUpload();
+
+        foreach ($files as $key => $fileVal) {
+
+            /* if (isset($crops[$key])) {
+                $crop = $this->convertToCrop($crops[$key]);
+                $filt = array_merge_recursive($crop, $filters);
+            }else
+                $filt = $filters; */
+
+            $fileUpload->setConfig($fileVal, null, null, true);
+
+            $fileUpload->saveFile();
+        }
+
+        /* if($modelName == 'DcAttachFiles')
+            dump($fileUpload->getSavePath());die('asdsad'); */
+
+        $filesArr = array_map(function($path) use ($modelName, $filePath){
+
+            $modelName = "App\Models\Admin\\".$modelName;
+
+            $path = str_replace('public', 'storage', $path);
+            return new $modelName([$filePath => $path]);
+
+        }, $fileUpload->getSavePath());
+
+        return $filesArr;
     }
 
     public function getFileInfos(Request $request)
@@ -36,17 +164,17 @@ class DocumentsController extends Controller
             
             $name = 'dc_sender_file';
 
-        }else if($request->hasFile('rel_sender_file')) {
+        }else if($request->hasFile('rel_dc_sender_file')) {
             
             $file = $request->file();
 
-            $index = array_keys($file['rel_sender_file']);
+            $index = array_keys($file['rel_dc_sender_file']);
             
-            $name = "rel_sender_file.{$index[0]}";
+            $name = "rel_dc_sender_file.{$index[0]}";
         }
 
         $request->validate([
-            'rel_sender_file.*' => 'required|mimes:zip|max:2048',
+            'rel_dc_sender_file.*' => 'required|mimes:zip|max:2048',
         ]);
 
         $file = $request->file($name);
@@ -60,6 +188,14 @@ class DocumentsController extends Controller
             // $pattern= '/konu\s*?:(.*?)\n{2,10}(\D{3,500})\n{2,10}/si';
             $pattern= '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n\D*)\n{2,10}/si';
             preg_match($pattern, $result, $receiver);
+
+            // $pattern= '/konu\s*?:.*?\n{2,10}[A-ZİĞÜŞÖÇ ]{3,1000}\n\D*\n{2,10}(.*?)\n{2,10}.*?]]>/si';
+            $pattern= '/<!\[CDATA\[\¸(.*)]]>/si';
+            preg_match($pattern, $result, $content);
+
+            /* dump($result);
+            echo '<pre>------sender------</pre>';
+            dump($content);die; */
 
             $pattern= '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
             preg_match($pattern, $result, $number);
@@ -89,6 +225,8 @@ class DocumentsController extends Controller
                 'number' => $number[2],
                 'date' => $number[3],
                 'subject' => $receiver[1],
+                'content' => $content[1],
+                'rawContent' => $result,
                 'receiver' => $receiver[2],
             ];
 
@@ -100,11 +238,6 @@ class DocumentsController extends Controller
         }
 
         return $arr;
-    }
-
-    public function uploadFile($file)
-    {
-        dump($file);
     }
 
     /* public function getImages(Books $book)

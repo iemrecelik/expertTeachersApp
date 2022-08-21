@@ -3,8 +3,9 @@
 namespace App\Library;
 
 use Illuminate\Http\UploadedFile;
-use Storage;
-use Image;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
+
 
 /**
  * File upload proccess
@@ -22,17 +23,31 @@ class FileUpload
 		if (is_array($config)) {
 			
 			$this->setConfig(
-				$config['file'], $config['filters'], $config['extension']
+				$config['file'], 
+				$config['filters'], 
+				$config['extension'], 
+				$config['rawFileName']
 			);
 		}
 	}
 
-	public function setConfig(UploadedFile $file, Array $filters = null, String $extension = null)
+	public function setConfig(UploadedFile $file, Array $filters = null, String $extension = null, Bool $rawFileName = false)
 	{
 		$this->file = $file;
 		$this->filters = $filters;
-		$this->hashFileName = explode('.', $file->hashName())[0];
+		
+		$this->hashFileName = $rawFileName ? 
+			pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) : 
+			explode('.', $file->hashName())[0];
+
 		$this->guessExtension = $extension ?? $file->guessExtension();
+	}
+
+	public function saveFile()
+	{
+		Storage::put($this->savePathAndFileName('raw'), $this->file);
+
+		return $this;
 	}
 
 	public function saveImg()

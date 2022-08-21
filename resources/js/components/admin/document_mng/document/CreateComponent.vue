@@ -2,10 +2,18 @@
 
 <template-component>
 	<error-msg-list-component></error-msg-list-component>
+	<succeed-msg-component></succeed-msg-component>
 
   <!-- <form :id="formIDName" @submit.prevent> -->
-  <form :id="formIDName" method="post" data action="/admin/document-management/document/store">
+  <form :id="formIDName" 
+		method="post" 
+		action="/admin/document-management/document/store"
+		enctype="multipart/form-data"
+	>
+		<input type="hidden" name="_token" :value="token">
+
 		<div class="row">
+
 			<div class="col-12">
 				<div class="form-group">
 					<label for="exampleInputEmail1">
@@ -21,6 +29,7 @@
 					/>
 				</div>
 			</div>
+
 		</div>
 
 		<file-upload-form
@@ -127,24 +136,18 @@ export default {
   data () {
     return {
 			categoryList: [],
-			formTitleName: 'deneme',
+			formTitleName: 'document',
 			docFieldNames: {
+				itemStatus: 'dc_item_status',
 				senderFile: 'dc_sender_file',
 				senderAttachFiles: 'dc_sender_attach_files[]',
 				sender: 'dc_who_send',
 				receiver: 'dc_who_receiver',
 				number: 'dc_number',
 				subject: 'dc_subject',
+				content: 'dc_content',
+				rawContent: 'dc_raw_content',
 				date: 'dc_date',
-			},
-			docRelFieldNames: {
-				senderFile: 'rel_sender_file[]',
-				senderAttachFiles: 'rel_sender_attach_files[][]',
-				sender: 'rel_dc_who_send[]',
-				receiver: 'rel_dc_who_receiver[]',
-				number: 'rel_dc_number[]',
-				subject: 'rel_dc_subject[]',
-				date: 'rel_dc_date[]',
 			},
 			relFormCount: [],
 		}
@@ -158,10 +161,21 @@ export default {
       type: Object,
       required: true,
     },
+		ppsuccess: {
+      type: String,
+      required: false,
+      default: ''
+    },
+    ppoldinput: {
+      type: Object,
+      required: true,
+			default: {}
+    },
   },
   computed: {
     ...mapState([
       'routes',
+      'token',
     ]),
 		formIDName: function(){
       return this.uniqueDomID(_.toLower(this.formTitleName));
@@ -171,25 +185,30 @@ export default {
 		...mapMutations([
       'setRoutes',
       'setErrors',
+			'setSucceed',
+			'setOld',
     ]),
+		oldValue: function(fieldName){
+      return this.$store.state.old[fieldName];
+    },
 		addRelForm: function() {
 			this.relFormCount.push(Date.now());
 		},
 		dropRelForm: function(key) {
-			console.log(key);
 			this.relFormCount.splice(key, 1);
-			console.log('-----');
-			console.log(this.relFormCount);
 		},
 		getDocRelFieldNames: function(key) {
 
 			return {
-				senderFile: `rel_sender_file[${key}]`,
-				senderAttachFiles: `rel_sender_attach_files[${key}][]`,
+				itemStatus: `rel_dc_item_status[${key}]`,
+				senderFile: `rel_dc_sender_file[${key}]`,
+				senderAttachFiles: `rel_dc_sender_attach_files[${key}][]`,
 				sender: `rel_dc_who_send[${key}]`,
 				receiver: `rel_dc_who_receiver[${key}]`,
 				number: `rel_dc_number[${key}]`,
 				subject: `rel_dc_subject[${key}]`,
+				content: `rel_dc_content[${key}]]`,
+				rawContent: `rel_dc_raw_content[${key}]]`,
 				date: `rel_dc_date[${key}]`,
 			}
 		},
@@ -223,7 +242,14 @@ export default {
   created() {
 		this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
+		this.setSucceed(this.ppsuccess);
     this.getCategory();
+		console.log(this.ppoldinput);
+		// console.log(JSON.parse(this.ppoldinput));
+		this.setOld(this.ppoldinput);
+
+		// console.log('Eski değerler');
+		console.log(this.oldValue('dc_cat_id'));
   },
   components: {
     Treeselect,
@@ -241,17 +267,17 @@ export default {
 	background: #f1f1f1;
 	outline: 2px dashed #92b0b3;
 	outline-offset: -10px;
-	padding: 100px 0px 100px 250px;
+	padding: 60px 0px 60px 80px;
 	text-align: center !important;
-	width: 500px; */
-	
+	width: 330px; */
+
 	border: 1px solid #92b0b3;
-    background: #f1f1f1;
-    outline: 2px dashed #92b0b3;
-    outline-offset: -10px;
-    padding: 60px 0px 60px 80px;
-    text-align: center !important;
-    width: 330px;
+	background: #f1f1f1;
+	outline: 2px dashed #92b0b3;
+	outline-offset: -10px;
+	padding: 43px 0px 36px 38px;
+	text-align: center !important;
+	width: 100%;
 }
 .upload-container input:hover {
 	background: #ddd;
