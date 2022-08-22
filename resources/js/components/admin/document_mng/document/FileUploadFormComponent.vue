@@ -33,7 +33,7 @@
 					<input type="file" 
 						id="file_upload" 
 						:name="fieldNames.senderFile" 
-						@change="uploadForm"
+						@change="CheckFormAndUploadForm"
 					/>
 				</div>
 				<small id="emailHelp" class="form-text text-muted">
@@ -340,6 +340,10 @@ export default {
 		...mapMutations([
       'setErrors',
     ]),
+		CheckFormAndUploadForm: function(event) {
+			this.$parent.$parent.checkForm();
+			this.uploadForm(event);
+		},
 		uploadForm: function(event) {
       // let form = $('#' + this.formIDName)[0];
       /* let form = $('#' + this.$parent.$parent.formIDName)[0];

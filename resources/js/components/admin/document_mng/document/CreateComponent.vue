@@ -20,7 +20,9 @@
 						{{ $t('messages.categoryName') }}
 					</label>
 					<treeselect
+						id="doc-category"
 						name="dc_cat_id"
+						@select="setShowForm"
 						:options="categoryList"
 						:value=0
 						:disable-branch-nodes="false"
@@ -32,92 +34,94 @@
 
 		</div>
 
-		<file-upload-form
-			:ppfieldNames="docFieldNames"
-		>
-		</file-upload-form>
-		
-		<div class="row">
-			<div class="col-12">
+		<div v-if="showForm">
+			<file-upload-form
+				:ppfieldNames="docFieldNames"
+			>
+			</file-upload-form>
+			
+			<div class="row">
+				<div class="col-12">
 
-				<!-- SELECT2 EXAMPLE -->
-        <div class="card card-default" :key="key" v-for="(key, val) in relFormCount">
-          <div class="card-header">
-            <h3 class="card-title">İlgili Evrak</h3>
+					<!-- SELECT2 EXAMPLE -->
+					<div class="card card-default" :key="key" v-for="(key, val) in relFormCount">
+						<div class="card-header">
+							<h3 class="card-title">İlgili Evrak</h3>
 
-            <div class="card-tools">
-              <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                <i class="fas fa-minus"></i>
-              </button>
-              <!-- <button type="button" class="btn btn-tool" 
-								data-card-widget="remove"
-								@click="dropRelForm(key)"
-							> -->
-							<button type="button" class="btn btn-tool" 
-								data-card-widget="remove"
-								@click="dropRelForm(val)"
-							>
-                <i class="fas fa-times"></i>
-              </button>
-            </div>
-          </div>
-          <!-- /.card-header -->
-          <div class="card-body">
-            <div class="row">
-							<div class="col-12">
-								<file-upload-form
-									:ppfieldNames="getDocRelFieldNames(val)"
+							<div class="card-tools">
+								<button type="button" class="btn btn-tool" data-card-widget="collapse">
+									<i class="fas fa-minus"></i>
+								</button>
+								<!-- <button type="button" class="btn btn-tool" 
+									data-card-widget="remove"
+									@click="dropRelForm(key)"
+								> -->
+								<button type="button" class="btn btn-tool" 
+									data-card-widget="remove"
+									@click="dropRelForm(val)"
 								>
-								</file-upload-form>
+									<i class="fas fa-times"></i>
+								</button>
 							</div>
 						</div>
-            <!-- /.row -->
-          </div>
-          <!-- /.card-body -->
-          <div class="card-footer"></div>
-        </div>
-        <!-- /.card -->
+						<!-- /.card-header -->
+						<div class="card-body">
+							<div class="row">
+								<div class="col-12">
+									<file-upload-form
+										:ppfieldNames="getDocRelFieldNames(val)"
+									>
+									</file-upload-form>
+								</div>
+							</div>
+							<!-- /.row -->
+						</div>
+						<!-- /.card-body -->
+						<div class="card-footer"></div>
+					</div>
+					<!-- /.card -->
 
-				<div class="row">
-					<div class="col-12 mb-2">
-						<button type="button" class="btn btn-primary" @click="addRelForm()">
-							İlgi Formu Ekle
+					<div class="row">
+						<div class="col-12 mb-2">
+							<button type="button" class="btn btn-primary" @click="addRelForm()">
+								İlgi Formu Ekle
+							</button>
+						</div>
+					</div>
+					
+					<p>
+						<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample2" aria-expanded="false" aria-controls="collapseExample">
+							Gelişmiş Ekleme
 						</button>
-					</div>
-				</div>
-				
-				<p>
-					<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample2" aria-expanded="false" aria-controls="collapseExample">
-						Gelişmiş Ekleme
-					</button>
-				</p>
-				
-				<!-- <div class="collapse" id="collapseExample2">
-					<div class="card card-body">
-						<div class="form-group">
-							<label for="exampleInputEmail1">Açıklama Ekle</label>
-							<textarea class="form-control" id="validationTextarea" placeholder="Açıklama ekleyiniz." required="" style="height: 123px;" name="note"></textarea>
-							<small id="emailHelp" class="form-text text-muted">Evrak detaylarını yazınız.</small>
-						</div>
-						
-						<div class="form-group">
-							<label for="validationCustom04">Eklemek İstediğiniz Listeyi Seçiniz</label>
-							<select class="custom-select" id="validationCustom04" required name="list_name">
-								<option selected disabled value="">Seçiniz...</option>
-								<option>İl komisyonu kararları</option>
-								<option>Sendika davaları</option>
-								<option>Dış kurum uzman öğretmen listesi</option>
-							</select>
-							<div class="invalid-feedback">
-								Please select a valid state.
+					</p>
+					
+					<!-- <div class="collapse" id="collapseExample2">
+						<div class="card card-body">
+							<div class="form-group">
+								<label for="exampleInputEmail1">Açıklama Ekle</label>
+								<textarea class="form-control" id="validationTextarea" placeholder="Açıklama ekleyiniz." required="" style="height: 123px;" name="note"></textarea>
+								<small id="emailHelp" class="form-text text-muted">Evrak detaylarını yazınız.</small>
 							</div>
+							
+							<div class="form-group">
+								<label for="validationCustom04">Eklemek İstediğiniz Listeyi Seçiniz</label>
+								<select class="custom-select" id="validationCustom04" required name="list_name">
+									<option selected disabled value="">Seçiniz...</option>
+									<option>İl komisyonu kararları</option>
+									<option>Sendika davaları</option>
+									<option>Dış kurum uzman öğretmen listesi</option>
+								</select>
+								<div class="invalid-feedback">
+									Please select a valid state.
+								</div>
+							</div>
+							
 						</div>
-						
-					</div>
-				</div> -->
+					</div> -->
+				</div>
 			</div>
+			<button type="submit" class="btn btn-primary">Kaydet</button>
 		</div>
-		<button type="submit" class="btn btn-primary">Submit</button>
 	</form>
 </template-component>
 
@@ -150,6 +154,7 @@ export default {
 				date: 'dc_date',
 			},
 			relFormCount: [],
+			showForm: false,
 		}
   },
 	props: {
@@ -188,6 +193,12 @@ export default {
 			'setSucceed',
 			'setOld',
     ]),
+		checkForm: function() {
+			console.log('fffff');
+		},
+		setShowForm: function(node, instanceId) {
+			this.showForm =  node.id > 0;
+		},
 		oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
     },
@@ -243,13 +254,8 @@ export default {
 		this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
 		this.setSucceed(this.ppsuccess);
-    this.getCategory();
-		console.log(this.ppoldinput);
-		// console.log(JSON.parse(this.ppoldinput));
+    this.getCategory();		
 		this.setOld(this.ppoldinput);
-
-		// console.log('Eski değerler');
-		console.log(this.oldValue('dc_cat_id'));
   },
   components: {
     Treeselect,

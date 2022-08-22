@@ -6650,7 +6650,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         rawContent: 'dc_raw_content',
         date: 'dc_date'
       },
-      relFormCount: []
+      relFormCount: [],
+      showForm: false
     };
   },
   props: {
@@ -6679,6 +6680,12 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapMutations)(['setRoutes', 'setErrors', 'setSucceed', 'setOld'])), {}, {
+    checkForm: function checkForm() {
+      console.log('fffff');
+    },
+    setShowForm: function setShowForm(node, instanceId) {
+      this.showForm = node.id > 0;
+    },
     oldValue: function oldValue(fieldName) {
       return this.$store.state.old[fieldName];
     },
@@ -6725,11 +6732,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.setErrors(this.pperrors);
     this.setSucceed(this.ppsuccess);
     this.getCategory();
-    console.log(this.ppoldinput); // console.log(JSON.parse(this.ppoldinput));
-
-    this.setOld(this.ppoldinput); // console.log('Eski değerler');
-
-    console.log(this.oldValue('dc_cat_id'));
+    this.setOld(this.ppoldinput);
   },
   components: {
     Treeselect: (_riophae_vue_treeselect__WEBPACK_IMPORTED_MODULE_1___default()),
@@ -6781,6 +6784,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapState)(['routes'])),
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapMutations)(['setErrors'])), {}, {
+    CheckFormAndUploadForm: function CheckFormAndUploadForm(event) {
+      this.$parent.$parent.checkForm();
+      this.uploadForm(event);
+    },
     uploadForm: function uploadForm(event) {
       var _this = this;
 
@@ -8494,14 +8501,18 @@ var render = function render() {
     }
   }, [_vm._v("\n\t\t\t\t\t\t" + _vm._s(_vm.$t("messages.categoryName")) + "\n\t\t\t\t\t")]), _vm._v(" "), _c("treeselect", {
     attrs: {
+      id: "doc-category",
       name: "dc_cat_id",
       options: _vm.categoryList,
       value: 0,
       "disable-branch-nodes": false,
       "show-count": true,
       placeholder: _vm.$t("messages.enterCategoryName")
+    },
+    on: {
+      select: _vm.setShowForm
     }
-  })], 1)])]), _vm._v(" "), _c("file-upload-form", {
+  })], 1)])]), _vm._v(" "), _vm.showForm ? _c("div", [_c("file-upload-form", {
     attrs: {
       ppfieldNames: _vm.docFieldNames
     }
@@ -8567,7 +8578,7 @@ var render = function render() {
         return _vm.addRelForm();
       }
     }
-  }, [_vm._v("\n\t\t\t\t\t\t\tİlgi Formu Ekle\n\t\t\t\t\t\t")])])]), _vm._v(" "), _c("p", [_c("button", {
+  }, [_vm._v("\n\t\t\t\t\t\t\t\tİlgi Formu Ekle\n\t\t\t\t\t\t\t")])])]), _vm._v(" "), _c("p", [_c("button", {
     staticClass: "btn btn-primary",
     attrs: {
       type: "button",
@@ -8576,12 +8587,12 @@ var render = function render() {
       "aria-expanded": "false",
       "aria-controls": "collapseExample"
     }
-  }, [_vm._v("\n\t\t\t\t\t\tGelişmiş Ekleme\n\t\t\t\t\t")])])], 2)]), _vm._v(" "), _c("button", {
+  }, [_vm._v("\n\t\t\t\t\t\t\tGelişmiş Ekleme\n\t\t\t\t\t\t")])])], 2)]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-primary",
     attrs: {
       type: "submit"
     }
-  }, [_vm._v("Submit")])], 1)], 1);
+  }, [_vm._v("Kaydet")])], 1) : _vm._e()])], 1);
 };
 
 var staticRenderFns = [];
@@ -8669,7 +8680,7 @@ var render = function render() {
       name: _vm.fieldNames.senderFile
     },
     on: {
-      change: _vm.uploadForm
+      change: _vm.CheckFormAndUploadForm
     }
   })]), _vm._v(" "), _c("small", {
     staticClass: "form-text text-muted",
