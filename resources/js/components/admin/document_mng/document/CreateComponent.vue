@@ -37,6 +37,7 @@
 		<div v-if="showForm">
 			<file-upload-form
 				:ppfieldNames="docFieldNames"
+				ref="fileUploadFormComponent"
 			>
 			</file-upload-form>
 			
@@ -70,6 +71,7 @@
 								<div class="col-12">
 									<file-upload-form
 										:ppfieldNames="getDocRelFieldNames(val)"
+										ref="fileUploadFormComponent"
 									>
 									</file-upload-form>
 								</div>
@@ -120,7 +122,7 @@
 					</div> -->
 				</div>
 			</div>
-			<button type="submit" class="btn btn-primary">Kaydet</button>
+			<button id="document-submit" disabled type="submit" class="btn btn-primary">Kaydet</button>
 		</div>
 	</form>
 </template-component>
@@ -154,7 +156,7 @@ export default {
 				date: 'dc_date',
 			},
 			relFormCount: [],
-			showForm: false,
+			showForm: false
 		}
   },
 	props: {
@@ -193,8 +195,87 @@ export default {
 			'setSucceed',
 			'setOld',
     ]),
-		checkForm: function() {
-			console.log('fffff');
+		/* getFileInputClassName: function(fileName) {
+			return this.$refs.fileUploadFormComponent.getFileInputClassName(fileName);
+		}, */
+		getFileInputClassName: function(rawFileName) {
+			let fileName = rawFileName;
+			let indexOf = fileName.indexOf('[');
+
+			if(indexOf > 0) {
+				fileName = fileName.substring(0, indexOf);
+			}
+
+			fileName = fileName.replaceAll('_', '-');
+			let regex = /^[a-zA-Z-]+$/;
+
+			fileName = fileName.match(regex);
+			fileName = 'file-upload-'+fileName;
+
+			return fileName;
+		},
+		checkForm: function(val) {
+			let element = document.getElementById('document-submit');
+			let disabled = undefined
+
+			let files = document.getElementsByClassName(
+				this.getFileInputClassName(this.docFieldNames.senderFile)
+			);
+			
+			let relFiles = document.getElementsByClassName(
+				this.getFileInputClassName('rel_dc_sender_file')
+			);
+
+			// console.log(this.getFileInputClassName(this.docFieldNames.senderFile));
+			
+			// const files = document.getElementsByName(`${this.docFieldNames.senderFile}`);
+			// const relFiles = document.getElementsByName(`rel_dc_sender_file[]`);
+			// const relFiles = document.getElementsByClassName(`rel_dc_sender_file[]`);
+			/* console.log(files);
+			console.log('----------');
+			console.log(files.length); */
+			
+			console.log('relFiles');
+			console.log(relFiles);
+			console.log('----------');
+			console.log(relFiles.length);
+
+			for (let i = 0; i < relFiles.length; i++) {
+				// let element = document.getElementById('document-submit');
+				// disabled = false;
+
+				// element.disabled = relFiles[i].value ? false : true 
+
+				console.log(relFiles[i]);
+				console.log('relFile value: '+relFiles[i].value);
+			}
+
+			/* if(files.length > 0) {
+				console.log('disabled false');
+				document.getElementById('document-submit').disabled = false;
+			}else {
+				console.log('disabled true');
+				document.getElementById('document-submit').disabled = true;
+			} */
+			console.log('file', files[0]);
+			console.log('disabled', disabled)
+
+			
+			for (let i = 0; i < files.length; i++) {
+				// let element = document.getElementById('document-submit');
+				// disabled = false;
+
+				// element.disabled = files[i].value ? false : true 
+
+				/* console.log(files[i]);
+				console.log('file value: '+files[i].value); */
+			}
+			
+			element.disabled = disabled ? false : true
+
+			console.log('*********************************')
+
+			// this.showForm = val;
 		},
 		setShowForm: function(node, instanceId) {
 			this.showForm =  node.id > 0;

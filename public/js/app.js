@@ -6680,8 +6680,70 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapMutations)(['setRoutes', 'setErrors', 'setSucceed', 'setOld'])), {}, {
-    checkForm: function checkForm() {
-      console.log('fffff');
+    /* getFileInputClassName: function(fileName) {
+    	return this.$refs.fileUploadFormComponent.getFileInputClassName(fileName);
+    }, */
+    getFileInputClassName: function getFileInputClassName(rawFileName) {
+      var fileName = rawFileName;
+      var indexOf = fileName.indexOf('[');
+
+      if (indexOf > 0) {
+        fileName = fileName.substring(0, indexOf);
+      }
+
+      fileName = fileName.replaceAll('_', '-');
+      var regex = /^[a-zA-Z-]+$/;
+      fileName = fileName.match(regex);
+      fileName = 'file-upload-' + fileName;
+      return fileName;
+    },
+    checkForm: function checkForm(val) {
+      var element = document.getElementById('document-submit');
+      var disabled = undefined;
+      var files = document.getElementsByClassName(this.getFileInputClassName(this.docFieldNames.senderFile));
+      var relFiles = document.getElementsByClassName(this.getFileInputClassName('rel_dc_sender_file')); // console.log(this.getFileInputClassName(this.docFieldNames.senderFile));
+      // const files = document.getElementsByName(`${this.docFieldNames.senderFile}`);
+      // const relFiles = document.getElementsByName(`rel_dc_sender_file[]`);
+      // const relFiles = document.getElementsByClassName(`rel_dc_sender_file[]`);
+
+      /* console.log(files);
+      console.log('----------');
+      console.log(files.length); */
+
+      console.log('relFiles');
+      console.log(relFiles);
+      console.log('----------');
+      console.log(relFiles.length);
+
+      for (var i = 0; i < relFiles.length; i++) {
+        // let element = document.getElementById('document-submit');
+        // disabled = false;
+        // element.disabled = relFiles[i].value ? false : true 
+        console.log(relFiles[i]);
+        console.log('relFile value: ' + relFiles[i].value);
+      }
+      /* if(files.length > 0) {
+      	console.log('disabled false');
+      	document.getElementById('document-submit').disabled = false;
+      }else {
+      	console.log('disabled true');
+      	document.getElementById('document-submit').disabled = true;
+      } */
+
+
+      console.log('file', files[0]);
+      console.log('disabled', disabled);
+
+      for (var _i = 0; _i < files.length; _i++) {// let element = document.getElementById('document-submit');
+        // disabled = false;
+        // element.disabled = files[i].value ? false : true 
+
+        /* console.log(files[i]);
+        console.log('file value: '+files[i].value); */
+      }
+
+      element.disabled = disabled ? false : true;
+      console.log('*********************************'); // this.showForm = val;
     },
     setShowForm: function setShowForm(node, instanceId) {
       this.showForm = node.id > 0;
@@ -6784,9 +6846,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapState)(['routes'])),
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapMutations)(['setErrors'])), {}, {
-    CheckFormAndUploadForm: function CheckFormAndUploadForm(event) {
-      this.$parent.$parent.checkForm();
-      this.uploadForm(event);
+    getFileInputClassName: function getFileInputClassName(rawFileName) {
+      return this.$parent.$parent.getFileInputClassName(rawFileName);
     },
     uploadForm: function uploadForm(event) {
       var _this = this;
@@ -6794,7 +6855,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       // let form = $('#' + this.formIDName)[0];
 
       /* let form = $('#' + this.$parent.$parent.formIDName)[0];
-       let data = new FormData(form); */
+        let data = new FormData(form); */
       var files = event.target.files;
       var data = new FormData();
 
@@ -6823,10 +6884,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (error.responseJSON) {
           // this.setSucceed('');
           _this.setErrors(error.responseJSON.errors);
+
+          var _files = event.target;
+          _files.value = null;
         }
       }).then(function (res) {// this.$parent.dataTable.ajax.reload();
-      }).always(function () {// this.formElement.scrollTo(0, 0);
+      }).always(function () {
+        _this.$parent.$parent.checkForm(); // this.formElement.scrollTo(0, 0);
         // btn.classList.remove("running");
+
       });
     }
   })
@@ -8123,7 +8189,7 @@ var render = function render() {
     attrs: {
       "for": "exampleInputEmail1"
     }
-  }, [_vm._v("\n          " + _vm._s(_vm.$t("messages.categoryName")) + "\n        ")]), _vm._v(" "), _c("treeselect", {
+  }, [_vm._v("\r\n          " + _vm._s(_vm.$t("messages.categoryName")) + "\r\n        ")]), _vm._v(" "), _c("treeselect", {
     attrs: {
       name: "dc_cat_id",
       options: _vm.categoryList,
@@ -8268,7 +8334,7 @@ var render = function render() {
     attrs: {
       "for": "exampleInputEmail1"
     }
-  }, [_vm._v("\n          " + _vm._s(_vm.$t("messages.categoryName")) + "\n        ")]), _vm._v(" "), _c("treeselect", {
+  }, [_vm._v("\r\n          " + _vm._s(_vm.$t("messages.categoryName")) + "\r\n        ")]), _vm._v(" "), _c("treeselect", {
     attrs: {
       name: "dc_cat_id",
       options: _vm.categoryList,
@@ -8323,7 +8389,7 @@ var render = function render() {
     attrs: {
       id: "formModalLongTitle"
     }
-  }, [_vm._v("\n      " + _vm._s(_vm.titleName) + "\n    ")]), _vm._v(" "), _vm._m(0)]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\r\n      " + _vm._s(_vm.titleName) + "\r\n    ")]), _vm._v(" "), _vm._m(0)]), _vm._v(" "), _c("div", {
     staticClass: "modal-body"
   }, [_vm._t("default")], 2), _vm._v(" "), _c("div", {
     staticClass: "modal-footer"
@@ -8335,7 +8401,7 @@ var render = function render() {
     on: {
       click: _vm.saveMethod
     }
-  }, [_vm._v("\n      " + _vm._s(_vm.saveBtnName) + "\n      "), _c("div", {
+  }, [_vm._v("\r\n      " + _vm._s(_vm.saveBtnName) + "\r\n      "), _c("div", {
     staticClass: "ld ld-ring ld-spin p-2"
   })]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-secondary",
@@ -8343,7 +8409,7 @@ var render = function render() {
       type: "button",
       "data-dismiss": "modal"
     }
-  }, [_vm._v("\n      " + _vm._s(_vm.cancelBtnName) + "\n    ")])])]);
+  }, [_vm._v("\r\n      " + _vm._s(_vm.cancelBtnName) + "\r\n    ")])])]);
 };
 
 var staticRenderFns = [function () {
@@ -8402,7 +8468,7 @@ var render = function render() {
       "data-datas": "{\"formTitleName\": \"${formTitleName}\"}",
       "data-component": "".concat(_vm.formTitleName, "-create-component")
     }
-  }, [_vm._v("\n            " + _vm._s(_vm.$t("messages.add")) + "\n          ")])])])])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\r\n            " + _vm._s(_vm.$t("messages.add")) + "\r\n          ")])])])])]), _vm._v(" "), _c("div", {
     staticClass: "modal fade",
     attrs: {
       tabindex: "-1",
@@ -8499,7 +8565,7 @@ var render = function render() {
     attrs: {
       "for": "exampleInputEmail1"
     }
-  }, [_vm._v("\n\t\t\t\t\t\t" + _vm._s(_vm.$t("messages.categoryName")) + "\n\t\t\t\t\t")]), _vm._v(" "), _c("treeselect", {
+  }, [_vm._v("\r\n\t\t\t\t\t\t" + _vm._s(_vm.$t("messages.categoryName")) + "\r\n\t\t\t\t\t")]), _vm._v(" "), _c("treeselect", {
     attrs: {
       id: "doc-category",
       name: "dc_cat_id",
@@ -8513,6 +8579,7 @@ var render = function render() {
       select: _vm.setShowForm
     }
   })], 1)])]), _vm._v(" "), _vm.showForm ? _c("div", [_c("file-upload-form", {
+    ref: "fileUploadFormComponent",
     attrs: {
       ppfieldNames: _vm.docFieldNames
     }
@@ -8558,6 +8625,8 @@ var render = function render() {
     }, [_c("div", {
       staticClass: "col-12"
     }, [_c("file-upload-form", {
+      ref: "fileUploadFormComponent",
+      refInFor: true,
       attrs: {
         ppfieldNames: _vm.getDocRelFieldNames(val)
       }
@@ -8578,7 +8647,7 @@ var render = function render() {
         return _vm.addRelForm();
       }
     }
-  }, [_vm._v("\n\t\t\t\t\t\t\t\tİlgi Formu Ekle\n\t\t\t\t\t\t\t")])])]), _vm._v(" "), _c("p", [_c("button", {
+  }, [_vm._v("\r\n\t\t\t\t\t\t\t\tİlgi Formu Ekle\r\n\t\t\t\t\t\t\t")])])]), _vm._v(" "), _c("p", [_c("button", {
     staticClass: "btn btn-primary",
     attrs: {
       type: "button",
@@ -8587,9 +8656,11 @@ var render = function render() {
       "aria-expanded": "false",
       "aria-controls": "collapseExample"
     }
-  }, [_vm._v("\n\t\t\t\t\t\t\tGelişmiş Ekleme\n\t\t\t\t\t\t")])])], 2)]), _vm._v(" "), _c("button", {
+  }, [_vm._v("\r\n\t\t\t\t\t\t\tGelişmiş Ekleme\r\n\t\t\t\t\t\t")])])], 2)]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-primary",
     attrs: {
+      id: "document-submit",
+      disabled: "",
       type: "submit"
     }
   }, [_vm._v("Kaydet")])], 1) : _vm._e()])], 1);
@@ -8661,7 +8732,7 @@ var render = function render() {
     }
   }, [_vm._v("Gelen Evrak")])]), _vm._v(" "), _c("div", {
     staticClass: "invalid-feedback"
-  }, [_vm._v("\n\t\t\t\t\tLütfen evrağın durumunu seçiniz.\n\t\t\t\t")])])])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\r\n\t\t\t\t\tLütfen evrağın durumunu seçiniz.\r\n\t\t\t\t")])])])]), _vm._v(" "), _c("div", {
     staticClass: "row"
   }, [_c("div", {
     staticClass: "col-3"
@@ -8674,20 +8745,20 @@ var render = function render() {
   }, [_vm._v("Evrak Dosyasını Ekle")]), _vm._v(" "), _c("div", {
     staticClass: "upload-container"
   }, [_c("input", {
+    "class": _vm.getFileInputClassName(_vm.fieldNames.senderFile),
     attrs: {
       type: "file",
-      id: "file_upload",
       name: _vm.fieldNames.senderFile
     },
     on: {
-      change: _vm.CheckFormAndUploadForm
+      change: _vm.uploadForm
     }
   })]), _vm._v(" "), _c("small", {
     staticClass: "form-text text-muted",
     attrs: {
       id: "emailHelp"
     }
-  }, [_vm._v("\n\t\t\t\t\tudf formatındaki evrağı yükleyin.\n\t\t\t\t")])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\r\n\t\t\t\t\tudf formatındaki evrağı yükleyin.\r\n\t\t\t\t")])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
   }, [_c("label", {
     attrs: {
@@ -8707,7 +8778,7 @@ var render = function render() {
     attrs: {
       id: "emailHelp"
     }
-  }, [_vm._v("\n\t\t\t\t\t\t\tBuraya evrakın eklerini ekleyiniz.\n\t\t\t\t\t")])])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\r\n\t\t\t\t\t\t\tBuraya evrakın eklerini ekleyiniz.\r\n\t\t\t\t\t")])])]), _vm._v(" "), _c("div", {
     staticClass: "col-5"
   }, [_c("div", {
     staticClass: "form-group mb-1"
@@ -8750,7 +8821,7 @@ var render = function render() {
     attrs: {
       id: "emailHelp"
     }
-  }, [_vm._v("\n\t\t\t\t\tEvrağın gönderildiği tarih.\n\t\t\t\t")])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\r\n\t\t\t\t\tEvrağın gönderildiği tarih.\r\n\t\t\t\t")])]), _vm._v(" "), _c("div", {
     staticClass: "form-group"
   }, [_c("label", {
     attrs: {
@@ -8773,7 +8844,7 @@ var render = function render() {
     attrs: {
       id: "emailHelp"
     }
-  }, [_vm._v("\n\t\t\t\t\tEvrağın konusunu içerir.\n\t\t\t\t")])])]), _vm._v(" "), _c("div", {
+  }, [_vm._v("\r\n\t\t\t\t\tEvrağın konusunu içerir.\r\n\t\t\t\t")])])]), _vm._v(" "), _c("div", {
     staticClass: "col-4"
   }, [_c("div", {
     staticClass: "form-group"
@@ -8821,7 +8892,7 @@ var render = function render() {
     attrs: {
       id: "emailHelp"
     }
-  }, [_vm._v("\n\t\t\t\t\tEvrağın gönderildiği yer.\n\t\t\t\t")])])])])]);
+  }, [_vm._v("\r\n\t\t\t\t\tEvrağın gönderildiği yer.\r\n\t\t\t\t")])])])])]);
 };
 
 var staticRenderFns = [];
@@ -9012,7 +9083,7 @@ var render = function render() {
     }
   }, [_c("i", {
     staticClass: "fa fa-search"
-  }), _vm._v("\n            Ara\n          ")])])], 1), _vm._v(" "), _c("div", {
+  }), _vm._v("\r\n            Ara\r\n          ")])])], 1), _vm._v(" "), _c("div", {
     staticClass: "row mt-3"
   }, [_c("div", {
     staticClass: "col-md-10 offset-md-1"
@@ -9210,7 +9281,7 @@ var staticRenderFns = [function () {
     attrs: {
       type: "button"
     }
-  }, [_vm._v("\n                    EKLE\n                  ")])])])]);
+  }, [_vm._v("\r\n                    EKLE\r\n                  ")])])])]);
 }];
 render._withStripped = true;
 
@@ -9254,7 +9325,7 @@ var staticRenderFns = [function () {
     attrs: {
       type: "button"
     }
-  }, [_vm._v("\n          asdasdasd\n        ")])])])])]);
+  }, [_vm._v("\r\n          asdasdasd\r\n        ")])])])])]);
 }];
 render._withStripped = true;
 
@@ -9640,7 +9711,7 @@ var staticRenderFns = [function () {
       "aria-controls": "pills-home",
       "aria-selected": "true"
     }
-  }, [_vm._v("\n                    Eski Yönetmelik\n                  ")])]), _vm._v(" "), _c("li", {
+  }, [_vm._v("\r\n                    Eski Yönetmelik\r\n                  ")])]), _vm._v(" "), _c("li", {
     staticClass: "nav-item",
     attrs: {
       role: "presentation"
@@ -9656,7 +9727,7 @@ var staticRenderFns = [function () {
       "aria-controls": "pills-profile",
       "aria-selected": "false"
     }
-  }, [_vm._v("\n                    Yeni Yönetmelik\n                  ")])]), _vm._v(" "), _c("li", {
+  }, [_vm._v("\r\n                    Yeni Yönetmelik\r\n                  ")])]), _vm._v(" "), _c("li", {
     staticClass: "nav-item",
     attrs: {
       role: "presentation"
@@ -9672,7 +9743,7 @@ var staticRenderFns = [function () {
       "aria-controls": "pills-contact",
       "aria-selected": "false"
     }
-  }, [_vm._v("\n                    Bilgi Ekleme\n                  ")])])])]);
+  }, [_vm._v("\r\n                    Bilgi Ekleme\r\n                  ")])])])]);
 }];
 render._withStripped = true;
 
@@ -31720,7 +31791,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\n.upload-container {\n\tposition: relative;\n}\n.upload-container input {\n\t/* border: 1px solid #92b0b3;\n\tbackground: #f1f1f1;\n\toutline: 2px dashed #92b0b3;\n\toutline-offset: -10px;\n\tpadding: 60px 0px 60px 80px;\n\ttext-align: center !important;\n\twidth: 330px; */\n\n\tborder: 1px solid #92b0b3;\n\tbackground: #f1f1f1;\n\toutline: 2px dashed #92b0b3;\n\toutline-offset: -10px;\n\tpadding: 43px 0px 36px 38px;\n\ttext-align: center !important;\n\twidth: 100%;\n}\n.upload-container input:hover {\n\tbackground: #ddd;\n}   \n/* .upload-container:before {\n\tposition: absolute;\n\tbottom: 50px;\n\tleft: 245px;\n\tcontent: \" (or) Drag and Drop files here. \";\n\tcolor: #3f8188;\n\tfont-weight: 900;\n}  */\n.upload-btn {\n\tmargin-left: 300px;\n\tpadding: 7px 20px;\n}     \n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\n.upload-container {\r\n\tposition: relative;\n}\n.upload-container input {\r\n\t/* border: 1px solid #92b0b3;\r\n\tbackground: #f1f1f1;\r\n\toutline: 2px dashed #92b0b3;\r\n\toutline-offset: -10px;\r\n\tpadding: 60px 0px 60px 80px;\r\n\ttext-align: center !important;\r\n\twidth: 330px; */\r\n\r\n\tborder: 1px solid #92b0b3;\r\n\tbackground: #f1f1f1;\r\n\toutline: 2px dashed #92b0b3;\r\n\toutline-offset: -10px;\r\n\tpadding: 43px 0px 36px 38px;\r\n\ttext-align: center !important;\r\n\twidth: 100%;\n}\n.upload-container input:hover {\r\n\tbackground: #ddd;\n}   \r\n/* .upload-container:before {\r\n\tposition: absolute;\r\n\tbottom: 50px;\r\n\tleft: 245px;\r\n\tcontent: \" (or) Drag and Drop files here. \";\r\n\tcolor: #3f8188;\r\n\tfont-weight: 900;\r\n}  */\n.upload-btn {\r\n\tmargin-left: 300px;\r\n\tpadding: 7px 20px;\n}     \r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 
@@ -31744,7 +31815,7 @@ __webpack_require__.r(__webpack_exports__);
 
 var ___CSS_LOADER_EXPORT___ = _node_modules_css_loader_dist_runtime_api_js__WEBPACK_IMPORTED_MODULE_0___default()(function(i){return i[1]});
 // Module
-___CSS_LOADER_EXPORT___.push([module.id, "\nimg[data-v-29be5aad] {\n  max-width: 100%;\n}\n", ""]);
+___CSS_LOADER_EXPORT___.push([module.id, "\nimg[data-v-29be5aad] {\r\n  max-width: 100%;\n}\r\n", ""]);
 // Exports
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (___CSS_LOADER_EXPORT___);
 

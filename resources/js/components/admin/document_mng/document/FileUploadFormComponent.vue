@@ -31,9 +31,9 @@
 				<label for="file_upload">Evrak Dosyasını Ekle</label>
 				<div class="upload-container">
 					<input type="file" 
-						id="file_upload" 
+						:class="getFileInputClassName(fieldNames.senderFile)" 
 						:name="fieldNames.senderFile" 
-						@change="CheckFormAndUploadForm"
+						@change="uploadForm"
 					/>
 				</div>
 				<small id="emailHelp" class="form-text text-muted">
@@ -340,9 +340,8 @@ export default {
 		...mapMutations([
       'setErrors',
     ]),
-		CheckFormAndUploadForm: function(event) {
-			this.$parent.$parent.checkForm();
-			this.uploadForm(event);
+		getFileInputClassName: function(rawFileName) {
+			return this.$parent.$parent.getFileInputClassName(rawFileName);
 		},
 		uploadForm: function(event) {
       // let form = $('#' + this.formIDName)[0];
@@ -381,12 +380,16 @@ export default {
         if(error.responseJSON){
           // this.setSucceed('');
           this.setErrors(error.responseJSON.errors);
+
+					let files = event.target;
+					files.value = null;
         }
       })
       .then((res) => {
         // this.$parent.dataTable.ajax.reload();
       })
       .always(() => {
+				this.$parent.$parent.checkForm();
         // this.formElement.scrollTo(0, 0);
         // btn.classList.remove("running");
       });
