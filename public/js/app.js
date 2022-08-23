@@ -6650,7 +6650,8 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         rawContent: 'dc_raw_content',
         date: 'dc_date'
       },
-      relFormCount: []
+      relFormCount: [],
+      showForm: false
     };
   },
   props: {
@@ -6679,6 +6680,74 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     }
   }),
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_3__.mapMutations)(['setRoutes', 'setErrors', 'setSucceed', 'setOld'])), {}, {
+    /* getFileInputClassName: function(fileName) {
+    	return this.$refs.fileUploadFormComponent.getFileInputClassName(fileName);
+    }, */
+    getFileInputClassName: function getFileInputClassName(rawFileName) {
+      var fileName = rawFileName;
+      var indexOf = fileName.indexOf('[');
+
+      if (indexOf > 0) {
+        fileName = fileName.substring(0, indexOf);
+      }
+
+      fileName = fileName.replaceAll('_', '-');
+      var regex = /^[a-zA-Z-]+$/;
+      fileName = fileName.match(regex);
+      fileName = 'file-upload-' + fileName;
+      return fileName;
+    },
+    checkForm: function checkForm(val) {
+      var element = document.getElementById('document-submit');
+      var disabled = undefined;
+      var files = document.getElementsByClassName(this.getFileInputClassName(this.docFieldNames.senderFile));
+      var relFiles = document.getElementsByClassName(this.getFileInputClassName('rel_dc_sender_file')); // console.log(this.getFileInputClassName(this.docFieldNames.senderFile));
+      // const files = document.getElementsByName(`${this.docFieldNames.senderFile}`);
+      // const relFiles = document.getElementsByName(`rel_dc_sender_file[]`);
+      // const relFiles = document.getElementsByClassName(`rel_dc_sender_file[]`);
+
+      /* console.log(files);
+      console.log('----------');
+      console.log(files.length); */
+
+      console.log('relFiles');
+      console.log(relFiles);
+      console.log('----------');
+      console.log(relFiles.length);
+
+      for (var i = 0; i < relFiles.length; i++) {
+        // let element = document.getElementById('document-submit');
+        // disabled = false;
+        // element.disabled = relFiles[i].value ? false : true 
+        console.log(relFiles[i]);
+        console.log('relFile value: ' + relFiles[i].value);
+      }
+      /* if(files.length > 0) {
+      	console.log('disabled false');
+      	document.getElementById('document-submit').disabled = false;
+      }else {
+      	console.log('disabled true');
+      	document.getElementById('document-submit').disabled = true;
+      } */
+
+
+      console.log('file', files[0]);
+      console.log('disabled', disabled);
+
+      for (var _i = 0; _i < files.length; _i++) {// let element = document.getElementById('document-submit');
+        // disabled = false;
+        // element.disabled = files[i].value ? false : true 
+
+        /* console.log(files[i]);
+        console.log('file value: '+files[i].value); */
+      }
+
+      element.disabled = disabled ? false : true;
+      console.log('*********************************'); // this.showForm = val;
+    },
+    setShowForm: function setShowForm(node, instanceId) {
+      this.showForm = node.id > 0;
+    },
     oldValue: function oldValue(fieldName) {
       return this.$store.state.old[fieldName];
     },
@@ -6725,11 +6794,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     this.setErrors(this.pperrors);
     this.setSucceed(this.ppsuccess);
     this.getCategory();
-    console.log(this.ppoldinput); // console.log(JSON.parse(this.ppoldinput));
-
-    this.setOld(this.ppoldinput); // console.log('Eski değerler');
-
-    console.log(this.oldValue('dc_cat_id'));
+    this.setOld(this.ppoldinput);
   },
   components: {
     Treeselect: (_riophae_vue_treeselect__WEBPACK_IMPORTED_MODULE_1___default()),
@@ -6781,6 +6846,9 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
   },
   computed: _objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapState)(['routes'])),
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_0__.mapMutations)(['setErrors'])), {}, {
+    getFileInputClassName: function getFileInputClassName(rawFileName) {
+      return this.$parent.$parent.getFileInputClassName(rawFileName);
+    },
     uploadForm: function uploadForm(event) {
       var _this = this;
 
@@ -6816,10 +6884,15 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
         if (error.responseJSON) {
           // this.setSucceed('');
           _this.setErrors(error.responseJSON.errors);
+
+          var _files = event.target;
+          _files.value = null;
         }
       }).then(function (res) {// this.$parent.dataTable.ajax.reload();
-      }).always(function () {// this.formElement.scrollTo(0, 0);
+      }).always(function () {
+        _this.$parent.$parent.checkForm(); // this.formElement.scrollTo(0, 0);
         // btn.classList.remove("running");
+
       });
     }
   })
@@ -8494,14 +8567,19 @@ var render = function render() {
     }
   }, [_vm._v("\r\n\t\t\t\t\t\t" + _vm._s(_vm.$t("messages.categoryName")) + "\r\n\t\t\t\t\t")]), _vm._v(" "), _c("treeselect", {
     attrs: {
+      id: "doc-category",
       name: "dc_cat_id",
       options: _vm.categoryList,
       value: 0,
       "disable-branch-nodes": false,
       "show-count": true,
       placeholder: _vm.$t("messages.enterCategoryName")
+    },
+    on: {
+      select: _vm.setShowForm
     }
-  })], 1)])]), _vm._v(" "), _c("file-upload-form", {
+  })], 1)])]), _vm._v(" "), _vm.showForm ? _c("div", [_c("file-upload-form", {
+    ref: "fileUploadFormComponent",
     attrs: {
       ppfieldNames: _vm.docFieldNames
     }
@@ -8547,6 +8625,8 @@ var render = function render() {
     }, [_c("div", {
       staticClass: "col-12"
     }, [_c("file-upload-form", {
+      ref: "fileUploadFormComponent",
+      refInFor: true,
       attrs: {
         ppfieldNames: _vm.getDocRelFieldNames(val)
       }
@@ -8567,7 +8647,7 @@ var render = function render() {
         return _vm.addRelForm();
       }
     }
-  }, [_vm._v("\r\n\t\t\t\t\t\t\tİlgi Formu Ekle\r\n\t\t\t\t\t\t")])])]), _vm._v(" "), _c("p", [_c("button", {
+  }, [_vm._v("\r\n\t\t\t\t\t\t\t\tİlgi Formu Ekle\r\n\t\t\t\t\t\t\t")])])]), _vm._v(" "), _c("p", [_c("button", {
     staticClass: "btn btn-primary",
     attrs: {
       type: "button",
@@ -8576,12 +8656,14 @@ var render = function render() {
       "aria-expanded": "false",
       "aria-controls": "collapseExample"
     }
-  }, [_vm._v("\r\n\t\t\t\t\t\tGelişmiş Ekleme\r\n\t\t\t\t\t")])])], 2)]), _vm._v(" "), _c("button", {
+  }, [_vm._v("\r\n\t\t\t\t\t\t\tGelişmiş Ekleme\r\n\t\t\t\t\t\t")])])], 2)]), _vm._v(" "), _c("button", {
     staticClass: "btn btn-primary",
     attrs: {
+      id: "document-submit",
+      disabled: "",
       type: "submit"
     }
-  }, [_vm._v("Submit")])], 1)], 1);
+  }, [_vm._v("Kaydet")])], 1) : _vm._e()])], 1);
 };
 
 var staticRenderFns = [];
@@ -8663,9 +8745,9 @@ var render = function render() {
   }, [_vm._v("Evrak Dosyasını Ekle")]), _vm._v(" "), _c("div", {
     staticClass: "upload-container"
   }, [_c("input", {
+    "class": _vm.getFileInputClassName(_vm.fieldNames.senderFile),
     attrs: {
       type: "file",
-      id: "file_upload",
       name: _vm.fieldNames.senderFile
     },
     on: {
