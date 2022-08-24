@@ -57,37 +57,6 @@
 
 				</div>
 		</div>
-		
-		<!-- <div class="col-2">
-			<div class="form-group">
-				<div>
-					<label for="file_upload">Evrak Ek(leri)ini Ekle</label>
-					<div class="upload-container">
-						<input type="file" id="file_upload" multiple
-							:name="fieldNames.senderAttachFiles"
-						/>
-					</div>
-					<small id="emailHelp" 
-						class="form-text text-muted">
-							Buraya evrakın eklerini ekleyiniz.
-					</small>
-				</div>
-				
-				<div class="mt-2">
-					<label for="exampleInputEmail1">Evrak Tarihi</label>
-					<input type="text" class="form-control" id="exampleInputEmail1" 
-						readonly
-						aria-describedby="emailHelp" 
-						:name="fieldNames.date"
-						:value="fieldValues.date"
-					>
-					<small id="emailHelp" class="form-text text-muted">
-						Evrağın gönderildiği tarih.
-					</small>
-				</div>
-
-			</div>
-		</div> -->
 
 		<div class="col-5">
 
@@ -119,12 +88,6 @@
 			
 			<div class="form-group">
 				<label for="exampleInputEmail1">Evrak Konusu</label>
-				<!-- <input type="text" class="form-control" id="exampleInputEmail1" 
-					readonly
-					aria-describedby="emailHelp" 
-					:name="fieldNames.subject"
-					:value="fieldValues.subject"
-				> -->
 				<textarea id="exampleInputEmail1" class="form-control" 
 					readonly 
 					rows="4"
@@ -144,11 +107,6 @@
 			
 			<div class="form-group">
 				<label for="exampleInputEmail1">Gönderen</label>
-				<!-- <input type="text" class="form-control" id="exampleInputEmail1" 
-					readonly  aria-describedby="emailHelp" 
-					:name="fieldNames.sender"
-					:value="fieldValues.sender"
-				> -->
 				<textarea id="exampleInputEmail1" class="form-control" 
 					rows="4"
 					readonly  
@@ -163,12 +121,6 @@
 			<div class="form-group">
 
 				<label for="exampleInputEmail1">Gönderilen</label>
-				<!-- <input type="text" class="form-control" id="exampleInputEmail1" 
-					readonly 
-					aria-describedby="emailHelp" 
-					:name="fieldNames.receiver"
-					:value="fieldValues.receiver"
-				> -->
 				<textarea id="exampleInputEmail1" class="form-control" 
 					rows="4"
 					readonly
@@ -184,126 +136,7 @@
 			</div>
 			
 		</div>
-		
-		<!-- <div class="col-2">
-			<div class="form-group">
-
-				<label for="exampleInputEmail1">Gönderilen</label>
-				<input type="text" class="form-control" id="exampleInputEmail1" 
-					readonly 
-					aria-describedby="emailHelp" 
-					:name="fieldNames.receiver"
-					:value="fieldValues.receiver"
-				>
-				<textarea id="exampleInputEmail1" class="form-control" 
-					rows="8"
-					readonly
-					aria-describedby="emailHelp" 
-					:name="fieldNames.receiver"
-					:value="fieldValues.receiver.trim()" 
-				>
-				</textarea>
-				<small id="emailHelp" class="form-text text-muted">
-					Evrağın gönderildiği yer.
-				</small>
-
-			</div>
-		</div> -->
-		
 	</div>
-	
-	<!-- <div class="row">
-		<div class="col-4">
-			
-			<div class="form-group">
-				<label for="exampleInputEmail1">Gönderen</label>
-				<textarea id="exampleInputEmail1" class="form-control" 
-					rows="1"
-					readonly  
-					aria-describedby="emailHelp" 
-					:name="fieldNames.sender"
-					:value="fieldValues.sender"
-				>
-				</textarea>
-				<small id="emailHelp" class="form-text text-muted">Evrağı gönderen yer.</small>
-			</div>
-			
-		</div>
-		
-		<div class="col-4">
-			<div class="form-group">
-
-				<label for="exampleInputEmail1">Gönderilen</label>
-				<textarea id="exampleInputEmail1" class="form-control" 
-					rows="1"
-					readonly
-					aria-describedby="emailHelp" 
-					:name="fieldNames.receiver"
-					:value="fieldValues.receiver" 
-				>
-				</textarea>
-				<small id="emailHelp" class="form-text text-muted">
-					Evrağın gönderildiği yer.
-				</small>
-
-			</div>
-		</div>
-	</div>
-
-	<div class="row">
-		<div class="col-2">
-			
-			<div class="form-group">
-				<label for="exampleInputEmail1">Evrak Numarası</label>
-				<input type="text" class="form-control" id="exampleInputEmail1" 
-					readonly
-					aria-describedby="emailHelp" 
-					:name="fieldNames.number"
-					:value="fieldValues.number"
-				>
-				<small id="emailHelp" class="form-text text-muted">
-					Evrağın benzersiz numarası.
-				</small>
-			</div>
-			
-		</div>
-		
-		<div class="col-8">
-			
-			<div class="form-group">
-				<label for="exampleInputEmail1">Evrak Konusu</label>
-				<textarea id="exampleInputEmail1" class="form-control" 
-					readonly 
-					rows="1"
-					aria-describedby="emailHelp"
-					:name="fieldNames.subject"
-					:value="fieldValues.subject" 
-				>
-				</textarea>
-				<small id="emailHelp" class="form-text text-muted">
-					Evrağın konusunu içerir.
-				</small>
-			</div>
-			
-		</div>
-		
-		<div class="col-2">
-			
-			<div class="form-group">
-				<label for="exampleInputEmail1">Evrak Tarihi</label>
-				<input type="text" class="form-control" id="exampleInputEmail1" 
-					readonly
-					aria-describedby="emailHelp" 
-					:name="fieldNames.date"
-					:value="fieldValues.date"
-				>
-				<small id="emailHelp" class="form-text text-muted">
-					Evrağın gönderildiği tarih.
-				</small>
-			</div>
-			
-		</div>
-	</div> -->
 </div>
 </template>
 
@@ -344,11 +177,6 @@ export default {
 			return this.$parent.$parent.getFileInputClassName(rawFileName);
 		},
 		uploadForm: function(event) {
-      // let form = $('#' + this.formIDName)[0];
-      /* let form = $('#' + this.$parent.$parent.formIDName)[0];
-
-      let data = new FormData(form); */
-
 			let files = event.target.files;
 
 			let data = new FormData();

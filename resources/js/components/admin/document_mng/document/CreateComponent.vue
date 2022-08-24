@@ -195,9 +195,6 @@ export default {
 			'setSucceed',
 			'setOld',
     ]),
-		/* getFileInputClassName: function(fileName) {
-			return this.$refs.fileUploadFormComponent.getFileInputClassName(fileName);
-		}, */
 		getFileInputClassName: function(rawFileName) {
 			let fileName = rawFileName;
 			let indexOf = fileName.indexOf('[');
@@ -241,14 +238,7 @@ export default {
 					disabled = files[i].value ? false : true;
 				}
 			}
-
-			console.log('file', disabled);
-			
 			element.disabled = disabled ? true : false
-
-			console.log('element', element.disabled)
-
-			console.log('*********************************')
 		},
 		setShowForm: function(node, instanceId) {
 			this.showForm =  node.id > 0;
