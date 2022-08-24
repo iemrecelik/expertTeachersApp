@@ -35,9 +35,9 @@ class DocumentsController extends Controller
         $params = $request->all();
         
         $arr = [
+            'dc_number'         => trim($params['dc_number']),
             'dc_item_status'    => $params['dc_item_status'],
             'dc_cat_id'         => $params['dc_cat_id'],
-            'dc_number'         => $params['dc_number'],
             'dc_subject'        => $params['dc_subject'],
             'dc_who_send'       => $params['dc_who_send'],
             'dc_who_receiver'   => $params['dc_who_receiver'],
@@ -59,9 +59,9 @@ class DocumentsController extends Controller
         if (isset($params['rel_dc_number'])) {
             foreach ($params['rel_dc_number'] as $key => $val) {
                 $arr = [
+                    'dc_number'         => trim($params['rel_dc_number'][$key]),
                     'dc_item_status'    => $params['rel_dc_item_status'][$key],
                     'dc_cat_id'         => $params['dc_cat_id'],
-                    'dc_number'         => $params['rel_dc_number'][$key],
                     'dc_subject'        => $params['rel_dc_subject'][$key],
                     'dc_who_send'       => $params['rel_dc_who_send'][$key],
                     'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
@@ -95,17 +95,27 @@ class DocumentsController extends Controller
 
     private function saveDcDocument($params, $dcFile, $dcAttachFiles = null, $dcDocuments = null)
     {
-        // dump($params);die('sss');
         if(empty($dcDocuments)) {
-            $dcDocuments = DcDocuments::create($params);
+            
+            $dcDocuments = DcDocuments::find(['dc_number' => $params['dc_number']]);
+            dump($dcDocuments);die;
+
+            $dcDocuments = DcDocuments::firstOrCreate(
+                ['dc_number' => array_shift($params)],
+                $params
+            );
             $this->uploadFile([
                 'dcDocuments'   => $dcDocuments,
                 'params'        => $params,
                 'dcFile'        => $dcFile,
                 'dcAttachFiles' => $dcAttachFiles,
+                'exist' => $dcAttachFiles,
             ]);
         }else {
-            $dcRelative = DcDocuments::create($params);
+            $dcRelative = DcDocuments::firstOrCreate(
+                ['dc_number' => array_shift($params)],
+                $params
+            );
             $dcDocuments->dc_ralatives()->save($dcRelative);
             $this->uploadFile([
                 'dcDocuments'   => $dcRelative,
@@ -122,15 +132,19 @@ class DocumentsController extends Controller
     {
         extract($arr);
 
-        $filesArr = $this->saveFileToStorage(
-            $dcFile, 
-            'DcFiles', 
-            'dc_file_path',
-            'udf'
-        );
+        if($exist === false) {
+            $filesArr = $this->saveFileToStorage(
+                $dcFile, 
+                'DcFiles', 
+                'dc_file_path',
+                'udf'
+            );
+        }
         
         // dump($dcAttachFiles);die;
         if(isset($dcAttachFiles)) {
+            $dcDocuments->dcAttachFiles()->delete();
+
             $attachFilesArr = $this->saveFileToStorage(
                 $dcAttachFiles, 
                 'DcAttachFiles', 
