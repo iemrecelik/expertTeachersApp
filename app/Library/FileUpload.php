@@ -45,7 +45,11 @@ class FileUpload
 
 	public function saveFile()
 	{
-		Storage::put($this->savePathAndFileName('raw'), $this->file);
+		// Storage::put($this->savePathAndFileName('raw'), $this->file);
+
+		$savePathAndFileName = $this->savePathAndFileName("raw");
+
+		Storage::putFileAs($savePathAndFileName['pathName'], $this->file, $savePathAndFileName['fileName']);
 
 		return $this;
 	}
@@ -61,14 +65,17 @@ class FileUpload
 				$img = $this->performFilters($valFilt);
 
 				Storage::put(
-					str_replace('*filtName*', $keyFilt, $savePathAndFileName), 
+					str_replace('*filtName*', $keyFilt, $savePathAndFileName['pathAndFileName']), 
 					$img->encode()
 				);
 			}
 
 		}else{
 			$img = Image::make($this->file);
-			Storage::put($this->savePathAndFileName('raw'), $img->encode());
+
+			$savePathAndFileName = $this->savePathAndFileName("raw");
+
+			Storage::put($savePathAndFileName['pathAndFileName'], $img->encode());
 		}
 
 		return $this;
@@ -91,20 +98,47 @@ class FileUpload
 
 	public function savePathAndFileName($filtName = '*filtName*')
 	{
-		$fileName = $this->hashFileName.'.'.$this->guessExtension;
+		// $fileName = $this->hashFileName.'.'.$this->guessExtension;
+		
+		/* $pathName = implode('/', [
+			date('Y'),
+			date('m'),
+			date('d'),
+			date('H'),
+		]); */
+		// $imagesPath = '/public/upload/images/'.$filtName;
+		// dump($imagesPath);
+
 		$pathName = implode('/', [
 			date('Y'),
 			date('m'),
 			date('d'),
 			date('H'),
 		]);
-		$imagesPath = '/public/upload/images/'.$filtName;
-		
+		$imagesPath = $this->getImagesPath($filtName);
+		$fileName = $this->getFileName();
+
 		$pathAndFileName = "{$imagesPath}/{$pathName}/{$fileName}";
-		
+
+		// dump($pathAndFileName);die;
+
 		$this->setSavePath("/{$pathName}/{$fileName}");
 
-		return $pathAndFileName;
+		return [
+			'fileName' => $fileName,
+			'pathName' => "{$imagesPath}/{$pathName}/",
+			'pathAndFileName' => $pathAndFileName,
+		];
+	}
+
+	private function getImagesPath($filtName = '*filtName*')
+	{	
+		return '/public/upload/images/'.$filtName;
+	}
+
+	private function getFileName()
+	{
+		return $this->hashFileName.'.'.$this->guessExtension;
 	}
 
     /**

@@ -33,9 +33,7 @@ class DocumentsController extends Controller
     public function store(StoreDcDocumentsRequest $request)
     {
         $params = $request->all();
-        // dump($params);die;
-        // dump(strtotime($params['dc_date']));die;
-        /* Save Sender Document */
+        
         $arr = [
             'dc_item_status'    => $params['dc_item_status'],
             'dc_cat_id'         => $params['dc_cat_id'],
@@ -49,7 +47,7 @@ class DocumentsController extends Controller
             'dc_date'           => strtotime($params['dc_date']),
         ];
 
-        $this->saveDcDocument(
+        $dcDocuments = $this->saveDcDocument(
             $arr, 
             [
                 $request->file('dc_sender_file')
@@ -62,7 +60,7 @@ class DocumentsController extends Controller
             foreach ($params['rel_dc_number'] as $key => $val) {
                 $arr = [
                     'dc_item_status'    => $params['rel_dc_item_status'][$key],
-                    'dc_cat_id'         => $params['dc_cat_id'][$key],
+                    'dc_cat_id'         => $params['dc_cat_id'],
                     'dc_number'         => $params['rel_dc_number'][$key],
                     'dc_subject'        => $params['rel_dc_subject'][$key],
                     'dc_who_send'       => $params['rel_dc_who_send'][$key],
@@ -73,14 +71,18 @@ class DocumentsController extends Controller
                     'dc_date'           => strtotime($params['rel_dc_date'][$key]),
                 ];
 
-                // dump($request->file('rel_dc_sender_file'));die;
+                $relDcSenderAttachFiles = $request->file('rel_dc_sender_attach_files');
+                $relDcSenderAttachFiles = isset($relDcSenderAttachFiles[$key]) ? 
+                                            $relDcSenderAttachFiles[$key] : 
+                                            null;
 
                 $this->saveDcDocument(
                     $arr,
                     [
                         $request->file('rel_dc_sender_file')[$key]
                     ],
-                    $request->file('rel_dc_sender_attach_files')[$key],
+                    $relDcSenderAttachFiles,
+                    $dcDocuments
                 );
             }
         }
@@ -91,17 +93,40 @@ class DocumentsController extends Controller
                         ->with($msg);
     }
 
-    private function saveDcDocument($params, $dcFile, $dcAttachFiles = null)
+    private function saveDcDocument($params, $dcFile, $dcAttachFiles = null, $dcDocuments = null)
     {
         // dump($params);die('sss');
-        $dcDocuments = DcDocuments::create($params);
+        if(empty($dcDocuments)) {
+            $dcDocuments = DcDocuments::create($params);
+            $this->uploadFile([
+                'dcDocuments'   => $dcDocuments,
+                'params'        => $params,
+                'dcFile'        => $dcFile,
+                'dcAttachFiles' => $dcAttachFiles,
+            ]);
+        }else {
+            $dcRelative = DcDocuments::create($params);
+            $dcDocuments->dc_ralatives()->save($dcRelative);
+            $this->uploadFile([
+                'dcDocuments'   => $dcRelative,
+                'params'        => $params,
+                'dcFile'        => $dcFile,
+                'dcAttachFiles' => $dcAttachFiles,
+            ]);
+        }
         // dump($params);die('sss');
-        
+        return $dcDocuments;
+    }
+
+    public function uploadFile($arr)
+    {
+        extract($arr);
 
         $filesArr = $this->saveFileToStorage(
             $dcFile, 
             'DcFiles', 
-            'dc_file_path'
+            'dc_file_path',
+            'udf'
         );
         
         // dump($dcAttachFiles);die;
@@ -121,30 +146,16 @@ class DocumentsController extends Controller
             $dcDocuments->dcAttachFiles()->saveMany($attachFilesArr);
     }
 
-    public function uploadFile($file)
-    {
-        dump($file);
-    }
-
-    private function saveFileToStorage($files, $modelName, $filePath)
+    private function saveFileToStorage($files, $modelName, $filePath, $extension = null)
     {
         $fileUpload = new FileUpload();
 
         foreach ($files as $key => $fileVal) {
 
-            /* if (isset($crops[$key])) {
-                $crop = $this->convertToCrop($crops[$key]);
-                $filt = array_merge_recursive($crop, $filters);
-            }else
-                $filt = $filters; */
-
-            $fileUpload->setConfig($fileVal, null, null, true);
+            $fileUpload->setConfig($fileVal, null, $extension, true);
 
             $fileUpload->saveFile();
         }
-
-        /* if($modelName == 'DcAttachFiles')
-            dump($fileUpload->getSavePath());die('asdsad'); */
 
         $filesArr = array_map(function($path) use ($modelName, $filePath){
 

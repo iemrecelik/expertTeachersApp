@@ -37,4 +37,12 @@ class DcDocuments extends Model
     {
         return $this->morphMany(DcAttachFiles::class, 'dc_att_file_owner');
     }
+
+    /**
+     * The dc_relatives that belong to the dc_document.
+     */
+    public function dc_ralatives()
+    {
+        return $this->belongsToMany(DcDocuments::class, 'dc_relative', 'dc_id', 'rel_id');
+    }
 }
