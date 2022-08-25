@@ -16,6 +16,7 @@ class CreateDcDocumentsTable extends Migration
         Schema::create('dc_documents', function (Blueprint $table) {
             $table->id();
             $table->enum('dc_item_status', [0, 1]);
+            $table->enum('dc_main_status', [0, 1])->default(0);
             $table->integer('dc_number');
             $table->string('dc_subject');
             $table->text('dc_raw_content');

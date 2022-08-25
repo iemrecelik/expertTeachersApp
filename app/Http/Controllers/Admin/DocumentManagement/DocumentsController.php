@@ -5,11 +5,12 @@ namespace App\Http\Controllers\Admin\DocumentManagement;
 use App\Library\FileUpload;
 use Illuminate\Http\Request;
 use App\Models\Admin\DcFiles;
+use App\Models\Admin\DcDocuments;
 use App\Models\Admin\DcAttachFiles;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\DocumentManagement\StoreDcDocumentsRequest;
-use App\Models\Admin\DcDocuments;
 
 class DocumentsController extends Controller
 {
@@ -33,15 +34,17 @@ class DocumentsController extends Controller
     public function store(StoreDcDocumentsRequest $request)
     {
         $params = $request->all();
+
+        // dump($params);die;
         
         $arr = [
             'dc_number'         => trim($params['dc_number']),
             'dc_item_status'    => $params['dc_item_status'],
+            'dc_main_status'    => 1,
             'dc_cat_id'         => $params['dc_cat_id'],
             'dc_subject'        => $params['dc_subject'],
             'dc_who_send'       => $params['dc_who_send'],
             'dc_who_receiver'   => $params['dc_who_receiver'],
-            'dc_subject'        => $params['dc_subject'],
             'dc_content'        => $params['dc_content'],
             'dc_raw_content'    => $params['dc_raw_content'],
             'dc_date'           => strtotime($params['dc_date']),
@@ -65,7 +68,6 @@ class DocumentsController extends Controller
                     'dc_subject'        => $params['rel_dc_subject'][$key],
                     'dc_who_send'       => $params['rel_dc_who_send'][$key],
                     'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
-                    'dc_subject'        => $params['rel_dc_subject'][$key],
                     'dc_content'        => $params['rel_dc_content'][$key],
                     'dc_raw_content'    => $params['rel_dc_raw_content'][$key],
                     'dc_date'           => strtotime($params['rel_dc_date'][$key]),
@@ -97,42 +99,53 @@ class DocumentsController extends Controller
     {
         if(empty($dcDocuments)) {
             
-            $dcDocuments = DcDocuments::where(['dc_number' => $params['dc_number']])->first();
-            
-            // dump($dcDocuments);die;
-            // $exist = empty($dcDocuments) ? false : true;
+            $dcDocuments = DcDocuments::where(
+                ['dc_number'        => $params['dc_number']],
+                ['dc_main_status'   => 1],
+            )->first();
 
             if(!empty($dcDocuments)) {
                 throw ValidationException::withMessages(
                     ['document' => 'Yüklenmeye çalışılan evrak zaten mevcuttur.']
                 );
             }
+
+            $dcDocuments = DcDocuments::where(
+                ['dc_number'    => $params['dc_number']],
+            )->first();
+
+            $exist = empty($dcDocuments) ? false : true;
             
-            if($exist === false) {
+            if ($exist === false) {
                 $dcDocuments = DcDocuments::create(
-                    ['dc_number' => array_shift($params)],
+                    // ['dc_number' => array_shift($params)],
                     $params
                 );
             }
+            
 
             $this->uploadFile([
                 'dcDocuments'   => $dcDocuments,
                 'params'        => $params,
                 'dcFile'        => $dcFile,
                 'dcAttachFiles' => $dcAttachFiles,
-                'exist'         => false,
+                'exist'         => $exist,
             ]);
             
         }else {
-            $dcRelative = DcDocuments::where(['dc_number' => $params['dc_number']])->first();
+            $dcRelative = DcDocuments::where(
+                ['dc_number' => $params['dc_number']]
+            )->first();
+
             $exist = empty($dcRelative) ? false : true;
 
             if($exist === false) {
                 $dcRelative = DcDocuments::create(
-                    ['dc_number' => array_shift($params)],
+                    // ['dc_number' => array_shift($params)],
                     $params
                 );
             }
+
             $dcDocuments->dc_ralatives()->save($dcRelative);
             $this->uploadFile([
                 'dcDocuments'   => $dcRelative,
@@ -142,7 +155,7 @@ class DocumentsController extends Controller
                 'exist'         => $exist,
             ]);
         }
-        // dump($params);die('sss');
+
         return $dcDocuments;
     }
 
@@ -161,11 +174,17 @@ class DocumentsController extends Controller
         
         // dump($dcAttachFiles);die;
         if(isset($dcAttachFiles)) {
-            $dcDocuments->dcAttachFiles()->delete();
+
+            $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
+            $this->deleteImageFromStorage($dcAttachFilesCollection);
+            
+            $dcAttachFilesCollection->delete();
+
+            // $this->deleteImageFromStorage($dcAttachFilesCollection);
 
             $attachFilesArr = $this->saveFileToStorage(
-                $dcAttachFiles, 
-                'DcAttachFiles', 
+                $dcAttachFiles,
+                'DcAttachFiles',
                 'dc_att_file_path'
             );
         }
@@ -199,6 +218,21 @@ class DocumentsController extends Controller
         }, $fileUpload->getSavePath());
 
         return $filesArr;
+    }
+
+    private function deleteImageFromStorage($oldImages)
+    {
+        $deleteImgs = [];
+
+        foreach ($oldImages as $oldImage) {
+
+            $path = $oldImage->img_path;
+
+            $deleteImgs[] = "/public/upload/images/{$path}";
+        }
+
+        Storage::delete($deleteImgs);
+        // Images::destroy($oldImages->pluck('id')->all());
     }
 
     public function getFileInfos(Request $request)
