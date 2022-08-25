@@ -97,31 +97,49 @@ class DocumentsController extends Controller
     {
         if(empty($dcDocuments)) {
             
-            $dcDocuments = DcDocuments::find(['dc_number' => $params['dc_number']]);
-            dump($dcDocuments);die;
+            $dcDocuments = DcDocuments::where(['dc_number' => $params['dc_number']])->first();
+            
+            // dump($dcDocuments);die;
+            // $exist = empty($dcDocuments) ? false : true;
 
-            $dcDocuments = DcDocuments::firstOrCreate(
-                ['dc_number' => array_shift($params)],
-                $params
-            );
+            if(!empty($dcDocuments)) {
+                throw ValidationException::withMessages(
+                    ['document' => 'Yüklenmeye çalışılan evrak zaten mevcuttur.']
+                );
+            }
+            
+            if($exist === false) {
+                $dcDocuments = DcDocuments::create(
+                    ['dc_number' => array_shift($params)],
+                    $params
+                );
+            }
+
             $this->uploadFile([
                 'dcDocuments'   => $dcDocuments,
                 'params'        => $params,
                 'dcFile'        => $dcFile,
                 'dcAttachFiles' => $dcAttachFiles,
-                'exist' => $dcAttachFiles,
+                'exist'         => false,
             ]);
+            
         }else {
-            $dcRelative = DcDocuments::firstOrCreate(
-                ['dc_number' => array_shift($params)],
-                $params
-            );
+            $dcRelative = DcDocuments::where(['dc_number' => $params['dc_number']])->first();
+            $exist = empty($dcRelative) ? false : true;
+
+            if($exist === false) {
+                $dcRelative = DcDocuments::create(
+                    ['dc_number' => array_shift($params)],
+                    $params
+                );
+            }
             $dcDocuments->dc_ralatives()->save($dcRelative);
             $this->uploadFile([
                 'dcDocuments'   => $dcRelative,
                 'params'        => $params,
                 'dcFile'        => $dcFile,
                 'dcAttachFiles' => $dcAttachFiles,
+                'exist'         => $exist,
             ]);
         }
         // dump($params);die('sss');
