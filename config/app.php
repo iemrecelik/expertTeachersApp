@@ -138,6 +138,9 @@ return [
         /* Intervention Image */
         Intervention\Image\ImageServiceProvider::class,
 
+        /* Barryvdh debugbar */
+        Barryvdh\Debugbar\ServiceProvider::class,
+
         /*
          * Laravel Framework Service Providers...
          */
@@ -194,6 +197,9 @@ return [
         
         /* Intervention Image */
         'Image' => Intervention\Image\Facades\Image::class,
+
+        /* Barryvdh Debugbar */
+        'Debugbar' => Barryvdh\Debugbar\Facades\Debugbar::class,
 
         'App' => Illuminate\Support\Facades\App::class,
         'Arr' => Illuminate\Support\Arr::class,

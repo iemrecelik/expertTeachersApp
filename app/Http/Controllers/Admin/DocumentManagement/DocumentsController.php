@@ -40,7 +40,7 @@ class DocumentsController extends Controller
         $arr = [
             'dc_number'         => trim($params['dc_number']),
             'dc_item_status'    => $params['dc_item_status'],
-            'dc_main_status'    => 1,
+            'dc_main_status'    => "1",
             'dc_cat_id'         => $params['dc_cat_id'],
             'dc_subject'        => $params['dc_subject'],
             'dc_who_send'       => $params['dc_who_send'],
@@ -60,7 +60,14 @@ class DocumentsController extends Controller
 
         /* Save Relative Document */
         if (isset($params['rel_dc_number'])) {
+            
             foreach ($params['rel_dc_number'] as $key => $val) {
+                if(trim($params['dc_number']) == trim($params['rel_dc_number'][$key])) {
+                    throw ValidationException::withMessages(
+                        ['senderFile' => 'ilgi yazı ile ana evrak aynı olamaz']
+                    );
+                }
+
                 $arr = [
                     'dc_number'         => trim($params['rel_dc_number'][$key]),
                     'dc_item_status'    => $params['rel_dc_item_status'][$key],
@@ -99,11 +106,11 @@ class DocumentsController extends Controller
     {
         if(empty($dcDocuments)) {
             
-            $dcDocuments = DcDocuments::where(
-                ['dc_number'        => $params['dc_number']],
-                ['dc_main_status'   => 1],
-            )->first();
-
+            $dcDocuments = DcDocuments::where([
+                ['dc_number', $params['dc_number']],
+                ['dc_main_status', "1"],
+            ])->first();
+            
             if(!empty($dcDocuments)) {
                 throw ValidationException::withMessages(
                     ['document' => 'Yüklenmeye çalışılan evrak zaten mevcuttur.']
@@ -121,8 +128,10 @@ class DocumentsController extends Controller
                     // ['dc_number' => array_shift($params)],
                     $params
                 );
+            }else {
+                $dcDocuments->dc_main_status = "1";
+                $dcDocuments->save();
             }
-            
 
             $this->uploadFile([
                 'dcDocuments'   => $dcDocuments,
@@ -176,7 +185,7 @@ class DocumentsController extends Controller
         if(isset($dcAttachFiles)) {
 
             $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
-            $this->deleteImageFromStorage($dcAttachFilesCollection);
+            $this->deleteImageFromStorage($dcAttachFilesCollection->get());
             
             $dcAttachFilesCollection->delete();
 
@@ -225,11 +234,12 @@ class DocumentsController extends Controller
         $deleteImgs = [];
 
         foreach ($oldImages as $oldImage) {
+            $path = $oldImage->dc_att_file_path;
 
-            $path = $oldImage->img_path;
-
-            $deleteImgs[] = "/public/upload/images/{$path}";
+            $deleteImgs[] = "public/upload/images/raw{$path}";
         }
+
+        // dump($deleteImgs);die;
 
         Storage::delete($deleteImgs);
         // Images::destroy($oldImages->pluck('id')->all());
