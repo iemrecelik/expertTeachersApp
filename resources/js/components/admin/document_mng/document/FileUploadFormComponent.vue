@@ -12,9 +12,12 @@
 					class="custom-select"
 					required 
 					:name="fieldNames.itemStatus"
+					@change="showingForm"
 				>
-					<option selected value="1">Giden Evrak</option>
+					<option selected value="2">Evrak Durumunu Seçiniz.</option>
+					<option value="1">Giden Evrak</option>
 					<option value="0">Gelen Evrak</option>
+					<!-- <option :selected=itemStatus value="0">Gelen Evrak</option> -->
 				</select>
 				<div class="invalid-feedback">
 					Lütfen evrağın durumunu seçiniz.
@@ -24,7 +27,7 @@
 
 	</div>
 
-	<div class="row">
+	<div class="row" v-if="showForm">
 		<div class="col-3">
 			<div class="form-group">
 
@@ -141,6 +144,7 @@
 </template>
 
 <script>
+import { EQUALITY_BINARY_OPERATORS } from '@babel/types';
 import { mapState, mapMutations } from 'vuex';
 
 export default {
@@ -156,13 +160,19 @@ export default {
 				'subject': '',
 				'receiver': '',
 			},
+			itemStatus: this.ppitemStatus == 0 ? "selected" : "",
+			showForm: false,
 		}
   },
 	props: {
 		ppfieldNames: {
 			type: Object,
 			required: true,
-		}
+		},
+		ppitemStatus: {
+			type: Number,
+			required: true,
+		},
 	},
   computed: {
     ...mapState([
@@ -173,6 +183,15 @@ export default {
 		...mapMutations([
       'setErrors',
     ]),
+		setShowForm: async function(event) {
+			console.log('asdasd');
+			this.showForm = event.target.value < 2 ? true : false;
+		},
+		showingForm: function(event) {
+			this.setShowForm(event).then(() => {
+				this.$parent.$parent.checkForm();
+			});
+		},
 		getFileInputClassName: function(rawFileName) {
 			return this.$parent.$parent.getFileInputClassName(rawFileName);
 		},
@@ -208,13 +227,14 @@ export default {
         if(error.responseJSON){
           // this.setSucceed('');
           this.setErrors(error.responseJSON.errors);
+					this.$parent.$parent.modalErrorMsgShow(true)
 
 					let files = event.target;
 					files.value = null;
         }
       })
       .then((res) => {
-        // this.$parent.dataTable.ajax.reload();
+        // this.$parent.dataTable.ajax.reload();				
       })
       .always(() => {
 				this.$parent.$parent.checkForm();

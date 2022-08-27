@@ -37,6 +37,7 @@
 		<div v-if="showForm">
 			<file-upload-form
 				:ppfieldNames="docFieldNames"
+				:ppitemStatus="1"
 				ref="fileUploadFormComponent"
 			>
 			</file-upload-form>
@@ -71,6 +72,7 @@
 								<div class="col-12">
 									<file-upload-form
 										:ppfieldNames="getDocRelFieldNames(val)"
+										:ppitemStatus="0"
 										ref="fileUploadFormComponent"
 									>
 									</file-upload-form>
@@ -125,6 +127,29 @@
 			<button id="document-submit" disabled type="submit" class="btn btn-primary">Kaydet</button>
 		</div>
 	</form>
+
+	<div class="modal fade" tabindex="-1" role="dialog" 
+    aria-labelledby="formModalLongTitle" aria-hidden="true"
+    data-backdrop="static" id="error-modal"
+  >
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title">Hata!</h5>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+				</div>
+				<div class="modal-body">
+					<error-msg-list-component></error-msg-list-component>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+					<!-- <button type="button" class="btn btn-primary">Save changes</button> -->
+				</div>
+			</div>
+		</div>
+	</div>
 </template-component>
 
 </template>
@@ -223,21 +248,26 @@ export default {
 			let relFiles = document.getElementsByClassName(
 				this.getFileInputClassName('rel_dc_sender_file')
 			);
-
+console.log("relFiles.length", relFiles.length);
 			for (let i = 0; i < relFiles.length; i++) {
 				disabled = relFiles[i].value ? false : true;
-				
-				if (disabled === true)
+console.log(1, disabled);		
+				if (disabled === true) {
+					element.disabled = disabled ? true : false
 					break;
+				}
 			}
-
-			console.log('rel', disabled);
-
+console.log(2, disabled);
 			if(disabled === false) {
 				for (let i = 0; i < files.length; i++) {
 					disabled = files[i].value ? false : true;
 				}
 			}
+console.log("files.length", files.length )
+			if(files.length < 1) {
+				disabled = true;
+			}
+
 			element.disabled = disabled ? true : false
 		},
 		setShowForm: function(node, instanceId) {
@@ -303,6 +333,17 @@ export default {
 			.then((res) => {})
 			.always(() => {});
     },
+		modalErrorMsgShow: function(errors = false) {
+			if(
+				(
+					this.pperrors 
+					&& Object.keys(this.pperrors).length > 0
+					&& Object.getPrototypeOf(this.pperrors) === Object.prototype
+				) || (errors)
+			) {
+				$('#error-modal').modal('show');
+			}
+		}
   },
   created() {
 		this.setRoutes(this.pproutes);
@@ -311,6 +352,9 @@ export default {
     this.getCategory();		
 		this.setOld(this.ppoldinput);
   },
+	mounted() {
+		this.modalErrorMsgShow();
+	},
   components: {
     Treeselect,
 		'file-upload-form': fileUpladoFormComponent,

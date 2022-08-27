@@ -11,6 +11,7 @@ class DcDocuments extends Model
 
     protected $fillable = [
         'dc_item_status',
+        'dc_main_status',
         'dc_cat_id',
         'dc_number',
         'dc_subject',
