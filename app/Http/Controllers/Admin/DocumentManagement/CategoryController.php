@@ -32,11 +32,15 @@ class CategoryController extends Controller
             
         
         $categoryList = $this->getTreeviewCat(null, $id);
- 
-        array_unshift($categoryList, [
-            'id' => 0,
-            'label' => 'Üst Kategori Yok'
-        ]);
+        
+        if(isset($req['startData'])) {
+            array_unshift($categoryList, $req['startData']);
+        }else {
+            array_unshift($categoryList, [
+                'id' => 0,
+                'label' => 'Üst Kategori Yok'
+            ]);
+        }
 
         return $categoryList;
     }

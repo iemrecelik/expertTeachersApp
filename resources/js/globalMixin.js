@@ -119,6 +119,7 @@ export default {
         ajax: {
           url: config.url || '',
           type: config.method || 'POST',
+          data: config.data || undefined
         },
         columns: config.columns,
         "drawCallback": function( settings ) {

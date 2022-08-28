@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\DocumentManagement\CategoryController;
 use App\Http\Controllers\Admin\DocumentManagement\DocumentsController;
+use App\Http\Controllers\Admin\DocumentManagement\SearchController as DcSearchController;
 use App\Http\Controllers\Admin\Search\SearchController;
 use App\Http\Controllers\Admin\OldRegulation\SearchController as OldSearchController;
 
@@ -74,6 +75,7 @@ Route::prefix('admin/document-management')
     ->controller(CategoryController::class)
     ->name('admin.document_mng.')
     ->group(function () {
+        /* Category */
         Route::get(
 			'category/get-category', 
 			'getCategory'
@@ -87,6 +89,31 @@ Route::prefix('admin/document-management')
 		->name('category.dataList');
 
         Route::resource('category', CategoryController::class);
+    });
+
+Route::prefix('admin/document-management')
+    ->controller(DcSearchController::class)
+    ->name('admin.document_mng.')
+    ->group(function () {
+
+         Route::get(
+			'search/search-form', 
+			'searchForm'
+		)
+		->name('search.searchForm');
+        
+        Route::post(
+			'search/get-search-documents', 
+			'getSearchDocuments'
+		)
+		->name('search.getSearchDocuments');
+
+        Route::get(
+            "search/{id}",
+            "show"
+        )
+        ->where('dcDocuments', '[0-9]+')
+        ->name('search.show');
     });
 
 

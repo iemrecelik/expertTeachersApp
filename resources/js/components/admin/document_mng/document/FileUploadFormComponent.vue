@@ -5,7 +5,7 @@
 	
 	<div class="row">
 		
-		<div class="col-12">
+		<div class="col-3">
 			<div class="form-group">
 				<label for="validationCustom04">Evrağın Durumu</label>
 				<select id="validationCustom04" 
@@ -24,6 +24,8 @@
 				</div>
 			</div>
 		</div>
+
+		<div class="col-9"></div>
 
 	</div>
 
@@ -184,7 +186,6 @@ export default {
       'setErrors',
     ]),
 		setShowForm: async function(event) {
-			console.log('asdasd');
 			this.showForm = event.target.value < 2 ? true : false;
 		},
 		showingForm: function(event) {

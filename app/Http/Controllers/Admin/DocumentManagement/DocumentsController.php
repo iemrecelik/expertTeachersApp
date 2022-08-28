@@ -269,22 +269,47 @@ class DocumentsController extends Controller
         try {
             $result = file_get_contents("zip://{$file->getPathName()}#content.xml");
 
-            $pattern= '/<!\[CDATA\[\¸(.*)\n{2,10}sayı/si';
+            $pattern = '/<!\[CDATA\[\¸(.*)\n{2,10}(sayı\s*?:.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
+            preg_match($pattern, $result, $showContent1);
+
+
+            $patternOne ='/(konu\s*?:.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n\D*)\n{2,10}([İiIı]+lgi\s*?:.*?)\n{2,10}(.+)\n{2,10}(.+)]]>/si';
+            // $patternTwo ='(ilgi\s*?:.*?)\n{2,10}';
+            /* $patternTwo ='';
+            $pattern = '/'.$patternOne.$patternTwo.'/si'; */
+            $pattern = $patternOne;
+            preg_match($pattern, $result, $showContent2);
+            
+            array_shift($showContent2);
+
+            dump($showContent2[3]);
+
+            $pattern = '/(.+)\n{2,10}(.+)\n{2,10}(ek?\s*?:.*)?\n+/si';
+            preg_match($pattern, $showContent2[3], $deneme);
+
+            dump($deneme);die;
+
+
+
+            $showContent = array_merge($showContent1, $showContent2);
+            dump($showContent2);die;
+
+            $pattern = '/<!\[CDATA\[\¸(.*)\n{2,10}sayı/si';
             preg_match($pattern, $result, $sender);
             
             // $pattern= '/konu\s*?:(.*?)\n{2,10}(\D{3,500})\n{2,10}/si';
-            $pattern= '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n\D*)\n{2,10}/si';
+            $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n\D*)\n{2,10}/si';
             preg_match($pattern, $result, $receiver);
 
             // $pattern= '/konu\s*?:.*?\n{2,10}[A-ZİĞÜŞÖÇ ]{3,1000}\n\D*\n{2,10}(.*?)\n{2,10}.*?]]>/si';
-            $pattern= '/<!\[CDATA\[\¸(.*)]]>/si';
+            $pattern = '/<!\[CDATA\[\¸(.*)]]>/si';
             preg_match($pattern, $result, $content);
 
             /* dump($result);
             echo '<pre>------sender------</pre>';
             dump($content);die; */
 
-            $pattern= '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
+            $pattern = '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
             preg_match($pattern, $result, $number);
 
             /* echo '<pre>------sender------</pre>';

@@ -6,6 +6,7 @@ import teacherInfosComponent from './components/admin/search/teacher_infos/Teach
 import docMngCategoryComponent from './components/admin/document_mng/category/IndexComponent.vue';
 import docMngDocumentComponent from './components/admin/document_mng/document/IndexComponent.vue';
 import docMngCreateDocumentComponent from './components/admin/document_mng/document/CreateComponent.vue';
+import docMngSearchComponent from './components/admin/document_mng/search/SearchComponent.vue';
 
 
 export default {
@@ -16,4 +17,5 @@ export default {
 	'doc-mng-category-component': docMngCategoryComponent,
 	'doc-mng-document-component': docMngDocumentComponent,
 	'doc-mng-create-document-component': docMngCreateDocumentComponent,
+	'doc-mng-search-component': docMngSearchComponent,
 }

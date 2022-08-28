@@ -14,7 +14,7 @@
 
 		<div class="row">
 
-			<div class="col-12">
+			<div class="col-3">
 				<div class="form-group">
 					<label for="exampleInputEmail1">
 						{{ $t('messages.categoryName') }}
@@ -31,6 +31,7 @@
 					/>
 				</div>
 			</div>
+			<div class="col-9"></div>
 
 		</div>
 
@@ -248,22 +249,22 @@ export default {
 			let relFiles = document.getElementsByClassName(
 				this.getFileInputClassName('rel_dc_sender_file')
 			);
-console.log("relFiles.length", relFiles.length);
+// console.log("relFiles.length", relFiles.length);
 			for (let i = 0; i < relFiles.length; i++) {
 				disabled = relFiles[i].value ? false : true;
-console.log(1, disabled);		
+// console.log(1, disabled);
 				if (disabled === true) {
 					element.disabled = disabled ? true : false
 					break;
 				}
 			}
-console.log(2, disabled);
+// console.log(2, disabled);
 			if(disabled === false) {
 				for (let i = 0; i < files.length; i++) {
 					disabled = files[i].value ? false : true;
 				}
 			}
-console.log("files.length", files.length )
+// console.log("files.length", files.length )
 			if(files.length < 1) {
 				disabled = true;
 			}

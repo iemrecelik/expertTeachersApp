@@ -38,6 +38,8 @@ require('./adminlte/js/adminlte.js');
 /* Select2 */
 require('./adminlte/plugins/select2/js/select2.full');
 
+/* daterange picker */
+require('./adminlte/plugins/daterangepicker/daterangepicker');
 
 /*Main JS*/
 require('./jquery/main.js');
