@@ -109,7 +109,7 @@ Route::prefix('admin/document-management')
 		->name('search.getSearchDocuments');
 
         Route::get(
-            "search/{id}",
+            "search/{dcDocuments}",
             "show"
         )
         ->where('dcDocuments', '[0-9]+')

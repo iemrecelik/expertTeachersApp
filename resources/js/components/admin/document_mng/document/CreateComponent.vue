@@ -178,6 +178,7 @@ export default {
 				number: 'dc_number',
 				subject: 'dc_subject',
 				content: 'dc_content',
+				showContent: 'dc_show_content',
 				rawContent: 'dc_raw_content',
 				date: 'dc_date',
 			},
@@ -304,6 +305,7 @@ export default {
 				number: `rel_dc_number[${key}]`,
 				subject: `rel_dc_subject[${key}]`,
 				content: `rel_dc_content[${key}]]`,
+				showContent: `rel_dc_show_content[${key}]]`,
 				rawContent: `rel_dc_raw_content[${key}]]`,
 				date: `rel_dc_date[${key}]`,
 			}

@@ -124,6 +124,10 @@ class SearchController extends Controller
 	    ];
     }
 
+	/* public function show(DcDocuments $dcDocuments)
+	{
+		return $dcDocuments;
+	} */
 	public function show(DcDocuments $dcDocuments)
 	{
 		return $dcDocuments;

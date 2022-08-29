@@ -2,6 +2,7 @@
 <div>
 	<input type="hidden" :name="fieldNames.content" :value="fieldValues.content">
 	<input type="hidden" :name="fieldNames.rawContent" :value="fieldValues.rawContent">
+	<input type="hidden" :name="fieldNames.showContent" :value="fieldValues.showContent">
 	
 	<div class="row">
 		

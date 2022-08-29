@@ -33,6 +33,12 @@ class DocumentsController extends Controller
     // public function store(Request $request)
     public function store(StoreDcDocumentsRequest $request)
     {
+
+        /* 
+            1- İlgi evrakların aynı olmaması lazım.
+            2- Arama yaparken sadece ana evraklar gösterilsin
+            3- Arama yaparken ilgi evrağı göstermesi i.in seçenek olsun.
+        */
         $params = $request->all();
 
         // dump($params);die;
@@ -46,6 +52,7 @@ class DocumentsController extends Controller
             'dc_who_send'       => $params['dc_who_send'],
             'dc_who_receiver'   => $params['dc_who_receiver'],
             'dc_content'        => $params['dc_content'],
+            'dc_show_content'   => $params['dc_show_content'],
             'dc_raw_content'    => $params['dc_raw_content'],
             'dc_date'           => strtotime($params['dc_date']),
         ];
@@ -76,6 +83,7 @@ class DocumentsController extends Controller
                     'dc_who_send'       => $params['rel_dc_who_send'][$key],
                     'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
                     'dc_content'        => $params['rel_dc_content'][$key],
+                    'dc_show_content'   => $params['rel_dc_show_content'][$key],
                     'dc_raw_content'    => $params['rel_dc_raw_content'][$key],
                     'dc_date'           => strtotime($params['rel_dc_date'][$key]),
                 ];
@@ -269,37 +277,61 @@ class DocumentsController extends Controller
         try {
             $result = file_get_contents("zip://{$file->getPathName()}#content.xml");
 
-            $pattern = '/<!\[CDATA\[\¸(.*)\n{2,10}(sayı\s*?:.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
-            preg_match($pattern, $result, $showContent1);
+            /* $pattern = '/<!\[CDATA\[\¸(.*)\n{2,10}(sayı\s*?:.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
+            preg_match($pattern, $result, $showContent1); */
 
 
-            $patternOne ='/(konu\s*?:.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n\D*)\n{2,10}([İiIı]+lgi\s*?:.*?)\n{2,10}(.+)\n{2,10}(.+)]]>/si';
+            // $patternOne ='/(konu\s*?:.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n\D*)\n{2,10}([İiIı]+lgi\s*?:.*?)\n{2,10}(.+)\n{2,10}(.+)]]>/si';
+            // $patternOne ='/(konu\s*?:.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n\D*)\n{1,10}(.+)]]>/si';
             // $patternTwo ='(ilgi\s*?:.*?)\n{2,10}';
             /* $patternTwo ='';
             $pattern = '/'.$patternOne.$patternTwo.'/si'; */
-            $pattern = $patternOne;
+            /* $pattern = $patternOne;
             preg_match($pattern, $result, $showContent2);
             
             array_shift($showContent2);
 
-            dump($showContent2[3]);
+            dump($showContent2);die;
 
-            $pattern = '/(.+)\n{2,10}(.+)\n{2,10}(ek?\s*?:.*)?\n+/si';
+            // dump($showContent2[3]);
+            
+            $pattern = '/(.+)\n{2,10}(.+)\n{2,10}(.+)\n{1,300}+/si';
             preg_match($pattern, $showContent2[3], $deneme);
 
             dump($deneme);die;
 
-
+            
 
             $showContent = array_merge($showContent1, $showContent2);
-            dump($showContent2);die;
+            dump($showContent2);die; */
 
             $pattern = '/<!\[CDATA\[\¸(.*)\n{2,10}sayı/si';
             preg_match($pattern, $result, $sender);
+
+            // dump($result);
+            /* echo '<pre>------sender------</pre>';
+            dump($sender); */
             
-            // $pattern= '/konu\s*?:(.*?)\n{2,10}(\D{3,500})\n{2,10}/si';
-            $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n\D*)\n{2,10}/si';
+            $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
+            // $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n*\D*)\n{2,10}(.+)/si';
             preg_match($pattern, $result, $receiver);
+
+
+            // $receiver[3] = str_replace('\n', '<br/>', $receiver[3]);
+            
+            // $receiver[3] = preg_replace('/\n/', '<br/>', $receiver[3]);
+
+            // $pattern = '/(.+)\n{2,10}(.+)\n{2,10}(.+)]]>/si';
+            /* $pattern = '/(.+)\n{2,10}(\w.+)\n{2,10}(\w.+)\n{0,10}]]>/si';
+            preg_match($pattern, $receiver[3], $deneme); */
+
+            // dump($result);
+            // echo '<pre>------receiver------</pre>';
+            // dump($receiver[3]);die;
+            // dump($receiver);die;
+            
+            /* echo '<pre>------deneme------</pre>';
+            dump($deneme);die; */
 
             // $pattern= '/konu\s*?:.*?\n{2,10}[A-ZİĞÜŞÖÇ ]{3,1000}\n\D*\n{2,10}(.*?)\n{2,10}.*?]]>/si';
             $pattern = '/<!\[CDATA\[\¸(.*)]]>/si';
@@ -321,6 +353,66 @@ class DocumentsController extends Controller
             echo '<pre>------number------</pre>';
             dump($result);die; */
 
+           /*  echo '<pre>------number------</pre>';
+            dump($receiver[3]); */
+            
+            $receiver[3] = preg_replace('/\n/', '<br/>', $receiver[3]);
+            $receiver[3] = preg_replace('/\t{3,100}/', '<span class="mr-5"></span>', $receiver[3]);
+            
+            /* echo '<pre>------number------</pre>';
+            dump($receiver[3]); */
+
+            $receiver[3] = preg_replace('/\t/', '<span class="mr-5"></span>', $receiver[3]);
+
+            /* echo '<pre>------number------</pre>';
+            dump($receiver[3]);die; */
+
+            $showContent = '
+            <div class="row mb-5">
+                <div class="col-4"></div>
+                <div class="col-4 text-center">
+                            '.$sender[1].'
+                </div>
+                <div class="col-4"></div>
+                </div>
+
+            <div class="row">
+                <div class="col-1"></div>
+                <div class="col-9">
+                    Sayı: '.$number[1].$number[2].'
+                </div>
+                <div class="col-2">
+                    '.$number[3].'
+                </div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-1"></div>
+                <div class="col-11">
+                    Konu: '.$receiver[1].'
+                </div>
+            </div>
+            
+
+            <div class="row mb-5">
+                <div class="col-4"></div>
+                <div class="col-4 text-center">
+                    '.$receiver[2].'
+                </div>
+                <div class="col-4"></div>
+            </div>
+
+            <div class="row mb-5">
+                <div class="col-1"></div>
+                <div class="col-10">
+                    '.$receiver[3].'
+                </div>
+                <div class="col-1"></div>
+            </div>
+            ';
+
+            // dump($showContent);die;
+
             if (
                 empty($sender[1]) || empty($number[1]) || 
                 empty($number[2]) || empty($number[3]) ||
@@ -340,6 +432,7 @@ class DocumentsController extends Controller
                 'content' => $content[1],
                 'rawContent' => $result,
                 'receiver' => $receiver[2],
+                'showContent' => $showContent,
             ];
 
         } catch (\Throwable $th) {

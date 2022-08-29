@@ -55,7 +55,7 @@
     data-backdrop="static" :id="modalIDName"
   >
     
-    <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-dialog modal-xl" role="document">
         <component
           v-if="formModalBody.show"
           :is="formModalBody.component"
