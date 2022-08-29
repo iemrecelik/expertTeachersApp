@@ -20,6 +20,7 @@ class DcDocuments extends Model
         'dc_subject',
         'dc_content',
         'dc_raw_content',
+        'dc_show_content',
         'dc_date',
     ];
 

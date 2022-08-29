@@ -3,7 +3,7 @@
   <doc-mng-search-component
     :pproutes="{
       getSearchDocuments: '{{ route("admin.document_mng.search.getSearchDocuments") }}', 
-      show: 'http://expertteachersapp.test/admin/document-management/search', 
+      show: '/admin/document-management/search', 
       getCategory: '{{ route('admin.document_mng.category.getCategory') }}', 
     }"
   >
