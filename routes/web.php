@@ -29,11 +29,12 @@ Route::get('/', function () {
 }); */
 
 
-Route::resource('main', MainController::class);
+Route::resource('main', MainController::class)->middleware('auth');
 
 // Route::get('search', [SearchController::class, 'expertInfo']);
 
 Route::prefix('admin/search')
+    ->middleware('auth')
     ->controller(SearchController::class)
     ->name('admin.search.')
     ->group(function () {
@@ -41,6 +42,7 @@ Route::prefix('admin/search')
     });
 
 Route::prefix('admin/old-regulation')
+    ->middleware('auth')
     ->controller(OldSearchController::class)
     ->name('admin.old_regulation.')
     ->group(function () {
@@ -49,6 +51,7 @@ Route::prefix('admin/old-regulation')
     });
 
 Route::prefix('admin/document-management')
+    ->middleware('auth')
     ->controller(DocumentsController::class)
     ->name('admin.document_mng.')
     ->group(function () {
@@ -72,6 +75,7 @@ Route::prefix('admin/document-management')
     });
     
 Route::prefix('admin/document-management')
+    ->middleware('auth')
     ->controller(CategoryController::class)
     ->name('admin.document_mng.')
     ->group(function () {
@@ -92,6 +96,7 @@ Route::prefix('admin/document-management')
     });
 
 Route::prefix('admin/document-management')
+    ->middleware('auth')
     ->controller(DcSearchController::class)
     ->name('admin.document_mng.')
     ->group(function () {

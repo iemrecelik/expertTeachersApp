@@ -38,10 +38,26 @@
 
     <!-- Messages Dropdown Menu -->
     <li class="nav-item">
-      <a class="nav-link" href="#">
+      <a class="nav-link" href="{{ route('logout') }}"
+        onclick="event.preventDefault();
+        document.getElementById('logout-form').submit();"
+      >
         <i class="fas fa-sign-out-alt"></i>
         Çıkış Yap
+        
+        <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+          @csrf
+        </form>
       </a>
+      {{-- <a class="dropdown-item" href="{{ route('logout') }}"
+          onclick="event.preventDefault();
+                        document.getElementById('logout-form').submit();">
+          {{ __('Logout') }}
+      </a>
+
+      <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
+          @csrf
+      </form> --}}
     </li>
 
     <li class="nav-item">

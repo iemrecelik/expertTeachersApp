@@ -44,6 +44,7 @@ class SearchController extends Controller
 	    }
 
 		$selectCol = substr($selectCol, 0, -2)." ";
+		$necessity = false;
 		
 		foreach ($tblInfo['datas'] as $data) {
 
@@ -53,6 +54,8 @@ class SearchController extends Controller
 						if ($data['value'] > -1) {
 							$whereQuery .= "{$data['name']} = ? AND ";
 							$whereQueryParams[] = $data['value'];
+
+							$necessity = true;
 						}
 						break;
 						
@@ -60,6 +63,17 @@ class SearchController extends Controller
 						if ($data['value'] > 0) {
 							$whereQuery .= "{$data['name']} = ? AND ";
 							$whereQueryParams[] = $data['value'];
+
+							$necessity = true;
+						}
+						break;
+
+					case 'dc_main_status':
+						if ($data['value'] > 0) {
+							$whereQuery .= "{$data['name']} = '0' OR {$data['name']} = '1' AND ";
+							// $whereQueryParams[] = $data['value'];
+						}else {
+							$whereQuery .= "{$data['name']} = '1' AND ";
 						}
 						break;
 
@@ -75,6 +89,8 @@ class SearchController extends Controller
 
 							$whereQuery .= "{$data['name']} BETWEEN ? AND ? AND ";
 							$whereQueryParams = array_merge($whereQueryParams, $vals);
+
+							$necessity = true;
 						}
 						
 						break;
@@ -82,15 +98,18 @@ class SearchController extends Controller
 					default:
 						$searchQuery .= "{$data['name']} LIKE ? AND ";
 						$searchQueryParams[] = '%'.$data['value'].'%';
+
+						$necessity = true;
 						break;
 				}
 				
 			}
 		}
 
-		if(!empty($whereQuery) || !empty($searchQuery)) {
+		// if(!empty($whereQuery) || !empty($searchQuery)) {
+		if(!empty($necessity)) {
 
-			$whereQuery = $whereQuery.$searchQuery = substr($searchQuery, 0, -4);
+			$whereQuery = substr($whereQuery.$searchQuery, 0, -4);
 
 			$whereQueryParams = array_merge($whereQueryParams, $searchQueryParams);
 		} else {

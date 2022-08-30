@@ -14,6 +14,7 @@
             style="width:100%">
             <thead>
               <tr>
+                <th>messages.dc_main_status</th>
                 <th>messages.dc_cat_name</th>
                 <th>messages.dc_number</th>
                 <th>messages.dc_item_status</th>
@@ -24,10 +25,10 @@
             </thead>
             <tfoot>
               <tr>
-                <th colspan="6">
-                  <button type="button" class="btn btn-primary" >
+                <th colspan="7">
+                  <!-- <button type="button" class="btn btn-primary" >
                     asdasdasd
-                  </button>
+                  </button> -->
                   <!-- <button type="button" class="btn btn-primary"
                     data-toggle="modal" 
                     :data-target="modalSelector"
@@ -210,6 +211,12 @@ export default {
           'datas': form.serializeArray(),
         },
         columns: [
+          { 
+            "data": "dc_main_status",
+            "render": (data, type, row) => {
+              return data < 1 ? "İlgi" : "";
+            }
+          },
           { "data": "dc_cat_id" },
           { "data": "dc_number" },
           { "data": "dc_item_status" },

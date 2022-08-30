@@ -18,8 +18,11 @@
 /* fontawesome */
 @import './plugins/fontawesome-free/css/all.min.css';
 
-/* daterange picker */
+/* icheck-boostrap */
 @import './plugins/daterangepicker/daterangepicker.css';
+
+/* daterange picker */
+@import './plugins/icheck-bootstrap/icheck-bootstrap.css';
 
 /* Ionicons */
 @import 'https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css';

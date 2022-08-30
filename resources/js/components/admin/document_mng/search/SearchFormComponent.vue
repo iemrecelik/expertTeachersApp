@@ -132,8 +132,23 @@
 
     </div>
 
-    <div class="row">
+    <div class="row mb-3">
       <div class="col-2">
+        <input type="hidden" name="dc_main_status" :value="mainStatus">
+        <div class="icheck-primary d-inline">
+          <input type="checkbox" 
+            id="checkboxPrimary2" 
+            @change="setMainStatus"
+          >
+          <label for="checkboxPrimary2">
+            İlgi Evraklarınıda Ara
+          </label>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-1">
         <slot></slot>
       </div>
     </div>
@@ -155,6 +170,7 @@ export default {
     return {
       categoryList: [],
       ajaxErrorCount: -1,
+      mainStatus: 0,
     }
   },
   computed: {
@@ -163,6 +179,13 @@ export default {
     ]),
   },
   methods: {
+    setMainStatus: function(event) {
+      if(event.target.checked) {
+        this.mainStatus = 1
+      }else {
+        this.mainStatus = 0
+      }
+    },
     getCategory: function() {
       $.ajax({
         url: this.routes.getCategory,

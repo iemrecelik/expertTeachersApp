@@ -138,8 +138,11 @@ return [
         /* Intervention Image */
         Intervention\Image\ImageServiceProvider::class,
 
-        /* Barryvdh debugbar */
+        /* Barryvdh Debugbar */
         Barryvdh\Debugbar\ServiceProvider::class,
+
+        /* Fortify Service */
+        App\Providers\FortifyServiceProvider::class,
 
         /*
          * Laravel Framework Service Providers...

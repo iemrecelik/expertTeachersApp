@@ -33,15 +33,15 @@ class DocumentsController extends Controller
     // public function store(Request $request)
     public function store(StoreDcDocumentsRequest $request)
     {
-
         /* 
-            1- İlgi evrakların aynı olmaması lazım.
-            2- Arama yaparken sadece ana evraklar gösterilsin
-            3- Arama yaparken ilgi evrağı göstermesi i.in seçenek olsun.
+            1- Arama yaparken sadece ana evraklar gösterilsin
+            2- Arama yaparken ilgi evrağı göstermesi i.in seçenek olsun.
         */
         $params = $request->all();
 
         // dump($params);die;
+
+        $this->sameDocumentControl($params);
         
         $arr = [
             'dc_number'         => trim($params['dc_number']),
@@ -69,11 +69,6 @@ class DocumentsController extends Controller
         if (isset($params['rel_dc_number'])) {
             
             foreach ($params['rel_dc_number'] as $key => $val) {
-                if(trim($params['dc_number']) == trim($params['rel_dc_number'][$key])) {
-                    throw ValidationException::withMessages(
-                        ['senderFile' => 'ilgi yazı ile ana evrak aynı olamaz']
-                    );
-                }
 
                 $arr = [
                     'dc_number'         => trim($params['rel_dc_number'][$key]),
@@ -108,6 +103,28 @@ class DocumentsController extends Controller
         
         return redirect()->route('admin.document_mng.document.create')
                         ->with($msg);
+    }
+
+    private function sameDocumentControl($params)
+    {
+        $rel_dc_number = [];
+            
+        foreach ($params['rel_dc_number'] as $key => $val) {
+            
+            if(trim($params['dc_number']) == trim($params['rel_dc_number'][$key])) {
+                throw ValidationException::withMessages(
+                    ['senderFile' => 'ilgi yazı ile ana evrak aynı olamaz']
+                );
+            }
+
+            if (array_search($params['rel_dc_number'], $rel_dc_number) === false) {
+                $rel_dc_number[] = $params['rel_dc_number'];
+            } else {
+                throw ValidationException::withMessages(
+                    ['senderFile' => 'ilgi yazılar aynı evrak olamaz.']
+                );
+            }
+        }
     }
 
     private function saveDcDocument($params, $dcFile, $dcAttachFiles = null, $dcDocuments = null)
