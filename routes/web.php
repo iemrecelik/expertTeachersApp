@@ -97,6 +97,27 @@ Route::prefix('admin/document-management')
 
 Route::prefix('admin/document-management')
     ->middleware('auth')
+    ->controller(ListController::class)
+    ->name('admin.document_mng.')
+    ->group(function () {
+        /* List */
+        Route::get(
+			'list/get-list', 
+			'getList'
+		)
+		->name('list.getList');
+
+        Route::post(
+			'list/data-list', 
+			'getDataList'
+		)
+		->name('list.dataList');
+
+        Route::resource('list', CategoryController::class);
+    });
+
+Route::prefix('admin/document-management')
+    ->middleware('auth')
     ->controller(DcSearchController::class)
     ->name('admin.document_mng.')
     ->group(function () {

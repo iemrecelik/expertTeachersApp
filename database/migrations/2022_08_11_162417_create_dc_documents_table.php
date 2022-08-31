@@ -29,6 +29,10 @@ class CreateDcDocumentsTable extends Migration
             $table->unsignedBigInteger('dc_cat_id'); 
             $table->foreign('dc_cat_id')
                   ->references('id')->on('dc_category');
+
+            $table->unsignedBigInteger('user_id'); 
+            $table->foreign('user_id')
+                  ->references('id')->on('users');
                 //   ->onDelete('cascade');
             
             $table->timestamps();
