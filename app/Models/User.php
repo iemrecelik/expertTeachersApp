@@ -41,4 +41,12 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    /**
+     * Get the comments for the blog post.
+     */
+    public function dcLists()
+    {
+        return $this->hasMany(DcLists::class, 'id', 'user_id');
+    }
 }

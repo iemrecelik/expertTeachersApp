@@ -47,4 +47,13 @@ class DcDocuments extends Model
     {
         return $this->belongsToMany(DcDocuments::class, 'dc_relative', 'dc_id', 'rel_id');
     }
+
+
+    /**
+     * The dc_list that belong to the dc_document.
+     */
+    public function dc_lists()
+    {
+        return $this->belongsToMany(DcLists::class, 'dc_doc_list', 'list_id', 'dc_id');
+    }
 }
