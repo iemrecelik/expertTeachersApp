@@ -3,11 +3,12 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\MainController;
+use App\Http\Controllers\Admin\Search\SearchController;
+use App\Http\Controllers\Admin\DocumentManagement\ListController;
 use App\Http\Controllers\Admin\DocumentManagement\CategoryController;
 use App\Http\Controllers\Admin\DocumentManagement\DocumentsController;
-use App\Http\Controllers\Admin\DocumentManagement\SearchController as DcSearchController;
-use App\Http\Controllers\Admin\Search\SearchController;
 use App\Http\Controllers\Admin\OldRegulation\SearchController as OldSearchController;
+use App\Http\Controllers\Admin\DocumentManagement\SearchController as DcSearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -113,7 +114,7 @@ Route::prefix('admin/document-management')
 		)
 		->name('list.dataList');
 
-        Route::resource('list', CategoryController::class);
+        Route::resource('list', ListController::class);
     });
 
 Route::prefix('admin/document-management')

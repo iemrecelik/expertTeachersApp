@@ -52,33 +52,6 @@ export default {
     langFieldName: function(fieldName){
       return `langs[${this.$store.state.lang}][${fieldName}]`;
     },
-    getCategory: function() {
-      $.ajax({
-        url: this.routes.getCategory,
-        type: 'GET',
-        dataType: 'JSON',
-        data: {'id': this.item['id']}
-      })
-      .done((res) => {
-        this.categoryList = res;
-        this.ajaxErrorCount = -1;
-      })
-      .fail((error) => {
-
-        setTimeout(() => {
-          this.ajaxErrorCount++
-
-          if(this.ajaxErrorCount < 3)
-            this.getCategory();
-          else
-            this.ajaxErrorCount = -1;
-
-        }, 100);
-        
-      })
-      .then((res) => {})
-      .always(() => {});
-    }
   },
   created() {
     this.getCategory();

@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers\Admin\DocumentManagement;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Admin\DcLists;
+use App\Http\Controllers\Controller;
+use App\Http\Responsable\isAjaxResponse;
+use App\Http\Requests\Admin\DocumentManagement\StoreDcListsRequest;
+use App\Http\Requests\Admin\DocumentManagement\UpdateDcListsRequest;
 
 class ListController extends Controller
 {
@@ -54,8 +58,8 @@ class ListController extends Controller
 	        'fieldIDName' => 'id',
 	        'addLangFields' => [],
             'choiceJoin' => 'leftJoin',
-            'join' => $join,
-            'selectJoin' => $selectJoin,
+            /* 'join' => $join,
+            'selectJoin' => $selectJoin, */
 	        'selectCol' => $selectCol,
 	        'searchCol' => $searchCol,
 	        'colOrder' => $colOrder,
@@ -82,53 +86,49 @@ class ListController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\Admin\DocumentManagement\StoreDcListRequest  $request
+     * @param  \App\Http\Requests\Admin\DocumentManagement\StoreDcListsRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreDcListRequest $request)
+    public function store(StoreDcListsRequest $request)
     {
         $params = $request->all();
 
-        $childList = DcList::create($params);
+        $params['user_id'] = $request->user()->id;
 
-        if($params['dc_cat_id'] > 0) {
-
-            $dcList = DcList::find($params['dc_cat_id']);
-            
-            $dcList->childList()->save($childList);
-        }
+        DcLists::create($params);
     
         return ['succeed' => __('messages.add_success')];
     }
 
     /**
-     * Update the specified resource in storage.
+     * Show the form for editing the specified resource.
      *
-     * @param  \App\Http\Requests\Admin\DocumentManagement\UpdateDcListRequest  $request
-     * @param  \App\Models\Admin\DcList  $List
+     * @param  \App\Models\Admin\DcLists  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateDcListRequest $request, DcList $List)
+    public function edit(DcLists $list)
+    {
+        return new isAjaxResponse($list);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\Admin\DocumentManagement\UpdateDcListsRequest  $request
+     * @param  \App\Models\Admin\DcLists  $List
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateDcListsRequest $request, DcLists $lists)
     {
         $params = $request->all();
 
-        $list->fill($params)->save();
+        dump($params);
+        dump($lists);die;
 
-        if($params['dc_cat_id'] > 0) {
-
-            $dcList = DcList::find($params['dc_cat_id']);
-            
-            $dcList->childList()->save($List);
-        }
-        
-        /* $book->updateMany([
-            'childDatas' => $params['langs'],
-            'childName' => 'booksLang',
-            'childInstance' => new BooksLang(),
-        ]); */
+        $lists->fill($params)->save();
     
         return [
-            'updatedItem' => $list,
+            'updatedItem' => $lists,
             'succeed' => __('messages.edit_success')
         ];
     }
@@ -139,9 +139,9 @@ class ListController extends Controller
      * @param  \App\Models\Admin\DcLists  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DcLists $list)
+    public function destroy(DcLists $lists)
     {
-        $res = $list->delete();
+        $res = $lists->delete();
         $msg = [];
 
         if ($res)

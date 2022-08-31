@@ -53,7 +53,7 @@ trait Repository
                 ['lang' => $this->lang]
             ];
         }
-
+        
         /* Custom join and select */
         if(isset($info['choiceJoin']) && isset($info['join']) && isset($info['selectJoin'])){
             $choiceJoin = $info['choiceJoin'];

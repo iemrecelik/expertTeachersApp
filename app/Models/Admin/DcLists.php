@@ -2,12 +2,14 @@
 
 namespace App\Models\Admin;
 
+use App\ModelsRepository\Admin\DcListsRepository;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
 class DcLists extends Model
 {
     use HasFactory;
+    use DcListsRepository;
 
     protected $fillable = [
         'dc_list_name',
