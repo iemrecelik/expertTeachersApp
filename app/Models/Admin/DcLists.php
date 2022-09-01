@@ -29,6 +29,6 @@ class DcLists extends Model
      */
     public function dc_documents()
     {
-        return $this->belongsToMany(DcDocuments::class, 'dc_doc_list', 'dc_id', 'list_id');
+        return $this->belongsToMany(DcDocuments::class, 'dc_doc_list', 'list_id', 'dc_id');
     }
 }

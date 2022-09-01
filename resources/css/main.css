@@ -17,3 +17,12 @@ div.add-cat-btn {
     width: 60%;
     padding: 14px 0px 0px 0px;
 }
+
+i.delete-list-icon {
+    cursor: pointer;
+    color: #ff2121;
+}
+
+span > i.delete-list-icon {
+    font-size: 21px;
+}

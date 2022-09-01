@@ -33,13 +33,7 @@ class DocumentsController extends Controller
     // public function store(Request $request)
     public function store(StoreDcDocumentsRequest $request)
     {
-        /* 
-            1- Arama yaparken sadece ana evraklar gösterilsin
-            2- Arama yaparken ilgi evrağı göstermesi i.in seçenek olsun.
-        */
         $params = $request->all();
-
-        // dump($params);die;
 
         $this->sameDocumentControl($params);
         
@@ -55,6 +49,7 @@ class DocumentsController extends Controller
             'dc_show_content'   => $params['dc_show_content'],
             'dc_raw_content'    => $params['dc_raw_content'],
             'dc_date'           => strtotime($params['dc_date']),
+            'user_id'           => $request->user()->id,
         ];
 
         $dcDocuments = $this->saveDcDocument(
@@ -81,6 +76,7 @@ class DocumentsController extends Controller
                     'dc_show_content'   => $params['rel_dc_show_content'][$key],
                     'dc_raw_content'    => $params['rel_dc_raw_content'][$key],
                     'dc_date'           => strtotime($params['rel_dc_date'][$key]),
+                    'user_id'           => $request->user()->id,
                 ];
 
                 $relDcSenderAttachFiles = $request->file('rel_dc_sender_attach_files');
@@ -109,20 +105,22 @@ class DocumentsController extends Controller
     {
         $rel_dc_number = [];
             
-        foreach ($params['rel_dc_number'] as $key => $val) {
+        if(isset($params['rel_dc_number'])) {
+            foreach ($params['rel_dc_number'] as $key => $val) {
             
-            if(trim($params['dc_number']) == trim($params['rel_dc_number'][$key])) {
-                throw ValidationException::withMessages(
-                    ['senderFile' => 'ilgi yazı ile ana evrak aynı olamaz']
-                );
-            }
+                if(trim($params['dc_number']) == trim($params['rel_dc_number'][$key])) {
+                    throw ValidationException::withMessages(
+                        ['senderFile' => 'ilgi yazı ile ana evrak aynı olamaz']
+                    );
+                }
 
-            if (array_search($params['rel_dc_number'], $rel_dc_number) === false) {
-                $rel_dc_number[] = $params['rel_dc_number'];
-            } else {
-                throw ValidationException::withMessages(
-                    ['senderFile' => 'ilgi yazılar aynı evrak olamaz.']
-                );
+                if (array_search($params['rel_dc_number'], $rel_dc_number) === false) {
+                    $rel_dc_number[] = $params['rel_dc_number'];
+                } else {
+                    throw ValidationException::withMessages(
+                        ['senderFile' => 'ilgi yazılar aynı evrak olamaz.']
+                    );
+                }
             }
         }
     }

@@ -30,37 +30,7 @@
       </form-form-component>
     </div>
   </div>
-  <!-- <edit-lang-form-component
-    :ppitem="item"
-  >
-  </edit-lang-form-component> -->
-  
-  <!-- <form-form-component
-    :ppsettings="{
-      type: 'text', 
-      fieldName: 'bks_edition', 
-      value: value('bks_edition')
-    }"
-  >
-  </form-form-component>
 
-  <form-form-component
-    :ppsettings="{
-      type: 'text', 
-      fieldName: 'bks_salary', 
-      value: value('bks_salary')
-    }"
-  >
-  </form-form-component>
-
-  <form-form-component
-    :ppsettings="{
-      type: 'date', 
-      fieldName: 'bks_start_date', 
-      value: value('bks_start_date')
-    }"
-  >
-  </form-form-component> -->
 </div>
 </template>
 

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin\DocumentManagement;
 
 use Illuminate\Http\Request;
 use App\Models\Admin\DcLists;
+use App\Models\Admin\DcDocuments;
 use App\Http\Controllers\Controller;
 use App\Http\Responsable\isAjaxResponse;
 use App\Http\Requests\Admin\DocumentManagement\StoreDcListsRequest;
@@ -19,6 +20,34 @@ class ListController extends Controller
     public function index()
     {
         return view('admin.document_mng.list.index');
+    }
+
+    public function getListAndSelected(Request $request)
+    {
+        $params = $request->all();
+
+        $dcLists = DcDocuments::find($params['dc_id'])->dc_lists();
+
+        // dump($dcLists->pluck('dc_lists.id')->all());die;
+
+        $list = $this->getList($dcLists->pluck('dc_lists.id')->all());
+
+        return [
+            'selected' => $dcLists->get(),
+            'list' => $list
+        ];
+    }
+
+    public function getList($ids)
+	{
+        if(empty($ids))
+            $ids = [];
+        else
+            $ids = $ids;
+
+        $list = DcLists::whereNotIn('id', $ids)->get();
+
+        return $list;
     }
 
     public function getDataList(Request $request)
@@ -82,6 +111,31 @@ class ListController extends Controller
 	    ];
 	}
 
+    public function addList(Request $request)
+    {
+        $params = $request->all();
+
+        $dcDocument = DcDocuments::find($params['dc_id']);
+        $dcList = DcLists::find($params['id']);
+
+        $dcDocument->dc_lists()->save($dcList);
+
+        return ['succeed' => __('messages.add_success')];
+    }
+
+    public function deleteList(Request $request)
+    {
+        $params = $request->all();
+
+        // $dcDocument = DcDocuments::find($params['dc_id']);
+        $dcList = DcLists::find($params['id']);
+        $dcDocument = DcDocuments::find($params['dc_id']);
+
+        $dcList->dc_documents()->detach($dcDocument);
+
+        return ['succeed' => __('messages.add_success')];
+    }
+
 
     /**
      * Store a newly created resource in storage.
@@ -118,17 +172,14 @@ class ListController extends Controller
      * @param  \App\Models\Admin\DcLists  $List
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateDcListsRequest $request, DcLists $lists)
+    public function update(UpdateDcListsRequest $request, DcLists $list)
     {
         $params = $request->all();
 
-        dump($params);
-        dump($lists);die;
-
-        $lists->fill($params)->save();
+        $list->fill($params)->save();
     
         return [
-            'updatedItem' => $lists,
+            'updatedItem' => $list,
             'succeed' => __('messages.edit_success')
         ];
     }
@@ -139,9 +190,9 @@ class ListController extends Controller
      * @param  \App\Models\Admin\DcLists  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DcLists $lists)
+    public function destroy(DcLists $list)
     {
-        $res = $lists->delete();
+        $res = $list->delete();
         $msg = [];
 
         if ($res)

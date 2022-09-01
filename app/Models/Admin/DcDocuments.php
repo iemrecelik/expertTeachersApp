@@ -22,6 +22,7 @@ class DcDocuments extends Model
         'dc_raw_content',
         'dc_show_content',
         'dc_date',
+        'user_id',
     ];
 
     /**
@@ -54,6 +55,6 @@ class DcDocuments extends Model
      */
     public function dc_lists()
     {
-        return $this->belongsToMany(DcLists::class, 'dc_doc_list', 'list_id', 'dc_id');
+        return $this->belongsToMany(DcLists::class, 'dc_doc_list', 'dc_id', 'list_id');
     }
 }

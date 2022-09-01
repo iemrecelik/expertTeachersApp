@@ -108,11 +108,29 @@ Route::prefix('admin/document-management')
 		)
 		->name('list.getList');
 
+        Route::get(
+			'list/get-list-and-selected', 
+			'getListAndSelected'
+		)
+		->name('list.getListAndSelected');
+
         Route::post(
 			'list/data-list', 
 			'getDataList'
 		)
 		->name('list.dataList');
+
+        Route::post(
+			'list/add-list', 
+			'addList'
+		)
+		->name('list.addList');
+        
+        Route::post(
+			'list/delete-list', 
+			'deleteList'
+		)
+		->name('list.deleteList');
 
         Route::resource('list', ListController::class);
     });

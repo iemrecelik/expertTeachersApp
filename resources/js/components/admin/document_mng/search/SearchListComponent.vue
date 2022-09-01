@@ -73,6 +73,7 @@
 /* import createComponent from './CreateComponent';
 import editComponent from './EditComponent'; */
 import showComponent from './ShowComponent';
+import addlistComponent from './AddListComponent';
 // import deleteComponent from './DeleteComponent';
 // import imagesComponent from './ImagesComponent';
 
@@ -114,6 +115,7 @@ export default {
     processesRow: function(id){
       let row = '';
       row += this.showBtnHtml(id);
+      row += this.listBtnHtml(id);
       /* row += this.editBtnHtml(id);
       row += this.deleteBtnHtml(id); */
       // row += this.imageBtnHtml(id);
@@ -124,7 +126,7 @@ export default {
       return  `
         <span 
           data-toggle="tooltip" data-placement="top" 
-          title="${this.$t('messages.edit')}"
+          title="${this.$t('messages.showDocument')}"
         >
           <button type="button" class="btn btn-sm btn-info"
             data-toggle="modal" data-target="${this.modalSelector}"
@@ -134,7 +136,26 @@ export default {
               "formTitleName": "${this.formTitleName}"
             }'
           >
-            <i class="bi bi-pencil-square"></i>
+            <i class="bi bi-file-text"></i>
+          </button>
+        </span>`;
+    },
+
+    listBtnHtml: function(id){
+      return  `
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.addList')}"
+        >
+          <button type="button" class="btn btn-sm btn-primary"
+            data-toggle="modal" data-target="${this.modalSelector}"
+            data-component="${this.formTitleName}-add-list-component" 
+            data-datas='{
+              "id": ${id},
+              "formTitleName": "${this.formTitleName}"
+            }'
+          >
+            <i class="bi bi-card-list"></i>
           </button>
         </span>`;
     },
@@ -255,6 +276,7 @@ export default {
     /* [formTitleName + '-create-component']: createComponent,
     [formTitleName + '-edit-component']: editComponent, */
     [formTitleName + '-show-component']: showComponent,
+    [formTitleName + '-add-list-component']: addlistComponent,
     // [formTitleName + '-delete-component']: deleteComponent,
     // [formTitleName + '-images-component']: imagesComponent,
   }
