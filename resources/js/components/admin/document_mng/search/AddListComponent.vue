@@ -32,7 +32,7 @@ import addListFormComponent from './AddListFormComponent';
 import { mapState, mapMutations } from 'vuex';
 
 export default {
-  name: 'createComponent',
+  name: 'AddListComponent',
   data () {
     return {
       datas: this.ppdatas,

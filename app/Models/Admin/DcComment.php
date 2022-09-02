@@ -9,6 +9,8 @@ class DcComment extends Model
 {
     use HasFactory;
 
+    protected $table = 'dc_comment';
+
     protected $fillable = [
         'dc_com_text',
         'user_id',

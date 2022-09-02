@@ -38,7 +38,7 @@ class ListController extends Controller
         ];
     }
 
-    public function getList($ids)
+    public function getList($ids = null)
 	{
         if(empty($ids))
             $ids = [];

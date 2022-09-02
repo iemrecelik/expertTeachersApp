@@ -49,7 +49,7 @@ import Treeselect from '@riophae/vue-treeselect'
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { mapState } from 'vuex';
 export default {
-  name: 'CreateFormComponent',
+  name: 'AddListFormComponent',
   data () {
     return {
       list: [],
