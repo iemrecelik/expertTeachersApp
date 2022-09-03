@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\Search\SearchController;
 use App\Http\Controllers\Admin\DocumentManagement\ListController;
+use App\Http\Controllers\Admin\DocumentManagement\CommentController;
 use App\Http\Controllers\Admin\DocumentManagement\CategoryController;
 use App\Http\Controllers\Admin\DocumentManagement\DocumentsController;
 use App\Http\Controllers\Admin\OldRegulation\SearchController as OldSearchController;
@@ -137,9 +138,28 @@ Route::prefix('admin/document-management')
 
 Route::prefix('admin/document-management')
     ->middleware('auth')
+    ->controller(CommentController::class)
+    ->name('admin.document_mng.')
+    ->group(function () {
+        /* Comment */
+        Route::post(
+			'comment/add-comment', 
+			'addComment'
+		)
+		->name('comment.addComment');
+    });
+
+Route::prefix('admin/document-management')
+    ->middleware('auth')
     ->controller(DcSearchController::class)
     ->name('admin.document_mng.')
     ->group(function () {
+
+        Route::post(
+			'search/get-category-and-list', 
+			'getCategoryAndList'
+		)
+		->name('search.getCategoryAndList');
 
          Route::get(
 			'search/search-form', 

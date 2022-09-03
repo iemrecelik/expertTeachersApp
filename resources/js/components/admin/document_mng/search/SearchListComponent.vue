@@ -74,6 +74,7 @@
 import editComponent from './EditComponent'; */
 import showComponent from './ShowComponent';
 import addlistComponent from './AddListComponent';
+import addCommentComponent from './AddCommentComponent';
 // import deleteComponent from './DeleteComponent';
 // import imagesComponent from './ImagesComponent';
 
@@ -116,6 +117,7 @@ export default {
       let row = '';
       row += this.showBtnHtml(id);
       row += this.listBtnHtml(id);
+      row += this.commentBtnHtml(id);
       /* row += this.editBtnHtml(id);
       row += this.deleteBtnHtml(id); */
       // row += this.imageBtnHtml(id);
@@ -156,6 +158,25 @@ export default {
             }'
           >
             <i class="bi bi-card-list"></i>
+          </button>
+        </span>`;
+    },
+
+    commentBtnHtml: function(id){
+      return  `
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.addcomment')}"
+        >
+          <button type="button" class="btn btn-sm btn-primary"
+            data-toggle="modal" data-target="${this.modalSelector}"
+            data-component="${this.formTitleName}-add-comment-component" 
+            data-datas='{
+              "id": ${id},
+              "formTitleName": "${this.formTitleName}"
+            }'
+          >
+            <i class="bi bi-card-text"></i>
           </button>
         </span>`;
     },
@@ -277,6 +298,7 @@ export default {
     [formTitleName + '-edit-component']: editComponent, */
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-add-list-component']: addlistComponent,
+    [formTitleName + '-add-comment-component']: addCommentComponent,
     // [formTitleName + '-delete-component']: deleteComponent,
     // [formTitleName + '-images-component']: imagesComponent,
   }

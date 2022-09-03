@@ -132,6 +132,23 @@
 
     </div>
 
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="exampleFormControlSelect1">Listeler</label>
+          <select class="form-control" 
+            id="exampleFormControlSelect1"
+            name="dc_list_id"
+          >
+            <!-- <option value=""></option> -->
+            <option v-for="item in list" :value="item.id">
+              {{item.dc_list_name}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
     <div class="row mb-3">
       <div class="col-2">
         <input type="hidden" name="dc_main_status" :value="mainStatus">
@@ -169,6 +186,7 @@ export default {
     data () {
     return {
       categoryList: [],
+      list: [],
       ajaxErrorCount: -1,
       mainStatus: 0,
     }
@@ -186,10 +204,11 @@ export default {
         this.mainStatus = 0
       }
     },
-    getCategory: function() {
+    getCategoryAndList: function() {
+      console.log('sdsadasd');
       $.ajax({
-        url: this.routes.getCategory,
-        type: 'GET',
+        url: this.routes.getCategoryAndList,
+        type: 'POST',
         dataType: 'JSON',
         data: {
           'startData': {
@@ -199,7 +218,8 @@ export default {
         }
       })
       .done((res) => {
-        this.categoryList = res;
+        this.categoryList = res.category;
+        this.list = res.list;
         this.ajaxErrorCount = -1;
       })
       .fail((error) => {
@@ -208,7 +228,7 @@ export default {
           this.ajaxErrorCount++
 
           if(this.ajaxErrorCount < 3)
-            this.getCategory();
+            this.getCategoryAndList();
           else
             this.ajaxErrorCount = -1;
 
@@ -220,7 +240,7 @@ export default {
     }
   },
   created() {
-    this.getCategory();
+    this.getCategoryAndList();
   },
   components: {
     Treeselect
