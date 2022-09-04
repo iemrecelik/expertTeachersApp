@@ -6,40 +6,24 @@
       <div class="row">
         <div class="col-12">
           <ul>
-            <li>
-              <label for="exampleFormControlTextarea1">Alı Rıza TAŞÇI</label>
-              <br/>
-              <span>
-                Bakanlığımızda görev yapan öğretmenlerin, uzman öğretmenlik ve başöğretmenlik eğitim programına başvuruları tamamlanmıştır.
-    Van ili İpekyolu ilçesi İpekyolu Borsa İstanbul Fen Lisesinde öğretmen olarak görev yapan Evin KESKİN(41731432364)'in, Uzman Öğretmenlik Eğitim Programına başvuruda bulunduğu ancak açığa alındığı
+            <li v-for="comment in comments">
+              <label for="exampleFormControlTextarea1">
+                {{comment.user.name}}
+              </label>
+
+              <span v-if="comment.user.auth"
+                @click="deleteComment(comment.id)"
+              >
+                <i class="bi bi-x-circle-fill delete-list-icon"></i>
               </span>
-              <hr/>
-            </li>
-            
-            <li>
-              <label for="exampleFormControlTextarea1">Necati UĞUR</label>
+
               <br/>
               <span>
-                Bakanlığımızda görev yapan öğretmenlerin, uzman öğretmenlik ve başöğretmenlik eğitim programına başvuruları tamamlanmıştır.
-    Van ili İpekyolu ilçesi İpekyolu Borsa İstanbul Fen Lisesinde öğretmen olarak görev yapan Evin KESKİN(41731432364)'in, Uzman Öğretmenlik Eğitim Programına başvuruda bulunduğu ancak açığa alındığı
+                {{comment.dc_com_text}}
               </span>
               <hr/>
             </li>
           </ul>
-          
-          <!-- <ul>
-            <li v-for="item in list.selected">
-              <span>{{ item.dc_list_name }}</span>
-              <span class="float-right"
-                @click="deleteList(item.id)"
-              >
-                <i class="bi bi-x-circle-fill delete-list-icon"></i>
-              </span>
-              <hr/>
-            </li>
-          </ul> -->
-
-
 
         </div>
       </div>
@@ -53,7 +37,7 @@
               id="exampleFormControlTextarea1" 
               rows="3"
               name="dc_com_text"
-              value=""
+              v-model="userComment"
             >
             </textarea>
           </div>
@@ -75,12 +59,15 @@
 import Treeselect from '@riophae/vue-treeselect'
 // import the styles
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+
 import { mapState } from 'vuex';
+
 export default {
   name: 'AddCommentFormComponent',
   data () {
     return {
-      list: [],
+      comments: [],
+      userComment: '',
       ajaxErrorCount: -1,
       datas: this.ppdatas
     }
@@ -100,33 +87,39 @@ export default {
     oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
     },
-    getListAndSelectedList: function() {
+    getComments: function(){
       $.ajax({
-        url: this.routes.getListAndSelected,
+        url: this.routes.getComments,
+        // url: '/admin/document-management/comment/get-comments/' + this.datas.id,
         type: 'GET',
         dataType: 'JSON',
         data: {'dc_id': this.datas.id}
       })
       .done((res) => {
-        this.list = res;
+        this.comments = res;
         this.ajaxErrorCount = -1;
+
+        this.comments.forEach((comment) => {
+          if(comment.user.auth) {
+            this.userComment = comment.dc_com_text;
+          }
+        });
       })
       .fail((error) => {
         setTimeout(() => {
           this.ajaxErrorCount++
           if(this.ajaxErrorCount < 3)
-            this.getListAndSelectedList();
+            this.getComments();
           else
             this.ajaxErrorCount = -1;
         }, 100);
-        
       })
       .then((res) => {})
       .always(() => {});
     },
-    deleteList: function(id){
+    deleteComment: function(id){
       $.ajax({
-        url: this.routes.deleteList,
+        url: this.routes.deleteComment,
         type: 'POST',
         dataType: 'JSON',
         data: {
@@ -135,13 +128,14 @@ export default {
         }
       })
       .done((res) => {
-        this.getListAndSelectedList();
+        this.getComments();
+        this.userComment = '';
       })
       .fail((error) => {
         setTimeout(() => {
           this.ajaxErrorCount++
           if(this.ajaxErrorCount < 3)
-            this.deleteList();
+            this.deleteComment();
           else
             this.ajaxErrorCount = -1;
         }, 100);
@@ -152,7 +146,7 @@ export default {
     }
   },
   created() {
-    this.getListAndSelectedList();
+    this.getComments();
   },
   components: {
     Treeselect

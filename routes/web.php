@@ -147,6 +147,26 @@ Route::prefix('admin/document-management')
 			'addComment'
 		)
 		->name('comment.addComment');
+        
+        Route::get(
+			'comment/get-comments', 
+			'getComments'
+		)
+		->name('comment.getComments');
+
+        Route::post(
+			'comment/delete-comment', 
+			'deleteComment'
+		)
+		->name('comment.deleteComment');
+
+        Route::post(
+			'comment/data-list', 
+			'getDataList'
+		)
+		->name('comment.dataList');
+
+        Route::resource('comment', CommentController::class);
     });
 
 Route::prefix('admin/document-management')

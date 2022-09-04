@@ -80,7 +80,7 @@ export default {
         // this.$parent.$parent.dataTable.ajax.reload();
       })
       .always(() => {
-        this.$refs.addListFormComponent.getListAndSelectedList();
+        this.$refs.addCommentFormComponent.getComments();
         this.formElement.scrollTo(0, 0);
       });
 

@@ -2,12 +2,16 @@
 
 namespace App\Models\Admin;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
+use App\ModelsRepository\Admin\DcCommentRepository;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class DcComment extends Model
 {
     use HasFactory;
+
+    use DcCommentRepository;
 
     protected $table = 'dc_comment';
 
@@ -22,7 +26,7 @@ class DcComment extends Model
      */
     public function user()
     {
-        return $this->hasOne(User::class, 'user_id', 'id');
+        return $this->hasOne(User::class, 'id', 'user_id');
     }
     
     /**

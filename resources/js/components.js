@@ -5,6 +5,7 @@ import teacherInfosComponent from './components/admin/search/teacher_infos/Teach
 /* Document Management Category */
 import docMngCategoryComponent from './components/admin/document_mng/category/IndexComponent.vue';
 import docMngListComponent from './components/admin/document_mng/list/IndexComponent.vue';
+import docMngCommentComponent from './components/admin/document_mng/comment/IndexComponent.vue';
 import docMngDocumentComponent from './components/admin/document_mng/document/IndexComponent.vue';
 import docMngCreateDocumentComponent from './components/admin/document_mng/document/CreateComponent.vue';
 import docMngSearchComponent from './components/admin/document_mng/search/SearchComponent.vue';
@@ -17,6 +18,7 @@ export default {
 
 	'doc-mng-category-component': docMngCategoryComponent,
 	'doc-mng-list-component': docMngListComponent,
+	'doc-mng-comment-component': docMngCommentComponent,
 	'doc-mng-document-component': docMngDocumentComponent,
 	'doc-mng-create-document-component': docMngCreateDocumentComponent,
 	'doc-mng-search-component': docMngSearchComponent,

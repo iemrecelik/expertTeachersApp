@@ -140,7 +140,7 @@
             id="exampleFormControlSelect1"
             name="dc_list_id"
           >
-            <!-- <option value=""></option> -->
+            <option value="">Liste Seçiniz.</option> 
             <option v-for="item in list" :value="item.id">
               {{item.dc_list_name}}
             </option>
@@ -205,7 +205,7 @@ export default {
       }
     },
     getCategoryAndList: function() {
-      console.log('sdsadasd');
+      
       $.ajax({
         url: this.routes.getCategoryAndList,
         type: 'POST',

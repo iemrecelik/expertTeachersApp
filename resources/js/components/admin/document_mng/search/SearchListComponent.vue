@@ -1,5 +1,10 @@
 <template>
 <div class="list-group">
+  <div class="row">
+    <div class="col-12">
+      <error-msg-list-component></error-msg-list-component>
+    </div>
+  </div>
   <!-- /.row -->
   <div class="row">
     <div class="col-12">
@@ -80,7 +85,7 @@ import addCommentComponent from './AddCommentComponent';
 
 let formTitleName= 'dc-search-list';
 
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 
 export default {
   name: "SearchListComponent",
@@ -112,15 +117,15 @@ export default {
     },
   },
   methods: {
-
+    ...mapMutations([
+      'setErrors',
+      'setSucceed',
+    ]),
     processesRow: function(id){
       let row = '';
       row += this.showBtnHtml(id);
       row += this.listBtnHtml(id);
       row += this.commentBtnHtml(id);
-      /* row += this.editBtnHtml(id);
-      row += this.deleteBtnHtml(id); */
-      // row += this.imageBtnHtml(id);
       return row;
     },
     
@@ -180,63 +185,7 @@ export default {
           </button>
         </span>`;
     },
-    
-    editBtnHtml: function(id){
-      return  `
-        <span 
-          data-toggle="tooltip" data-placement="top" 
-          title="${this.$t('messages.edit')}"
-        >
-          <button type="button" class="btn btn-sm btn-success"
-            data-toggle="modal" data-target="${this.modalSelector}"
-            data-component="${this.formTitleName}-edit-component" 
-            data-datas='{
-              "id": ${id},
-              "formTitleName": "${this.formTitleName}"
-            }'
-          >
-            <i class="bi bi-pencil-square"></i>
-          </button>
-        </span>`;
-    },
 
-    deleteBtnHtml: function(id){
-      return  `
-        <span 
-            data-toggle="tooltip" data-placement="top" 
-            title="${this.$t('messages.delete')}"
-          >
-          <button type="button" class="btn btn-sm btn-danger"
-            data-toggle="modal" data-target="${this.modalSelector}"
-            data-component="${this.formTitleName}-delete-component" 
-            data-datas='{
-              "id": ${id},
-              "formTitleName": "${this.formTitleName}"
-            }'
-          >
-            <i class="bi bi-trash"></i>
-          </button>
-        </span>`;
-    },
-    
-    imageBtnHtml: function(id){
-      return  `
-        <span 
-            data-toggle="tooltip" data-placement="top" 
-            title="${this.$t('messages.image')}"
-          >
-          <button type="button" class="btn btn-sm btn-info"
-            data-toggle="modal" data-target="${this.modalSelector}"
-            data-component="${this.formTitleName}-images-component" 
-            data-datas='{
-              "id": ${id},
-              "formTitleName": "${this.formTitleName}"
-            }'
-          >
-            <i class="bi bi-image"></i>
-          </button>
-        </span>`;
-    },
     destroyTable() {
       if (typeof this.dataTable !== 'undefined') {
         this.dataTable.destroy();
@@ -280,6 +229,9 @@ export default {
             "defaultContent": ""
           },
         ],
+        "initComplete": ((settings, json) => {
+          this.setErrors('');
+        })
       });
     },
     showTable(vals) {
@@ -291,7 +243,11 @@ export default {
   },
   mounted() {
     this.showModalBody(this.modalSelector);
-    // this.loadDataTable();
+
+    $.fn.dataTable.ext.errMode =  (( settings, helpPage, message ) => { 
+      this.setSucceed('');
+      this.setErrors(settings.jqXHR.responseJSON.errors);
+    });
   },
   components: {
     /* [formTitleName + '-create-component']: createComponent,

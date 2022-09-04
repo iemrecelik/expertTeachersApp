@@ -157,7 +157,7 @@ class ListController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Admin\DcLists  $category
+     * @param  \App\Models\Admin\DcLists  $list
      * @return \Illuminate\Http\Response
      */
     public function edit(DcLists $list)
@@ -169,7 +169,7 @@ class ListController extends Controller
      * Update the specified resource in storage.
      *
      * @param  \App\Http\Requests\Admin\DocumentManagement\UpdateDcListsRequest  $request
-     * @param  \App\Models\Admin\DcLists  $List
+     * @param  \App\Models\Admin\DcLists  $list
      * @return \Illuminate\Http\Response
      */
     public function update(UpdateDcListsRequest $request, DcLists $list)
@@ -187,7 +187,7 @@ class ListController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Admin\DcLists  $category
+     * @param  \App\Models\Admin\DcLists  $list
      * @return \Illuminate\Http\Response
      */
     public function destroy(DcLists $list)

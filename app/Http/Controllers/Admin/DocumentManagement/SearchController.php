@@ -182,7 +182,7 @@ class SearchController extends Controller
 						break;
 						
 					case 'dc_list_id':
-						if (isset($data['value'])) {
+						if (!empty($data['value'])) {
 							$dcDocuments->join('dc_doc_list as t1', 't1.dc_id', '=', 't0.id');
             				$dcDocuments->join('dc_lists as t2', 't2.id', '=', 't1.list_id');
 

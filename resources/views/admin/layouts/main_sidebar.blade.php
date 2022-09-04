@@ -80,6 +80,20 @@
             </li>
             
             <li class="nav-item">
+              <a href="{{route('admin.document_mng.list.index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Liste Yönetimi</p>
+              </a>
+            </li>
+
+            <li class="nav-item">
+              <a href="{{route('admin.document_mng.comment.index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Evrak Notları</p>
+              </a>
+            </li>
+            
+            <li class="nav-item">
               <a href="{{route('admin.document_mng.document.create')}}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Evrak Ekleme</p>

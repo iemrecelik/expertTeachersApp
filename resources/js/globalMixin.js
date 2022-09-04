@@ -128,7 +128,8 @@ export default {
               trigger: "hover",
             });
           }, 100);
-        }
+        },
+        "initComplete": config.initComplete || undefined,
       });
     },
 

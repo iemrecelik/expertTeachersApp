@@ -54,7 +54,7 @@ export default {
     },
   },
   created() {
-    this.getCategory();
+    // this.getCategory();
   },
   components: {
     Treeselect,
