@@ -173,7 +173,7 @@ class CommentController extends Controller
             +++ 4- ana evrağın yanında ilgi evrakları da gözükecek
             5- Listeleri sadece yükleyen kişi silebilir.
             6- Tablolarda arama çubuğunu kaldır.
-            7- evrak aramada ilgi evrağı göster deyince ana evrak ve ilgiler gözükecek
+            +++ 7- evrak aramada ilgi evrağı göster deyince ana evrak ve ilgiler gözükecek
             +++ 8- listeye eklenen ilgi evrak aramada gösterilmiyor.
             9- ralative olan yerler relative olarak değiştirilecek.
         */

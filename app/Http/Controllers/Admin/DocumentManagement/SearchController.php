@@ -249,22 +249,22 @@ class SearchController extends Controller
 			$relId = $dcDocuments->id;
 			$mainDcDocuments = DB::table('dc_documents as t0');
 
-			// $mainDcDocuments->selectRaw('t0.*, t');
-			$mainDcDocuments->leftJoin('dc_relative as t1', 't1.dc_id', '=', 't0.id')
+			$mainDcDocuments = $mainDcDocuments->selectRaw('t0.*')
+			->leftJoin('dc_relative as t1', 't1.dc_id', '=', 't0.id')
 			->where([
 				['t1.rel_id', $relId]
 			])
 			->first();
 
-			// dump($mainDcDocuments);die;
-
-			$mainDcDocuments = DB::table('dc_documents as t0')->leftJoin('dc_relative as t1', 't1.dc_id', '=', 't0.id');
-			$mainDcDocuments = $mainDcDocuments->where([
+			$relDcDocuments = DB::table('dc_documents as t0')->leftJoin('dc_relative as t1', 't1.rel_id', '=', 't0.id')
+			->where([
 				['t1.dc_id', $mainDcDocuments->id]
-			])->first();
+			])
+			->get();
 
-			
-			dump($mainDcDocuments);die;
+			$mainDcDocuments->dc_ralatives = $relDcDocuments;
+
+			$dcDocuments = $mainDcDocuments;
 		}
 		
 		return $dcDocuments;
