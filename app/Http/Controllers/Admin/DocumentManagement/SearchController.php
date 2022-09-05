@@ -102,19 +102,6 @@ class SearchController extends Controller
 		$whereQueryParams = [];
 		$searchQuery = '';
 		$searchQueryParams = [];
-			
-
-	    /*Array select and search columns*/
-	    /* foreach ($tblInfo['columns'] as $column) {
-	        
-	        if (isset($column['data']))
-	            $selectCol[] = $column['data'];
-
-	        if($column['searchable'])
-	            $searchQuery[] = $column['data'];
-	    } */
-
-		
 
 		foreach ($tblInfo['columns'] as $column) {
 	        
@@ -156,7 +143,7 @@ class SearchController extends Controller
 
 					case 'dc_main_status':
 						if ($data['value'] > 0) {
-							$whereQuery .= "{$data['name']} = '0' OR {$data['name']} = '1' AND ";
+							$whereQuery .= "({$data['name']} = '0' OR {$data['name']} = '1') AND ";
 							// $whereQueryParams[] = $data['value'];
 						}else {
 							$whereQuery .= "{$data['name']} = '1' AND ";
@@ -229,10 +216,12 @@ class SearchController extends Controller
 		if(!empty($whereQuery)) {
 			$dcDocuments = $dcDocuments->whereRaw($whereQuery, $whereQueryParams);
 		}
+
+		$dcDocuments->leftJoin('dc_files as t3', 't3.dc_file_owner_id', '=', 't0.id');
+		$dcDocuments->selectRaw('t3.dc_file_path');
 		
 		$dcDocuments = $dcDocuments->orderBy($colOrder, $order);
 
-        
         $recordsTotal = DcDocuments::count();
 	    $recordsFiltered = $dcDocuments->count();
 
@@ -254,6 +243,30 @@ class SearchController extends Controller
 	} */
 	public function show(DcDocuments $dcDocuments)
 	{
+		if($dcDocuments->dc_main_status > 0) {
+			$dcDocuments->dc_ralatives;
+		}else {
+			$relId = $dcDocuments->id;
+			$mainDcDocuments = DB::table('dc_documents as t0');
+
+			// $mainDcDocuments->selectRaw('t0.*, t');
+			$mainDcDocuments->leftJoin('dc_relative as t1', 't1.dc_id', '=', 't0.id')
+			->where([
+				['t1.rel_id', $relId]
+			])
+			->first();
+
+			// dump($mainDcDocuments);die;
+
+			$mainDcDocuments = DB::table('dc_documents as t0')->leftJoin('dc_relative as t1', 't1.dc_id', '=', 't0.id');
+			$mainDcDocuments = $mainDcDocuments->where([
+				['t1.dc_id', $mainDcDocuments->id]
+			])->first();
+
+			
+			dump($mainDcDocuments);die;
+		}
+		
 		return $dcDocuments;
 	}
 }

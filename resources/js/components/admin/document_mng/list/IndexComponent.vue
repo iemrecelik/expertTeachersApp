@@ -1,16 +1,54 @@
 <template>
 <template-component>
+
+  <div class="row">
+    <div class="col-3">
+
+      <div class="form-group">
+        <label for="usersSelectBox">Kullanıcılar</label>
+      
+        <div class="input-group input-group-md">
+          <select class="form-control" 
+            id="usersSelectBox"
+            name="user_id"
+          >
+            <option value="0">Tüm Kullanıclar</option>
+            <option :selected="user.auth" v-for="user in users" :value="user.id">
+              {{user.name}}
+            </option>
+          </select>
+
+          <!-- <input type="text" class="form-control form-control-lg" name="surname" placeholder="Buraya soyad giriniz" value=""> -->
+
+          <div class="input-group-append">
+            <button
+              type="button" 
+              class="btn btn-primary"
+              @click="getDataList"
+            >
+              <i class="fa fa-search"></i>
+              Ara
+            </button>
+          </div>
+        </div>
+
+      </div><!-- /.form-group -->
+
+    </div>
+  </div>
+
   <table class="res-dt-table table table-striped table-bordered" 
   style="width:100%">
     <thead>
       <tr>
         <th>{{ $t("messages.dc_list_name") }}</th>
+        <th>{{ $t("messages.user_name") }}</th>
         <th>{{ $t("messages.processes") }}</th>
       </tr>
     </thead>
     <tfoot>
       <tr>
-        <th colspan="2">
+        <th colspan="3">
           <button type="button" class="btn btn-primary"
             data-toggle="modal" 
             :data-target="modalSelector"
@@ -49,19 +87,19 @@ import createComponent from './CreateComponent';
 import editComponent from './EditComponent';
 import showComponent from './ShowComponent';
 import deleteComponent from './DeleteComponent';
-// import imagesComponent from './ImagesComponent';
 
 import { mapState, mapMutations } from 'vuex';
 
 let formTitleName = 'dc-list'
 
 export default {
-  // name: this.componentTitleName,
+  name: 'IndexComponent',
   data () {
     return {
       modalIDName: 'formModalLong',
       formTitleName,
-      dataTable: null,
+      dataTable: undefined,
+      users: this.ppusers,
     };
   },
   props: {
@@ -73,9 +111,9 @@ export default {
       type: Object,
       required: true,
     },
-    ppimgfilters: {
-      type: Object,
-      required: false,
+    ppusers: {
+      type: Array,
+      required: true,
     },
   },
   computed: {
@@ -107,7 +145,6 @@ export default {
       let row = '';
       row += this.editBtnHtml(id);
       row += this.deleteBtnHtml(id);
-      // row += this.imageBtnHtml(id);
       return row;
     },
     
@@ -168,39 +205,56 @@ export default {
         </span>`;
     },
 
+    destroyTable() {
+      if (typeof this.dataTable !== 'undefined') {
+        this.dataTable.destroy();
+        $("#"+this.form+" tbody").empty();
+      }
+    },
+
+    getDataList: function(){
+      this.destroyTable();
+      
+      let userId = document.getElementById('usersSelectBox').value;
+
+      this.dataTable = this.dataTableRun({
+        jQDomName: '.res-dt-table',
+        url: this.routes.dataList,
+        data: {'user_id': userId},
+        columns: [
+          { "data": "dc_list_name" },
+          { "data": "user_name" },
+          {
+            "orderable": false,
+            "searchable": false,
+            "sortable": false,
+            "data": "id",
+            "render": ( data, type, row ) => {
+              if(data) {
+                return this.processesRow(data);
+              }
+            },
+            "defaultContent": ""
+          },
+        ],
+      });
+    }
+
   },
   created(){
     this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
-    // this.setImgFilters(this.ppimgfilters);
   },
   mounted(){
     this.showModalBody(this.modalSelector);
 
-    this.dataTable = this.dataTableRun({
-      jQDomName: '.res-dt-table',
-      url: this.routes.dataList,
-      columns: [
-        { "data": "dc_list_name" },
-        {
-          "orderable": false,
-          "searchable": false,
-          "sortable": false,
-          "data": "id",
-          "render": ( data, type, row ) => {
-              return this.processesRow(data);
-          },
-          "defaultContent": ""
-        },
-      ],
-    });
+    this.getDataList();
   },
   components: {
     [formTitleName + '-create-component']: createComponent,
     [formTitleName + '-edit-component']: editComponent,
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-delete-component']: deleteComponent,
-    // [formTitleName + '-images-component']: imagesComponent,
   }
 }
 </script>
