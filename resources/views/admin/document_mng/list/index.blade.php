@@ -7,6 +7,7 @@
       getList: '{{ route('admin.document_mng.list.getList') }}', 
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
+    :ppusers="{{ json_encode($datas) }}"
   >
   </doc-mng-list-component>
 @endsection

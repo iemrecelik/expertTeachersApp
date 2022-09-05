@@ -22,7 +22,6 @@ class CommentController extends Controller
     {
         $users = User::all()->toArray();
 
-        // dump($users->toArray());die;
         $user = Auth::user();
 
         $datas = array_map(function($item) use ($user) {
@@ -97,6 +96,9 @@ class CommentController extends Controller
         $dataList->leftJoin('dc_documents as t2', 't2.id', '=', 't0.dc_id');
         $dataList->selectRaw('t2.dc_number, t2.dc_subject, t2.id as dc_id');
 
+        $dataList->leftJoin('dc_files as t3', 't3.dc_file_owner_id', '=', 't2.id');
+		$dataList->selectRaw('t3.dc_file_path');
+
         if($selectUserId > 0) {
             $dataList->where('t0.user_id', $selectUserId);
         }
@@ -167,10 +169,13 @@ class CommentController extends Controller
         /* 
             1- Bütün formlarda validation kontrolleri yapılacak 
             2- Dökümanların ekleri gösterilecek ve resim , pdf dosyaları tarayıcı gösterilecek
-            3- udf dosyası indirilebilir olacak
-            4- ana evrağın yanında ilgi evrakları da gözükecek
+            +++ 3- udf dosyası indirilebilir olacak 
+            +++ 4- ana evrağın yanında ilgi evrakları da gözükecek
             5- Listeleri sadece yükleyen kişi silebilir.
             6- Tablolarda arama çubuğunu kaldır.
+            7- evrak aramada ilgi evrağı göster deyince ana evrak ve ilgiler gözükecek
+            +++ 8- listeye eklenen ilgi evrak aramada gösterilmiyor.
+            9- ralative olan yerler relative olarak değiştirilecek.
         */
 
         $request->validate(

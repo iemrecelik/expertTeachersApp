@@ -9,6 +9,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Responsable\isAjaxResponse;
 use App\Http\Requests\Admin\DocumentManagement\StoreDcListsRequest;
 use App\Http\Requests\Admin\DocumentManagement\UpdateDcListsRequest;
+use Illuminate\Support\Facades\Auth;
+use App\Models\User;
 
 class ListController extends Controller
 {
@@ -19,7 +21,23 @@ class ListController extends Controller
      */
     public function index()
     {
-        return view('admin.document_mng.list.index');
+        $users = User::all()->toArray();
+
+        $user = Auth::user();
+
+        $datas = array_map(function($item) use ($user) {
+            if($user->id === $item['id'] ) {
+                $item['auth'] = true;
+            }else {
+                $item['auth'] = false;
+            }
+            return $item;
+        }, $users);
+
+        return view(
+            'admin.document_mng.list.index',
+            ['datas' => $datas]
+        );
     }
 
     public function getListAndSelected(Request $request)
@@ -54,11 +72,20 @@ class ListController extends Controller
 	{
 	    $tblInfo = $request->all();
 
+        $selectUserId = $tblInfo['user_id'];
+
+        $notSelectCol = [
+            'user_name',
+            'user_id',
+        ];
+
 	    /*Array select and search columns*/
 	    foreach ($tblInfo['columns'] as $column) {
 	        
-	        if (isset($column['data']))
-	            $selectCol[] = $column['data'];
+            if (isset($column['data'])){
+                if(!in_array($column['data'], $notSelectCol))
+                    $selectCol[] = $column['data'];
+            }
 
 	        if($column['searchable'])
 	            $searchCol[] = $column['data'];
@@ -69,17 +96,14 @@ class ListController extends Controller
 	    $colOrder = $tblInfo['columns'][$colIndex]['data'];
 	    $order = $tblInfo['order'][0]['dir'];
 
-
         /*join*/
-        /* $join = [
-            "dc_lists as t1", 
-            "t0.dc_cat_id", '=', 
+        $join = [
+            "users as t1", 
+            "t0.user_id", '=', 
             "t1.id"
-        ]; */
-        $join = "";
+        ];
 
-        // $selectJoin = ", t1.dc_list_name as dc_up_cat_name";
-        $selectJoin = "";
+        $selectJoin = ", t1.name as user_name, t1.id as user_id";
         
 
 	    $dataList = DcLists::dataList([
@@ -87,8 +111,8 @@ class ListController extends Controller
 	        'fieldIDName' => 'id',
 	        'addLangFields' => [],
             'choiceJoin' => 'leftJoin',
-            /* 'join' => $join,
-            'selectJoin' => $selectJoin, */
+            'join' => $join,
+            'selectJoin' => $selectJoin,
 	        'selectCol' => $selectCol,
 	        'searchCol' => $searchCol,
 	        'colOrder' => $colOrder,
@@ -102,11 +126,23 @@ class ListController extends Controller
 	    $data = $dataList->offset($tblInfo['start'])
 	    ->limit($tblInfo['length'])
 	    ->get();
+
+        /* Editing only own objects */
+        $userId = $request->user()->id;
+
+        $datas = array_map(function($item) use ($userId) {
+            if($item['user_id'] === $userId) {
+                return $item;
+            }else {
+                $item['id'] = null;
+                return $item;
+            }
+        }, $data->toArray());
         
 	    return [
 	        'recordsTotal' => $recordsTotal, 
 	        'recordsFiltered' => $recordsFiltered, 
-	        'data' => $data,
+	        'data' => $datas,
 	        'draw' => $tblInfo['draw']
 	    ];
 	}

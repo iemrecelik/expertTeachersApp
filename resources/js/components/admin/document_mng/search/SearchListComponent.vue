@@ -126,10 +126,20 @@ export default {
       row += this.showBtnHtml(id);
       row += this.listBtnHtml(id);
       row += this.commentBtnHtml(id);
+      row += this.fileDownloadBtnHtml(id);
+      this.fileDownloadScript();
       return row;
     },
+
+    fileDownloadScript() {
+      $( "[data-file-download]" ).on( "click", function(event) {
+        event.attr({
+          target: '_blank', 
+          href  : 'public/upload/2022/09/02/08/Evin KESKİN Eksiz ilgisiz.udf'});
+        });
+    },
     
-    showBtnHtml: function(id){
+    showBtnHtml: function(datas){
       return  `
         <span 
           data-toggle="tooltip" data-placement="top" 
@@ -139,7 +149,7 @@ export default {
             data-toggle="modal" data-target="${this.modalSelector}"
             data-component="${this.formTitleName}-show-component" 
             data-datas='{
-              "id": ${id},
+              "id": ${datas.id},
               "formTitleName": "${this.formTitleName}"
             }'
           >
@@ -148,7 +158,7 @@ export default {
         </span>`;
     },
 
-    listBtnHtml: function(id){
+    listBtnHtml: function(datas){
       return  `
         <span 
           data-toggle="tooltip" data-placement="top" 
@@ -158,7 +168,7 @@ export default {
             data-toggle="modal" data-target="${this.modalSelector}"
             data-component="${this.formTitleName}-add-list-component" 
             data-datas='{
-              "id": ${id},
+              "id": ${datas.id},
               "formTitleName": "${this.formTitleName}"
             }'
           >
@@ -167,7 +177,7 @@ export default {
         </span>`;
     },
 
-    commentBtnHtml: function(id){
+    commentBtnHtml: function(datas){
       return  `
         <span 
           data-toggle="tooltip" data-placement="top" 
@@ -177,7 +187,7 @@ export default {
             data-toggle="modal" data-target="${this.modalSelector}"
             data-component="${this.formTitleName}-add-comment-component" 
             data-datas='{
-              "id": ${id},
+              "id": ${datas.id},
               "formTitleName": "${this.formTitleName}"
             }'
           >
@@ -185,6 +195,45 @@ export default {
           </button>
         </span>`;
     },
+    
+    fileDownloadBtnHtml: function(datas){
+      return  `
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.docFileDownload')}"
+        >
+          <a type="button" class="btn btn-sm btn-success"
+            data-file-download
+            href="/storage/upload/images/raw${datas.url}"
+            download
+            data-datas='{
+              "id": ${datas.id},
+              "formTitleName": "${this.formTitleName}"
+            }'
+          >
+            <i class="bi bi-file-earmark-arrow-down"></i>
+          </a>
+        </span>`;
+    },
+
+    /* fileDownloadBtnHtml: function(id){
+      return  `
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.docFileDownload')}"
+        >
+          <button type="button" class="btn btn-sm btn-success"
+            data-toggle="modal" data-target="${this.modalSelector}"
+            data-component="${this.formTitleName}-doc-file-download-component" 
+            data-datas='{
+              "id": ${id},
+              "formTitleName": "${this.formTitleName}"
+            }'
+          >
+            <i class="bi bi-file-earmark-arrow-down"></i>
+          </button>
+        </span>`;
+    }, */
 
     destroyTable() {
       if (typeof this.dataTable !== 'undefined') {
@@ -224,7 +273,10 @@ export default {
             "sortable": false,
             "data": "id",
             "render": ( data, type, row ) => {
-                return this.processesRow(data);
+                return this.processesRow({
+                  'id': data,
+                  'url': row.dc_file_path
+                });
             },
             "defaultContent": ""
           },

@@ -142,11 +142,12 @@ export default {
       'setErrors',
       'setEditItem',
     ]),
-    processesRow: function(id, dc_id){
+    processesRow: function(datas){
       let row = '';
-      row += this.editBtnHtml(id);
-      row += this.deleteBtnHtml(id);
-      row += this.showBtnHtml(dc_id);
+      row += this.editBtnHtml(datas.id);
+      row += this.deleteBtnHtml(datas.id);
+      row += this.showBtnHtml(datas.dc_id);
+      row += this.fileDownloadBtnHtml(datas.url);
       return row;
     },
     
@@ -207,6 +208,22 @@ export default {
         </span>`;
     },
 
+    fileDownloadBtnHtml: function(url){
+      return  `
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.docFileDownload')}"
+        >
+          <a type="button" class="btn btn-sm btn-success"
+            data-file-download
+            href="/storage/upload/images/raw${url}"
+            download
+          >
+            <i class="bi bi-file-earmark-arrow-down"></i>
+          </a>
+        </span>`;
+    },
+
     destroyTable() {
       if (typeof this.dataTable !== 'undefined') {
         this.dataTable.destroy();
@@ -235,7 +252,11 @@ export default {
             "data": "id",
             "render": ( data, type, row ) => {
               if(data) {
-                return this.processesRow(data, row.dc_id);
+                return this.processesRow({
+                  'id': data, 
+                  'dc_id': row.dc_id,
+                  'url': row.dc_file_path
+                });
               }
             },
             "defaultContent": ""
