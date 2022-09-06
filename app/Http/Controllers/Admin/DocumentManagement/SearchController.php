@@ -237,14 +237,43 @@ class SearchController extends Controller
 	    ];
     }
 
-	/* public function show(DcDocuments $dcDocuments)
-	{
-		return $dcDocuments;
-	} */
 	public function show(DcDocuments $dcDocuments)
 	{
 		if($dcDocuments->dc_main_status > 0) {
 			$dcDocuments->dc_ralatives;
+
+			/* set udf file start*/
+			foreach ($dcDocuments->dc_ralatives as $key => $item) {
+				$dcRelFile = DB::table('dc_documents as t0')->join('dc_files as t1', 't1.dc_file_owner_id', '=', 't0.id')
+				->where([
+					['t0.id', $item->id]
+				])
+				->first();
+
+				$dcDocuments->dc_ralatives[$key]->dc_files = $dcRelFile;
+			}
+			/* set udf file end*/
+
+			/* set attach files start*/
+			foreach ($dcDocuments->dc_ralatives as $key => $item) {
+				$dcRelAttFile = DB::table('dc_documents as t0')->join('dc_attach_files as t1', 't1.dc_att_file_owner_id', '=', 't0.id')
+				->where([
+					['t0.id', $item->id]
+				])
+				->first();
+				
+				if(!empty($dcRelAttFile)) {
+					foreach ($dcRelAttFile as $keyAttItem => $valAttItem) {
+						$dcDocuments->dc_ralatives[$key]->dcAttachFiles[$keyAttItem] = $valAttItem;
+					}
+				}else {
+					$dcDocuments->dc_ralatives[$key]->dcAttachFiles = [];
+				}
+			}
+			/* set attach files end*/
+
+			$dcDocuments->dcFiles;
+			$dcDocuments->dcAttachFiles;
 		}else {
 			$relId = $dcDocuments->id;
 			$mainDcDocuments = DB::table('dc_documents as t0');
@@ -255,14 +284,35 @@ class SearchController extends Controller
 				['t1.rel_id', $relId]
 			])
 			->first();
-
+			
+			/* set relative documents and udf file start*/
 			$relDcDocuments = DB::table('dc_documents as t0')->leftJoin('dc_relative as t1', 't1.rel_id', '=', 't0.id')
 			->where([
 				['t1.dc_id', $mainDcDocuments->id]
 			])
 			->get();
 
+			foreach ($relDcDocuments as $key => $item) {
+				$dcRelFile = DB::table('dc_documents as t0')->leftJoin('dc_files as t1', 't1.dc_file_owner_id', '=', 't0.id')
+				->where([
+					['t0.id', $item->id]
+				])
+				->first();
+
+				$relDcDocuments[$key]->dc_files = $dcRelFile;
+			}
+
 			$mainDcDocuments->dc_ralatives = $relDcDocuments;
+			/* set relative documents and udf file end*/
+
+			/* set documents file */
+			$dcFiles = DB::table('dc_documents as t0')->leftJoin('dc_files as t1', 't1.dc_file_owner_id', '=', 't0.id')
+			->where([
+				['t0.id', $mainDcDocuments->id]
+			])
+			->get();
+
+			$mainDcDocuments->dc_files = $dcFiles;
 
 			$dcDocuments = $mainDcDocuments;
 		}

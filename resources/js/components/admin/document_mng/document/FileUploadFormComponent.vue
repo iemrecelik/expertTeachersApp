@@ -1,9 +1,5 @@
 <template>
 <div>
-	<input type="hidden" :name="fieldNames.content" :value="fieldValues.content">
-	<input type="hidden" :name="fieldNames.rawContent" :value="fieldValues.rawContent">
-	<input type="hidden" :name="fieldNames.showContent" :value="fieldValues.showContent">
-	
 	<div class="row">
 		
 		<div class="col-3">
@@ -31,6 +27,10 @@
 	</div>
 
 	<div class="row" v-if="showForm">
+		<input type="hidden" :name="fieldNames.content" :value="fieldValues.content">
+		<input type="hidden" :name="fieldNames.rawContent" :value="fieldValues.rawContent">
+		<input type="hidden" :name="fieldNames.showContent" :value="fieldValues.showContent">
+		
 		<div class="col-3">
 			<div class="form-group">
 

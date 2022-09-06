@@ -12,7 +12,10 @@
       <button class="nav-link active" id="home-tab" data-toggle="tab" data-target="#home" type="button" role="tab" aria-controls="home" aria-selected="true">Evrak</button>
     </li>
 
-    <li class="nav-item" role="presentation" v-for="(item, key) in items.dc_ralatives">
+    <li class="nav-item" 
+      role="presentation" 
+      v-for="(item, key) in items.dc_ralatives"
+    >
       <button class="nav-link" 
         :id="'relative'+key+'-tab'" 
         data-toggle="tab" 
@@ -27,9 +30,60 @@
     </li>
 
   </ul>
+
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
+      
       <div class="modal-body" v-html="items.dc_show_content"></div>
+      
+      <!-- <div class="col-12" v-for="dc_att_file in items.dc_attach_files">
+        <a :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
+          download
+        >
+          {{dc_att_file.dc_att_file_path}}
+        </a>
+      </div> -->
+
+
+      <div class="pl-5">
+        
+        <div class="row">
+          <div class="col-12">
+            <u>EKLENMİŞ DOSYALAR:</u>
+          </div>
+        </div>
+        
+        <div class="row" v-if="items.dc_attach_files">
+          <div class="col-12" v-for="dc_att_file in items.dc_attach_files">
+            <a :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
+              download
+            >
+              {{splitFileName(dc_att_file.dc_att_file_path)}}
+            </a>
+          </div>
+        </div>
+        <div v-else><b>DOSYA YOK</b></div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          {{ $t('messages.close') }}
+        </button>
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          :title="$t('messages.downloadFile')"
+        >
+          <a type="button" class="btn btn-md btn-success"
+            data-file-download
+            :href="'/storage/upload/images/raw'+items.dc_files.dc_file_path"
+            download
+          >
+            {{ $t('messages.downloadFile') }}
+            <i class="bi bi-file-earmark-arrow-down"></i>
+          </a>
+        </span>
+      </div>
     </div>
 
     <div class="tab-pane fade" 
@@ -37,19 +91,53 @@
       role="tabpanel" 
       :aria-labelledby="'relative'+key+'-tab'"
       v-for="(item, key) in items.dc_ralatives"
-      v-html="item.dc_show_content"
     >
-    </div>
-  </div>
+      <div class="modal-body" v-html="item.dc_show_content"></div>
 
+      <div class="pl-5">
+        
+        <div class="row">
+          <div class="col-12">
+            <u>EKLENMİŞ DOSYALAR:</u>
+          </div>
+        </div>
+        
+        <div class="row" v-if="item.dc_attach_files">
+          <div class="col-12" v-for="dc_att_file in item.dc_attach_files">
+            <a :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
+              download
+            >
+              {{splitFileName(dc_att_file.dc_att_file_path)}}
+            </a>
+          </div>
+        </div>
+        <div v-else><b>DOSYA YOK</b></div>
+
+      </div>
+
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">
+          {{ $t('messages.close') }}
+        </button>
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          :title="$t('messages.downloadFile')"
+        >
+          <a type="button" class="btn btn-md btn-success"
+            data-file-download
+            :href="'/storage/upload/images/raw'+item.dc_files.dc_file_path"
+            download
+          >
+            {{ $t('messages.downloadFile') }}
+            <i class="bi bi-file-earmark-arrow-down"></i>
+          </a>
+        </span>
+      </div>
+    </div>
+
+  </div>
 
   
-
-
-  <div class="modal-footer">
-    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-    <button type="button" class="btn btn-primary">Save changes</button>
-  </div>
 </div>
 </template>
 
@@ -80,8 +168,12 @@ export default {
     },
   },
   methods: {
-    deneme(a) {
-      console.log(a);
+    splitFileName(val) {
+      if(val) {
+        let arr = val.split('/');
+
+        return arr[arr.length - 1];
+      }
     }
   },
   created() {
