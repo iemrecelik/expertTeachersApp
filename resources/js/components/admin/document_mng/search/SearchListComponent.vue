@@ -66,6 +66,7 @@
           v-if="formModalBody.show"
           :is="formModalBody.component"
           :ppdatas="formModalBody.datas"
+          :ppDcContent="dcContent"
         >
         </component>
     </div>
@@ -95,6 +96,7 @@ export default {
       modalIDName: 'formModalLong',
       formTitleName,
       dataTable: null,
+      dcContent: '',
     }
   },
   props: {
@@ -242,6 +244,8 @@ export default {
       }
     },
     loadDataTable() {
+      this.dcContent = document.getElementsByName('dc_content')[0].value;
+
       let form = $("#"+this.form);
 
       this.dataTable = this.dataTableRun({

@@ -30,9 +30,22 @@ class FileUpload
 			);
 		}
 	}
+	private function udfControl($extension, $originalName)
+	{
+		$pattern = "/^.*\.(udf)$/i";
+		preg_match($pattern, $originalName, $orjExtension);
+		
+		if(empty($extension)) {
+			$extension = $orjExtension[1] ?? $extension;
+		}
+
+		return $extension;
+	}
 
 	public function setConfig(UploadedFile $file, Array $filters = null, String $extension = null, Bool $rawFileName = false)
 	{
+		$extension = $this->udfControl($extension, $file->getClientOriginalName());
+
 		$this->file = $file;
 		$this->filters = $filters;
 		

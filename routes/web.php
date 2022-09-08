@@ -57,6 +57,25 @@ Route::prefix('admin/document-management')
     ->controller(DocumentsController::class)
     ->name('admin.document_mng.')
     ->group(function () {
+        /* Document */
+        Route::get(
+			'document/manual-create', 
+			'manualCreate'
+		)
+		->name('document.manualCreate');
+
+        Route::post(
+			'document/manual-store', 
+			'manualStore'
+		)
+		->name('document.manualStore');
+
+		Route::post(
+			'document/udf-control', 
+			'udfControl'
+		)
+		->name('document.udfControl');
+        
         Route::get(
 			'document/create', 
 			'create'

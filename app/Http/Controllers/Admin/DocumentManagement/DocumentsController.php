@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Admin\DocumentManagement;
 use App\Library\FileUpload;
 use Illuminate\Http\Request;
 use App\Models\Admin\DcFiles;
+use App\Models\Admin\DcLists;
 use App\Models\Admin\DcDocuments;
+use App\Models\Admin\DcComment;
 use App\Models\Admin\DcAttachFiles;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\DocumentManagement\StoreDcDocumentsRequest;
+use App\Http\Requests\Admin\DocumentManagement\StoreManualDcDocumentsRequest;
 
 class DocumentsController extends Controller
 {
@@ -22,6 +25,130 @@ class DocumentsController extends Controller
     public function create()
     {
         return view('admin.document_mng.create_document');
+    }
+
+    /**
+     * Show the form for manual creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function manualCreate()
+    {
+        return view('admin.document_mng.create_document');
+        // return view('admin.document_mng.create_manual_document');
+    }
+
+    public function udfControl(Request $request)
+    {
+        if($request->hasFile('dc_sender_file')) {
+            
+            $name = 'dc_sender_file';
+
+        }else if($request->hasFile('rel_dc_sender_file')) {
+            
+            $file = $request->file();
+
+            $index = array_keys($file['rel_dc_sender_file']);
+            
+            $name = "rel_dc_sender_file.{$index[0]}";
+        }
+
+        $file = $request->file($name);
+        $arr = null;
+
+		$pattern = "/^.*\.(udf)$/i";
+		preg_match($pattern, $file->getClientOriginalName(), $orjExtension);
+        		
+		if(!empty($orjExtension[1])) {
+            $arr = $this->getFileInfos($request);
+		}
+
+		return $arr;
+    }
+
+    /**
+     * Store a newly manual created resource in storage.
+     *
+     * @param  StoreManualDcDocumentsRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function manualStore(StoreManualDcDocumentsRequest $request)
+    {
+        $params = $request->all();
+
+        $this->sameDocumentControl($params);
+        
+        $arr = [
+            'dc_number'         => trim($params['dc_number']),
+            'dc_item_status'    => $params['dc_item_status'],
+            'dc_main_status'    => "1",
+            'dc_cat_id'         => $params['dc_cat_id'],
+            'dc_subject'        => $params['dc_subject'],
+            'dc_who_send'       => $params['dc_who_send'],
+            'dc_who_receiver'   => $params['dc_who_receiver'],
+            'dc_content'        => $params['dc_content'] ?? '',
+            'dc_show_content'   => $params['dc_show_content'] ?? '',
+            'dc_raw_content'    => $params['dc_raw_content'] ?? '',
+            'dc_date'           => strtotime($params['dc_date']),
+            'user_id'           => $request->user()->id,
+            'list_id'           => $params['list_id'],
+            'dc_com_text'       => $params['dc_com_text'],
+        ];
+
+        $dcDocuments = $this->saveDcDocument(
+            $arr, 
+            [
+                $request->file('dc_sender_file')
+            ], 
+            $request->file('dc_sender_attach_files'),
+        );
+
+        /* Save Relative Document */
+        $this->manualSaveRelDocument($dcDocuments, $params, $request);
+        
+
+        $msg = ['succeed' => __('messages.edit_success')];
+        
+        return redirect()->route('admin.document_mng.document.manualCreate')
+                        ->with($msg);
+    }
+
+    private function manualSaveRelDocument($dcDocuments, $params, $request)
+    {
+        // dd($params);
+        if (isset($params['rel_dc_number'])) {
+            
+            foreach ($params['rel_dc_number'] as $key => $val) {
+// dump(strtotime($params['rel_dc_date'][$key]));die;
+                $arr = [
+                    'dc_number'         => trim($params['rel_dc_number'][$key]),
+                    'dc_item_status'    => $params['rel_dc_item_status'][$key],
+                    'dc_cat_id'         => $params['dc_cat_id'],
+                    'dc_subject'        => $params['rel_dc_subject'][$key],
+                    'dc_who_send'       => $params['rel_dc_who_send'][$key],
+                    'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
+                    'dc_content'        => $params['rel_dc_content'][$key] ?? '',
+                    'dc_show_content'   => $params['rel_dc_show_content'][$key] ?? '',
+                    'dc_raw_content'    => $params['rel_dc_raw_content'][$key] ?? '',
+                    'dc_date'           => strtotime($params['rel_dc_date'][$key]),
+                    'user_id'           => $request->user()->id,
+                ];
+
+                $relDcSenderAttachFiles = $request->file('rel_dc_sender_attach_files');
+                $relDcSenderAttachFiles = isset($relDcSenderAttachFiles[$key]) ? 
+                                            $relDcSenderAttachFiles[$key] : 
+                                            null;
+
+                $this->saveDcDocument(
+                    $arr,
+                    [
+                        $request->file('rel_dc_sender_file')[$key]
+                    ],
+                    $relDcSenderAttachFiles,
+                    $dcDocuments
+                );
+            }
+        }
     }
 
     /**
@@ -127,6 +254,13 @@ class DocumentsController extends Controller
 
     private function saveDcDocument($params, $dcFile, $dcAttachFiles = null, $dcDocuments = null)
     {
+        $listId = $params['list_id'] ?? 0;
+        $dcComText = $params['dc_com_text'] ?? '';
+
+        unset($params['list_id']);
+        unset($params['dc_com_text']);
+        
+
         if(empty($dcDocuments)) {
             
             $dcDocuments = DcDocuments::where([
@@ -156,6 +290,23 @@ class DocumentsController extends Controller
                 $dcDocuments->save();
             }
 
+            /* Listeye ekleme */
+            if($listId > 0) {
+                $dcList = DcLists::find($listId);
+
+                $dcDocuments->dc_lists()->save($dcList);
+            }
+
+            /* Dökümana not ekleme */
+            if(!empty($dcComText)) {
+
+                $dcComment = DcComment::create([
+                    'dc_com_text'   => $dcComText,
+                    'dc_id'         => $dcDocuments->id,
+                    'user_id'       => $params['user_id'],
+                ]);
+            }
+
             $this->uploadFile([
                 'dcDocuments'   => $dcDocuments,
                 'params'        => $params,
@@ -179,6 +330,7 @@ class DocumentsController extends Controller
             }
 
             $dcDocuments->dc_ralatives()->save($dcRelative);
+
             $this->uploadFile([
                 'dcDocuments'   => $dcRelative,
                 'params'        => $params,
@@ -190,7 +342,7 @@ class DocumentsController extends Controller
 
         return $dcDocuments;
     }
-
+    
     public function uploadFile($arr)
     {
         extract($arr);
@@ -200,7 +352,7 @@ class DocumentsController extends Controller
                 $dcFile, 
                 'DcFiles', 
                 'dc_file_path',
-                'udf'
+                // 'udf'
             );
         }
         
@@ -221,7 +373,7 @@ class DocumentsController extends Controller
             );
         }
             
-        /* New images will be saved to databse */
+        /* New images will be saved to database */
         if(isset($filesArr))
             $dcDocuments->dcFiles()->saveMany($filesArr);
         

@@ -13,6 +13,8 @@
       getCategory: '{{ route('admin.document_mng.category.getCategory') }}', 
       dcStore: '{{ route('admin.document_mng.document.store') }}', 
       getFileInfos: '{{ route('admin.document_mng.document.getFileInfos') }}', 
+      udfControl: '{{ route('admin.document_mng.document.udfControl') }}', 
+      getList: '{{ route('admin.document_mng.list.getList') }}',
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
     :ppsuccess="'{{ session('succeed') ?? '' }}'"
