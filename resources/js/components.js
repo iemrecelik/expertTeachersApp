@@ -8,6 +8,7 @@ import docMngListComponent from './components/admin/document_mng/list/IndexCompo
 import docMngCommentComponent from './components/admin/document_mng/comment/IndexComponent.vue';
 import docMngDocumentComponent from './components/admin/document_mng/document/IndexComponent.vue';
 import docMngCreateDocumentComponent from './components/admin/document_mng/document/CreateComponent.vue';
+import docMngManualCreateDocumentComponent from './components/admin/document_mng/document/ManualCreateComponent.vue';
 import docMngSearchComponent from './components/admin/document_mng/search/SearchComponent.vue';
 
 
@@ -21,5 +22,6 @@ export default {
 	'doc-mng-comment-component': docMngCommentComponent,
 	'doc-mng-document-component': docMngDocumentComponent,
 	'doc-mng-create-document-component': docMngCreateDocumentComponent,
+	'doc-mng-manual-create-document-component': docMngManualCreateDocumentComponent,
 	'doc-mng-search-component': docMngSearchComponent,
 }

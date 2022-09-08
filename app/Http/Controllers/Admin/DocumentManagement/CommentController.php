@@ -176,12 +176,13 @@ class CommentController extends Controller
             +++ 7- evrak aramada ilgi evrağı göster deyince ana evrak ve ilgiler gözükecek
             +++ 8- listeye eklenen ilgi evrak aramada gösterilmiyor.
             9- ralative olan yerler relative olarak değiştirilecek.
-            10- manual evrak ekleme yapılacak.
+            +++ 10- manual evrak ekleme yapılacak.
             11- admin panelde yükleme logosu değişecek.
             12- aranan kelime dosyada seçili olacak.
             13- ana evrağı gösterirken  konsol da path_file hatası veriyor.
             14- evrak eklerken liste ve not ekleme eklenecek.
             15- tablolarda sayfalar kontrol edilecek
+            16- Hem manual hemde otomotik yükleme birleştirilecek
         */
 
         $request->validate(

@@ -31,15 +31,15 @@ class StoreManualDcDocumentsRequest extends FormRequest
             'dc_who_receiver'           => 'required|string',
             'dc_number'                 => 'required|integer',
             'dc_subject'                => 'required|string',
-            'dc_content'                => 'required|string',
-            'dc_raw_content'            => 'string',
+            /* 'dc_content'                => 'required|string',
+            'dc_raw_content'            => 'string', */
             'dc_date'                   => 'required|date',
             'rel_sender_file.*'         => 'required|file',
             'rel_sender_attach_files.*.*'  => 'file',
             'rel_dc_who_send.*'         => 'required|string',
             'rel_dc_number.*'           => 'required|integer',
             'rel_dc_subject.*'          => 'required|string',
-            'rel_dc_content.*'          => 'required|string',
+            // 'rel_dc_content.*'          => 'required|string',
             'rel_dc_date.*'             => 'required|date',
         ];
     }
@@ -64,10 +64,10 @@ class StoreManualDcDocumentsRequest extends FormRequest
             'dc_number.integer'             => 'Sadece rakam giriniz.',
             'dc_subject.required'           => 'Evrak konusunu giriniz.',
             'dc_subject.string'             => 'Evrak konusunu sadece harf haricinde karakter girmeyiniz.',
-            'dc_content.required'           => 'Evrak içeriğini giriniz.',
+            /* 'dc_content.required'           => 'Evrak içeriğini giriniz.',
             'dc_content.string'             => 'Evrak içeriğini harf haricinde karakter girmeyiniz.',
             'dc_raw_content.required'       => 'Evrak içeriğini giriniz.',
-            'dc_raw_content.string'         => 'Evrak içeriğini harf haricinde karakter girmeyiniz.',
+            'dc_raw_content.string'         => 'Evrak içeriğini harf haricinde karakter girmeyiniz.', */
             'dc_date.required'              => 'Evrak tarihini giriniz.',
             'dc_date.date'                  => 'Evrak tarihi formatı:"xx.xx.xxxx" şeklinde olmalıdır. ',
             'rel_sender_file.*.required'    => 'Yüklenecek ilgili evrağın udf dosyasını yükleyiniz.',
@@ -81,8 +81,8 @@ class StoreManualDcDocumentsRequest extends FormRequest
             'rel_dc_subject.*.string'       => 'İlgili evrak konusunu sadece harf haricinde karakter girmeyiniz.',
             'rel_dc_date.*.required'        => 'İlgili evrak tarihini giriniz.',
             'rel_dc_date.*.date'            => 'İlgili evrak tarihi formatı:"xx.xx.xxxx" şeklinde olmalıdır. ',
-            'rel_dc_content.required'       => 'ilgi Evrağın içeriğini giriniz.',
-            'rel_dc_content.string'         => 'ilgi Evrağın harf haricinde karakter girmeyiniz.',
+            /* 'rel_dc_content.required'       => 'ilgi Evrağın içeriğini giriniz.',
+            'rel_dc_content.string'         => 'ilgi Evrağın harf haricinde karakter girmeyiniz.', */
         ];
     }
 }

@@ -23,7 +23,17 @@
 		</div>
 
 		<div class="col-9"></div>
+	</div>
 
+	<div class="row mb-3">
+		<div class="col-12">
+			<button type="button" 
+				class="btn btn-md btn-danger"
+				@click="resetFieldValues"
+			>
+				{{$t('messages.resetForm')}}
+			</button>
+		</div>
 	</div>
 
 	<div class="row" v-if="showForm">
@@ -69,7 +79,7 @@
 			<div class="form-group mb-1">
 				<label for="exampleInputEmail1">Evrak Numarası</label>
 				<input type="text" class="form-control" id="exampleInputEmail1" 
-					readonly
+					:readonly="inputReadonly"
 					aria-describedby="emailHelp" 
 					:name="fieldNames.number"
 					:value="fieldValues.number"
@@ -82,7 +92,7 @@
 			<div class="form-group">
 				<label for="exampleInputEmail1">Evrak Tarihi</label>
 				<input type="text" class="form-control" id="exampleInputEmail1" 
-					readonly
+					:readonly="inputReadonly"
 					aria-describedby="emailHelp" 
 					:name="fieldNames.date"
 					:value="fieldValues.date"
@@ -95,7 +105,7 @@
 			<div class="form-group">
 				<label for="exampleInputEmail1">Evrak Konusu</label>
 				<textarea id="exampleInputEmail1" class="form-control" 
-					readonly 
+					:readonly="inputReadonly" 
 					rows="4"
 					aria-describedby="emailHelp"
 					:name="fieldNames.subject"
@@ -115,7 +125,7 @@
 				<label for="exampleInputEmail1">Gönderen</label>
 				<textarea id="exampleInputEmail1" class="form-control" 
 					rows="4"
-					readonly  
+					:readonly="inputReadonly"  
 					aria-describedby="emailHelp" 
 					:name="fieldNames.sender"
 					:value="fieldValues.sender.trim()"
@@ -129,7 +139,7 @@
 				<label for="exampleInputEmail1">Gönderilen</label>
 				<textarea id="exampleInputEmail1" class="form-control" 
 					rows="4"
-					readonly
+					:readonly="inputReadonly"
 					aria-describedby="emailHelp" 
 					:name="fieldNames.receiver"
 					:value="fieldValues.receiver.trim()" 
@@ -147,11 +157,10 @@
 </template>
 
 <script>
-import { EQUALITY_BINARY_OPERATORS } from '@babel/types';
 import { mapState, mapMutations } from 'vuex';
 
 export default {
-	name: 'FileUploadFormComponent',
+	name: 'ManualFileUploadFormComponent',
 	data () {
     return {
 			fieldNames: this.ppfieldNames,
@@ -165,6 +174,7 @@ export default {
 			},
 			itemStatus: this.ppitemStatus == 0 ? "selected" : "",
 			showForm: false,
+			inputReadonly: false,
 		}
   },
 	props: {
@@ -186,6 +196,18 @@ export default {
 		...mapMutations([
       'setErrors',
     ]),
+		resetFieldValues() {
+			if(this.inputReadonly === false) {
+				this.fieldValues = {
+					'sender': '',
+					'subjectNumber': '',
+					'number': '',
+					'date': '',
+					'subject': '',
+					'receiver': '',
+				};
+			}
+		},
 		setShowForm: async function(event) {
 			this.showForm = event.target.value < 2 ? true : false;
 		},
@@ -210,7 +232,7 @@ export default {
       btn.classList.add("running"); */
 
       $.ajax({
-        url: this.routes.getFileInfos,
+        url: this.routes.udfControl,
         enctype: 'multipart/form-data',
         type: 'POST',
         data: data,
@@ -221,7 +243,12 @@ export default {
       .done((res) => {
 				// console.log(res);
 				// this.text = res;
-				this.fieldValues = res;
+				if(res) {
+					this.inputReadonly = true;
+					this.fieldValues = res;
+				}else {
+					this.inputReadonly = false;
+				}
         /* this.setErrors('');
         this.setSucceed(res.succeed); */
       })

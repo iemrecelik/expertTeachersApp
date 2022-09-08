@@ -7,7 +7,7 @@
   <!-- <form :id="formIDName" @submit.prevent> -->
   <form :id="formIDName" 
 		method="post" 
-		action="/admin/document-management/document/store"
+		action="/admin/document-management/document/manual-store"
 		enctype="multipart/form-data"
 	>
 		<input type="hidden" name="_token" :value="token">
@@ -93,36 +93,40 @@
 							</button>
 						</div>
 					</div>
-					
-					<p>
-						<button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#collapseExample2" aria-expanded="false" aria-controls="collapseExample">
-							Gelişmiş Ekleme
-						</button>
-					</p>
-					
-					<!-- <div class="collapse" id="collapseExample2">
-						<div class="card card-body">
-							<div class="form-group">
-								<label for="exampleInputEmail1">Açıklama Ekle</label>
-								<textarea class="form-control" id="validationTextarea" placeholder="Açıklama ekleyiniz." required="" style="height: 123px;" name="note"></textarea>
-								<small id="emailHelp" class="form-text text-muted">Evrak detaylarını yazınız.</small>
-							</div>
+
+					<div class="row">
+						<div class="col-4">
 							
 							<div class="form-group">
-								<label for="validationCustom04">Eklemek İstediğiniz Listeyi Seçiniz</label>
-								<select class="custom-select" id="validationCustom04" required name="list_name">
-									<option selected disabled value="">Seçiniz...</option>
-									<option>İl komisyonu kararları</option>
-									<option>Sendika davaları</option>
-									<option>Dış kurum uzman öğretmen listesi</option>
-								</select>
-								<div class="invalid-feedback">
-									Please select a valid state.
-								</div>
+								<label for="exampleFormControlTextarea1">Notunuz</label>
+								<textarea class="form-control" 
+									id="exampleFormControlTextarea1" 
+									rows="3"
+									name="dc_com_text"
+								>
+								</textarea>
 							</div>
 							
 						</div>
-					</div> -->
+					</div>
+
+					<div class="row">
+						<div class="col-4">
+							<div class="form-group">
+								<label for="exampleFormControlSelect1">Listeler</label>
+								<select class="form-control" 
+									id="exampleFormControlSelect1"
+									name="list_id"
+								>
+									<option value="0">Liste Seçiniz.</option>
+									<option v-for="item in docList" :value="item.id">
+										{{item.dc_list_name}}
+									</option>
+								</select>
+							</div>
+						</div>
+					</div>
+
 				</div>
 			</div>
 			<button id="document-submit" disabled type="submit" class="btn btn-primary">Kaydet</button>
@@ -156,7 +160,7 @@
 </template>
 
 <script>
-import fileUpladoFormComponent from './FileUploadFormComponent.vue';
+import fileUpladoFormComponent from './ManualFileUploadFormComponent.vue';
 import Treeselect from '@riophae/vue-treeselect'
 // import the styles
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -164,7 +168,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { mapState, mapMutations } from 'vuex';
 
 export default {
-	name: 'CreateComponent',
+	name: 'ManualCreateComponent',
   data () {
     return {
 			categoryList: [],
@@ -183,7 +187,8 @@ export default {
 				date: 'dc_date',
 			},
 			relFormCount: [],
-			showForm: false
+			showForm: false,
+			docList: [],
 		}
   },
 	props: {
@@ -333,9 +338,27 @@ export default {
 				}, 100);
 				
 			})
-			.then((res) => {})
+			.then((res) => {
+				this.getList();
+			})
 			.always(() => {});
     },
+		getList: function() {
+			$.get(this.routes.getList, (data) => {
+				this.docList = data;
+			})
+			.fail(function(error) {
+				setTimeout(() => {
+					this.ajaxErrorCount++
+
+					if(this.ajaxErrorCount < 3)
+						this.getList();
+					else
+						this.ajaxErrorCount = -1;
+
+				}, 100);
+			});
+		},
 		modalErrorMsgShow: function(errors = false) {
 			if(
 				(
@@ -356,7 +379,7 @@ export default {
 		this.setOld(this.ppoldinput);
   },
 	mounted() {
-		this.modalErrorMsgShow();
+		this.modalErrorMsgShow();		
 	},
   components: {
     Treeselect,
