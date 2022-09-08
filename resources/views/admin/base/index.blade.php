@@ -43,7 +43,8 @@
 		</aside>
 		<!-- /.control-sidebar -->
 	</div>
-
+	
+	<script src="{{ asset('js/mark.min.js') }}" charset="UTF-8"></script>
 	<script src="{{ asset('js/app.js') }}"></script>
 </body>
 </html>

@@ -3,7 +3,7 @@
   <div class="modal-header">
     <h5 class="modal-title">Modal title</h5>
     <button class="btn btn-sm btn-danger ml-3"
-      @click="mark = false"
+      @click="removeMarked"
     >
       {{$t('messages.removeMarked')}}
     </button>
@@ -39,7 +39,7 @@
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
       
-      <div v-if="items.dc_show_content" class="modal-body" v-html="markSearch(items.dc_show_content)"></div>
+      <div v-if="items.dc_show_content" class="modal-body" v-html="items.dc_show_content"></div>
       <div v-else class="modal-body p-5">
         <a type="button" 
             :href="'/storage/upload/images/raw'+items.dc_files.dc_file_path"
@@ -96,7 +96,7 @@
       :aria-labelledby="'relative'+key+'-tab'"
       v-for="(item, key) in items.dc_ralatives"
     >
-      <div v-if="item.dc_show_content" class="modal-body" v-html="markSearch(item.dc_show_content)"></div>
+      <div v-if="item.dc_show_content" class="modal-body" v-html="item.dc_show_content"></div>
       <div v-else class="modal-body p-5">
         <a type="button" 
             :href="'/storage/upload/images/raw'+item.dc_files.dc_file_path"
@@ -164,6 +164,7 @@ export default {
       datas: this.ppdatas,
       items: {},
       dcContent: this.ppDcContent,
+      markInstance: null,
     }
   },
   props: {
@@ -192,11 +193,30 @@ export default {
         return arr[arr.length - 1];
       }
     },
-    markSearch(val) {
-      let regex = new RegExp(`\\b${this.dcContent}\\b`, 'gi');
+    markSearch() {
+      /* let regex = new RegExp(`\\b${this.dcContent}\\b`, 'gi');
 
-      return val.replaceAll(regex, `<span class="bg-warning">${this.dcContent}</span>`); 
+      return val.replaceAll(regex, `<span class="bg-warning">${this.dcContent}</span>`);  */
+
+      this.markInstance = new Mark(document.querySelectorAll(".modal-body"));
+
+      let options = {
+        diacritics: true,
+        separateWordSearch: true
+      }
+
+      this.markInstance.mark(this.dcContent ,options);
     },
+
+    removeMarked() {
+      let options = {
+        diacritics: true,
+        separateWordSearch: true
+      }
+      console.log('sss');
+      this.markInstance.unmark();
+    }
+    
   },
   created() {
     $.get(this.showUrl, (data) => {
@@ -206,9 +226,18 @@ export default {
     .fail(function(error) {
       console.log(error);
     })
-    .then((res) => {});
+    .then((res) => {
+      this.markSearch();
+    });
   },
   components: {}
   
 }
 </script>
+
+<style>
+mark{
+    background: rgb(255, 251, 0);
+    color: black;
+}
+</style>
