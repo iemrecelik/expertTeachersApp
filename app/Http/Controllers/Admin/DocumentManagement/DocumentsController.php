@@ -34,7 +34,8 @@ class DocumentsController extends Controller
      */
     public function manualCreate()
     {
-        return view('admin.document_mng.create_manual_document');
+        return view('admin.document_mng.create_document');
+        // return view('admin.document_mng.create_manual_document');
     }
 
     public function udfControl(Request $request)
@@ -114,10 +115,11 @@ class DocumentsController extends Controller
 
     private function manualSaveRelDocument($dcDocuments, $params, $request)
     {
+        // dd($params);
         if (isset($params['rel_dc_number'])) {
             
             foreach ($params['rel_dc_number'] as $key => $val) {
-
+// dump(strtotime($params['rel_dc_date'][$key]));die;
                 $arr = [
                     'dc_number'         => trim($params['rel_dc_number'][$key]),
                     'dc_item_status'    => $params['rel_dc_item_status'][$key],
@@ -255,7 +257,9 @@ class DocumentsController extends Controller
         $listId = $params['list_id'] ?? 0;
         $dcComText = $params['dc_com_text'] ?? '';
 
-        array_splice($params, -2);
+        unset($params['list_id']);
+        unset($params['dc_com_text']);
+        
 
         if(empty($dcDocuments)) {
             

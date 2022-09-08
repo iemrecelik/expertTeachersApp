@@ -181,8 +181,11 @@ class CommentController extends Controller
             12- aranan kelime dosyada seçili olacak.
             13- ana evrağı gösterirken  konsol da path_file hatası veriyor.
             14- evrak eklerken liste ve not ekleme eklenecek.
-            15- tablolarda sayfalar kontrol edilecek
-            16- Hem manual hemde otomotik yükleme birleştirilecek
+            15- tablolarda sayfa sayıları kontrol edilecek
+            +++ 16- Hem manual hemde otomotik yükleme birleştirilecek
+            17- Aynı isimde veri eklenmeyecek
+            18- Dudu PANK dosyasını yüklerken içindekileri düzgün çekmiyor.
+            19- Evraklarda Yetkilendirme olacak
         */
 
         $request->validate(

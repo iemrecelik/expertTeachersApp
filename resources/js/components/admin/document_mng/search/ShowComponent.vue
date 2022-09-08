@@ -2,6 +2,11 @@
 <div class="modal-content">
   <div class="modal-header">
     <h5 class="modal-title">Modal title</h5>
+    <button class="btn btn-sm btn-danger ml-3"
+      @click="mark = false"
+    >
+      {{$t('messages.removeMarked')}}
+    </button>
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -34,16 +39,15 @@
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
       
-      <div class="modal-body" v-html="items.dc_show_content"></div>
-      
-      <!-- <div class="col-12" v-for="dc_att_file in items.dc_attach_files">
-        <a :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
-          download
-        >
-          {{dc_att_file.dc_att_file_path}}
-        </a>
-      </div> -->
-
+      <div v-if="items.dc_show_content" class="modal-body" v-html="markSearch(items.dc_show_content)"></div>
+      <div v-else class="modal-body p-5">
+        <a type="button" 
+            :href="'/storage/upload/images/raw'+items.dc_files.dc_file_path"
+            target="_blank"
+          >
+            {{ $t('messages.readDocumentLinkClick') }}
+          </a>
+      </div>
 
       <div class="pl-5">
         
@@ -92,7 +96,15 @@
       :aria-labelledby="'relative'+key+'-tab'"
       v-for="(item, key) in items.dc_ralatives"
     >
-      <div class="modal-body" v-html="item.dc_show_content"></div>
+      <div v-if="item.dc_show_content" class="modal-body" v-html="markSearch(item.dc_show_content)"></div>
+      <div v-else class="modal-body p-5">
+        <a type="button" 
+            :href="'/storage/upload/images/raw'+item.dc_files.dc_file_path"
+            target="_blank"
+          >
+            {{ $t('messages.readDocumentLinkClick') }}
+          </a>
+      </div>
 
       <div class="pl-5">
         
@@ -150,12 +162,17 @@ export default {
   data () {
     return {
       datas: this.ppdatas,
-      items: {}
+      items: {},
+      dcContent: this.ppDcContent,
     }
   },
   props: {
     ppdatas: {
       type: Object,
+      required: true,
+    },
+    ppDcContent: {
+      type: String,
       required: true,
     }
   },
@@ -174,7 +191,12 @@ export default {
 
         return arr[arr.length - 1];
       }
-    }
+    },
+    markSearch(val) {
+      let regex = new RegExp(`\\b${this.dcContent}\\b`, 'gi');
+
+      return val.replaceAll(regex, `<span class="bg-warning">${this.dcContent}</span>`); 
+    },
   },
   created() {
     $.get(this.showUrl, (data) => {
@@ -183,7 +205,8 @@ export default {
     })
     .fail(function(error) {
       console.log(error);
-    });
+    })
+    .then((res) => {});
   },
   components: {}
   
