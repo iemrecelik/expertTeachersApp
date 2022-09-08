@@ -207,16 +207,13 @@ export default {
 
       this.markInstance.mark(this.dcContent ,options);
     },
-
     removeMarked() {
       let options = {
         diacritics: true,
         separateWordSearch: true
       }
-      console.log('sss');
       this.markInstance.unmark();
     }
-    
   },
   created() {
     $.get(this.showUrl, (data) => {
