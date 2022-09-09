@@ -110,7 +110,6 @@ class SearchController extends Controller
 				$selectCol .= "t0.{$column['data']}, ";
 			}
 	    }
-
 		
 		$dcDocuments = DB::table('dc_documents as t0');
 
@@ -219,6 +218,9 @@ class SearchController extends Controller
 
 		$dcDocuments->leftJoin('dc_files as t3', 't3.dc_file_owner_id', '=', 't0.id');
 		$dcDocuments->selectRaw('t3.dc_file_path');
+
+		$dcDocuments->join('users as t4', 't4.id', '=', 't0.user_id');
+		$dcDocuments->selectRaw('t4.name as user_name');
 		
 		$dcDocuments = $dcDocuments->orderBy($colOrder, $order);
 

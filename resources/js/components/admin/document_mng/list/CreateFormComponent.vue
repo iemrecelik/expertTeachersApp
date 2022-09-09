@@ -41,7 +41,7 @@ export default {
     oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
     },
-    getCategory: function() {
+    /* getCategory: function() {
       $.ajax({
         url: this.routes.getCategory,
         type: 'GET',
@@ -66,10 +66,10 @@ export default {
       })
       .then((res) => {})
       .always(() => {});
-    }
+    } */
   },
   created() {
-    this.getCategory();
+    // this.getCategory();
   },
   components: {
     Treeselect

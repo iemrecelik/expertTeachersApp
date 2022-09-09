@@ -15,7 +15,7 @@ class CreateDcListsTable extends Migration
     {
         Schema::create('dc_lists', function (Blueprint $table) {
             $table->id();
-            $table->string('dc_list_name');
+            $table->string('dc_list_name')->unique();
 
             $table->unsignedBigInteger('user_id');
             $table->foreign('user_id')

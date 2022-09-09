@@ -42,4 +42,14 @@ return [
 	/*Upload Component*/
 	'upload' => 'Upload',
     'ct_cat_name' => 'Kategori Adı',
+
+
+	/* SearchList */
+	'dc_main_status'	=> 	'İlgisi',
+	'dc_cat_name'		=> 	'Kategori',
+	'dc_number'			=>	'Numarası',
+	'dc_item_status'	=>	'Durumu',
+	'dc_subject'		=>	'Konu',
+	'dc_date'			=>	'Tarih',
+	'processes'			=>	'İşlemler'
 ];

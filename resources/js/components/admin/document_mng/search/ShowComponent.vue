@@ -7,6 +7,9 @@
     >
       {{$t('messages.removeMarked')}}
     </button>
+
+    <span class="ml-4"><b>{{datas.userName}}</b> Kullanıcısı tarafından eklendi.</span>
+
     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
       <span aria-hidden="true">&times;</span>
     </button>
@@ -59,8 +62,13 @@
         
         <div class="row" v-if="items.dc_attach_files">
           <div class="col-12" v-for="dc_att_file in items.dc_attach_files">
-            <a :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
+            <a v-if="fileExtensionControl(dc_att_file.dc_att_file_path)" :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
               download
+            >
+              {{splitFileName(dc_att_file.dc_att_file_path)}}
+            </a>
+            <a v-else :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
+              target="_blank"
             >
               {{splitFileName(dc_att_file.dc_att_file_path)}}
             </a>
@@ -116,8 +124,14 @@
         
         <div class="row" v-if="item.dc_attach_files">
           <div class="col-12" v-for="dc_att_file in item.dc_attach_files">
-            <a :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
+
+            <a v-if="fileExtensionControl(dc_att_file.dc_att_file_path)" :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
               download
+            >
+              {{splitFileName(dc_att_file.dc_att_file_path)}}
+            </a>
+            <a v-else :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
+              target="_blank"
             >
               {{splitFileName(dc_att_file.dc_att_file_path)}}
             </a>
@@ -186,6 +200,20 @@ export default {
     },
   },
   methods: {
+    fileExtensionControl(val) {
+      if(val) {
+        let ext = val.split('.').pop();
+        let blankFile = ['jpg', 'JPG', 'jpeg', 'JPEG', 'png', 'PNG', 'pdf', 'PDF', 'tif', 'TIF', ];
+        let blank;
+
+        if(blankFile.includes(ext)) {
+          blank = false;
+        }else {
+          blank = true;
+        }
+        return blank;
+      }
+    },
     splitFileName(val) {
       if(val) {
         let arr = val.split('/');

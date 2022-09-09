@@ -57,4 +57,12 @@ class DcDocuments extends Model
     {
         return $this->belongsToMany(DcLists::class, 'dc_doc_list', 'dc_id', 'list_id');
     }
+
+    /**
+     * Get the document's file.
+     */
+    public function dc_user_pers()
+    {
+        return $this->morphMany(User::class, 'dc_per_owner');
+    }
 }

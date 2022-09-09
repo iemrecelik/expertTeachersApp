@@ -8,6 +8,7 @@ use App\Http\Requests\Admin\DocumentManagement\StoreDcCategoryRequest;
 use App\Http\Requests\Admin\DocumentManagement\UpdateDcCategoryRequest;
 use App\Http\Responsable\isAjaxResponse;
 use App\Models\Admin\DcCategory;
+use Illuminate\Validation\ValidationException;
 
 class CategoryController extends Controller
 {
@@ -153,6 +154,14 @@ class CategoryController extends Controller
     public function store(StoreDcCategoryRequest $request)
     {
         $params = $request->all();
+
+        $dcCat = DcCategory::where('dc_cat_name', $params['dc_cat_name']);
+
+        if(!empty($dcCat->first())) {
+            throw ValidationException::withMessages(
+                ['dc_cat_name' => 'Aynı isimde konu ekleyemezsiniz.']
+            );
+        }
 
         $childCategory = DcCategory::create($params);
 

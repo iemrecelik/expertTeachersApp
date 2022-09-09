@@ -297,6 +297,8 @@ class DocumentsController extends Controller
                 $dcDocuments->dc_lists()->save($dcList);
             }
 
+            /* İzinli kullanıcıları ekleme */
+
             /* Dökümana not ekleme */
             if(!empty($dcComText)) {
 

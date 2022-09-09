@@ -172,20 +172,22 @@ class CommentController extends Controller
             +++ 3- udf dosyası indirilebilir olacak 
             +++ 4- ana evrağın yanında ilgi evrakları da gözükecek
             5- Listeleri sadece yükleyen kişi silebilir.
-            6- Tablolarda arama çubuğunu kaldır.
+            +++ 6- Tablolarda arama çubuğunu kaldır.
             +++ 7- evrak aramada ilgi evrağı göster deyince ana evrak ve ilgiler gözükecek
             +++ 8- listeye eklenen ilgi evrak aramada gösterilmiyor.
             9- ralative olan yerler relative olarak değiştirilecek.
             +++ 10- manual evrak ekleme yapılacak.
-            11- admin panelde yükleme logosu değişecek.
-            12- aranan kelime dosyada seçili olacak.
+            +++ 11- admin panelde yükleme logosu değişecek.
+            +++ 12- aranan kelime dosyada seçili olacak.
             13- ana evrağı gösterirken  konsol da path_file hatası veriyor.
-            14- evrak eklerken liste ve not ekleme eklenecek.
-            15- tablolarda sayfa sayıları kontrol edilecek
+            +++ 14- evrak eklerken liste ve not ekleme eklenecek.
+            +++ 15- tablolarda sayfa sayıları kontrol edilecek
             +++ 16- Hem manual hemde otomotik yükleme birleştirilecek
-            17- Aynı isimde veri eklenmeyecek
+            +++ 17- Aynı isimde veri eklenmeyecek
             18- Dudu PANK dosyasını yüklerken içindekileri düzgün çekmiyor.
             19- Evraklarda Yetkilendirme olacak
+            +++ 20- Hangi kullanıcı tarafından ekleneceği
+            21- login yaptıktan sonra evrak arama sayfasına girsin
         */
 
         $request->validate(

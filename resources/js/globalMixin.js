@@ -121,6 +121,7 @@ export default {
           type: config.method || 'POST',
           data: config.data || undefined
         },
+        searching: config.searching || false,
         columns: config.columns,
         "drawCallback": function( settings ) {
           setTimeout(() => {
