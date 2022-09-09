@@ -19,13 +19,13 @@
             style="width:100%">
             <thead>
               <tr>
-                <th>messages.dc_main_status</th>
-                <th>messages.dc_cat_name</th>
-                <th>messages.dc_number</th>
-                <th>messages.dc_item_status</th>
-                <th>messages.dc_subject</th>
-                <th>messages.dc_date</th>
-                <th>messages.processes</th>
+                <th>{{$t('messages.dc_main_status')}}</th>
+                <th>{{$t('messages.dc_cat_name')}}</th>
+                <th>{{$t('messages.dc_number')}}</th>
+                <th>{{$t('messages.dc_item_status')}}</th>
+                <th>{{$t('messages.dc_subject')}}</th>
+                <th>{{$t('messages.dc_date')}}</th>
+                <th>{{$t('messages.processes')}}</th>
               </tr>
             </thead>
             <tfoot>
@@ -152,7 +152,8 @@ export default {
             data-component="${this.formTitleName}-show-component" 
             data-datas='{
               "id": ${datas.id},
-              "formTitleName": "${this.formTitleName}"
+              "formTitleName": "${this.formTitleName}",
+              "userName": "${datas.userName}"
             }'
           >
             <i class="bi bi-file-text"></i>
@@ -218,25 +219,6 @@ export default {
         </span>`;
     },
 
-    /* fileDownloadBtnHtml: function(id){
-      return  `
-        <span 
-          data-toggle="tooltip" data-placement="top" 
-          title="${this.$t('messages.docFileDownload')}"
-        >
-          <button type="button" class="btn btn-sm btn-success"
-            data-toggle="modal" data-target="${this.modalSelector}"
-            data-component="${this.formTitleName}-doc-file-download-component" 
-            data-datas='{
-              "id": ${id},
-              "formTitleName": "${this.formTitleName}"
-            }'
-          >
-            <i class="bi bi-file-earmark-arrow-down"></i>
-          </button>
-        </span>`;
-    }, */
-
     destroyTable() {
       if (typeof this.dataTable !== 'undefined') {
         this.dataTable.destroy();
@@ -279,7 +261,8 @@ export default {
             "render": ( data, type, row ) => {
                 return this.processesRow({
                   'id': data,
-                  'url': row.dc_file_path
+                  'url': row.dc_file_path,
+                  'userName': row.user_name
                 });
             },
             "defaultContent": ""

@@ -2,6 +2,20 @@
 
 @section('content')
 <div class="container">
+    
+    <div class="row">
+        <div class="col-12 text-center">
+            <img src="{{asset('images/logo/meb-logo-large.png')}}" alt="OYGM Logo" height="" width="240">
+        </div>
+    </div>
+
+    <div class="row mt-3 mb-3">
+        <div class="col-12 text-center">
+            <h4>ÖĞRETMEN YETİŞTİRME VE GELİŞTİRME GENEL MÜDÜRLÜĞÜ</h4>
+            <h5>Kariyer Basamakları</h5>
+        </div>
+    </div>
+
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card">

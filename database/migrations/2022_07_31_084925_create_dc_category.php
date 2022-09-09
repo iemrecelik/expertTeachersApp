@@ -15,7 +15,7 @@ class CreateDcCategory extends Migration
     {
         Schema::create('dc_category', function (Blueprint $table) {
             $table->id();
-            $table->string('dc_cat_name');
+            $table->string('dc_cat_name')->unique();
             $table->unsignedBigInteger('dc_cat_id')->nullable(); 
             $table->foreign('dc_cat_id')
                   ->references('id')->on('dc_category')

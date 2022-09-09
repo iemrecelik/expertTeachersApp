@@ -9,6 +9,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Responsable\isAjaxResponse;
 use App\Http\Requests\Admin\DocumentManagement\StoreDcListsRequest;
 use App\Http\Requests\Admin\DocumentManagement\UpdateDcListsRequest;
+use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 
@@ -45,8 +46,6 @@ class ListController extends Controller
         $params = $request->all();
 
         $dcLists = DcDocuments::find($params['dc_id'])->dc_lists();
-
-        // dump($dcLists->pluck('dc_lists.id')->all());die;
 
         $list = $this->getList($dcLists->pluck('dc_lists.id')->all());
 
@@ -185,9 +184,18 @@ class ListController extends Controller
 
         $params['user_id'] = $request->user()->id;
 
-        DcLists::create($params);
-    
-        return ['succeed' => __('messages.add_success')];
+        $dcLists = DcLists::where('dc_list_name', $params['dc_list_name']);
+
+        if(empty($dcLists->first())) {
+            DcLists::create($params);
+            $msg['succeed'] = __('messages.add_success');
+        }else {
+            throw ValidationException::withMessages(
+                ['dc_cat_name' => 'Aynı isimde liste ekleyemezsiniz.']
+            );
+        }
+
+        return $msg;
     }
 
     /**
