@@ -1,6 +1,7 @@
 <template>
-<template-component>
-
+<template-component
+	:ppTitleName="$t('messages.listManage')"
+>
   <div class="row">
     <div class="col-3">
 

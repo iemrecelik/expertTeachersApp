@@ -1,6 +1,8 @@
 <template>
 
-<template-component>
+<template-component
+	:ppTitleName="$t('messages.createDocument')"
+>
 	<error-msg-list-component></error-msg-list-component>
 	<succeed-msg-component></succeed-msg-component>
 

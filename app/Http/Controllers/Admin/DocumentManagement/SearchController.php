@@ -221,6 +221,9 @@ class SearchController extends Controller
 
 		$dcDocuments->join('users as t4', 't4.id', '=', 't0.user_id');
 		$dcDocuments->selectRaw('t4.name as user_name');
+
+		$dcDocuments->join('dc_category as t5', 't5.id', '=', 't0.dc_cat_id');
+		$dcDocuments->selectRaw('t5.dc_cat_name as dc_cat_name');
 		
 		$dcDocuments = $dcDocuments->orderBy($colOrder, $order);
 

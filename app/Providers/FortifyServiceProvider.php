@@ -2,17 +2,19 @@
 
 namespace App\Providers;
 
+use App\Models\User;
 use Illuminate\Http\Request;
 use Laravel\Fortify\Fortify;
+use Illuminate\Support\Facades\Hash;
 use App\Actions\Fortify\CreateNewUser;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use App\Actions\Fortify\ResetUserPassword;
 use App\Actions\Fortify\UpdateUserPassword;
 use Illuminate\Support\Facades\RateLimiter;
+use Laravel\Fortify\Contracts\LoginResponse;
 use Laravel\Fortify\Contracts\LogoutResponse;
 use App\Actions\Fortify\UpdateUserProfileInformation;
-use Laravel\Fortify\Contracts\LoginResponse;
 
 class FortifyServiceProvider extends ServiceProvider
 {
@@ -35,7 +37,7 @@ class FortifyServiceProvider extends ServiceProvider
         $this->app->instance(LoginResponse::class, new class implements LoginResponse {
             public function toResponse($request)
             {
-                return redirect('/main');
+                return redirect('/admin/document-management/search/search-form');
             }
         });
     }
@@ -69,5 +71,16 @@ class FortifyServiceProvider extends ServiceProvider
         Fortify::registerView(function () {
             return view('admin.auth.register');
         });
+
+        /* Fortify::authenticateUsing(function (Request $request) {
+            $user = User::where('email', $request->email)
+                ->orWhere('name', $request->name)
+                ->first();
+     
+            if ($user &&
+                Hash::check($request->password, $user->password)) {
+                return $user;
+            }
+        }); */
     }
 }

@@ -240,12 +240,22 @@ export default {
           { 
             "data": "dc_main_status",
             "render": (data, type, row) => {
-              return data < 1 ? "İlgi" : "";
+              return data < 1 ? "İlgi" : "Asıl";
             }
           },
-          { "data": "dc_cat_id" },
+          { 
+            "data": "dc_cat_id",
+            "render": (data, type, row) => {
+              return row.dc_cat_name;
+            }
+          },
           { "data": "dc_number" },
-          { "data": "dc_item_status" },
+          { 
+            "data": "dc_item_status",
+            "render": (data, type, row) => {
+              return data < 1 ? "Gelen" : "Giden";
+            }
+          },
           { "data": "dc_subject" },
           { 
             "data": "dc_date",

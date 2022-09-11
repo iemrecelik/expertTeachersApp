@@ -1,6 +1,7 @@
 <template>
-<template-component>
-  
+<template-component
+	:ppTitleName="$t('messages.DocumentCommentManage')"
+> 
   <div class="row">
     <div class="col-3">
 

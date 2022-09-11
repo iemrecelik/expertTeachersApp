@@ -38,6 +38,7 @@
     </li> --}}
 
     <!-- Messages Dropdown Menu -->
+    <span class="mr-2 nav-link">{{ Auth::user()->name }}</span>
     <li class="nav-item">
       <a class="nav-link" href="{{ route('logout') }}"
         onclick="event.preventDefault();

@@ -22,7 +22,7 @@
       @click="saveMethod"
     >
       {{saveBtnName}}
-      <div class="ld ld-ring ld-spin p-2"></div>
+      <!-- <div class="ld ld-ring ld-spin p-2"></div> -->
     </button>
     
     <button type="button" class="btn btn-secondary"

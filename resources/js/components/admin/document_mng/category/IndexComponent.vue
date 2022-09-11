@@ -1,5 +1,7 @@
 <template>
-<template-component>
+<template-component
+	:ppTitleName="$t('messages.categoryManage')"
+>
   <table class="res-dt-table table table-striped table-bordered" 
   style="width:100%">
     <thead>

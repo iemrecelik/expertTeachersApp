@@ -4,7 +4,7 @@
   <!-- Content Header (Page header) -->
   <section class="content-header">
     <div class="container-fluid">
-      <h2 class="text-center display-4">{{ $t("messages.doc_mng_category") }}</h2>
+      <h2 class="text-center display-4">{{titleName}}</h2>
     </div>
     <!-- /.container-fluid -->
   </section>
@@ -28,7 +28,18 @@
 
 <script>
 export default {
-  name: 'TemplateComponent'
+  name: 'TemplateComponent',
+  data () {
+    return {
+			titleName: this.ppTitleName,
+		}
+  },
+	props: {
+    ppTitleName: {
+      type: String,
+      required: false,
+    },
+  },
 }
 </script>
 

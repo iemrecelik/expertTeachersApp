@@ -100,12 +100,12 @@
               </a>
             </li>
             
-            <li class="nav-item">
+            {{-- <li class="nav-item">
               <a href="{{route('admin.document_mng.document.manualCreate')}}" class="nav-link">
                 <i class="far fa-circle nav-icon"></i>
                 <p>Manual Evrak Ekleme</p>
               </a>
-            </li>
+            </li> --}}
 
             <li class="nav-item">
               <a href="{{route('admin.document_mng.search.searchForm')}}" class="nav-link">

@@ -1,3 +1,5 @@
+import datatablesTr from '../../public/js/datatablesTr.json';
+
 export default {
   data () {
     return {
@@ -131,6 +133,10 @@ export default {
           }, 100);
         },
         "initComplete": config.initComplete || undefined,
+        /* language: {
+          "url":"/js/datatablesTr.json"
+        } */
+        language: datatablesTr
       });
     },
 
