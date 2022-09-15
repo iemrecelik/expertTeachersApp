@@ -481,10 +481,19 @@ class DocumentsController extends Controller
             /* echo '<pre>------sender------</pre>';
             dump($sender); */
             
-            $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
+            // $pattern = '/konu\s*:(.*)[A-ZİĞÜŞÖÇ ]{7,1000}\n*\D*/si';
+            $pattern = '/konu\s*:.*([A-ZİĞÜŞÖÇ ]{10,1000}\n{2,10})/si';
+            // $pattern = '/konu\s*:(\D+).*/si';
+            // $pattern = '/konu\s*:(\D+)\n{2,10}[A-ZİĞÜŞÖÇ ]{3,1000}/si';
+            $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
             // $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n*\D*)\n{2,10}(.+)/si';
             preg_match($pattern, $result, $receiver);
-
+            
+            /* if(isset($receiver[1])) {
+                unset($receiver[0]);
+                dd($receiver);
+            }else
+                dd($receiver); */
 
             // $receiver[3] = str_replace('\n', '<br/>', $receiver[3]);
             
