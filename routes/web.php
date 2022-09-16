@@ -22,16 +22,16 @@ use App\Http\Controllers\Admin\DocumentManagement\SearchController as DcSearchCo
 |
 */
 
-Route::get('/', function () {
+/* Route::get('/', function () {
     return view('welcome');
-});
+}); */
 
 /* Route::get('/admin/document-management/category/get-category', function () {
     return view('welcome');
 }); */
 
 
-Route::resource('main', MainController::class)->middleware('auth');
+// Route::resource('main', MainController::class)->middleware('auth');
 
 // Route::get('search', [SearchController::class, 'expertInfo']);
 

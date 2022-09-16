@@ -32,7 +32,7 @@
         <div class="col-12">
           
           <div class="form-group">
-            <label for="exampleFormControlTextarea1">Example textarea</label>
+            <label for="exampleFormControlTextarea1">Notunuzu ekleyiniz.</label>
             <textarea class="form-control" 
               id="exampleFormControlTextarea1" 
               rows="3"
