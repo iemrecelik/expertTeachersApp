@@ -4,16 +4,18 @@ namespace App\Http\Controllers\Admin\DocumentManagement;
 
 use App\Library\FileUpload;
 use Illuminate\Http\Request;
+use Smalot\PdfParser\Parser;
 use App\Models\Admin\DcFiles;
 use App\Models\Admin\DcLists;
-use App\Models\Admin\DcDocuments;
 use App\Models\Admin\DcComment;
+use App\Models\Admin\DcDocuments;
 use App\Models\Admin\DcAttachFiles;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\DocumentManagement\StoreDcDocumentsRequest;
 use App\Http\Requests\Admin\DocumentManagement\StoreManualDcDocumentsRequest;
+use setasign\Fpdi\Fpdi;
 
 class DocumentsController extends Controller
 {
@@ -35,7 +37,6 @@ class DocumentsController extends Controller
     public function manualCreate()
     {
         return view('admin.document_mng.create_document');
-        // return view('admin.document_mng.create_manual_document');
     }
 
     public function udfControl(Request $request)
@@ -61,6 +62,17 @@ class DocumentsController extends Controller
         		
 		if(!empty($orjExtension[1])) {
             $arr = $this->getFileInfos($request);
+		}
+        
+        $pattern = "/^.*\.(pdf|PDF)$/i";
+		preg_match($pattern, $file->getClientOriginalName(), $externalAgencyExt);
+
+        if(!empty($externalAgencyExt[1])) {
+            $parser = new Parser();
+
+            $pdf = $parser->parseFile($file->getPathName());
+
+            $arr['content'] = $pdf->getText();
 		}
 
 		return $arr;
@@ -93,6 +105,7 @@ class DocumentsController extends Controller
             'user_id'           => $request->user()->id,
             'list_id'           => $params['list_id'],
             'dc_com_text'       => $params['dc_com_text'],
+            'dc_manuel'         => $params['dc_manuel'],
         ];
 
         $dcDocuments = $this->saveDcDocument(
@@ -115,11 +128,10 @@ class DocumentsController extends Controller
 
     private function manualSaveRelDocument($dcDocuments, $params, $request)
     {
-        // dd($params);
         if (isset($params['rel_dc_number'])) {
             
             foreach ($params['rel_dc_number'] as $key => $val) {
-// dump(strtotime($params['rel_dc_date'][$key]));die;
+
                 $arr = [
                     'dc_number'         => trim($params['rel_dc_number'][$key]),
                     'dc_item_status'    => $params['rel_dc_item_status'][$key],
@@ -132,6 +144,7 @@ class DocumentsController extends Controller
                     'dc_raw_content'    => $params['rel_dc_raw_content'][$key] ?? '',
                     'dc_date'           => strtotime($params['rel_dc_date'][$key]),
                     'user_id'           => $request->user()->id,
+                    'dc_manuel'         => $params['dc_manuel'],
                 ];
 
                 $relDcSenderAttachFiles = $request->file('rel_dc_sender_attach_files');
@@ -358,15 +371,12 @@ class DocumentsController extends Controller
             );
         }
         
-        // dump($dcAttachFiles);die;
         if(isset($dcAttachFiles)) {
 
             $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
             $this->deleteImageFromStorage($dcAttachFilesCollection->get());
             
             $dcAttachFilesCollection->delete();
-
-            // $this->deleteImageFromStorage($dcAttachFilesCollection);
 
             $attachFilesArr = $this->saveFileToStorage(
                 $dcAttachFiles,
@@ -416,10 +426,7 @@ class DocumentsController extends Controller
             $deleteImgs[] = "public/upload/images/raw{$path}";
         }
 
-        // dump($deleteImgs);die;
-
         Storage::delete($deleteImgs);
-        // Images::destroy($oldImages->pluck('id')->all());
     }
 
     public function getFileInfos(Request $request)
@@ -446,150 +453,28 @@ class DocumentsController extends Controller
         try {
             $result = file_get_contents("zip://{$file->getPathName()}#content.xml");
 
-            /* $pattern = '/<!\[CDATA\[\¸(.*)\n{2,10}(sayı\s*?:.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
-            preg_match($pattern, $result, $showContent1); */
-
-
-            // $patternOne ='/(konu\s*?:.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n\D*)\n{2,10}([İiIı]+lgi\s*?:.*?)\n{2,10}(.+)\n{2,10}(.+)]]>/si';
-            // $patternOne ='/(konu\s*?:.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n\D*)\n{1,10}(.+)]]>/si';
-            // $patternTwo ='(ilgi\s*?:.*?)\n{2,10}';
-            /* $patternTwo ='';
-            $pattern = '/'.$patternOne.$patternTwo.'/si'; */
-            /* $pattern = $patternOne;
-            preg_match($pattern, $result, $showContent2);
-            
-            array_shift($showContent2);
-
-            dump($showContent2);die;
-
-            // dump($showContent2[3]);
-            
-            $pattern = '/(.+)\n{2,10}(.+)\n{2,10}(.+)\n{1,300}+/si';
-            preg_match($pattern, $showContent2[3], $deneme);
-
-            dump($deneme);die;
-
-            
-
-            $showContent = array_merge($showContent1, $showContent2);
-            dump($showContent2);die; */
-
             $pattern = '/<!\[CDATA\[\¸(.*)\n{2,10}sayı/si';
             preg_match($pattern, $result, $sender);
 
-            // dump($result);
-            /* echo '<pre>------sender------</pre>';
-            dump($sender); */
-            
-            // $pattern = '/konu\s*:(.*)[A-ZİĞÜŞÖÇ ]{7,1000}\n*\D*/si';
-            $pattern = '/konu\s*:.*([A-ZİĞÜŞÖÇ ]{10,1000}\n{2,10})/si';
-            // $pattern = '/konu\s*:(\D+).*/si';
-            // $pattern = '/konu\s*:(\D+)\n{2,10}[A-ZİĞÜŞÖÇ ]{3,1000}/si';
-            $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
-            // $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ ]{3,1000}\n*\D*)\n{2,10}(.+)/si';
+            // $pattern = '/konu\s*:.*([A-ZİĞÜŞÖÇ ]{10,1000}\n{2,10})/si';
+            $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
             preg_match($pattern, $result, $receiver);
             
-            /* if(isset($receiver[1])) {
-                unset($receiver[0]);
-                dd($receiver);
-            }else
-                dd($receiver); */
-
-            // $receiver[3] = str_replace('\n', '<br/>', $receiver[3]);
-            
-            // $receiver[3] = preg_replace('/\n/', '<br/>', $receiver[3]);
-
-            // $pattern = '/(.+)\n{2,10}(.+)\n{2,10}(.+)]]>/si';
-            /* $pattern = '/(.+)\n{2,10}(\w.+)\n{2,10}(\w.+)\n{0,10}]]>/si';
-            preg_match($pattern, $receiver[3], $deneme); */
-
-            // dump($result);
-            // echo '<pre>------receiver------</pre>';
-            // dump($receiver[3]);die;
-            // dump($receiver);die;
-            
-            /* echo '<pre>------deneme------</pre>';
-            dump($deneme);die; */
-
-            // $pattern= '/konu\s*?:.*?\n{2,10}[A-ZİĞÜŞÖÇ ]{3,1000}\n\D*\n{2,10}(.*?)\n{2,10}.*?]]>/si';
             $pattern = '/<!\[CDATA\[\¸(.*)]]>/si';
             preg_match($pattern, $result, $content);
 
-            /* dump($result);
-            echo '<pre>------sender------</pre>';
-            dump($content);die; */
-
             $pattern = '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
             preg_match($pattern, $result, $number);
-
-            /* echo '<pre>------sender------</pre>';
-            dump($sender);
-            echo '<pre>------receiver------</pre>';
-            dump($receiver);;
-            echo '<pre>------number------</pre>';
-            dump($number);
-            echo '<pre>------number------</pre>';
-            dump($result);die; */
-
-           /*  echo '<pre>------number------</pre>';
-            dump($receiver[3]); */
             
             $receiver[3] = preg_replace('/\n/', '<br/>', $receiver[3]);
             $receiver[3] = preg_replace('/\t{3,100}/', '<span class="mr-5"></span>', $receiver[3]);
-            
-            /* echo '<pre>------number------</pre>';
-            dump($receiver[3]); */
-
             $receiver[3] = preg_replace('/\t/', '<span class="mr-5"></span>', $receiver[3]);
 
-            /* echo '<pre>------number------</pre>';
-            dump($receiver[3]);die; */
-
-            $showContent = '
-            <div class="row mb-5">
-                <div class="col-4"></div>
-                <div class="col-4 text-center">
-                            '.$sender[1].'
-                </div>
-                <div class="col-4"></div>
-                </div>
-
-            <div class="row">
-                <div class="col-1"></div>
-                <div class="col-9">
-                    Sayı: '.$number[1].$number[2].'
-                </div>
-                <div class="col-2">
-                    '.$number[3].'
-                </div>
-            </div>
-
-            <div class="row mb-5">
-                <div class="col-1"></div>
-                <div class="col-11">
-                    Konu: '.$receiver[1].'
-                </div>
-            </div>
-            
-
-            <div class="row mb-5">
-                <div class="col-4"></div>
-                <div class="col-4 text-center">
-                    '.$receiver[2].'
-                </div>
-                <div class="col-4"></div>
-            </div>
-
-            <div class="row mb-5">
-                <div class="col-1"></div>
-                <div class="col-10">
-                    '.$receiver[3].'
-                </div>
-                <div class="col-1"></div>
-            </div>
-            ';
-
-            // dump($showContent);die;
+            $showContent = $this->createShowContentHtml([
+                'sender'    => $sender,
+                'number'    => $number,
+                'receiver'  => $receiver,
+            ]);
 
             if (
                 empty($sender[1]) || empty($number[1]) || 
@@ -601,18 +486,6 @@ class DocumentsController extends Controller
                 );
             }
 
-            $arr = [
-                'sender' => $sender[1],
-                'subjectNumber' => $number[1],
-                'number' => $number[2],
-                'date' => $number[3],
-                'subject' => $receiver[1],
-                'content' => $content[1],
-                'rawContent' => $result,
-                'receiver' => $receiver[2],
-                'showContent' => $showContent,
-            ];
-
         } catch (\Throwable $th) {
 
             throw ValidationException::withMessages(
@@ -620,105 +493,82 @@ class DocumentsController extends Controller
             );
         }
 
+        if(
+            (strlen($receiver[1]) > 255) || !is_numeric($number[2]) ||
+            (strlen($sender[1]) > 255) || (strlen($receiver[2]) > 255)
+        ) {
+            throw ValidationException::withMessages(
+                [
+                    'senderFile' => 'Yazım formatı hatalı lütfen manual giriş yapınız.',
+                    'manuel' => true,
+                    'content' => $content[1]
+                ],
+            );
+        }
+
+        $arr = [
+            'sender' => $sender[1],
+            'subjectNumber' => $number[1],
+            'number' => $number[2],
+            'date' => $number[3],
+            'subject' => $receiver[1],
+            'content' => $content[1],
+            'rawContent' => $result,
+            'receiver' => $receiver[2],
+            'showContent' => $showContent,
+        ];
+
         return $arr;
     }
 
-    /* public function getImages(Books $book)
+    private function createShowContentHtml($datas)
     {
-        return $book->images;
-    } */
+        extract($datas);
+        
+        $showContent = '
+        <div class="row mb-5">
+            <div class="col-4"></div>
+            <div class="col-4 text-center">
+                        '.$sender[1].'
+            </div>
+            <div class="col-4"></div>
+            </div>
 
-    /* public function updateImages(UpdateImagesPost $request, Books $book)
-    {
-        $this->loadImages($request, $book);
+        <div class="row">
+            <div class="col-1"></div>
+            <div class="col-9">
+                Sayı: '.$number[1].$number[2].'
+            </div>
+            <div class="col-2">
+                '.$number[3].'
+            </div>
+        </div>
 
-        return ['succeed' => __('messages.edit_success')];
-    } */
+        <div class="row mb-5">
+            <div class="col-1"></div>
+            <div class="col-11">
+                Konu: '.$receiver[1].'
+            </div>
+        </div>
+        
 
-    /* public function loadImages($request, Books $book)
-    {
-        $oldImgIDs = $request->input('altImages');
+        <div class="row mb-5">
+            <div class="col-4"></div>
+            <div class="col-4 text-center">
+                '.$receiver[2].'
+            </div>
+            <div class="col-4"></div>
+        </div>
 
-        $filters = config('imageFilters.filter.bookImagesFilt'); */
+        <div class="row mb-5">
+            <div class="col-1"></div>
+            <div class="col-10">
+                '.$receiver[3].'
+            </div>
+            <div class="col-1"></div>
+        </div>
+        ';
 
-        /* New images will be saved to storage */
-    /*     $imgs = $request->file('images.*.file');
-        $crops = $request->input('images.*.crops');
-
-        if($imgs)
-            $imgsArr = $this->saveImageToStorage($imgs, $crops, $filters);
-        else
-            $imgsArr = null; */
-
-        /* Images will be deleted */
-        /* $oldImages = $book->images
-                            ->whereNotIn('id', $oldImgIDs);
-
-        if($oldImages->isNotEmpty())
-            $this->deleteImageFromStorage($oldImages, $filters);
- */
-        /* New images will be saved to databse */
-        /* if($imgsArr)
-            $book->images()->saveMany($imgsArr);
-    } */
-
-    /* private function convertToCrop($crop)
-    {
-        $cropFilt = [];
-
-        foreach ($crop as $key => $val) {
-            $cropFilt[$key]['crop'] = explode('*?*', $val);
-        }
-
-        return $cropFilt;
-    } */
-
-   /*  private function saveImageToStorage($images, $crops = null, $filters)
-    {
-        $imgFileUpload = new ImgFileUpload();
-        foreach ($images as $key => $imgVal) {
-            
-            if (isset($crops[$key])) {
-                $crop = $this->convertToCrop($crops[$key]);
-                $filt = array_merge_recursive($crop, $filters);
-            }else
-                $filt = $filters;
-
-            $imgFileUpload->setConfig(
-                $imgVal, 
-                $filt
-            );
-            $imgFileUpload->saveImg();
-        }
-
-        $imagesArr = array_map(function($path){
-
-            $path = str_replace('public', 'storage', $path);
-            return new Images(['img_path' => $path]);
-
-        }, $imgFileUpload->getSavePath());
-
-        return $imagesArr;
+        return $showContent;
     }
-
-    private function deleteImageFromStorage($oldImages, $filters)
-    {
-        $deleteImgs = [];
-        foreach ($oldImages as $oldImage) {
-
-            $path = $oldImage->img_path;
-            $dltImgs = array_map(
-                
-                function($filt) use ($path){
-                    return "/public/upload/images/{$filt}/{$path}";
-                }, 
-                array_keys($filters)
-            );
-
-            $deleteImgs = array_merge($deleteImgs, $dltImgs);
-        }
-
-        Storage::delete($deleteImgs);
-        Images::destroy($oldImages->pluck('id')->all());
-    } */
 }

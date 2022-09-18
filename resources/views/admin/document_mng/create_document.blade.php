@@ -15,6 +15,7 @@
       getFileInfos: '{{ route('admin.document_mng.document.getFileInfos') }}', 
       udfControl: '{{ route('admin.document_mng.document.udfControl') }}', 
       getList: '{{ route('admin.document_mng.list.getList') }}',
+      getReqList: '{{ route('admin.document_mng.list.getReqList') }}',
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
     :ppsuccess="'{{ session('succeed') ?? '' }}'"

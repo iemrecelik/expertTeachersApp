@@ -22,6 +22,7 @@ class DcDocuments extends Model
         'dc_raw_content',
         'dc_show_content',
         'dc_date',
+        'dc_manuel',
         'user_id',
     ];
 

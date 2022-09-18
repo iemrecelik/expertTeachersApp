@@ -25,6 +25,7 @@ class CreateDcDocumentsTable extends Migration
             $table->string('dc_who_send');
             $table->string('dc_who_receiver');
             $table->integer('dc_date');
+            $table->enum('dc_manuel', [0, 1])->default(0);
             
             $table->unsignedBigInteger('dc_cat_id'); 
             $table->foreign('dc_cat_id')

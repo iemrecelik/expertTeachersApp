@@ -23,7 +23,7 @@ return [
 	'create' => 'Kaydet',
 	'edit' => 'Düzenle',
 	'update' => 'Güncelle',
-	'save' => 'Katdet',
+	'save' => 'Kaydet',
 	'delete' => 'Sil',
 	'cancel' => 'İptal Et',
 	'startDate' => 'Start Date',
@@ -50,12 +50,13 @@ return [
 
 
 	/* SearchList */
-	'dc_main_status'	=> 	'İlgisi',
-	'dc_cat_name'		=> 	'Kategori',
-	'dc_number'			=>	'Numarası',
-	'dc_item_status'	=>	'Durumu',
-	'dc_subject'		=>	'Konu',
-	'dc_date'			=>	'Tarih',
+	'dc_main_status'		=> 	'İlgisi',
+	'dc_cat_name'			=> 	'Kategori',
+	'dc_number'				=>	'Numarası',
+	'dc_item_status'		=>	'Durumu',
+	'dc_subject'			=>	'Konu',
+	'dc_date'				=>	'Tarih',
+	'readDocumentLinkClick'	=>	'Yazıyı okumak için tıklayınız.',
 
 	/* Document Category */
 	'categoryName' => 'Kategori Adı',
@@ -65,6 +66,7 @@ return [
 	/* Create Document */
 	'createDocument' => 'Evrak Kaydetme',
 	'resetForm' => 'Formu Sıfırla',
+	'enterCategoryName' => 'Kategori ismini giriniz.',
 
 
 	/* Document List */

@@ -127,6 +127,12 @@ Route::prefix('admin/document-management')
 			'getList'
 		)
 		->name('list.getList');
+		
+		Route::get(
+			'list/get-req-list', 
+			'getReqList'
+		)
+		->name('list.getReqList');
 
         Route::get(
 			'list/get-list-and-selected', 

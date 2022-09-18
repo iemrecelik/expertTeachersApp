@@ -40,6 +40,7 @@
 		<input type="hidden" :name="fieldNames.content" :value="fieldValues.content">
 		<input type="hidden" :name="fieldNames.rawContent" :value="fieldValues.rawContent">
 		<input type="hidden" :name="fieldNames.showContent" :value="fieldValues.showContent">
+		<input type="hidden" name="dc_manuel" :value="manuel">
 		
 		<div class="col-3">
 			<div class="form-group">
@@ -160,7 +161,7 @@
 import { mapState, mapMutations } from 'vuex';
 
 export default {
-	name: 'ManualFileUploadFormComponent',
+	name: 'FileUploadFormComponent',
 	data () {
     return {
 			fieldNames: this.ppfieldNames,
@@ -171,10 +172,14 @@ export default {
 				'date': '',
 				'subject': '',
 				'receiver': '',
+				'content': '',
+				'rawContent': '',
+				'showContent': '',
 			},
 			itemStatus: this.ppitemStatus == 0 ? "selected" : "",
 			showForm: false,
 			inputReadonly: false,
+			manuel: 0,
 		}
   },
 	props: {
@@ -205,6 +210,9 @@ export default {
 					'date': '',
 					'subject': '',
 					'receiver': '',
+					'content': '',
+					'rawContent': '',
+					'showContent': '',
 				};
 			}
 		},
@@ -243,10 +251,11 @@ export default {
       .done((res) => {
 				// console.log(res);
 				// this.text = res;
-				if(res) {
+				if(res.showContent) {
 					this.inputReadonly = true;
 					this.fieldValues = res;
-				}else {
+				}else if(res.content) {
+					this.fieldValues.content = res.content;
 					this.inputReadonly = false;
 				}
         /* this.setErrors('');
@@ -254,12 +263,25 @@ export default {
       })
       .fail((error) => {
         if(error.responseJSON){
-          // this.setSucceed('');
-          this.setErrors(error.responseJSON.errors);
-					this.$parent.$parent.modalErrorMsgShow(true)
+					if(
+						typeof error.responseJSON.errors.manuel === 'object' &&
+						error.responseJSON.errors.manuel !== null
+					) {
+						this.inputReadonly = false;
+						this.manuel = 1;
+						this.fieldValues.content = error.responseJSON.errors.content;
 
-					let files = event.target;
-					files.value = null;
+						delete error.responseJSON.errors.manuel;
+						delete error.responseJSON.errors.content;
+
+					}else {
+						let files = event.target;
+						files.value = null;
+					}
+
+					this.setErrors(error.responseJSON.errors);
+					this.$parent.$parent.modalErrorMsgShow(true);
+					
         }
       })
       .then((res) => {

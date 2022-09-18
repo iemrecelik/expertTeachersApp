@@ -44,25 +44,40 @@ class ListController extends Controller
     public function getListAndSelected(Request $request)
     {
         $params = $request->all();
+        $userId = $request->user()->id;
 
         $dcLists = DcDocuments::find($params['dc_id'])->dc_lists();
 
-        $list = $this->getList($dcLists->pluck('dc_lists.id')->all());
+        $list = $this->getList($dcLists->pluck('dc_lists.id')->all(), $userId);
 
         return [
             'selected' => $dcLists->get(),
-            'list' => $list
+            'list' => $list,
+            'userId' => $userId
         ];
     }
 
-    public function getList($ids = null)
+    public function getList($ids = null, $userId = null)
 	{
         if(empty($ids))
             $ids = [];
         else
             $ids = $ids;
 
-        $list = DcLists::whereNotIn('id', $ids)->get();
+        $list = DcLists::whereNotIn('id', $ids);
+
+        if(isset($userId)) {
+            $list = $list->where('user_id', $userId);
+        }
+
+        $list = $list->get();
+
+        return $list;
+    }
+    
+    public function getReqList(Request $request)
+	{
+        $list = $this->getList(null, $request->user()->id);
 
         return $list;
     }
@@ -109,7 +124,7 @@ class ListController extends Controller
 	        'table' => 'dc_lists',
 	        'fieldIDName' => 'id',
 	        'addLangFields' => [],
-            'choiceJoin' => 'leftJoin',
+            'choiceJoin' => 'join',
             'join' => $join,
             'selectJoin' => $selectJoin,
 	        'selectCol' => $selectCol,
@@ -121,6 +136,10 @@ class ListController extends Controller
 
 	    $recordsTotal = DcLists::count();
 	    $recordsFiltered = $dataList->count();
+
+        if($selectUserId > 0) {
+            $dataList->where('user_id', $selectUserId);
+        }
         
 	    $data = $dataList->offset($tblInfo['start'])
 	    ->limit($tblInfo['length'])

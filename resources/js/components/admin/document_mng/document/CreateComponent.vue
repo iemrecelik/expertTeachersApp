@@ -162,7 +162,7 @@
 </template>
 
 <script>
-import fileUpladoFormComponent from './ManualFileUploadFormComponent.vue';
+import fileUpladoFormComponent from './FileUploadFormComponent.vue';
 import Treeselect from '@riophae/vue-treeselect'
 // import the styles
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -170,7 +170,7 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 import { mapState, mapMutations } from 'vuex';
 
 export default {
-	name: 'ManualCreateComponent',
+	name: 'CreateComponent',
   data () {
     return {
 			categoryList: [],
@@ -346,7 +346,7 @@ export default {
 			.always(() => {});
     },
 		getList: function() {
-			$.get(this.routes.getList, (data) => {
+			$.get(this.routes.getReqList, (data) => {
 				this.docList = data;
 			})
 			.fail(function(error) {
