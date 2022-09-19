@@ -1,0 +1,28 @@
+a.logo {
+    background-color: #fff;
+    color: #6c757d !important;
+    font-weight: bold;
+    font-size: 21px;
+    font-family: none
+}
+
+ul.pure-list {
+    list-style-type: none;
+    margin: 0px;
+    padding: 0px;
+}
+
+div.add-cat-btn {
+    margin: auto;
+    width: 60%;
+    padding: 14px 0px 0px 0px;
+}
+
+i.delete-list-icon {
+    cursor: pointer;
+    color: #ff2121;
+}
+
+span > i.delete-list-icon {
+    font-size: 21px;
+}
