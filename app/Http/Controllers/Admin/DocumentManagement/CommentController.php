@@ -188,7 +188,7 @@ class CommentController extends Controller
             19- Evraklarda Yetkilendirme olacak
             +++ 20- Hangi kullanıcı tarafından ekleneceği
             +++ 21- login yaptıktan sonra evrak arama sayfasına girsin
-            22. dış kurum evrakların içerikleri veri tbanınan kaydedilesin. Ve arama yapılabilsin.
+            +++ 22. dış kurum evrakların içerikleri veri tbanınan kaydedilesin. Ve arama yapılabilsin.
         */
 
         $request->validate(
