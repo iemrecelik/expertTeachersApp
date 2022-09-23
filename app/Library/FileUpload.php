@@ -5,7 +5,7 @@ namespace App\Library;
 use Illuminate\Http\UploadedFile;
 use Intervention\Image\Facades\Image;
 use Illuminate\Support\Facades\Storage;
-
+use Illuminate\Validation\ValidationException;
 
 /**
  * File upload proccess
@@ -62,7 +62,13 @@ class FileUpload
 
 		$savePathAndFileName = $this->savePathAndFileName("raw");
 
-		Storage::putFileAs($savePathAndFileName['pathName'], $this->file, $savePathAndFileName['fileName']);
+		try {
+			Storage::putFileAs($savePathAndFileName['pathName'], $this->file, $savePathAndFileName['fileName']);
+		} catch (\Throwable $e) {
+			throw ValidationException::withMessages(
+                ['file' => "Eklenmeye çalışılan dosyada hata var!"]
+            );	
+		}
 
 		return $this;
 	}

@@ -62,16 +62,46 @@
 			<div class="form-group">
 
 					<label for="file_upload">Evrak Ek(leri)ini Ekle</label>
-					<div class="upload-container">
+					<!-- <div class="upload-container">
 						<input type="file" id="file_upload" multiple
 							:name="fieldNames.senderAttachFiles"
 						/>
-					</div>
-					<small id="emailHelp" 
+					</div> -->
+
+					<!-- <small id="emailHelp" 
 						class="form-text text-muted">
 							Buraya evrakın eklerini ekleyiniz.
-					</small>
+					</small> -->
 
+					<div id="dropContainer"
+						@dragover="fileOnDragenter"
+						@drop="fileOnDrop"
+					>
+						Dosya(ları) buraya sürükleyip bırakınız.
+						<div id="fileNameList">
+							<div class="mt-2" v-for="(item, key) in htmlFileList">
+								<div class="progress">
+									<div :class="`progress-bar progress-bar-striped progress-bar-animated progress-${elUniqueID}-${item.fileKey}`"
+										role="progressbar" 
+										aria-valuenow="0" 
+										aria-valuemin="0" 
+										aria-valuemax="100" 
+										style="width: 0%"
+									>
+									</div>
+								</div>
+
+								<div class="w-75 float-left">{{item.fileName}}</div>
+								<div class="float-right" style="cursor:pointer" @click="delFileList(key)">
+									<i class="bi bi-x-circle-fill delete-list-icon"></i>
+								</div>
+							</div>
+						</div>
+					</div>
+						<!-- Manuel olarak eklemek için: -->
+					<input type="file" :id="fileInputId" multiple
+						:name="fieldNames.senderAttachFiles"
+					/>
 				</div>
 		</div>
 
@@ -151,7 +181,7 @@
 				</small>
 
 			</div>
-			
+
 		</div>
 	</div>
 </div>
@@ -180,6 +210,12 @@ export default {
 			showForm: false,
 			inputReadonly: false,
 			manuel: 0,
+			dT: new DataTransfer(),
+			htmlFileList: [],
+			reader: new FileReader(),
+			dropFileErrors: {},
+			fileInputId: this.getFileInputIdGenerate(),
+			elUniqueID: this.uniqueID(),
 		}
   },
 	props: {
@@ -195,12 +231,18 @@ export default {
   computed: {
     ...mapState([
       'routes',
-    ]),
+    ])
   },
 	methods: {
 		...mapMutations([
       'setErrors',
     ]),
+		getFileInputIdGenerate() {
+			return 'fileInput'+ this.uniqueId;
+		},
+		getFileInputElement() {
+			return document.getElementById(this.fileInputId);
+		},
 		resetFieldValues() {
 			if(this.inputReadonly === false) {
 				this.fieldValues = {
@@ -249,8 +291,6 @@ export default {
         cache: false,
       })
       .done((res) => {
-				// console.log(res);
-				// this.text = res;
 				if(res.showContent) {
 					this.inputReadonly = true;
 					this.fieldValues = res;
@@ -293,10 +333,199 @@ export default {
         // btn.classList.remove("running");
       });
     },
+		fileOnDrop: function(evt) {
+
+			// let addFileListProm = new Promise((resolve, reject) => {
+
+				// let filesCount = evt.dataTransfer.files.length;
+				// let errors = {};
+
+			// 	for (const [key, file] of Object.entries(evt.dataTransfer.files)) {
+
+			// 		this.reader.readAsText(file);
+
+			// 		/* file onload start */
+			// 		this.reader.onload = () => {
+
+			// 			if(this.reader.result.length > 0) {
+
+			// 				this.htmlFileList.push({fileName: file.name, fileKey: key});
+			// 				this.dT.items.add(file);
+			// 			}else {
+			// 				errors['fileDropException'+key] = [
+			// 					`"${file.name}" isimli dosya boş yada bozuk olduğu için eklenemedi.`
+			// 				];
+			// 			}
+			// 		};
+			// 		/* file onload end */
+
+			// 		/* file onerror start */
+			// 		this.reader.onerror = () => {
+			// 			if(this.reader.result.length < 1) {
+			// 				errors['fileDropException'+key] = [
+			// 					`"${file.name}" isimli dosya boş yada bozuk olduğu için eklenemedi.`
+			// 				];
+			// 			}
+			// 		};
+			// 		/* file onerror end */
+					
+			// 		this.reader.onloadend = () => {
+			// 			if((parseInt(key)+1) == filesCount) {
+			// 				resolve(errors);
+			// 			}
+			// 		};
+			// 	}
+			// });
+
+			// addFileListProm
+			// 	.then((data) => {
+			// 		console.log(data);
+
+			// 		if(Object.keys(obj).length === 0) {
+			// 			this.setErrors(data);
+			// 			this.$parent.$parent.modalErrorMsgShow(true);
+			// 		}
+
+			// 		fileInput.files = this.dT.files;
+
+			// 		evt.preventDefault();
+			// 	})
+			// 	.catch((data) => {
+			// 		console.log('data rej')
+			// 		console.log(data)
+			// 	});
+
+					/* this.reader.onloadend = () => {
+						if((parseInt(key)+1) == filesCount) {
+							resolve(errors);
+						}
+					}; */
+
+			let fileInput = this.getFileInputElement();
+			let filesCount = evt.dataTransfer.files.length;
+			let co = 0;
+			
+			let errors = {};
+			for (const [key, file] of Object.entries(evt.dataTransfer.files)) {
+				let reader = new FileReader();
+				let fileKey = this.htmlFileList.length + 1;
+
+				reader.readAsText(file);
+
+				reader.onloadstart = () => {
+					this.htmlFileList.push({fileName: file.name, fileKey});
+				};
+				
+				reader.onload = () => {
+					console.log('reader.result.length', reader.result.length)
+					if(reader.result.length > 0) {
+
+						// this.htmlFileList.push({fileName: file.name, fileKey: key});
+						this.dT.items.add(file);
+					}else {
+						let index = this.htmlFileList.findIndex(object => {
+							return object.fileName === file.name;
+						});
+						this.htmlFileList.splice(index, 1);
+
+						errors['fileDropException'+key] = [
+							`"${file.name}" isimli dosya boş yada bozuk olduğu için eklenemedi.`
+						];
+					}
+				};
+
+				reader.onerror = () => {
+					if(reader.result.length < 1) {
+						errors['fileDropException'+key] = [
+							`"${file.name}" isimli dosya boş yada bozuk olduğu için eklenemedi.`
+						];
+					}
+				};
+
+				reader.onprogress = (event) => {
+					let progress = (event.loaded * 100) / event.total;
+					
+					let el = document.getElementsByClassName(`progress-${this.elUniqueID}-${fileKey}`)[0];
+
+					el.style.width = progress+"%";
+					el.style['aria-valuenow'] = progress+"%";
+
+					console.log(el);
+					console.log('yüklenen: ', event.loaded);
+					console.log('toplam:', event.total);
+					console.log('yüzde: ', progress);
+				};
+
+				reader.onloadend = () => {
+					co++;
+					console.log(filesCount)
+					console.log(co);
+
+					if(co == filesCount) {
+						if(Object.keys(errors).length >0) {
+							this.setErrors(errors);
+							this.$parent.$parent.modalErrorMsgShow(true);			
+						}
+						fileInput.files = this.dT.files;			
+					}
+				};
+			}
+
+			evt.preventDefault();
+		},
+		fileOnDragenter: function(evt) {
+			evt.preventDefault();
+		},
+		delFileList: function(key) {
+			let fileInput = this.getFileInputElement();
+
+			this.dT.items.remove(key);
+
+			this.htmlFileList = [];
+			for (const [key, file] of Object.entries(this.dT.files)) {
+				this.htmlFileList.push({fileName: file.name, fileKey: key});
+			}
+
+			fileInput.files = this.dT.files;
+    },
 	}
 }
 </script>
 
 <style>
-
+.upload-container {
+	position: relative;
+}
+.upload-container input {
+	border: 1px solid #92b0b3;
+	background: #f1f1f1;
+	outline: 2px dashed #92b0b3;
+	outline-offset: -10px;
+	padding: 43px 0px 36px 38px;
+	text-align: center !important;
+	width: 100%;
+}
+.upload-container input:hover {
+	background: #ddd;
+}    
+.upload-btn {
+	margin-left: 300px;
+	padding: 7px 20px;
+}
+#dropContainer {
+	border: 1px solid #92b0b3;
+	/* background: #f1f1f1;
+	outline: 2px dashed #92b0b3;
+	outline-offset: -10px; */
+	padding: 10px 0px 0px 4px;
+	margin-bottom: 5px;
+	width: 100%;
+	height: 111px;
+	overflow-y: scroll;
+} 
+#fileNameList > div{
+	display: table;
+	border: 2px solid #123dd9;
+	padding: 3px 3px 0px 7px;
+}
 </style>
