@@ -92,7 +92,7 @@
 								</div>
 
 								<div class="w-75 float-left">{{item.fileName}}</div>
-								<div class="float-right" style="cursor:pointer" @click="delFileList(key)">
+								<div class="float-right" style="cursor:pointer" @click="delFileList(item.fileKey)">
 									<i class="bi bi-x-circle-fill delete-list-icon"></i>
 								</div>
 							</div>
@@ -113,7 +113,7 @@
 					:readonly="inputReadonly"
 					aria-describedby="emailHelp" 
 					:name="fieldNames.number"
-					:value="fieldValues.number"
+					v-model="fieldValues.number"
 				>
 				<!-- <small id="emailHelp" class="form-text text-muted">
 					Evrağın benzersiz numarası.
@@ -126,7 +126,7 @@
 					:readonly="inputReadonly"
 					aria-describedby="emailHelp" 
 					:name="fieldNames.date"
-					:value="fieldValues.date"
+					v-model="fieldValues.date"
 				>
 				<small id="emailHelp" class="form-text text-muted">
 					Evrağın gönderildiği tarih.
@@ -135,12 +135,20 @@
 			
 			<div class="form-group">
 				<label for="exampleInputEmail1">Evrak Konusu</label>
-				<textarea id="exampleInputEmail1" class="form-control" 
+				<!-- <textarea id="exampleInputEmail1" class="form-control" 
 					:readonly="inputReadonly" 
 					rows="4"
 					aria-describedby="emailHelp"
 					:name="fieldNames.subject"
 					:value="fieldValues.subject.trim()" 
+				>
+				</textarea> -->
+				<textarea id="exampleInputEmail1" class="form-control" 
+					:readonly="inputReadonly" 
+					rows="4"
+					aria-describedby="emailHelp"
+					:name="fieldNames.subject"
+					v-model="fieldValues.subject" 
 				>
 				</textarea>
 				<small id="emailHelp" class="form-text text-muted">
@@ -159,7 +167,7 @@
 					:readonly="inputReadonly"  
 					aria-describedby="emailHelp" 
 					:name="fieldNames.sender"
-					:value="fieldValues.sender.trim()"
+					v-model="fieldValues.sender"
 				>
 				</textarea>
 				<small id="emailHelp" class="form-text text-muted">Evrağı gönderen yer.</small>
@@ -173,7 +181,7 @@
 					:readonly="inputReadonly"
 					aria-describedby="emailHelp" 
 					:name="fieldNames.receiver"
-					:value="fieldValues.receiver.trim()" 
+					v-model="fieldValues.receiver" 
 				>
 				</textarea>
 				<small id="emailHelp" class="form-text text-muted">
@@ -214,7 +222,8 @@ export default {
 			htmlFileList: [],
 			reader: new FileReader(),
 			dropFileErrors: {},
-			fileInputId: this.getFileInputIdGenerate(),
+			// fileInputId: this.getFileInputIdGenerate(),
+			fileInputId: this.uniqueDomID('fileInput'),
 			elUniqueID: this.uniqueID(),
 		}
   },
@@ -237,9 +246,9 @@ export default {
 		...mapMutations([
       'setErrors',
     ]),
-		getFileInputIdGenerate() {
-			return 'fileInput'+ this.uniqueId;
-		},
+		/* getFileInputIdGenerate() {
+			return 'fileInput'+ this.elUniqueID;
+		}, */
 		getFileInputElement() {
 			return document.getElementById(this.fileInputId);
 		},
@@ -335,72 +344,6 @@ export default {
     },
 		fileOnDrop: function(evt) {
 
-			// let addFileListProm = new Promise((resolve, reject) => {
-
-				// let filesCount = evt.dataTransfer.files.length;
-				// let errors = {};
-
-			// 	for (const [key, file] of Object.entries(evt.dataTransfer.files)) {
-
-			// 		this.reader.readAsText(file);
-
-			// 		/* file onload start */
-			// 		this.reader.onload = () => {
-
-			// 			if(this.reader.result.length > 0) {
-
-			// 				this.htmlFileList.push({fileName: file.name, fileKey: key});
-			// 				this.dT.items.add(file);
-			// 			}else {
-			// 				errors['fileDropException'+key] = [
-			// 					`"${file.name}" isimli dosya boş yada bozuk olduğu için eklenemedi.`
-			// 				];
-			// 			}
-			// 		};
-			// 		/* file onload end */
-
-			// 		/* file onerror start */
-			// 		this.reader.onerror = () => {
-			// 			if(this.reader.result.length < 1) {
-			// 				errors['fileDropException'+key] = [
-			// 					`"${file.name}" isimli dosya boş yada bozuk olduğu için eklenemedi.`
-			// 				];
-			// 			}
-			// 		};
-			// 		/* file onerror end */
-					
-			// 		this.reader.onloadend = () => {
-			// 			if((parseInt(key)+1) == filesCount) {
-			// 				resolve(errors);
-			// 			}
-			// 		};
-			// 	}
-			// });
-
-			// addFileListProm
-			// 	.then((data) => {
-			// 		console.log(data);
-
-			// 		if(Object.keys(obj).length === 0) {
-			// 			this.setErrors(data);
-			// 			this.$parent.$parent.modalErrorMsgShow(true);
-			// 		}
-
-			// 		fileInput.files = this.dT.files;
-
-			// 		evt.preventDefault();
-			// 	})
-			// 	.catch((data) => {
-			// 		console.log('data rej')
-			// 		console.log(data)
-			// 	});
-
-					/* this.reader.onloadend = () => {
-						if((parseInt(key)+1) == filesCount) {
-							resolve(errors);
-						}
-					}; */
-
 			let fileInput = this.getFileInputElement();
 			let filesCount = evt.dataTransfer.files.length;
 			let co = 0;
@@ -408,29 +351,43 @@ export default {
 			let errors = {};
 			for (const [key, file] of Object.entries(evt.dataTransfer.files)) {
 				let reader = new FileReader();
-				let fileKey = this.htmlFileList.length + 1;
+				let addBool = true;
 
 				reader.readAsText(file);
 
 				reader.onloadstart = () => {
-					this.htmlFileList.push({fileName: file.name, fileKey});
+					/* Resim yüklenene kadar kaydet butonu pasif olsun start */
+					let element = document.getElementById('document-submit');
+					element.disabled = true;
+					/* Resim yüklenene kadar kaydet butonu pasif olsun end */
+
+					let index = this.htmlFileList.findIndex(object => {
+						return object.fileName === file.name;
+					});
+
+					if(index < 0) {
+						this.htmlFileList.push({fileName: file.name, fileKey: (this.htmlFileList.length + 1)});
+					}else {
+						addBool = false;
+					}
 				};
 				
 				reader.onload = () => {
-					console.log('reader.result.length', reader.result.length)
-					if(reader.result.length > 0) {
 
-						// this.htmlFileList.push({fileName: file.name, fileKey: key});
-						this.dT.items.add(file);
-					}else {
-						let index = this.htmlFileList.findIndex(object => {
-							return object.fileName === file.name;
-						});
-						this.htmlFileList.splice(index, 1);
+					if(addBool) {
+						if(reader.result.length > 0) {
 
-						errors['fileDropException'+key] = [
-							`"${file.name}" isimli dosya boş yada bozuk olduğu için eklenemedi.`
-						];
+							this.dT.items.add(file);
+						}else {
+							let index = this.htmlFileList.findIndex(object => {
+								return object.fileName === file.name;
+							});
+							this.htmlFileList.splice(index, 1);
+
+							errors['fileDropException'+key] = [
+								`"${file.name}" isimli dosya boş yada bozuk olduğu için eklenemedi.`
+							];
+						}
 					}
 				};
 
@@ -443,25 +400,31 @@ export default {
 				};
 
 				reader.onprogress = (event) => {
+					let fileListItem = this.htmlFileList.find(object => {
+						return object.fileName === file.name;
+					});
+
 					let progress = (event.loaded * 100) / event.total;
 					
-					let el = document.getElementsByClassName(`progress-${this.elUniqueID}-${fileKey}`)[0];
+					let el = document.getElementsByClassName(`progress-${this.elUniqueID}-${fileListItem.fileKey}`)[0];
 
 					el.style.width = progress+"%";
 					el.style['aria-valuenow'] = progress+"%";
 
-					console.log(el);
-					console.log('yüklenen: ', event.loaded);
-					console.log('toplam:', event.total);
-					console.log('yüzde: ', progress);
+					if(progress === 100) {
+						el.classList.add("bg-success");
+					}
 				};
 
 				reader.onloadend = () => {
 					co++;
-					console.log(filesCount)
-					console.log(co);
 
 					if(co == filesCount) {
+						/* Bütün resimler yüklendikten sonra kaydet butonu aktif olsun start*/
+						let element = document.getElementById('document-submit');
+						element.disabled = false;
+						/* Bütün resimler yüklendikten sonra kaydet butonu aktif olsun end*/
+
 						if(Object.keys(errors).length >0) {
 							this.setErrors(errors);
 							this.$parent.$parent.modalErrorMsgShow(true);			
@@ -479,14 +442,43 @@ export default {
 		delFileList: function(key) {
 			let fileInput = this.getFileInputElement();
 
-			this.dT.items.remove(key);
+			let fileListItemProm = new Promise((resolve, reject) => {
+
+				this.htmlFileList.find(obj => {
+					if(obj.fileKey === key) {
+						resolve(obj.fileName);
+					}
+				});
+			});
+
+			fileListItemProm.then((fileName) => {
+
+				this.htmlFileList = [];
+				for (const [key, file] of Object.entries(this.dT.files)) {
+
+					if(file.name === fileName) {
+						this.dT.items.remove(key);
+					}else {
+						this.htmlFileList.push({fileName: file.name, fileKey: key});
+					}					
+				}
+
+				fileInput.files = this.dT.files;
+				
+			}).catch((err) => {
+				console.log(err);
+			});
+
+			
+			
+			/* this.dT.items.remove(dtFileIndex);
 
 			this.htmlFileList = [];
 			for (const [key, file] of Object.entries(this.dT.files)) {
 				this.htmlFileList.push({fileName: file.name, fileKey: key});
 			}
 
-			fileInput.files = this.dT.files;
+			fileInput.files = this.dT.files; */
     },
 	}
 }
@@ -524,6 +516,7 @@ export default {
 	overflow-y: scroll;
 } 
 #fileNameList > div{
+	width: 99%;
 	display: table;
 	border: 2px solid #123dd9;
 	padding: 3px 3px 0px 7px;

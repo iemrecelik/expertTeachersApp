@@ -41,6 +41,10 @@ require('./adminlte/plugins/select2/js/select2.full');
 /* daterange picker */
 require('./adminlte/plugins/daterangepicker/daterangepicker');
 
+/* jquery-knob */
+require('./adminlte/plugins/jquery-knob/jquery.knob.min');
+
+
 /*Main JS*/
 require('./jquery/main.js');
 require('./jquery/main-ajax.js');

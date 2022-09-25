@@ -74,8 +74,8 @@
               <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                 <li class="nav-item" role="presentation">
                   <button class="nav-link active" id="pills-home-tab" 
-                    data-bs-toggle="pill" 
-                    data-bs-target="#pills-home" 
+                    data-toggle="pill" 
+                    data-target="#pills-home" 
                     type="button" 
                     role="tab" 
                     aria-controls="pills-home" 
@@ -86,8 +86,8 @@
                 </li>
                 <li class="nav-item" role="presentation">
                   <button class="nav-link" id="pills-profile-tab" 
-                    data-bs-toggle="pill" 
-                    data-bs-target="#pills-profile" 
+                    data-toggle="pill" 
+                    data-target="#pills-profile" 
                     type="button" 
                     role="tab" 
                     aria-controls="pills-profile" 
@@ -97,21 +97,49 @@
                   </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                  <button class="nav-link" id="pills-contact-tab" 
-                    data-bs-toggle="pill" 
-                    data-bs-target="#pills-contact" 
+                  <button class="nav-link" id="pills-correspondence-tab" 
+                    data-toggle="pill" 
+                    data-target="#pills-correspondence" 
                     type="button" 
                     role="tab" 
-                    aria-controls="pills-contact" 
+                    aria-controls="pills-correspondence" 
                     aria-selected="false"
                   >
-                    Bilgi Ekleme
+                    Yazışmalar
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="pills-update-profile-tab" 
+                    data-toggle="pill" 
+                    data-target="#pills-update-profile" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="pills-update-profile" 
+                    aria-selected="false"
+                  >
+                    Bilgileri Güncelle
                   </button>
                 </li>
               </ul>
             </div><!-- /.card-header -->
             <div class="card-body">
+
               <div class="tab-content" id="pills-tabContent">
+                <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab">
+                  <old-regulation-component></old-regulation-component>
+                </div>
+                <div class="tab-pane fade" id="pills-profile" role="tabpanel" aria-labelledby="pills-profile-tab">
+                  <new-regulation-component></new-regulation-component>
+                </div>
+                <div class="tab-pane fade" id="pills-correspondence" role="tabpanel" aria-labelledby="pills-correspondence-tab">
+                  <update-knowlange-component></update-knowlange-component>
+                </div>
+                <div class="tab-pane fade" id="pills-update-profile" role="tabpanel" aria-labelledby="pills-update-profile-tab">
+                  <update-knowlange-component></update-knowlange-component>
+                </div>
+              </div>
+
+             <!--  <div class="tab-content" id="pills-tabContent">
                 <div class="tab-pane fade show active" id="pills-home" role="tabpanel" aria-labelledby="pills-home-tab" tabindex="0">
                   <old-regulation-component></old-regulation-component>
                 </div>
@@ -121,7 +149,7 @@
                 <div class="tab-pane fade" id="pills-contact" role="tabpanel" aria-labelledby="pills-contact-tab" tabindex="0">
                   <update-knowlange-component></update-knowlange-component>
                 </div>
-              </div>
+              </div> -->
               <!-- /.tab-content -->
             </div><!-- /.card-body -->
           </div>
