@@ -19,9 +19,9 @@ class CreateDcDocumentsTable extends Migration
             $table->enum('dc_main_status', [0, 1])->default(0);
             $table->integer('dc_number');
             $table->string('dc_subject');
-            $table->text('dc_raw_content');
-            $table->text('dc_content');
-            $table->text('dc_show_content');
+            $table->longText('dc_raw_content');
+            $table->longText('dc_content');
+            $table->longText('dc_show_content');
             $table->string('dc_who_send');
             $table->string('dc_who_receiver');
             $table->integer('dc_date');
