@@ -411,9 +411,9 @@ export default {
 					el.style.width = progress+"%";
 					el.style['aria-valuenow'] = progress+"%";
 
-					if(progress === 100) {
+					/* if(progress === 100) {
 						el.classList.add("bg-success");
-					}
+					} */
 				};
 
 				reader.onloadend = () => {

@@ -463,7 +463,8 @@ class DocumentsController extends Controller
             $pattern = '/<!\[CDATA\[\¸(.*)]]>/si';
             preg_match($pattern, $result, $content);
 
-            $pattern = '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
+            // $pattern = '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
+            $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
             preg_match($pattern, $result, $number);
             
             $receiver[3] = preg_replace('/\n/', '<br/>', $receiver[3]);
@@ -507,14 +508,14 @@ class DocumentsController extends Controller
         }
 
         $arr = [
-            'sender' => $sender[1],
-            'subjectNumber' => $number[1],
-            'number' => $number[2],
-            'date' => $number[3],
-            'subject' => $receiver[1],
+            'sender' => trim($sender[1]),
+            'subjectNumber' => trim($number[1]),
+            'number' => trim($number[2]),
+            'date' => trim($number[3]),
+            'subject' => trim($receiver[1]),
             'content' => $content[1],
             'rawContent' => $result,
-            'receiver' => $receiver[2],
+            'receiver' => trim($receiver[2]),
             'showContent' => $showContent,
         ];
 
