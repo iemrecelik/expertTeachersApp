@@ -2,7 +2,7 @@ import mainComponent from './components/admin/main/MainComponent.vue';
 import searchComponent from './components/admin/old_regulation/search/SearchComponent.vue';
 import teacherInfosComponent from './components/admin/search/teacher_infos/TeacherInfosComponent.vue';
 
-/* Document Management Category */
+/* Document Management*/
 import docMngCategoryComponent from './components/admin/document_mng/category/IndexComponent.vue';
 import docMngListComponent from './components/admin/document_mng/list/IndexComponent.vue';
 import docMngCommentComponent from './components/admin/document_mng/comment/IndexComponent.vue';
@@ -10,6 +10,10 @@ import docMngDocumentComponent from './components/admin/document_mng/document/In
 import docMngCreateDocumentComponent from './components/admin/document_mng/document/CreateComponent.vue';
 import docMngManualCreateDocumentComponent from './components/admin/document_mng/document/ManualCreateComponent.vue';
 import docMngSearchComponent from './components/admin/document_mng/search/SearchComponent.vue';
+
+/* Teacehrs */
+import teachersComponent from './components/admin/teachers/IndexComponent';
+import teachMngInstitutionsComponent from './components/admin/institutions/IndexComponent';
 
 
 export default {
@@ -24,4 +28,7 @@ export default {
 	'doc-mng-create-document-component': docMngCreateDocumentComponent,
 	'doc-mng-manual-create-document-component': docMngManualCreateDocumentComponent,
 	'doc-mng-search-component': docMngSearchComponent,
+
+	'teachers-component': teachersComponent,
+	'teach-mng-institutions-component': teachMngInstitutionsComponent,
 }

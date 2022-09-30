@@ -25,8 +25,11 @@ window._ = require('lodash');
     
 } catch (e) {}
 
-/*Moment*/
-// window.moment = require('moment');
+/*Moment JS*/
+window.moment = require('moment');
+
+/* InputMask */
+require('inputmask');
 
 /*CropperJS*/
 // window.Cropper = require('cropperjs/dist/cropper.js');

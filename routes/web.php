@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\MainController;
+use App\Http\Controllers\Admin\TeachersController;
+use App\Http\Controllers\Admin\TeachersListManagement\InstitutionsController;
 use App\Http\Controllers\Admin\Search\SearchController;
 use App\Http\Controllers\Admin\DocumentManagement\ListController;
 use App\Http\Controllers\Admin\DocumentManagement\CommentController;
@@ -34,6 +36,40 @@ use App\Http\Controllers\Admin\DocumentManagement\SearchController as DcSearchCo
 // Route::resource('main', MainController::class)->middleware('auth');
 
 // Route::get('search', [SearchController::class, 'expertInfo']);
+Route::prefix('admin')
+    ->middleware('auth')
+    ->controller(TeachersController::class)
+    ->name('admin.')
+    ->group(function () {
+        Route::post(
+			'teachers/data-list', 
+			'getDataList'
+		)
+		->name('teachers.dataList');
+
+		Route::resource('teachers', TeachersController::class);
+    });
+
+Route::prefix('admin')
+    ->middleware('auth')
+    ->controller(InstitutionsController::class)
+    ->name('admin.')
+    ->group(function () {
+		/* Institutions */
+        Route::get(
+			'institutions/get-institutions', 
+			'getInstitutions'
+		)
+		->name('institutions.getInstitutions');
+
+        Route::post(
+			'institutions/data-list', 
+			'getDataList'
+		)
+		->name('institutions.dataList');
+
+		Route::resource('institutions', InstitutionsController::class);
+    });
 
 Route::prefix('admin/search')
     ->middleware('auth')

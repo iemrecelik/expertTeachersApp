@@ -471,6 +471,12 @@ class DocumentsController extends Controller
             $receiver[3] = preg_replace('/\t{3,100}/', '<span class="mr-5"></span>', $receiver[3]);
             $receiver[3] = preg_replace('/\t/', '<span class="mr-5"></span>', $receiver[3]);
 
+            /* dd([
+                'sender'    => $sender,
+                'number'    => $number,
+                'receiver'  => $receiver,
+            ]); */
+
             $showContent = $this->createShowContentHtml([
                 'sender'    => $sender,
                 'number'    => $number,
@@ -483,14 +489,14 @@ class DocumentsController extends Controller
                 empty($receiver[1]) || empty($receiver[2])
             ) {
                 throw ValidationException::withMessages(
-                    ['senderFile' => 'Dosya formatı hatalı']
+                    ['senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.']
                 );
             }
 
         } catch (\Throwable $th) {
 
             throw ValidationException::withMessages(
-                ['senderFile' => 'Dosya formatı hatalı']
+                ['senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.']
             );
         }
 

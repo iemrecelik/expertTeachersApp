@@ -171,7 +171,7 @@ class CommentController extends Controller
             +++ 2- Dökümanların ekleri gösterilecek ve resim , pdf dosyaları tarayıcı gösterilecek
             +++ 3- udf dosyası indirilebilir olacak 
             +++ 4- ana evrağın yanında ilgi evrakları da gözükecek
-            5- Listeleri sadece yükleyen kişi silebilir.
+            +++ 5- Listeleri sadece yükleyen kişi silebilir.
             +++ 6- Tablolarda arama çubuğunu kaldır.
             +++ 7- evrak aramada ilgi evrağı göster deyince ana evrak ve ilgiler gözükecek
             +++ 8- listeye eklenen ilgi evrak aramada gösterilmiyor.
@@ -189,6 +189,9 @@ class CommentController extends Controller
             +++ 20- Hangi kullanıcı tarafından ekleneceği
             +++ 21- login yaptıktan sonra evrak arama sayfasına girsin
             +++ 22. dış kurum evrakların içerikleri veri tbanınan kaydedilesin. Ve arama yapılabilsin.
+            23. udf dosyalarını düzgün çekmiyor. Gönderene ilgi yazıyı da ekliyor.
+            24. öğretmenler listesi ve crud işlemleri eklenecek
+            25. teachers tablosundaki phone alanı mobile olarak değiştir
         */
 
         $request->validate(
