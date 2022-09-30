@@ -1,0 +1,12 @@
+@extends('admin.base.index')
+@section('contents')
+  <teachers-component
+    :pproutes="{ 
+      index: '{{ route('admin.teachers.index') }}', 
+      dataList: '{{ route('admin.teachers.dataList') }}', 
+      getInstitutions: '{{ route('admin.institutions.getInstitutions') }}', 
+    }"
+    :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
+  >
+  </teachers-component>
+@endsection

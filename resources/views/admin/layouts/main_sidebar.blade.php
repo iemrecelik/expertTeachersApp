@@ -116,6 +116,49 @@
           </ul>
         </li>
 
+        <li class="nav-item data-menu-open">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-search"></i>
+            <p>
+               Öğretmenler Liste Yönetimi
+               <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li>
+              <!-- SidebarSearch Form -->
+              <div class="form-inline mt-3 mb-2">
+                <div class="input-group" data-widget="sidebar-search">
+                  <input class="form-control form-control-sidebar" type="search" placeholder="Tc Kimlik No" aria-label="Search">
+                  <div class="input-group-append">
+                    <button class="btn btn-sidebar">
+                      <i class="fas fa-search fa-fw"></i>
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </li>
+            <li class="nav-item">
+              <a href="{{route('admin.teachers.index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Öğretmenler Listesi</p>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a href="{{route('admin.institutions.index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Kurum Listesi</p>
+              </a>
+            </li>
+            <!-- <li class="nav-item">
+              <a href="{{route('admin.teachers.index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Öğretmen Arama</p>
+              </a>
+            </li> -->
+          </ul>
+        </li>
+
         <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-table"></i>

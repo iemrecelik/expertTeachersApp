@@ -26,13 +26,23 @@
 	</div>
 
 	<div class="row mb-3">
-		<div class="col-12">
+		<div class="col-1 border-right">
 			<button type="button" 
-				class="btn btn-md btn-danger"
+				class="btn btn-sm btn-danger"
 				@click="resetFieldValues"
 			>
 				{{$t('messages.resetForm')}}
 			</button>
+		</div>
+		<div class="col-3 pl-4">
+			<div class="form-check form-check-inline">
+				<!-- <input class="form-check-input" type="checkbox" id="inlineCheckbox1" v-model="manuelEnter" @change="manuelEnterCheck"> -->
+				<!-- <input class="form-check-input" type="checkbox" :id="'inlineCheckbox1'+elUniqueID" @change="manuelEnterCheck"> -->
+				<input class="form-check-input" type="checkbox" :id="'inlineCheckbox1'+elUniqueID" v-model="manuelEnter">
+				<label class="form-check-label" :for="'inlineCheckbox1'+elUniqueID">
+					Manuel giriş yapınız.
+				</label>
+			</div>
 		</div>
 	</div>
 
@@ -225,6 +235,8 @@ export default {
 			// fileInputId: this.getFileInputIdGenerate(),
 			fileInputId: this.uniqueDomID('fileInput'),
 			elUniqueID: this.uniqueID(),
+			// manuelEnter: 'manuelEnter'+elUniqueID;
+			manuelEnter: false,
 		}
   },
 	props: {
@@ -237,6 +249,11 @@ export default {
 			required: true,
 		},
 	},
+	watch: {
+    manuelEnter(newManuelEnter, oldManuelEnter) {
+      this.inputReadonly = newManuelEnter === true ? false: true;
+    }
+  },
   computed: {
     ...mapState([
       'routes',
@@ -246,8 +263,12 @@ export default {
 		...mapMutations([
       'setErrors',
     ]),
-		/* getFileInputIdGenerate() {
-			return 'fileInput'+ this.elUniqueID;
+		/* manuelEnterCheck(event) {
+			console.log(event.target.value);
+			// console.log(this.manuelEnter);
+			// console.log(event.target.value == 'on');
+			this.inputReadonly = event.target.value === true ? false: true;
+			// this.inputReadonly = this.manuelEnter === true ? false: true;
 		}, */
 		getFileInputElement() {
 			return document.getElementById(this.fileInputId);
@@ -324,8 +345,9 @@ export default {
 						delete error.responseJSON.errors.content;
 
 					}else {
-						let files = event.target;
-						files.value = null;
+						this.inputReadonly = false;
+						/* let files = event.target;
+						files.value = null; */
 					}
 
 					this.setErrors(error.responseJSON.errors);
