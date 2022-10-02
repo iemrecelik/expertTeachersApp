@@ -25,15 +25,15 @@ class UpdateTeachersRequest extends FormRequest
     {
         return [
             'thr_tc_no' => 'required|digits:11',
-            'thr_name' => 'required|regex:/^[a-zA-Z]+$/u',
-            'thr_surname' => 'required|regex:/^[a-zA-Z]+$/u',
-            'thr_career_ladder' => 'required|regex:/^[a-zA-Z]+$/u',
+            'thr_name' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+            'thr_surname' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+            'thr_career_ladder' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
             /* 'thr_degree' => 'required|string',
             'thr_task' => 'required|string',
             'thr_education_st' => 'required|string',
             'thr_phone' => 'required|integer',
             'thr_place_of_task' => 'required|string', */
-            'thr_institution' => 'required|integer',
+            'inst_id' => 'required|integer',
             'thr_gender' => 'required|in:0,1',
         ];
     }
@@ -54,7 +54,7 @@ class UpdateTeachersRequest extends FormRequest
             'thr_surname.regex' => 'Soy isim alanı sadece harflerden oluşmalıdır.',
             'thr_career_ladder.required' => 'Kariyer basamağı alanı zorunludur.',
             'thr_career_ladder.regex' => 'Kariyer basamağı alanı sadece harflerden oluşmalıdır.',
-            'thr_institution.required' => 'Kurum alanı zorunludur.',
+            'inst_id.required' => 'Kurum alanı zorunludur.',
             'thr_gender.required' => 'Cinsiyet alanı zorunludur.',
             'thr_gender.in' => 'Cinsiyet sadece erkek veya bayan olmalıdır.',
         ];

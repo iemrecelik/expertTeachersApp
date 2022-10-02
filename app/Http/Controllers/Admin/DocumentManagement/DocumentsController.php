@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Admin\DocumentManagement;
 
+use setasign\Fpdi\Fpdi;
 use App\Library\FileUpload;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
 use App\Models\Admin\DcFiles;
 use App\Models\Admin\DcLists;
+use App\Models\Admin\Teachers;
 use App\Models\Admin\DcComment;
 use App\Models\Admin\DcDocuments;
 use App\Models\Admin\DcAttachFiles;
@@ -15,7 +17,6 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\DocumentManagement\StoreDcDocumentsRequest;
 use App\Http\Requests\Admin\DocumentManagement\StoreManualDcDocumentsRequest;
-use setasign\Fpdi\Fpdi;
 
 class DocumentsController extends Controller
 {
@@ -104,6 +105,7 @@ class DocumentsController extends Controller
             'dc_date'           => strtotime($params['dc_date']),
             'user_id'           => $request->user()->id,
             'list_id'           => $params['list_id'],
+            'thr_id'            => $params['thr_id'],
             'dc_com_text'       => $params['dc_com_text'],
             'dc_manuel'         => $params['dc_manuel'],
         ];
@@ -268,9 +270,11 @@ class DocumentsController extends Controller
     private function saveDcDocument($params, $dcFile, $dcAttachFiles = null, $dcDocuments = null)
     {
         $listId = $params['list_id'] ?? 0;
+        $teacherIds = $params['thr_id'] ?? [];
         $dcComText = $params['dc_com_text'] ?? '';
 
         unset($params['list_id']);
+        unset($params['thr_id']);
         unset($params['dc_com_text']);
         
 
@@ -308,6 +312,13 @@ class DocumentsController extends Controller
                 $dcList = DcLists::find($listId);
 
                 $dcDocuments->dc_lists()->save($dcList);
+            }
+
+            /* Öğretmenleri ekleme */
+            if(count($teacherIds) > 0) {
+                $teachers = Teachers::whereIn('id', $teacherIds)->get();
+
+                $dcDocuments->dc_teachers()->saveMany($teachers);
             }
 
             /* İzinli kullanıcıları ekleme */

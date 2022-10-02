@@ -128,14 +128,22 @@
             <li>
               <!-- SidebarSearch Form -->
               <div class="form-inline mt-3 mb-2">
-                <div class="input-group" data-widget="sidebar-search">
-                  <input class="form-control form-control-sidebar" type="search" placeholder="Tc Kimlik No" aria-label="Search">
-                  <div class="input-group-append">
-                    <button class="btn btn-sidebar">
-                      <i class="fas fa-search fa-fw"></i>
-                    </button>
+                <form action="{{route('admin.teachers.infos')}}" method="post">
+                  @csrf
+                  <div class="input-group">
+                    <input class="form-control form-control-sidebar" 
+                      type="search" 
+                      name="thr_tc_no"
+                      placeholder="Tc Kimlik No" 
+                      aria-label="Search"
+                    >
+                    <div class="input-group-append">
+                      <button class="btn btn-sidebar">
+                        <i class="fas fa-search fa-fw"></i>
+                      </button>
+                    </div>
                   </div>
-                </div>
+                </form>
               </div>
             </li>
             <li class="nav-item">
@@ -150,12 +158,6 @@
                 <p>Kurum Listesi</p>
               </a>
             </li>
-            <!-- <li class="nav-item">
-              <a href="{{route('admin.teachers.index')}}" class="nav-link">
-                <i class="far fa-circle nav-icon"></i>
-                <p>Öğretmen Arama</p>
-              </a>
-            </li> -->
           </ul>
         </li>
 

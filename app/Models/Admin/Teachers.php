@@ -31,6 +31,14 @@ class Teachers extends Model
 
     public function institution()
     {
-        return $this->hasMany(Institutions::class, 'inst_id', 'id');
+        return $this->hasMany(Institutions::class, 'id', 'inst_id');
+    }
+
+    /**
+     * The dc_documents that belong to the dc_document.
+     */
+    public function dc_documents()
+    {
+        return $this->belongsToMany(DcDocuments::class, 'dc_thr', 'thr_id', 'dc_id');
     }
 }

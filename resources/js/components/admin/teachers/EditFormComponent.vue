@@ -136,65 +136,92 @@
         <div class="form-group">
           <label for="exampleFormControlSelect1">thr_institution :</label>
           <select class="form-control" id="exampleFormControlSelect1"
-            name="thr_institution"
-            :value="value('thr_place_of_task')"
+            name="inst_id"
           >
             <option selected disabled value="">Kurum Seçiniz</option>
-            <option value="1">MEB</option>
-            <option value="2">Adelet Bakanlığı</option>
-            <option value="3">Sağlık Bakanlığı</option>
+            <option :key="index" v-for="(item, index) in institutionList" 
+              :value="item.id" 
+              :selected="item.id === value('inst_id')"
+            >
+              {{item.inst_name}}
+            </option>
           </select>
         </div>
       </div>
     </div>
   
   </div>
-  </template>
+</template>
   
-  <script>
-  // import editLangFormComponent from './EditLangFormComponent';
-  import Treeselect from '@riophae/vue-treeselect'
-  // import the styles
-  import '@riophae/vue-treeselect/dist/vue-treeselect.css'
-  
-  import { mapState } from 'vuex';
-  
-  export default {
-    name: 'EditFormComponent',
-    data () {
-      return {
-        categoryList: [],
-        ajaxErrorCount: -1,
-      }
-    },
-    props: {
-      ppitem: {
-        type: Object,
-        required: true,
-      }
-    },
-    computed: {
-      item: function(){
-        return this.ppitem;
-      },
-      ...mapState([
-        'routes',
-      ]),
-    },
-    methods: {
-      value: function(fieldName){
-        return this.$store.state.old[fieldName] || this.item[fieldName];
-      },
-      langFieldName: function(fieldName){
-        return `langs[${this.$store.state.lang}][${fieldName}]`;
-      },
-    },
-    created() {
-    },
-    components: {
-      Treeselect,
-      // 'edit-lang-form-component': editLangFormComponent,
+<script>
+import { mapState } from 'vuex';
+
+export default {
+  name: 'EditFormComponent',
+  data () {
+    return {
+      institutionList: [],
+      ajaxErrorCount: -1,
     }
-    
-  }
-  </script>
+  },
+  props: {
+    ppitem: {
+      type: Object,
+      required: true,
+    }
+  },
+  computed: {
+    item: function(){
+      return this.ppitem;
+    },
+    ...mapState([
+      'routes',
+    ]),
+  },
+  methods: {
+    value: function(fieldName){
+      return this.$store.state.old[fieldName] || this.item[fieldName];
+    },
+    langFieldName: function(fieldName){
+      return `langs[${this.$store.state.lang}][${fieldName}]`;
+    },
+    getInstitutions: function() {
+      $.ajax({
+        url: this.routes.getInstitutions,
+        type: 'GET',
+        dataType: 'JSON',
+      })
+      .done((res) => {
+        this.institutionList = res;
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getInstitutions();
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+      .always(() => {});
+    }
+  },
+  created() {
+    this.getInstitutions();
+  },
+  mounted() {
+    var mobileNoEl = document.getElementById("mobile-no");
+    var tcNo = document.getElementById("tc-no");
+
+    var im = new Inputmask();
+    im.mask(mobileNoEl);
+    im.mask(tcNo);
+  },
+}
+</script>

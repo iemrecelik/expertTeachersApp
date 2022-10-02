@@ -3,7 +3,7 @@
 	:ppTitleName="$t('messages.teachersListManage')"
 >
   <table class="res-dt-table table table-striped table-bordered" 
-  style="width:100%">
+    style="width:100%">
     <thead>
       <tr>
         <th>{{ $t("messages.thr_tc_no") }}</th>

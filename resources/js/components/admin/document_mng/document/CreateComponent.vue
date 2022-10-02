@@ -127,6 +127,27 @@
 								</select>
 							</div>
 						</div>
+
+						<div class="col-4">
+							<div class="form-group">
+								<label for="addTeacherList">İlgili Öğretmen(ler)i Ekle: </label>
+								<treeselect
+									:id="'addTeacherList'"
+									:multiple="true"
+									:async="true"
+									:load-options="loadOptions"
+									loadingText="Yükleniyor..."
+									clearAllText="Hepsini sil."
+									clearValueText="Değeri sil."
+									noOptionsText="Hiçbir seçenek yok."
+									noResultsText="Mevcut seçenek yok."
+									searchPromptText="Aramak için yazınız."
+									placeholder="Seçiniz..."
+									name="thr_id[]"
+								/>
+							</div>
+							
+						</div>
 					</div>
 
 				</div>
@@ -162,11 +183,16 @@
 </template>
 
 <script>
-import fileUpladoFormComponent from './FileUploadFormComponent.vue';
-import Treeselect from '@riophae/vue-treeselect'
-// import the styles
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import Treeselect from '@riophae/vue-treeselect';
+import { ASYNC_SEARCH } from '@riophae/vue-treeselect';
 
+const simulateAsyncOperation = fn => {
+  setTimeout(fn, 2000)
+}
+// import the styles
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+
+import fileUpladoFormComponent from './FileUploadFormComponent.vue';
 import { mapState, mapMutations } from 'vuex';
 
 export default {
@@ -371,7 +397,40 @@ export default {
 			) {
 				$('#error-modal').modal('show');
 			}
-		}
+		},
+		loadOptions({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+					this.getTeachersSearchList(searchQuery, callback);
+        })
+      }
+    },
+		getTeachersSearchList: function(searchTcNo, callback) {
+      $.ajax({
+        url: this.routes.getTeachersSearchList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'searchTcNo': searchTcNo}
+      })
+      .done((res) => {
+				callback(null, res)
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getTeachersSearchList(searchTcNo, callback);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		}  
   },
   created() {
 		this.setRoutes(this.pproutes);

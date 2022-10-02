@@ -41,11 +41,23 @@ Route::prefix('admin')
     ->controller(TeachersController::class)
     ->name('admin.')
     ->group(function () {
-        Route::post(
+		Route::post(
+			'teachers/infos', 
+			'showTeacherInfos'
+		)
+		->name('teachers.infos');
+
+		Route::post(
 			'teachers/data-list', 
 			'getDataList'
 		)
 		->name('teachers.dataList');
+		
+		Route::get(
+			'teachers/search-list', 
+			'getSearchTeacherList'
+		)
+		->name('teachers.searchList');
 
 		Route::resource('teachers', TeachersController::class);
     });

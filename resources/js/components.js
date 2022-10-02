@@ -1,6 +1,8 @@
 import mainComponent from './components/admin/main/MainComponent.vue';
 import searchComponent from './components/admin/old_regulation/search/SearchComponent.vue';
-import teacherInfosComponent from './components/admin/search/teacher_infos/TeacherInfosComponent.vue';
+// import teacherInfosComponent from './components/admin/search/teacher_infos/TeacherInfosComponent.vue';
+import teacherInfosComponent from './components/admin/teachers/teacher_infos/TeacherInfosComponent.vue';
+
 
 /* Document Management*/
 import docMngCategoryComponent from './components/admin/document_mng/category/IndexComponent.vue';

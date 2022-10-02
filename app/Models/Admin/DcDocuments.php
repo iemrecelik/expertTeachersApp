@@ -50,6 +50,14 @@ class DcDocuments extends Model
         return $this->belongsToMany(DcDocuments::class, 'dc_relative', 'dc_id', 'rel_id');
     }
 
+    /**
+     * The dc_teachers that belong to the dc_document.
+     */
+    public function dc_teachers()
+    {
+        return $this->belongsToMany(Teachers::class, 'dc_thr', 'dc_id', 'thr_id');
+    }
+
 
     /**
      * The dc_list that belong to the dc_document.

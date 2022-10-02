@@ -71,48 +71,48 @@
 
 			<div class="form-group">
 
-					<label for="file_upload">Evrak Ek(leri)ini Ekle</label>
-					<!-- <div class="upload-container">
-						<input type="file" id="file_upload" multiple
-							:name="fieldNames.senderAttachFiles"
-						/>
-					</div> -->
+				<label for="file_upload">Evrak Ek(leri)ini Ekle</label>
+				<!-- <div class="upload-container">
+					<input type="file" id="file_upload" multiple
+						:name="fieldNames.senderAttachFiles"
+					/>
+				</div> -->
 
-					<!-- <small id="emailHelp" 
-						class="form-text text-muted">
-							Buraya evrakın eklerini ekleyiniz.
-					</small> -->
+				<!-- <small id="emailHelp" 
+					class="form-text text-muted">
+						Buraya evrakın eklerini ekleyiniz.
+				</small> -->
 
-					<div id="dropContainer"
-						@dragover="fileOnDragenter"
-						@drop="fileOnDrop"
-					>
-						Dosya(ları) buraya sürükleyip bırakınız.
-						<div id="fileNameList">
-							<div class="mt-2" v-for="(item, key) in htmlFileList">
-								<div class="progress">
-									<div :class="`progress-bar progress-bar-striped progress-bar-animated progress-${elUniqueID}-${item.fileKey}`"
-										role="progressbar" 
-										aria-valuenow="0" 
-										aria-valuemin="0" 
-										aria-valuemax="100" 
-										style="width: 0%"
-									>
-									</div>
+				<div id="dropContainer"
+					@dragover="fileOnDragenter"
+					@drop="fileOnDrop"
+				>
+					Dosya(ları) buraya sürükleyip bırakınız.
+					<div id="fileNameList">
+						<div class="mt-2" v-for="(item, key) in htmlFileList">
+							<div class="progress">
+								<div :class="`progress-bar progress-bar-striped progress-bar-animated progress-${elUniqueID}-${item.fileKey}`"
+									role="progressbar" 
+									aria-valuenow="0" 
+									aria-valuemin="0" 
+									aria-valuemax="100" 
+									style="width: 0%"
+								>
 								</div>
+							</div>
 
-								<div class="w-75 float-left">{{item.fileName}}</div>
-								<div class="float-right" style="cursor:pointer" @click="delFileList(item.fileKey)">
-									<i class="bi bi-x-circle-fill delete-list-icon"></i>
-								</div>
+							<div class="w-75 float-left">{{item.fileName}}</div>
+							<div class="float-right" style="cursor:pointer" @click="delFileList(item.fileKey)">
+								<i class="bi bi-x-circle-fill delete-list-icon"></i>
 							</div>
 						</div>
 					</div>
-						<!-- Manuel olarak eklemek için: -->
-					<input type="file" :id="fileInputId" multiple
-						:name="fieldNames.senderAttachFiles"
-					/>
 				</div>
+					<!-- Manuel olarak eklemek için: -->
+				<input type="file" :id="fileInputId" multiple
+					:name="fieldNames.senderAttachFiles"
+				/>
+			</div>
 		</div>
 
 		<div class="col-5">
@@ -490,19 +490,8 @@ export default {
 			}).catch((err) => {
 				console.log(err);
 			});
-
-			
-			
-			/* this.dT.items.remove(dtFileIndex);
-
-			this.htmlFileList = [];
-			for (const [key, file] of Object.entries(this.dT.files)) {
-				this.htmlFileList.push({fileName: file.name, fileKey: key});
-			}
-
-			fileInput.files = this.dT.files; */
     },
-	}
+	},
 }
 </script>
 

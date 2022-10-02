@@ -190,8 +190,9 @@ class CommentController extends Controller
             +++ 21- login yaptıktan sonra evrak arama sayfasına girsin
             +++ 22. dış kurum evrakların içerikleri veri tbanınan kaydedilesin. Ve arama yapılabilsin.
             23. udf dosyalarını düzgün çekmiyor. Gönderene ilgi yazıyı da ekliyor.
-            24. öğretmenler listesi ve crud işlemleri eklenecek
-            25. teachers tablosundaki phone alanı mobile olarak değiştir
+            ++24. öğretmenler listesi ve crud işlemleri eklenecek
+            ++25. teachers tablosundaki phone alanı mobile olarak değiştir
+            +++26. treelselect dili türkçe ye çevirilecek
         */
 
         $request->validate(

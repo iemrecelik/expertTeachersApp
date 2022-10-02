@@ -25,9 +25,9 @@ class StoreTeachersRequest extends FormRequest
     {
         return [
             'thr_tc_no' => 'required|digits:11',
-            'thr_name' => 'required|regex:/^[a-zA-Z]+$/u',
-            'thr_surname' => 'required|regex:/^[a-zA-Z]+$/u',
-            'thr_career_ladder' => 'required|regex:/^[a-zA-Z]+$/u',
+            'thr_name' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+            'thr_surname' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+            'thr_career_ladder' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
             /* 'thr_degree' => 'required|string',
             'thr_task' => 'required|string',
             'thr_education_st' => 'required|string',
