@@ -16,6 +16,7 @@
     <succeed-msg-component></succeed-msg-component>
     
     <edit-form-component
+      ref="editFormComponent"
       :ppitem="item"
     >
     </edit-form-component>
@@ -96,6 +97,7 @@ export default {
         this.$parent.$parent.dataTable.ajax.reload();
       })
       .always(() => {
+        this.$refs.editFormComponent.commonStatus = 0;
         this.formElement.scrollTo(0, 0);
       });
     },

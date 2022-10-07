@@ -13,10 +13,15 @@ import docMngCreateDocumentComponent from './components/admin/document_mng/docum
 import docMngManualCreateDocumentComponent from './components/admin/document_mng/document/ManualCreateComponent.vue';
 import docMngSearchComponent from './components/admin/document_mng/search/SearchComponent.vue';
 
+/* Lawsuit Management*/
+import lawsuitMngLawsuitsComponent from './components/admin/lawsuit_mng/lawsuits/IndexComponent';
+
 /* Teacehrs */
 import teachersComponent from './components/admin/teachers/IndexComponent';
 import teachMngInstitutionsComponent from './components/admin/institutions/IndexComponent';
 
+/* Unions */
+import unionsMngComponent from './components/admin/unions/IndexComponent';
 
 export default {
 	'main-component': mainComponent,
@@ -33,4 +38,8 @@ export default {
 
 	'teachers-component': teachersComponent,
 	'teach-mng-institutions-component': teachMngInstitutionsComponent,
+
+	'unions-mng-component': unionsMngComponent,
+
+	'lawsuit-mng-lawsuits-component': lawsuitMngLawsuitsComponent,
 }

@@ -23,6 +23,19 @@ class TeachersController extends Controller
         ->with('institution')
         ->first();
 
+
+        foreach ($teacher->dc_documents as $key => $dc_documents) {
+            $dc_documents->dcFiles;
+            $dc_documents->dcAttachFiles;
+        }
+/*         
+        foreach ($teacher->dc_documents as $key => $dc_documents) {
+            $dc_documents->dcFiles
+        }
+        
+        $teacher->dc_documents[0]->dcFiles;
+        $teacher->dc_documents[0]->dcAttachFiles; */
+
         return view(
             'admin.teachers.teacher_infos.teacher_infos',
             ['teacher' => $teacher]

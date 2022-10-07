@@ -1,5 +1,20 @@
 <template>
 <div>
+  <div class="row mb-3">
+    <div class="col-12">
+      <input type="hidden" name="common_status" :value="commonStatus">
+      <div class="icheck-primary d-inline">
+        <input type="checkbox" 
+          id="checkboxPrimary2" 
+          @change="setCommonStatus"
+        >
+        <label for="checkboxPrimary2">
+          Ortak Liste
+        </label>
+      </div>
+    </div>
+  </div>
+
   <div class="row">
     <div class="col-12">
       <form-form-component
@@ -30,6 +45,7 @@ export default {
     return {
       categoryList: [],
       ajaxErrorCount: -1,
+      commonStatus: 0,
     }
   },
   computed: {
@@ -41,39 +57,18 @@ export default {
     oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
     },
-    /* getCategory: function() {
-      $.ajax({
-        url: this.routes.getCategory,
-        type: 'GET',
-        dataType: 'JSON',
-      })
-      .done((res) => {
-        this.categoryList = res;
-        this.ajaxErrorCount = -1;
-      })
-      .fail((error) => {
-
-        setTimeout(() => {
-          this.ajaxErrorCount++
-
-          if(this.ajaxErrorCount < 3)
-            this.getCategory();
-          else
-            this.ajaxErrorCount = -1;
-
-        }, 100);
-        
-      })
-      .then((res) => {})
-      .always(() => {});
-    } */
+    setCommonStatus: function(event) {
+      if(event.target.checked) {
+        this.commonStatus = 1
+      }else {
+        this.commonStatus = 0
+      }
+    },
   },
   created() {
-    // this.getCategory();
   },
   components: {
     Treeselect
-    // 'create-lang-form-component': createLangFormComponent,
   }
   
 }

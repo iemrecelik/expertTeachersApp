@@ -77,7 +77,7 @@ export default {
         this.$parent.$parent.dataTable.ajax.reload();
       })
       .always(() => {
-        this.$refs.createFormComponent.getCategory();
+        this.$refs.createFormComponent.commonStatus = 0;
         this.formElement.scrollTo(0, 0);
       });
 

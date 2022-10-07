@@ -18,9 +18,9 @@ class CreateDcListsTable extends Migration
             $table->string('dc_list_name')->unique();
 
             $table->unsignedBigInteger('user_id');
-            $table->foreign('user_id')
+            /* $table->foreign('user_id')
                   ->references('id')->on('users')
-                  ->onDelete('cascade');
+                  ->onDelete('cascade'); */
 
             $table->timestamps();
         });
