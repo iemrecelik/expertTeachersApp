@@ -200,8 +200,14 @@ class ListController extends Controller
     public function store(StoreDcListsRequest $request)
     {
         $params = $request->all();
+        // dd($params);
+        if($params['common_status'] == 1) {
+            $params['user_id'] = 0;
+        }else {
+            $params['user_id'] = $request->user()->id;
+        }
 
-        $params['user_id'] = $request->user()->id;
+        unset($params['common_status']);
 
         $dcLists = DcLists::where('dc_list_name', $params['dc_list_name']);
 
@@ -238,6 +244,14 @@ class ListController extends Controller
     public function update(UpdateDcListsRequest $request, DcLists $list)
     {
         $params = $request->all();
+
+        if($params['common_status'] == 1) {
+            $params['user_id'] = 0;
+        }else {
+            $params['user_id'] = $request->user()->id;
+        }
+
+        unset($params['common_status']);
 
         $list->fill($params)->save();
     

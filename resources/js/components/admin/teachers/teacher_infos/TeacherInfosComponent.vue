@@ -177,6 +177,8 @@ import NewRegulationComponent from "./NewRegulationComponent.vue";
 import UpdateKnowlangeComponent from "./UpdateKnowlangeComponent.vue";
 import teacherCorrespondenceComponent from "./CorrespondenceComponent.vue";
 
+import { mapState, mapMutations } from 'vuex';
+
 export default {
   name: 'TeacherInfosComponent',
   data() {
@@ -188,7 +190,26 @@ export default {
     ppteacher: {
       type: Object,
       required: true,
-    }
+    },
+    pproutes: {
+      type: Object,
+      required: true,
+    },
+  },
+  computed: {
+    ...mapState([
+      'routes',
+    ]),
+  },
+  methods: {
+    ...mapMutations([
+      'setRoutes',
+      'setErrors',
+    ]),
+  },
+  created() {
+    this.setRoutes(this.pproutes);
+    this.setErrors(this.pperrors);
   },
   components: {
     "profile-component": ProfileComponent,

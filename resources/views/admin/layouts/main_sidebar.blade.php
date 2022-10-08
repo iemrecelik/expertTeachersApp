@@ -120,6 +120,24 @@
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-search"></i>
             <p>
+               Davalar Yönetimi
+               <i class="fas fa-angle-left right"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{{route('admin.lawsuit_mng.lawsuits.index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Davalar Listesi</p>
+              </a>
+            </li>
+          </ul>
+        </li>
+
+        <li class="nav-item data-menu-open">
+          <a href="#" class="nav-link">
+            <i class="nav-icon fas fa-search"></i>
+            <p>
                Öğretmenler Liste Yönetimi
                <i class="fas fa-angle-left right"></i>
             </p>
@@ -159,6 +177,13 @@
               </a>
             </li>
           </ul>
+        </li>
+
+        <li class="nav-item">
+          <a href="{{route('admin.unions.index')}}" class="nav-link">
+            <i class="far fa-circle nav-icon"></i>
+            <p>Sendika Yönetimi</p>
+          </a>
         </li>
 
         <li class="nav-item">

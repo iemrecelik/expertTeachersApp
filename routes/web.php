@@ -4,6 +4,8 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\MainController;
 use App\Http\Controllers\Admin\TeachersController;
+use App\Http\Controllers\Admin\UnionsController;
+use App\Http\Controllers\Admin\LawsuitManagement\LawsuitsController;
 use App\Http\Controllers\Admin\TeachersListManagement\InstitutionsController;
 use App\Http\Controllers\Admin\Search\SearchController;
 use App\Http\Controllers\Admin\DocumentManagement\ListController;
@@ -81,6 +83,27 @@ Route::prefix('admin')
 		->name('institutions.dataList');
 
 		Route::resource('institutions', InstitutionsController::class);
+    });
+
+Route::prefix('admin')
+    ->middleware('auth')
+    ->controller(UnionsController::class)
+    ->name('admin.')
+    ->group(function () {
+		/* Unions */
+        Route::get(
+			'unions/get-unions', 
+			'getUnions'
+		)
+		->name('unions.getUnions');
+
+        Route::post(
+			'unions/data-list', 
+			'getDataList'
+		)
+		->name('unions.dataList');
+
+		Route::resource('unions', UnionsController::class);
     });
 
 Route::prefix('admin/search')
@@ -274,4 +297,17 @@ Route::prefix('admin/document-management')
         ->name('search.show');
     });
 
+Route::prefix('admin/lawsuit-management')
+    ->middleware('auth')
+    ->controller(LawsuitsController::class)
+    ->name('admin.lawsuit_mng.')
+    ->group(function () {
+        /* Lawsuits */
+		Route::post(
+			'lawsuits/data-list', 
+			'getDataList'
+		)
+		->name('lawsuits.dataList');
 
+		Route::resource('lawsuits', LawsuitsController::class);
+    });
