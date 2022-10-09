@@ -22,15 +22,15 @@ class CreateLawsuitsTable extends Migration
             $table->foreign('dc_id')
                   ->references('id')->on('dc_documents');
 
-            $table->unsignedBigInteger('uns_id');
+            $table->unsignedBigInteger('uns_id')->nullable();
             $table->foreign('uns_id')
                   ->references('id')->on('unions');
 
-            $table->unsignedBigInteger('thr_id');
+            $table->unsignedBigInteger('thr_id')->nullable();
             $table->foreign('thr_id')
                   ->references('id')->on('teachers');
 
-            $table->unsignedBigInteger('law_id');
+            $table->unsignedBigInteger('law_id')->nullable();
             $table->foreign('law_id')
                   ->references('id')->on('lawsuits');
 

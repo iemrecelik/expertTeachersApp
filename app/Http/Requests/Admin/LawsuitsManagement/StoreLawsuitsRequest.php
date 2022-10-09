@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Admin\TeachersListManagement;
+namespace App\Http\Requests\Admin\LawsuitsManagement;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreInstitutionsRequest extends FormRequest
+class StoreLawsuitsRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.

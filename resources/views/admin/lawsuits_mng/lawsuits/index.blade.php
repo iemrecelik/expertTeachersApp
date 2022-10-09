@@ -4,6 +4,7 @@
     :pproutes="{ 
       index: '{{ route('admin.lawsuit_mng.lawsuits.index') }}', 
       dataList: '{{ route('admin.lawsuit_mng.lawsuits.dataList') }}', 
+      getTeachersSearchList: '{{ route('admin.teachers.searchList') }}',
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
   >

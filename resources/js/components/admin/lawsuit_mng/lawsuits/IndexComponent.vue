@@ -6,13 +6,16 @@
   style="width:100%">
     <thead>
       <tr>
-        <th>{{ $t("messages.uns_name") }}</th>
+        <th>{{ $t("messages.dc_number") }}</th>
+        <th>{{ $t("messages.name") }}</th>
+        <th>{{ $t("messages.law_brief") }}</th>
+        <th>{{ $t("messages.dc_date") }}</th>
         <th>{{ $t("messages.processes") }}</th>
       </tr>
     </thead>
     <tfoot>
       <tr>
-        <th colspan="2">
+        <th colspan="5">
           <button type="button" class="btn btn-primary"
             data-toggle="modal" 
             :data-target="modalSelector"
@@ -31,7 +34,7 @@
     aria-labelledby="formModalLongTitle" aria-hidden="true"
     data-backdrop="static" :id="modalIDName"
   >
-    <div class="modal-dialog" role="document">
+    <div class="modal-dialog modal-xl" role="document">
       <div class="modal-body">
         <component
           v-if="formModalBody.show"
@@ -183,7 +186,10 @@ export default {
       jQDomName: '.res-dt-table',
       url: this.routes.dataList,
       columns: [
-        { "data": "uns_name" },
+        { "data": "dc_number" },
+        { "data": "name" },
+        { "data": "law_brief" },
+        { "data": "dc_date" },
         {
           "orderable": false,
           "searchable": false,

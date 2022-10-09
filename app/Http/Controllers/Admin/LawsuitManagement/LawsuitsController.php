@@ -128,10 +128,10 @@ class LawsuitsController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Admin\Unions  $institution
+     * @param  \App\Models\Admin\Lawsuits  $lawsuit
      * @return \Illuminate\Http\Response
      */
-    public function show(Unions $union)
+    public function show(Lawsuits $lawsuit)
     {
         //
     }
@@ -139,29 +139,29 @@ class LawsuitsController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Admin\Unions  $union
+     * @param  \App\Models\Admin\Lawsuits  $lawsuit
      * @return \Illuminate\Http\Response
      */
-    public function edit(Unions $union)
+    public function edit(Lawsuits $lawsuit)
     {
-        return new isAjaxResponse($union);
+        return new isAjaxResponse($lawsuit);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\Admin\DocumentManagement\UpdateUnionsRequest  $request
-     * @param  \App\Models\Admin\Unions  $union
+     * @param  \App\Http\Requests\Admin\DocumentManagement\UpdateLawsuitsRequest  $request
+     * @param  \App\Models\Admin\Lawsuits  $lawsuit
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateUnionsRequest $request, Unions $union)
+    public function update(UpdateLawsuitsRequest $request, Lawsuits $lawsuit)
     {
         $params = $request->all();
 
-        $union->fill($params)->save();
+        $lawsuit->fill($params)->save();
 
         return [
-            'updatedItem' => $union,
+            'updatedItem' => $lawsuit,
             'succeed' => __('messages.edit_success')
         ];
     }
@@ -169,12 +169,12 @@ class LawsuitsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Admin\Unions $union
+     * @param  \App\Models\Admin\Lawsuits $lawsuit
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Unions $union)
+    public function destroy(Lawsuits $lawsuit)
     {
-        $res = $union->delete();
+        $res = $lawsuit->delete();
         $msg = [];
 
         if ($res)

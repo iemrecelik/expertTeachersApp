@@ -80,7 +80,7 @@ class TeachersController extends Controller
             return [
                 'id' => $teacher['id'],
                 // 'label' => `({$teacher['thr_tc_no']}){$teacher['thr_name']} {$teacher['thr_surname']}`,
-                'label' => "(".$teacher['thr_tc_no'].")".$teacher['thr_name']." ".$teacher['thr_surname']
+                'label' => "(T.C. No: ".$teacher['thr_tc_no'].")".$teacher['thr_name']." ".$teacher['thr_surname']
             ];
         }, $teachers->toArray());
 
