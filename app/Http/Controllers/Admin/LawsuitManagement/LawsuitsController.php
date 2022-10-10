@@ -19,6 +19,17 @@ class LawsuitsController extends Controller
      */
     public function index()
     {
+        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+
+        // $url = Storage::url('belge.xlsx');
+        $url = storage_path('app/public/belge.xlsx');
+
+        // dd($url);
+        $reader->setReadDataOnly(true);
+        $spreadsheet = $reader->load($url);
+        dd($spreadsheet->getActiveSheet()->toArray());
+        dd($spreadsheet);
+        
         return view('admin.lawsuits_mng.lawsuits.index');
     }
 
