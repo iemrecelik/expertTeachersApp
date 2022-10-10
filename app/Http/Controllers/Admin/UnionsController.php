@@ -22,6 +22,40 @@ class UnionsController extends Controller
         return view('admin.unions.index');
     }
 
+    public function getSearchUnionList(Request $request)
+    {
+        // dd($request->all());
+        $request->validate(
+            [
+                'searchName' => 'required|string'
+            ],
+            [
+                'searchName.required' => 'Tc no giriniz.',
+                'searchName.string' => 'Sadece rakam giriniz.'
+            ],
+        );
+
+        $params = $request->all();
+
+        $unions = Unions::selectRaw('id, uns_name')
+        ->whereRaw(
+            'uns_name LIKE :searchName', 
+            [
+                'searchName' => $params['searchName'].'%'
+            ]
+        )
+        ->get();
+
+        $datas = array_map(function($union) {
+            return [
+                'id' => $union['id'],
+                'label' => $union['uns_name']
+            ];
+        }, $unions->toArray());
+
+        return $datas;
+    }
+
     public function getUnions(Request $request)
 	{
         $req = $request->all();

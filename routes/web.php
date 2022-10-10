@@ -103,6 +103,12 @@ Route::prefix('admin')
 		)
 		->name('unions.dataList');
 
+		Route::get(
+			'unions/search-list', 
+			'getSearchUnionList'
+		)
+		->name('unions.searchList');
+
 		Route::resource('unions', UnionsController::class);
     });
 
@@ -164,6 +170,12 @@ Route::prefix('admin/document-management')
 			'getFileInfos'
 		)
 		->name('document.getFileInfos');
+
+		Route::get(
+			'document/search-list', 
+			'getDocumentSearchList'
+		)
+		->name('document.searchList');
     });
     
 Route::prefix('admin/document-management')
