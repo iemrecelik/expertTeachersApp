@@ -20,6 +20,42 @@ use App\Http\Requests\Admin\DocumentManagement\StoreManualDcDocumentsRequest;
 
 class DocumentsController extends Controller
 {
+    public function getDocumentSearchList(Request $request)
+    {
+        // dd($request->all());
+        $request->validate(
+            [
+                'dcNumber' => 'required|integer'
+            ],
+            [
+                'dcNumber.required' => 'Evrak Numarasını giriniz.',
+                'dcNumber.integer' => 'Sadece rakam giriniz.'
+            ],
+        );
+
+        $params = $request->all();
+
+        $dcDocuments = DcDocuments::selectRaw('id, dc_number, dc_date, dc_item_status')
+        ->whereRaw(
+            'dc_number LIKE :dcNumber', 
+            [
+                'dcNumber' => $params['dcNumber'].'%'
+            ]
+        )
+        ->get();
+
+        $datas['datas'] = array_map(function($dcDocument) {
+            return [
+                'id' => $dcDocument['id'],
+                'label' => $dcDocument['dc_number'],
+            ];
+        }, $dcDocuments->toArray());
+
+        $datas['rawDatas'] = $dcDocuments->toArray();
+
+        return $datas;
+    }
+    
     /**
      * Show the form for creating a new resource.
      *

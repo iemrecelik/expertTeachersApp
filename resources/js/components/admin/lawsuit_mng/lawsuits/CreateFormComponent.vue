@@ -6,13 +6,13 @@
         
         <label>Davacıyı Seçiniz: </label><br/>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="law" id="law-teacher" value="1" v-model="SelectedLaw">
+          <input class="form-check-input" type="radio" name="law" id="law-teacher" value="1" v-model="selectedLaw" @change="resetTreeselect()">
           <label class="form-check-label" for="law-teacher">
             Öğretmen
           </label>
         </div>
         <div class="form-check form-check-inline">
-          <input class="form-check-input" type="radio" name="law" id="law-union" value="2" v-model="SelectedLaw">
+          <input class="form-check-input" type="radio" name="law" id="law-union" value="2" v-model="selectedLaw" @change="resetTreeselect()">
           <label class="form-check-label" for="law-union">
             Sendika
           </label>
@@ -25,13 +25,14 @@
   <div class="row">
     <div class="col-12">
       
-      <div v-if="SelectedLaw == 1" class="form-group">
+      <div v-if="selectedLaw == 1" class="form-group">
         <label for="addTeacherList">İlgili Öğretmeni Ekle: </label>
         <treeselect
           :id="'addTeacherList'"
           :multiple="false"
           :async="true"
           :load-options="loadTeachers"
+          v-model="teacherArr"
           loadingText="Yükleniyor..."
           clearAllText="Hepsini sil."
           clearValueText="Değeri sil."
@@ -39,17 +40,18 @@
           noResultsText="Mevcut seçenek yok."
           searchPromptText="Aramak için yazınız."
           placeholder="Seçiniz..."
-          name="thr_id[]"
+          name="thr_id"
         />
       </div>
       
-      <div v-if="SelectedLaw == 2" class="form-group">
-        <label for="addTeacherList">İlgili Sendikayı Ekle: </label>
+      <div v-if="selectedLaw == 2" class="form-group">
+        <label for="addUnionList">İlgili Sendikayı Ekle: </label>
         <treeselect
-          :id="'addTeacherList'"
+          :id="'addUnionList'"
           :multiple="false"
           :async="true"
           :load-options="loadUnions"
+          v-model="unionArr"
           loadingText="Yükleniyor..."
           clearAllText="Hepsini sil."
           clearValueText="Değeri sil."
@@ -57,7 +59,7 @@
           noResultsText="Mevcut seçenek yok."
           searchPromptText="Aramak için yazınız."
           placeholder="Seçiniz..."
-          name="thr_id[]"
+          name="uns_id"
         />
       </div>
       
@@ -81,12 +83,13 @@
     <div class="col-4">
       
       <div class="form-group">
-        <label for="addTeacherList">Evrak Numarası </label>
+        <label for="addMainDocumentList">Evrak Numarası </label>
         <treeselect
-          :id="'addTeacherList'"
+          :id="'addMainDocumentList'"
           :multiple="false"
           :async="true"
           :load-options="loadDcNumbers"
+          :cacheOptions="false"
           loadingText="Yükleniyor..."
           clearAllText="Hepsini sil."
           clearValueText="Değeri sil."
@@ -94,7 +97,8 @@
           noResultsText="Mevcut seçenek yok."
           searchPromptText="Aramak için yazınız."
           placeholder="Seçiniz..."
-          name="thr_id[]"
+          name="dc_id"
+          @select="deneme('event')"
         />
       </div>
       
@@ -181,7 +185,7 @@
           noResultsText="Mevcut seçenek yok."
           searchPromptText="Aramak için yazınız."
           placeholder="Seçiniz..."
-          name="thr_id"
+          name="dc_id"
         />
       </div>
       
@@ -248,9 +252,11 @@ export default {
     return {
       categoryList: [],
       ajaxErrorCount: -1,
-      SelectedLaw: 0,
+      selectedLaw: 0,
       lawSubjects: [''],
       dcNumber: [],
+      teacherArr: null,
+      unionArr: null,
     }
   },
   computed: {
@@ -259,6 +265,17 @@ export default {
     ]),
   },
   methods: {
+    resetTreeselect: function(){
+      if(this.selectedLaw == 1) {
+        this.teacherArr = null;
+      }else {
+        this.unionArr = null;
+      }
+    },
+    deneme: function(node, inst) {
+      console.log(node);
+      console.log(inst);
+    },
     oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
     },
@@ -303,7 +320,7 @@ export default {
         simulateAsyncOperation(() => {
 
           if(searchQuery.length > 2) {
-            this.getDcNumbersSearchList(searchQuery, callback);
+            this.getDocumentSearchList(searchQuery, callback);
           }else {
             callback(null, [])    
           }
@@ -335,12 +352,12 @@ export default {
       })
       .then((res) => {})
 		},
-    getUnionsSearchList: function(unionName, callback) {
+    getUnionsSearchList: function(searchName, callback) {
       $.ajax({
-        url: this.routes.getTeachersSearchList,
+        url: this.routes.getUnionsSearchList,
         type: 'GET',
         dataType: 'JSON',
-				data: {'unionName': unionName}
+				data: {'searchName': searchName}
       })
       .done((res) => {
 				callback(null, res)
@@ -351,7 +368,7 @@ export default {
           this.ajaxErrorCount++
 
           if(this.ajaxErrorCount < 3)
-            this.getTeachersSearchList(searchTcNo, callback);
+            this.getUnionsSearchList(searchName, callback);
           else
             this.ajaxErrorCount = -1;
 
@@ -360,15 +377,15 @@ export default {
       })
       .then((res) => {})
 		},
-		getDcNumbersSearchList: function(dcNumber, callback) {
+		getDocumentSearchList: function(dcNumber, callback) {
       $.ajax({
-        url: this.routes.getTeachersSearchList,
+        url: this.routes.getDocumentSearchList,
         type: 'GET',
         dataType: 'JSON',
 				data: {'dcNumber': dcNumber}
       })
       .done((res) => {
-				callback(null, res)
+				callback(null, res.datas)
         this.ajaxErrorCount = -1;
       })
       .fail((error) => {
@@ -376,7 +393,7 @@ export default {
           this.ajaxErrorCount++
 
           if(this.ajaxErrorCount < 3)
-            this.getTeachersSearchList(searchTcNo, callback);
+            this.getDocumentSearchList(dcNumber, callback);
           else
             this.ajaxErrorCount = -1;
 
