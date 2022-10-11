@@ -195,6 +195,7 @@ class CommentController extends Controller
             +++ 27. teachers tablosundaki phone alanı mobile olarak değiştir
             +++ 28. treelselect dili türkçe ye çevirilecek
             29- Ortak liste yapılacak
+            30- döküman kaydedersken öğretmen eklemek zorunlu olmasın
         */
 
         $request->validate(
