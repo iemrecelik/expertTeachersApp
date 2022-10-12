@@ -90,6 +90,7 @@
           :async="true"
           :load-options="loadDcNumbers"
           :cacheOptions="false"
+          :instanceId="0" 
           loadingText="Yükleniyor..."
           clearAllText="Hepsini sil."
           clearValueText="Değeri sil."
@@ -98,7 +99,7 @@
           searchPromptText="Aramak için yazınız."
           placeholder="Seçiniz..."
           name="dc_id"
-          @select="deneme('event')"
+          @select="getDocumentInfos"
         />
       </div>
       
@@ -108,7 +109,7 @@
       
       <div class="form-group">
         <label>Durumu </label>
-        <div>Gelen Evrak</div>
+        <div :class="'item-status'+0"></div>
       </div>
       
     </div>
@@ -117,7 +118,7 @@
       
       <div class="form-group">
         <label>Tarih </label>
-        <div>01.01.2022</div>
+        <div :class="'item-date'+0"></div>
       </div>
       
     </div>
@@ -178,6 +179,8 @@
           :multiple="false"
           :async="true"
           :load-options="loadDcNumbers"
+          :instanceId="key+1" 
+          v-model="dcNumber[key]"
           loadingText="Yükleniyor..."
           clearAllText="Hepsini sil."
           clearValueText="Değeri sil."
@@ -185,7 +188,8 @@
           noResultsText="Mevcut seçenek yok."
           searchPromptText="Aramak için yazınız."
           placeholder="Seçiniz..."
-          name="dc_id"
+          name="dc_down_id[]"
+          @select="getDocumentInfos"
         />
       </div>
       
@@ -195,7 +199,7 @@
       
       <div class="form-group">
         <label>Durumu </label>
-        <div>Gelen Evrak</div>
+        <div :class="'item-status'+(key+1)"></div>
       </div>
       
     </div>
@@ -204,7 +208,7 @@
       
       <div class="form-group">
         <label>Tarih </label>
-        <div>01.01.2022</div>
+        <div :class="'item-date'+(key+1)"></div>
       </div>
       
     </div>
@@ -265,16 +269,21 @@ export default {
     ]),
   },
   methods: {
+    open: function() {
+      console.log('open');
+    },
+    close: function() {
+      console.log('close');
+    },
+    input: function() {
+      console.log('input');
+    },
     resetTreeselect: function(){
       if(this.selectedLaw == 1) {
         this.teacherArr = null;
       }else {
         this.unionArr = null;
       }
-    },
-    deneme: function(node, inst) {
-      console.log(node);
-      console.log(inst);
     },
     oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
@@ -286,7 +295,8 @@ export default {
       this.lawSubjects.splice(index, 1);
     },
     addDcNumber: function() {
-      this.dcNumber.push(this.uniqueID());
+      // this.dcNumber.push(this.uniqueID());
+      this.dcNumber.push(null);
     },
     delDcNumber: function(index) {
       this.dcNumber.splice(index, 1);
@@ -315,12 +325,12 @@ export default {
         })
       }
     },
-    loadDcNumbers({ action, searchQuery, callback }) {
+    loadDcNumbers({ action, searchQuery, callback, instanceId }) {
       if (action === ASYNC_SEARCH) {
         simulateAsyncOperation(() => {
 
           if(searchQuery.length > 2) {
-            this.getDocumentSearchList(searchQuery, callback);
+            this.getDocumentSearchList(searchQuery, callback, instanceId);
           }else {
             callback(null, [])    
           }
@@ -377,7 +387,7 @@ export default {
       })
       .then((res) => {})
 		},
-		getDocumentSearchList: function(dcNumber, callback) {
+		getDocumentSearchList: function(dcNumber, callback, instanceId) {
       $.ajax({
         url: this.routes.getDocumentSearchList,
         type: 'GET',
@@ -385,7 +395,7 @@ export default {
 				data: {'dcNumber': dcNumber}
       })
       .done((res) => {
-				callback(null, res.datas)
+				callback(null, res)
         this.ajaxErrorCount = -1;
       })
       .fail((error) => {
@@ -393,7 +403,7 @@ export default {
           this.ajaxErrorCount++
 
           if(this.ajaxErrorCount < 3)
-            this.getDocumentSearchList(dcNumber, callback);
+            this.getDocumentSearchList(dcNumber, callback, instanceId);
           else
             this.ajaxErrorCount = -1;
 
@@ -401,7 +411,12 @@ export default {
         
       })
       .then((res) => {})
-		}
+		},
+    getDocumentInfos(datas, instanceId) {
+      console.log('select');
+      document.getElementsByClassName('item-date'+instanceId)[0].innerHTML = datas.date;
+      document.getElementsByClassName('item-status'+instanceId)[0].innerHTML = datas.itemStatus;
+    },
   },
   components: {
     Treeselect
