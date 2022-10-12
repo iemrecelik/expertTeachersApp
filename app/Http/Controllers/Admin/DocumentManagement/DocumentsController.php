@@ -46,8 +46,7 @@ class DocumentsController extends Controller
 
         $datas = array_map(function($dcDocument) {
             return [
-                // 'id' => $dcDocument['id'],
-                'id' => $dcDocument['dc_number'],
+                'id' => $dcDocument['id'],
                 'label' => $dcDocument['dc_number'],
                 'date' => date("d/m/Y", $dcDocument['dc_date']),
                 'itemStatus' => $dcDocument['dc_item_status'] == 0?'Gelen Evrak':'Giden Evrak',

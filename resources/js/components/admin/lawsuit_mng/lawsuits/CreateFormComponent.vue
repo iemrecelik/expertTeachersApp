@@ -169,7 +169,7 @@
     </div>
   </div>
 
-  <div class="row" v-for="(item, key) in dcNumber">
+  <div class="row" :key="item" v-for="(item, key) in dcNumber">
     <div class="col-4">
       
       <div class="form-group">
@@ -180,7 +180,6 @@
           :async="true"
           :load-options="loadDcNumbers"
           :instanceId="key+1" 
-          v-model="dcNumber[key]"
           loadingText="Yükleniyor..."
           clearAllText="Hepsini sil."
           clearValueText="Değeri sil."
@@ -295,8 +294,7 @@ export default {
       this.lawSubjects.splice(index, 1);
     },
     addDcNumber: function() {
-      // this.dcNumber.push(this.uniqueID());
-      this.dcNumber.push(null);
+      this.dcNumber.push(this.uniqueID());
     },
     delDcNumber: function(index) {
       this.dcNumber.splice(index, 1);
@@ -413,7 +411,6 @@ export default {
       .then((res) => {})
 		},
     getDocumentInfos(datas, instanceId) {
-      console.log('select');
       document.getElementsByClassName('item-date'+instanceId)[0].innerHTML = datas.date;
       document.getElementsByClassName('item-status'+instanceId)[0].innerHTML = datas.itemStatus;
     },
