@@ -44,14 +44,17 @@ class DocumentsController extends Controller
         )
         ->get();
 
-        $datas['datas'] = array_map(function($dcDocument) {
+        $datas = array_map(function($dcDocument) {
             return [
-                'id' => $dcDocument['id'],
+                // 'id' => $dcDocument['id'],
+                'id' => $dcDocument['dc_number'],
                 'label' => $dcDocument['dc_number'],
+                'date' => date("d/m/Y", $dcDocument['dc_date']),
+                'itemStatus' => $dcDocument['dc_item_status'] == 0?'Gelen Evrak':'Giden Evrak',
             ];
         }, $dcDocuments->toArray());
 
-        $datas['rawDatas'] = $dcDocuments->toArray();
+        // $datas['rawDatas'] = $dcDocuments->toArray();
 
         return $datas;
     }

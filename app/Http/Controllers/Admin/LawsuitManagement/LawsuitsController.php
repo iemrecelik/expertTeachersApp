@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\LawsuitsManagement\UpdateLawsuitsRequest;
 use App\Http\Responsable\isAjaxResponse;
 use App\Models\Admin\Lawsuits;
 use Illuminate\Validation\ValidationException;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class LawsuitsController extends Controller
 {
@@ -19,16 +20,32 @@ class LawsuitsController extends Controller
      */
     public function index()
     {
-        $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+        /* // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
+        $inputFileType = 'Xlsx';
 
         // $url = Storage::url('belge.xlsx');
-        $url = storage_path('app/public/belge.xlsx');
+        $url = storage_path('app/public/belge3.xlsx');
 
-        // dd($url);
-        $reader->setReadDataOnly(true);
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+        // $reader->setReadDataOnly(true);
+
         $spreadsheet = $reader->load($url);
-        dd($spreadsheet->getActiveSheet()->toArray());
-        dd($spreadsheet);
+
+
+        $datas = $spreadsheet->getActiveSheet()->toArray();
+        echo '<pre>';
+        foreach ($datas as $key => $value) {
+
+            var_dump($value[0]);
+            var_dump($value[1]);
+            var_dump($value[2]);
+            var_dump($value[3]);
+            var_dump($value[4]);
+            var_dump($value[5]);
+            var_dump($value[6]);
+        }
+        echo '</pre>';
+        die; */
         
         return view('admin.lawsuits_mng.lawsuits.index');
     }
