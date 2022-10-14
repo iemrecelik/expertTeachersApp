@@ -68,6 +68,7 @@ export default {
         this.setErrors('');
         this.setSucceed(res.succeed);
         document.getElementById(this.formIDName).reset();
+        this.$refs.createFormComponent.resetForm();
       })
       .fail((error) => {
         this.setSucceed('');

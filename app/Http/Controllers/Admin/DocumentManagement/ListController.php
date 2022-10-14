@@ -118,7 +118,6 @@ class ListController extends Controller
         ];
 
         $selectJoin = ", t1.name as user_name, t1.id as user_id";
-        
 
 	    $dataList = DcLists::dataList([
 	        'table' => 'dc_lists',

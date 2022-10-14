@@ -1,13 +1,13 @@
 <template>
 <template-component
-	:ppTitleName="$t('messages.institutionList')"
+	:ppTitleName="$t('messages.lawsuits')"
 >
   <table class="res-dt-table table table-striped table-bordered" 
   style="width:100%">
     <thead>
       <tr>
-        <th>{{ $t("messages.dc_number") }}</th>
-        <th>{{ $t("messages.name") }}</th>
+        <th>{{ $t("messages.dc_id") }}</th>
+        <th>{{ $t("messages.thr_name") }}</th>
         <th>{{ $t("messages.law_brief") }}</th>
         <th>{{ $t("messages.dc_date") }}</th>
         <th>{{ $t("messages.processes") }}</th>
@@ -186,10 +186,33 @@ export default {
       jQDomName: '.res-dt-table',
       url: this.routes.dataList,
       columns: [
-        { "data": "dc_number" },
-        { "data": "name" },
+        {
+          "orderable": false,
+          "searchable": false,
+          "sortable": false,
+          "data": "dc_id",
+          "render": ( data, type, row ) => {
+            return row.dc_number;
+          },
+          "defaultContent": ""
+        },
+        {
+          "orderable": false,
+          "searchable": false,
+          "sortable": false,
+          "data": "thr_name",
+          "render": ( data, type, row ) => {
+            return row.thr_name != null ? row.thr_name : row.uns_name;
+          },
+          "defaultContent": ""
+        },
         { "data": "law_brief" },
-        { "data": "dc_date" },
+        { 
+          "data": "dc_date",
+          "render": (data, type, row) => {
+            return this.unixTimestamp(data);
+          }
+        },
         {
           "orderable": false,
           "searchable": false,
