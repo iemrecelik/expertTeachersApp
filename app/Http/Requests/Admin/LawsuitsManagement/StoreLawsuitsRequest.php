@@ -24,7 +24,9 @@ class StoreLawsuitsRequest extends FormRequest
     public function rules()
     {
         return [
-            'inst_name'  => 'required|string',
+            'law_brief'  => 'required|string',
+            'dc_id'  => 'required|integer|unique:lawsuits,dc_id',
+            'thr_id'  => 'required_without:uns_id|integer',
         ];
     }
 
@@ -36,8 +38,11 @@ class StoreLawsuitsRequest extends FormRequest
     public function messages()
     {
         return [
-            'inst_name.required' => 'Kategori ismi zorunludur.',
-            'inst_name.string' => 'Kategori ismi sadece rakamlardan oluşamaz.',
+            'dc_id.required' => 'Evrak numarası zorunludur.',
+            'dc_id.integer' => 'Evrak numarası sadece rakamlardan oluşamaz.',
+            'law_brief.required' => 'Dava kısa açıklaması zorunludur.',
+            'law_brief.string' => 'Dava kısa açıklaması sadece rakamlardan oluşamaz.',
+            'thr_id.required_without' => 'İlgili Öğretmeni yada sendikayı giriniz. ',
         ];
     }
 }

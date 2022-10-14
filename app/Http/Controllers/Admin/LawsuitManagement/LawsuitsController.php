@@ -8,6 +8,8 @@ use App\Http\Requests\Admin\LawsuitsManagement\StoreLawsuitsRequest;
 use App\Http\Requests\Admin\LawsuitsManagement\UpdateLawsuitsRequest;
 use App\Http\Responsable\isAjaxResponse;
 use App\Models\Admin\Lawsuits;
+use App\Models\Admin\DcDocuments;
+use App\Models\Admin\Subjects;
 use Illuminate\Validation\ValidationException;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
@@ -67,11 +69,17 @@ class LawsuitsController extends Controller
 	{
 	    $tblInfo = $request->all();
 
+        $notSelectCol = [
+            'thr_name',
+            'dc_date',
+        ];
+
 	    /*Array select and search columns*/
 	    foreach ($tblInfo['columns'] as $column) {
 	        
 	        if (isset($column['data']))
-	            $selectCol[] = $column['data'];
+                if(!in_array($column['data'], $notSelectCol))
+                    $selectCol[] = $column['data'];
 
 	        if($column['searchable'])
 	            $searchCol[] = $column['data'];
@@ -83,27 +91,33 @@ class LawsuitsController extends Controller
 	    $order = $tblInfo['order'][0]['dir'];
 
         /*join*/
-        /* $join = [
-            "dc_category as t1", 
-            "t0.dc_cat_id", '=', 
+        $join = [
+            "dc_documents as t1", 
+            "t0.dc_id", '=', 
             "t1.id"
         ];
 
-        $selectJoin = ", t1.dc_cat_name as dc_up_cat_name"; */  
+        $selectJoin = ", t1.dc_number, t1.dc_date";  
 
 	    $dataList = Lawsuits::dataList([
 	        'table' => 'lawsuits',
 	        'fieldIDName' => 'id',
 	        'addLangFields' => [],
-            /* 'choiceJoin' => 'leftJoin',
+            'choiceJoin' => 'join',
             'join' => $join,
-            'selectJoin' => $selectJoin, */
+            'selectJoin' => $selectJoin,
 	        'selectCol' => $selectCol,
 	        'searchCol' => $searchCol,
 	        'colOrder' => $colOrder,
 	        'order' => $order,
 	        'search' => $tblInfo['search']['value'],
 	    ]);
+
+        $dataList->leftJoin('teachers as t2', 't2.id', '=', 't0.thr_id');
+        $dataList->selectRaw('t2.thr_name');
+        
+        $dataList->leftJoin('unions as t3', 't3.id', '=', 't0.uns_id');
+        $dataList->selectRaw('t3.uns_name');
 
 	    $recordsTotal = Lawsuits::count();
 	    $recordsFiltered = $dataList->count();
@@ -140,15 +154,51 @@ class LawsuitsController extends Controller
     {
         $params = $request->all();
 
-        $lawsuitExist = Lawsuits::where('uns_name', $params['uns_name']);
+        $dcDownIds = $params['dc_down_id'] ?? [];
+        
+        $subOrders = $params['sub_order'];
+        unset($params['sub_order']);
 
-        if(!empty($lawsuitExist->first())) {
-            throw ValidationException::withMessages(
-                ['uns_name' => "Zaten sendika yüklü lütfen başka sendika ismi yazınız."]
-            );
-        }
+        $subDescriptions = $params['sub_description'];
+        unset($params['sub_description']);
 
         $lawsuit = Lawsuits::create($params);
+        
+        /* add down dc_documents start */
+        if(count($dcDownIds) > 0) {
+            unset($params['dc_down_id']);
+
+            // $key = array_search($params['dc_id'], $dcDownIds);
+
+            $dcDownIds = array_map(function($item) use ($params) {
+                if($params['dc_id'] != $item) {
+                    return $item;
+                }
+            }, $dcDownIds);
+
+            $dcDownIds = array_unique($dcDownIds);
+
+            /* if(!empty($key)) {
+                unset($dcDownIds[$key]);
+            } */
+
+            $downDcDocuments = DcDocuments::whereIn('id', $dcDownIds)->get();
+
+            $lawsuit->dc_documents()->saveMany($downDcDocuments);
+        }
+        /* add down dc_documents end */
+
+        /* add subjects start */
+        for ($i=0; $i < count($subOrders); $i++) {
+            $subObj = new Subjects();
+            $subObj->sub_order = $subOrders[$i];
+            $subObj->sub_description = $subDescriptions[$i];
+            $subObj->law_id = $lawsuit->id;
+            $subjectArr[$i] = $subObj;
+        }
+
+        $lawsuit->subjects()->saveMany($subjectArr);
+        /* add subjects end */
 
         return ['succeed' => __('messages.add_success')];
     }
@@ -172,6 +222,12 @@ class LawsuitsController extends Controller
      */
     public function edit(Lawsuits $lawsuit)
     {
+        $lawsuit->dc_document;
+        $lawsuit->dc_documents;
+        $lawsuit->subjects;
+        $lawsuit->teacher;
+        $lawsuit->union;
+
         return new isAjaxResponse($lawsuit);
     }
 

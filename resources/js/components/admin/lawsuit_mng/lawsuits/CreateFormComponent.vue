@@ -89,6 +89,7 @@
           :multiple="false"
           :async="true"
           :load-options="loadDcNumbers"
+          v-model="mainDcNumberArr"
           :cacheOptions="false"
           :instanceId="0" 
           loadingText="Yükleniyor..."
@@ -143,6 +144,7 @@
               v-model="lawSubjects[key]"
             >
             </textarea>
+            <input type="hidden" name="sub_order[]" :value="(key+1)">
           </div>
           <div class="col-1 text-left">
             <span
@@ -260,6 +262,7 @@ export default {
       dcNumber: [],
       teacherArr: null,
       unionArr: null,
+      mainDcNumberArr: null,
     }
   },
   computed: {
@@ -268,15 +271,6 @@ export default {
     ]),
   },
   methods: {
-    open: function() {
-      console.log('open');
-    },
-    close: function() {
-      console.log('close');
-    },
-    input: function() {
-      console.log('input');
-    },
     resetTreeselect: function(){
       if(this.selectedLaw == 1) {
         this.teacherArr = null;
@@ -414,6 +408,13 @@ export default {
       document.getElementsByClassName('item-date'+instanceId)[0].innerHTML = datas.date;
       document.getElementsByClassName('item-status'+instanceId)[0].innerHTML = datas.itemStatus;
     },
+    resetForm() {
+      this.lawSubjects = [];
+      this.dcNumber = [];
+      this.teacherArr = null;
+      this.unionArr = null;
+      this.mainDcNumberArr = null;
+    }
   },
   components: {
     Treeselect

@@ -15,7 +15,7 @@ class CreateLawsuitsTable extends Migration
     {
         Schema::create('lawsuits', function (Blueprint $table) {
             $table->id();
-            $table->integer('law_order');
+            $table->integer('law_order')->nullable();
             $table->string('law_brief');
 
             $table->unsignedBigInteger('dc_id');
@@ -30,13 +30,13 @@ class CreateLawsuitsTable extends Migration
             $table->foreign('thr_id')
                   ->references('id')->on('teachers');
 
-            $table->unsignedBigInteger('law_id')->nullable();
+            /* $table->unsignedBigInteger('law_id')->nullable();
             $table->foreign('law_id')
-                  ->references('id')->on('lawsuits');
+                  ->references('id')->on('lawsuits'); */
 
-            $table->unsignedBigInteger('sub_id');
+            /* $table->unsignedBigInteger('sub_id');
             $table->foreign('sub_id')
-                  ->references('id')->on('subjects');
+                  ->references('id')->on('subjects'); */
 
             $table->timestamps();
         });
