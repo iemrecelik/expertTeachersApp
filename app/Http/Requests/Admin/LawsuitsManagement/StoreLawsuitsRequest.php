@@ -27,6 +27,8 @@ class StoreLawsuitsRequest extends FormRequest
             'law_brief'  => 'required|string',
             'dc_id'  => 'required|integer|unique:lawsuits,dc_id',
             'thr_id'  => 'required_without:uns_id|integer',
+            /* 'sub_description'  => 'nullable',
+            'sub_description.*'  => 'string|min:10', */
         ];
     }
 
@@ -39,10 +41,13 @@ class StoreLawsuitsRequest extends FormRequest
     {
         return [
             'dc_id.required' => 'Evrak numarası zorunludur.',
+            'dc_id.unique' => 'Evrak numarası daha önce kaydedilmiş.',
             'dc_id.integer' => 'Evrak numarası sadece rakamlardan oluşamaz.',
             'law_brief.required' => 'Dava kısa açıklaması zorunludur.',
             'law_brief.string' => 'Dava kısa açıklaması sadece rakamlardan oluşamaz.',
             'thr_id.required_without' => 'İlgili Öğretmeni yada sendikayı giriniz. ',
+            /* 'sub_description.*.min' => ':attribute Lütfen Maddeleri en 10 karakter olacak şekilde yazınız.',
+            'sub_description.*.string' => ':attribute Lütfen Maddeleri en 10 karakter olacak şekilde yazınız.', */
         ];
     }
 }

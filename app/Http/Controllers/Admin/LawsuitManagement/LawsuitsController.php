@@ -2,16 +2,17 @@
 
 namespace App\Http\Controllers\Admin\LawsuitManagement;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Admin\Lawsuits;
+use App\Models\Admin\Subjects;
+use App\Models\Admin\DcDocuments;
+use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use App\Http\Responsable\isAjaxResponse;
+use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
+use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\LawsuitsManagement\StoreLawsuitsRequest;
 use App\Http\Requests\Admin\LawsuitsManagement\UpdateLawsuitsRequest;
-use App\Http\Responsable\isAjaxResponse;
-use App\Models\Admin\Lawsuits;
-use App\Models\Admin\DcDocuments;
-use App\Models\Admin\Subjects;
-use Illuminate\Validation\ValidationException;
-use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 
 class LawsuitsController extends Controller
 {
@@ -156,11 +157,13 @@ class LawsuitsController extends Controller
 
         $dcDownIds = $params['dc_down_id'] ?? [];
         
-        $subOrders = $params['sub_order'];
-        unset($params['sub_order']);
+        if(!empty($params['sub_order'])) {
+            $subOrders = $params['sub_order'];
+            unset($params['sub_order']);
 
-        $subDescriptions = $params['sub_description'];
-        unset($params['sub_description']);
+            $subDescriptions = $params['sub_description'];
+            unset($params['sub_description']);
+        }
 
         $lawsuit = Lawsuits::create($params);
         
@@ -190,6 +193,9 @@ class LawsuitsController extends Controller
 
         /* add subjects start */
         for ($i=0; $i < count($subOrders); $i++) {
+            if(empty($subDescriptions[$i])) {
+                continue;
+            }
             $subObj = new Subjects();
             $subObj->sub_order = $subOrders[$i];
             $subObj->sub_description = $subDescriptions[$i];
@@ -197,7 +203,9 @@ class LawsuitsController extends Controller
             $subjectArr[$i] = $subObj;
         }
 
-        $lawsuit->subjects()->saveMany($subjectArr);
+        if(!empty($subjectArr)) {
+            $lawsuit->subjects()->saveMany($subjectArr);
+        }
         /* add subjects end */
 
         return ['succeed' => __('messages.add_success')];
@@ -214,6 +222,14 @@ class LawsuitsController extends Controller
         //
     }
 
+    private static function cmp($a, $b)
+    {
+        if ($a->sub_order == $b->sub_order) {
+            return 0;
+        }
+        return ($a->sub_order < $b->sub_order) ? -1 : 1;
+    }
+
     /**
      * Show the form for editing the specified resource.
      *
@@ -224,9 +240,39 @@ class LawsuitsController extends Controller
     {
         $lawsuit->dc_document;
         $lawsuit->dc_documents;
-        $lawsuit->subjects;
+        $subjects = $lawsuit->subjects->toArray();
+
+        if (!empty($subjects)) {
+            usort($subjects, function ($a, $b) {
+                if ($a['sub_order'] == $b['sub_order']) {
+                    return 0;
+                }
+                return ($a['sub_order'] < $b['sub_order']) ? -1 : 1;
+            });
+
+            $lawsuit->subjectsSort = $subjects;
+        }
+
         $lawsuit->teacher;
         $lawsuit->union;
+
+        $lawsuit->mainDcDocument = [
+            'date' => date("d/m/Y", $lawsuit->dc_document->dc_date),
+            'itemStatus' => $lawsuit->dc_document->dc_item_status == 0 
+                ? 'Gelen Evrak'
+                : 'Giden Evrak'
+        ];
+
+        if(!empty($lawsuit->dc_documents)) {
+            $lawsuit->relDcDocuments = array_map(function($item) {
+                return [
+                    'date' => date("d/m/Y", $item['dc_date']),
+                    'itemStatus' => $item['dc_item_status'] == 0 
+                        ? 'Gelen Evrak'
+                        : 'Giden Evrak'
+                ];
+            }, $lawsuit->dc_documents->toArray());
+        }
 
         return new isAjaxResponse($lawsuit);
     }
@@ -241,6 +287,60 @@ class LawsuitsController extends Controller
     public function update(UpdateLawsuitsRequest $request, Lawsuits $lawsuit)
     {
         $params = $request->all();
+
+        $dcDownIds = $params['dc_down_id'] ?? [];
+        
+        if(!empty($params['sub_order'])) {
+            $subOrders = $params['sub_order'];
+            unset($params['sub_order']);
+
+            $subDescriptions = $params['sub_description'];
+            unset($params['sub_description']);
+        }else {
+            $subOrders = [];
+        }
+
+        DB::table('law_dc')->where('law_id', '=', $lawsuit->id)->delete();
+
+        /* add down dc_documents start */
+        if(count($dcDownIds) > 0) {
+            unset($params['dc_down_id']);
+
+            $dcDownIds = array_map(function($item) use ($params) {
+                if($params['dc_id'] != $item) {
+                    return $item;
+                }
+            }, $dcDownIds);
+
+            $dcDownIds = array_unique($dcDownIds);
+
+            $downDcDocuments = DcDocuments::whereIn('id', $dcDownIds)->get();
+
+            $lawsuit->dc_documents()->saveMany($downDcDocuments);
+        }
+        /* add down dc_documents end */
+
+        /* add subjects start */
+        $lawsuit->subjects()->delete();
+
+        for ($i=0; $i < count($subOrders); $i++) {
+            if(empty($subDescriptions[$i])) {
+                continue;
+            }
+            $subObj = new Subjects();
+            $subObj->sub_order = $subOrders[$i];
+            $subObj->sub_description = $subDescriptions[$i];
+            $subObj->law_id = $lawsuit->id;
+            $subjectArr[$i] = $subObj;
+        }
+
+        if(!empty($subjectArr)) {
+            $lawsuit->subjects()->saveMany($subjectArr);
+        }
+        /* add subjects end */
+
+        $params['thr_id'] = $params['thr_id'] ?? null;
+        $params['uns_id'] = $params['uns_id'] ?? null;
 
         $lawsuit->fill($params)->save();
 

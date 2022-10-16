@@ -32,7 +32,7 @@
           :multiple="false"
           :async="true"
           :load-options="loadTeachers"
-          :options="teacherArrOpt"
+          :defaultOptions="teacherArrOpt"
           v-model="teacherArr"
           loadingText="Yükleniyor..."
           clearAllText="Hepsini sil."
@@ -50,9 +50,9 @@
         <treeselect
           :id="'addUnionList'"
           :multiple="false"
-          :auto-load-root-options="false"
+          :async="true"
           :load-options="loadUnions"
-          :options="deneme"
+          :defaultOptions="unionArrOpt"
           v-model="unionArr"
           loadingText="Yükleniyor..."
           clearAllText="Hepsini sil."
@@ -91,7 +91,7 @@
           :multiple="false"
           :async="true"
           :load-options="loadDcNumbers"
-          :options="mainDcNumberArrOpt"
+          :defaultOptions="mainDcNumberArrOpt"
           v-model="mainDcNumberArr"
           :cacheOptions="false"
           :instanceId="0" 
@@ -184,6 +184,8 @@
           :multiple="false"
           :async="true"
           :load-options="loadDcNumbers"
+          :defaultOptions="relDcNumberArrOpt[key]"
+          v-model="relDcNumberArr[key]"
           :instanceId="key+1" 
           loadingText="Yükleniyor..."
           clearAllText="Hepsini sil."
@@ -247,6 +249,10 @@
 import Treeselect from '@riophae/vue-treeselect'
 import { ASYNC_SEARCH } from '@riophae/vue-treeselect';
 
+const simulateAsyncOperation = fn => {
+  setTimeout(fn, 2000)
+}
+
 // import the styles
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
@@ -256,54 +262,19 @@ export default {
   name: 'EditFormComponent',
   data () {
     return {
-      deneme:[ {
-      id: 'fruits',
-      label: 'Fruits',
-      children: [ {
-        id: 'apple',
-        label: 'Apple 🍎',
-        isNew: true,
-      }, {
-        id: 'grapes',
-        label: 'Grapes 🍇',
-      }, {
-        id: 'pear',
-        label: 'Pear 🍐',
-      }, {
-        id: 'strawberry',
-        label: 'Strawberry 🍓',
-      }, {
-        id: 'watermelon',
-        label: 'Watermelon 🍉',
-      } ],
-    }, {
-      id: 'vegetables',
-      label: 'Vegetables',
-      children: [ {
-        id: 'corn',
-        label: 'Corn 🌽',
-      }, {
-        id: 'carrot',
-        label: 'Carrot 🥕',
-      }, {
-        id: 'eggplant',
-        label: 'Eggplant 🍆',
-      }, {
-        id: 'tomato',
-        label: 'Tomato 🍅',
-      } ],
-    } ],
       categoryList: [],
       ajaxErrorCount: -1,
       selectedLaw: 0,
-      lawSubjects: [''],
+      lawSubjects: [],
       dcNumber: [],
       teacherArr: null,
       unionArr: null,
       mainDcNumberArr: null,
-      teacherArrOpt: null,
-      unionArrOpt: null,
-      mainDcNumberArrOpt: null,
+      relDcNumberArr: [],
+      teacherArrOpt: [],
+      unionArrOpt: [],
+      mainDcNumberArrOpt: [],
+      relDcNumberArrOpt: [],
     }
   },
   props: {
@@ -324,6 +295,13 @@ export default {
     value: function(fieldName){
       return this.$store.state.old[fieldName] || this.item[fieldName];
     },
+    resetTreeselect: function(){
+      if(this.selectedLaw == 1) {
+        this.teacherArr = null;
+      }else {
+        this.unionArr = null;
+      }
+    },
     addSubject: function() {
       this.lawSubjects.push('');
     },
@@ -335,6 +313,8 @@ export default {
     },
     delDcNumber: function(index) {
       this.dcNumber.splice(index, 1);
+      this.relDcNumberArrOpt.splice(index, 1);
+      this.relDcNumberArr.splice(index, 1);
     },
 		loadTeachers({ action, searchQuery, callback }) {
       if (action === ASYNC_SEARCH) {
@@ -349,7 +329,6 @@ export default {
       }
     },
     loadUnions({ action, searchQuery, callback }) {
-      console.log('sadasd');
       if (action === ASYNC_SEARCH) {
         simulateAsyncOperation(() => {
 
@@ -468,32 +447,79 @@ export default {
           label: val[valName],
         }
       ];
+    },
+    setTreeselectOpt(fieldName, labelName, valName = null) {
+      let optName = valName? `${valName}ArrOpt` : `${fieldName}ArrOpt`;
+      let defValName = valName? `${valName}Arr` : `${fieldName}Arr`;
+      
+      let item = this.value(fieldName);
+
+      switch (fieldName) {
+        case 'teacher':
+          this[optName] = [
+            {
+              id: item.id,
+              label: "(T.C. No: "+item.thr_tc_no+")"+item.thr_name+" "+item.thr_surname,
+            }
+          ];   
+          break;
+      
+        default:
+          this[optName] = [
+            {
+              id: item.id,
+              label: item[labelName],
+            }
+          ];
+          break;
+      }
+
+      this[defValName] = item.id;
     }
   },
   created() {
-    let dcId = this.value('dc_id');
     let thrId = this.value('thr_id');
     let unsId = this.value('uns_id');
+    let subjectsSort = this.value('subjectsSort');
+    let dcDocuments = this.value('dc_documents');
 
-    if(thrId) {
-      this.selectedLaw = 1;
-    }else if(unsId) {
-      this.selectedLaw = 2;
-
-      let union = this.value('union');
-
-      /* this.unionArrOpt = [
+    dcDocuments.forEach((item, key) => {
+      this.dcNumber.push(this.uniqueID());
+      this.relDcNumberArrOpt[key] = [
         {
-          id: union.id,
-          label: union.uns_name,
+          id: item.id,
+          label: item.dc_number,
         }
       ];
- */
-      // this.unionArr = [union.id]
-      this.unionArr = ['fruits'];
+      this.relDcNumberArr[key] = item.id;
+    });
+
+    this.setTreeselectOpt('dc_document', 'dc_number', 'mainDcNumber');
+    
+    if(thrId) {
+      this.selectedLaw = 1;
+      this.setTreeselectOpt('teacher', 'thr_name');
+    }else if(unsId) {
+      this.selectedLaw = 2;
+      this.setTreeselectOpt('union', 'uns_name');
     }
-    // this.selectedLaw = dcId != null? 2 : 1;
-  }, 
+
+    subjectsSort = subjectsSort.map(item => {
+      return item.sub_description;
+    });
+
+    this.lawSubjects.push(...subjectsSort);
+  },
+  mounted() {
+    this.getDocumentInfos(this.value('mainDcDocument'), 0);
+
+    let relDcDocuments = this.value('relDcDocuments');
+
+    relDcDocuments.forEach((item, key) => {
+      this.getDocumentInfos(item, (key+1));
+    });
+    
+  },
   components: {
     Treeselect,
   }
