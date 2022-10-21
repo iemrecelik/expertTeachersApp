@@ -109,7 +109,7 @@
       
     </div>
     
-    <div class="col-4">
+    <div class="col-3">
       
       <div class="form-group">
         <label>Durumu </label>
@@ -118,11 +118,20 @@
       
     </div>
 
-    <div class="col-4">
+    <div class="col-3">
       
       <div class="form-group">
         <label>Tarih </label>
         <div :class="'item-date'+0"></div>
+      </div>
+      
+    </div>
+
+    <div class="col-2">
+      
+      <div class="form-group">
+        <label>Bilgiler </label>
+        <div :class="'item-info'+0"></div>
       </div>
       
     </div>
@@ -201,7 +210,7 @@
       
     </div>
     
-    <div class="col-4">
+    <div class="col-3">
       
       <div class="form-group">
         <label>Durumu </label>
@@ -210,11 +219,20 @@
       
     </div>
 
-    <div class="col-3">
+    <div class="col-2">
       
       <div class="form-group">
         <label>Tarih </label>
         <div :class="'item-date'+(key+1)"></div>
+      </div>
+      
+    </div>
+
+    <div class="col-2">
+      
+      <div class="form-group">
+        <label>Bilgiler </label>
+        <div :class="'item-info'+(key+1)"></div>
       </div>
       
     </div>
@@ -240,12 +258,30 @@
       </button>
     </div>
   </div>
+
+  <!-- Modal -->
+  <!-- <div class="modal fade" tabindex="-1" role="dialog" 
+    aria-labelledby="formModalLongTitle" aria-hidden="true"
+    data-backdrop="static" :id="modalIDName"
+  >
+    
+    <div class="modal-dialog modal-xl" role="document">
+        <component
+          v-if="formModalBody.show"
+          :is="formModalBody.component"
+          :ppdatas="formModalBody.datas"
+          :ppDcContent="dcContent"
+        >
+        </component>
+    </div>
+
+  </div> -->
   
 </div>
 </template>
 
 <script>
-// import editLangFormComponent from './EditLangFormComponent';
+// import showComponent from './ShowComponent';
 import Treeselect from '@riophae/vue-treeselect'
 import { ASYNC_SEARCH } from '@riophae/vue-treeselect';
 
@@ -258,10 +294,14 @@ import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 import { mapState } from 'vuex';
 
+// let formTitleName= 'lawsuit-dc-show';
+
 export default {
   name: 'EditFormComponent',
   data () {
     return {
+      /* modalIDName: 'formModalLong',
+      dcContent: '', */
       categoryList: [],
       ajaxErrorCount: -1,
       selectedLaw: 0,
@@ -289,7 +329,11 @@ export default {
     },
     ...mapState([
       'routes',
+      // 'formModalBody',
     ]),
+    /* modalSelector: function(){
+      return '#' + this.modalIDName;
+    }, */
   },
   methods: {
     value: function(fieldName){
@@ -430,6 +474,22 @@ export default {
     getDocumentInfos(datas, instanceId) {
       document.getElementsByClassName('item-date'+instanceId)[0].innerHTML = datas.date;
       document.getElementsByClassName('item-status'+instanceId)[0].innerHTML = datas.itemStatus;
+      // document.getElementsByClassName('item-info'+instanceId)[0].innerHTML = this.processesRow(datas.datas);
+      document.getElementsByClassName('item-info'+instanceId)[0].innerHTML = '<a tabindex="0" class="btn btn-lg btn-danger" role="button" data-toggle="popover" data-trigger="focus" title="Dismissible popover">Dismissible popover</a>';
+
+      setTimeout(() => {
+        $('[data-toggle="popover"]').popover({
+          trigger: "hover",
+          html: true,
+          content: datas.content,
+          placement: 'left',
+          trigger: 'click',
+          boundary: 'window',
+          template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
+        });  
+      }, 1000);
+
+      
     },
     resetForm() {
       this.lawSubjects = [];
@@ -475,7 +535,54 @@ export default {
       }
 
       this[defValName] = item.id;
-    }
+    },
+    /* processesRow: function(id){
+      let row = '';
+      row += this.showBtnHtml(id);
+      row += this.fileDownloadBtnHtml(id);
+      return row;
+    },
+
+    fileDownloadBtnHtml: function(datas){
+      return  `
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.docFileDownload')}"
+        >
+          <a type="button" class="btn btn-sm btn-success"
+            data-file-download
+            href="/storage/upload/images/raw${datas.url}"
+            download
+            data-datas='{
+              "id": ${datas.id},
+              "formTitleName": "${this.formTitleName}"
+            }'
+          >
+            <i class="bi bi-file-earmark-arrow-down"></i>
+          </a>
+        </span>`;
+    },
+
+    showBtnHtml: function(datas){
+      return  `
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.showDocument')}"
+        >
+          <button type="button" class="btn btn-sm btn-info"
+            data-toggle="modal" data-target="${this.modalSelector}"
+            data-component="${this.formTitleName}-show-component" 
+            data-datas='{
+              "id": ${datas.id},
+              "formTitleName": "${this.formTitleName}",
+              "userName": "${datas.userName}"
+            }'
+          >
+            <i class="bi bi-file-text"></i>
+          </button>
+        </span>`;
+    }, */
+
   },
   created() {
     let thrId = this.value('thr_id');
@@ -518,10 +625,50 @@ export default {
     relDcDocuments.forEach((item, key) => {
       this.getDocumentInfos(item, (key+1));
     });
-    
+
+    // this.showModalBody(this.modalSelector);
   },
   components: {
     Treeselect,
+    // [formTitleName + '-show-component']: showComponent,
   }
 }
 </script>
+
+<style>
+.popover {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1060;
+  display: block;
+  max-width: 1000px;
+  font-family: "Source Sans Pro", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  font-style: normal;
+  font-weight: 400;
+  line-height: 1.5;
+  text-align: left;
+  text-align: start;
+  text-decoration: none;
+  text-shadow: none;
+  text-transform: none;
+  letter-spacing: normal;
+  word-break: normal;
+  word-spacing: normal;
+  white-space: normal;
+  line-break: auto;
+  font-size: 0.875rem;
+  word-wrap: break-word;
+  background-color: #fff;
+  background-clip: padding-box;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 0.3rem;
+  box-shadow: 0 0.25rem 0.5rem rgb(0 0 0 / 20%);
+}
+.popover-body {
+  padding: 0.5rem 0.75rem;
+  color: #212529;
+  overflow: auto;
+  height: 3000px !important;
+}
+</style>

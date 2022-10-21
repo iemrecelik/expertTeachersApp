@@ -13,7 +13,8 @@
             id="usersSelectBox"
             name="user_id"
           >
-            <option value="0">Tüm Kullanıclar</option>
+            <option value="-1">Tüm Kullanıcılar</option>
+            <option value="0">Ortak Listeler</option>
             <option :selected="user.auth" v-for="user in users" :value="user.id">
               {{user.name}}
             </option>

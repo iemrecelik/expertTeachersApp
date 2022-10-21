@@ -8,7 +8,7 @@
           <ul>
             <li v-for="item in list.selected">
               <span>{{ item.dc_list_name }}</span>
-              <span v-if="item.user_id === list.userId"
+              <span v-if="item.user_id === list.userId || item.user_id == 0"
                 class="float-right"
                 @click="deleteList(item.id)"
               >

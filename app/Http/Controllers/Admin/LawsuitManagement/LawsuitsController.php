@@ -13,6 +13,8 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\LawsuitsManagement\StoreLawsuitsRequest;
 use App\Http\Requests\Admin\LawsuitsManagement\UpdateLawsuitsRequest;
+use Intervention\Image\Facades\Image;
+use Illuminate\Support\Facades\Storage;
 
 class LawsuitsController extends Controller
 {
@@ -23,21 +25,58 @@ class LawsuitsController extends Controller
      */
     public function index()
     {
+        /* $dirName = 'yok_uzman_sinav';
+        $dirs = scandir(storage_path('app/public/'.$dirName.'/'));
+
+        // dd($dirs);
+
+        echo '<pre>';
+        foreach ($dirs as $key => $val) {
+            
+            if($val != "." && $val != "..") {
+                var_dump($val);
+                $d = scandir(storage_path('app/public/'.$dirName.'/'.$val));
+
+                foreach ($d as $dkey => $dval) {
+                    if($dval != '.' && $dval != '..') {
+                        $v = explode('_', $val);
+                        $v = $v[1];
+                        
+                        $img = Image::make(storage_path('app/public/'.$dirName.'/'.$val.'/'.$dval));
+                        Storage::put(
+                            'public/'.$dirName.'_resim2/'.$v.'.JPG', 
+                            $img->encode('jpg', 75)
+                        );
+                        // $img->save(storage_path('app/public/yok_uzman_muaf_resim/'), 80, 'jpg');
+                    }
+                }
+                var_dump($d);
+            }
+        }
+        echo '</pre>';
+
+        dd($dirs); */
         /* // $reader = new \PhpOffice\PhpSpreadsheet\Reader\Xlsx();
         $inputFileType = 'Xlsx';
 
         // $url = Storage::url('belge.xlsx');
-        $url = storage_path('app/public/belge3.xlsx');
+        $url = storage_path('app/public/diger_dis_kurum/bas_sinav_engelli.xlsx');
 
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
         // $reader->setReadDataOnly(true);
 
         $spreadsheet = $reader->load($url);
 
+        $filterSubset = new \App\Library\PhpOfficeSpreadsheetFilter(3,60,range('A','Z'));
 
         $datas = $spreadsheet->getActiveSheet()->toArray();
         echo '<pre>';
+        $co = 0;
         foreach ($datas as $key => $value) {
+            if(strlen($value[2]) == 11) {
+                $co++;
+                mkdir(storage_path('app/public/diger_dis_kurum/bas_sinav_engelli/'.$co.'_'.$value[2]));
+            }
 
             var_dump($value[0]);
             var_dump($value[1]);
@@ -46,6 +85,7 @@ class LawsuitsController extends Controller
             var_dump($value[4]);
             var_dump($value[5]);
             var_dump($value[6]);
+            echo '<hr/>';
         }
         echo '</pre>';
         die; */
@@ -257,7 +297,11 @@ class LawsuitsController extends Controller
         $lawsuit->union;
 
         $lawsuit->mainDcDocument = [
+            'datas' => [
+                'id' => $lawsuit->dc_document->id,
+            ],
             'date' => date("d/m/Y", $lawsuit->dc_document->dc_date),
+            'content' => $lawsuit->dc_document->dc_show_content,
             'itemStatus' => $lawsuit->dc_document->dc_item_status == 0 
                 ? 'Gelen Evrak'
                 : 'Giden Evrak'
@@ -266,7 +310,11 @@ class LawsuitsController extends Controller
         if(!empty($lawsuit->dc_documents)) {
             $lawsuit->relDcDocuments = array_map(function($item) {
                 return [
+                    'datas' => [
+                        'id' => $item['id'],
+                    ],
                     'date' => date("d/m/Y", $item['dc_date']),
+                    'content' => $item['dc_show_content'],
                     'itemStatus' => $item['dc_item_status'] == 0 
                         ? 'Gelen Evrak'
                         : 'Giden Evrak'
