@@ -58,7 +58,7 @@ import deleteComponent from './DeleteComponent';
 
 import { mapState, mapMutations } from 'vuex';
 
-let formTitleName = 'institutions'
+let formTitleName = 'lawsuits'
 
 export default {
   // name: this.componentTitleName,
@@ -112,7 +112,8 @@ export default {
       let row = '';
       row += this.editBtnHtml(id);
       row += this.deleteBtnHtml(id);
-      // row += this.imageBtnHtml(id);
+      /* row += this.showBtnHtml(id);
+      row += this.fileDownloadBtnHtml(id); */
       return row;
     },
     
@@ -153,25 +154,46 @@ export default {
           </button>
         </span>`;
     },
-    
-    imageBtnHtml: function(id){
+
+    /* fileDownloadBtnHtml: function(datas){
       return  `
         <span 
-            data-toggle="tooltip" data-placement="top" 
-            title="${this.$t('messages.image')}"
-          >
-          <button type="button" class="btn btn-sm btn-info"
-            data-toggle="modal" data-target="${this.modalSelector}"
-            data-component="${this.formTitleName}-images-component" 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.docFileDownload')}"
+        >
+          <a type="button" class="btn btn-sm btn-success"
+            data-file-download
+            href="/storage/upload/images/raw${datas.url}"
+            download
             data-datas='{
-              "id": ${id},
+              "id": ${datas.id},
               "formTitleName": "${this.formTitleName}"
             }'
           >
-            <i class="bi bi-image"></i>
-          </button>
+            <i class="bi bi-file-earmark-arrow-down"></i>
+          </a>
         </span>`;
     },
+
+    showBtnHtml: function(datas){
+      return  `
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.showDocument')}"
+        >
+          <button type="button" class="btn btn-sm btn-info"
+            data-toggle="modal" data-target="${this.modalSelector}"
+            data-component="${this.formTitleName}-show-component" 
+            data-datas='{
+              "id": ${datas.id},
+              "formTitleName": "${this.formTitleName}",
+              "userName": "${datas.userName}"
+            }'
+          >
+            <i class="bi bi-file-text"></i>
+          </button>
+        </span>`;
+    }, */
 
   },
   created(){
@@ -231,7 +253,6 @@ export default {
     [formTitleName + '-edit-component']: editComponent,
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-delete-component']: deleteComponent,
-    // [formTitleName + '-images-component']: imagesComponent,
   }
 }
 </script>

@@ -7,6 +7,7 @@
         <input type="checkbox" 
           id="checkboxPrimary2" 
           @change="setCommonStatus"
+          :checked="commonStatus"
         >
         <label for="checkboxPrimary2">
           Ortak Liste
@@ -77,7 +78,7 @@ export default {
     },
   },
   created() {
-    // this.getCategory();
+    this.commonStatus = this.value('user_id') == 0 ? 1 : 0;
   },
   components: {
     Treeselect,

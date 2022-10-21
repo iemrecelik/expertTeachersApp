@@ -143,7 +143,7 @@ class DocumentsController extends Controller
             'dc_date'           => strtotime($params['dc_date']),
             'user_id'           => $request->user()->id,
             'list_id'           => $params['list_id'],
-            'thr_id'            => $params['thr_id'],
+            'thr_id'            => $params['thr_id'] ?? null,
             'dc_com_text'       => $params['dc_com_text'],
             'dc_manuel'         => $params['dc_manuel'],
         ];

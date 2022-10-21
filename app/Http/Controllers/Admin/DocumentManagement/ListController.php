@@ -67,7 +67,7 @@ class ListController extends Controller
         $list = DcLists::whereNotIn('id', $ids);
 
         if(isset($userId)) {
-            $list = $list->where('user_id', $userId);
+            $list = $list->whereIn('user_id', [$userId, 0]);
         }
 
         $list = $list->get();
@@ -123,7 +123,7 @@ class ListController extends Controller
 	        'table' => 'dc_lists',
 	        'fieldIDName' => 'id',
 	        'addLangFields' => [],
-            'choiceJoin' => 'join',
+            'choiceJoin' => 'leftJoin',
             'join' => $join,
             'selectJoin' => $selectJoin,
 	        'selectCol' => $selectCol,
@@ -136,7 +136,7 @@ class ListController extends Controller
 	    $recordsTotal = DcLists::count();
 	    $recordsFiltered = $dataList->count();
 
-        if($selectUserId > 0) {
+        if($selectUserId > -1) {
             $dataList->where('user_id', $selectUserId);
         }
         
@@ -148,7 +148,7 @@ class ListController extends Controller
         $userId = $request->user()->id;
 
         $datas = array_map(function($item) use ($userId) {
-            if($item['user_id'] === $userId) {
+            if($item['user_id'] === $userId || $item['user_id'] == 0) {
                 return $item;
             }else {
                 $item['id'] = null;
