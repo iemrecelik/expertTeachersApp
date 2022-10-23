@@ -47,6 +47,8 @@ require('./adminlte/plugins/daterangepicker/daterangepicker');
 /* jquery-knob */
 require('./adminlte/plugins/jquery-knob/jquery.knob.min');
 
+/* Chart JS */
+require('chart.js');
 
 /*Main JS*/
 require('./jquery/main.js');

@@ -262,14 +262,6 @@ class LawsuitsController extends Controller
         //
     }
 
-    private static function cmp($a, $b)
-    {
-        if ($a->sub_order == $b->sub_order) {
-            return 0;
-        }
-        return ($a->sub_order < $b->sub_order) ? -1 : 1;
-    }
-
     /**
      * Show the form for editing the specified resource.
      *

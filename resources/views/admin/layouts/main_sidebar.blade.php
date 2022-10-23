@@ -131,6 +131,12 @@
                 <p>Davalar Listesi</p>
               </a>
             </li>
+            <li class="nav-item">
+              <a href="{{route('admin.lawsuit_mng.statistical.index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Dava İstatistikleri</p>
+              </a>
+            </li>
           </ul>
         </li>
 

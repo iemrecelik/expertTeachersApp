@@ -15,6 +15,7 @@ import docMngSearchComponent from './components/admin/document_mng/search/Search
 
 /* Lawsuit Management*/
 import lawsuitMngLawsuitsComponent from './components/admin/lawsuit_mng/lawsuits/IndexComponent';
+import lawsuitMngStatisticalComponent from './components/admin/lawsuit_mng/statistical/IndexComponent';
 
 /* Teacehrs */
 import teachersComponent from './components/admin/teachers/IndexComponent';
@@ -42,4 +43,5 @@ export default {
 	'unions-mng-component': unionsMngComponent,
 
 	'lawsuit-mng-lawsuits-component': lawsuitMngLawsuitsComponent,
+	'lawsuit-mng-statistical-component': lawsuitMngStatisticalComponent,
 }

@@ -35,7 +35,7 @@ class DocumentsController extends Controller
 
         $params = $request->all();
 
-        $dcDocuments = DcDocuments::selectRaw('id, dc_number, dc_date, dc_item_status')
+        $dcDocuments = DcDocuments::selectRaw('id, dc_number, dc_date, dc_item_status, dc_show_content')
         ->whereRaw(
             'dc_number LIKE :dcNumber', 
             [
@@ -50,6 +50,7 @@ class DocumentsController extends Controller
                 'label' => $dcDocument['dc_number'],
                 'date' => date("d/m/Y", $dcDocument['dc_date']),
                 'itemStatus' => $dcDocument['dc_item_status'] == 0?'Gelen Evrak':'Giden Evrak',
+                'content' => $dcDocument['dc_show_content']
             ];
         }, $dcDocuments->toArray());
 

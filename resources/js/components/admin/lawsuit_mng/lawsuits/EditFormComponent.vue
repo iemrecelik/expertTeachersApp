@@ -130,7 +130,7 @@
     <div class="col-2">
       
       <div class="form-group">
-        <label>Bilgiler </label>
+        <label>İçeriği </label>
         <div :class="'item-info'+0"></div>
       </div>
       
@@ -231,7 +231,7 @@
     <div class="col-2">
       
       <div class="form-group">
-        <label>Bilgiler </label>
+        <label>İçeriği </label>
         <div :class="'item-info'+(key+1)"></div>
       </div>
       
@@ -472,23 +472,42 @@ export default {
       .then((res) => {})
 		},
     getDocumentInfos(datas, instanceId) {
-      document.getElementsByClassName('item-date'+instanceId)[0].innerHTML = datas.date;
-      document.getElementsByClassName('item-status'+instanceId)[0].innerHTML = datas.itemStatus;
-      // document.getElementsByClassName('item-info'+instanceId)[0].innerHTML = this.processesRow(datas.datas);
-      document.getElementsByClassName('item-info'+instanceId)[0].innerHTML = '<a tabindex="0" class="btn btn-lg btn-danger" role="button" data-toggle="popover" data-trigger="focus" title="Dismissible popover">Dismissible popover</a>';
+      let prom = new Promise((resolve, reject) => {
+        document.getElementsByClassName('item-date'+instanceId)[0].innerHTML = datas.date;
+        document.getElementsByClassName('item-status'+instanceId)[0].innerHTML = datas.itemStatus;
+        document.getElementsByClassName('item-info'+instanceId)[0].innerHTML = `
+          <a tabindex="0" class="btn btn-sm btn-info" 
+            id="show-document-${instanceId}"
+            role="button" 
+            data-toggle="popover" 
+            data-trigger="focus" 
+            title=""
+          >
+            <i class="bi bi-file-text"></i>
+          </a>
+        `;
 
-      setTimeout(() => {
-        $('[data-toggle="popover"]').popover({
-          trigger: "hover",
+        resolve();
+      });
+
+      prom.then((result) => {
+        $(`#show-document-${instanceId}`).popover({
           html: true,
           content: datas.content,
           placement: 'left',
-          trigger: 'click',
+          trigger: 'focus',
           boundary: 'window',
-          template: '<div class="popover" role="tooltip"><div class="arrow"></div><h3 class="popover-header"></h3><div class="popover-body"></div></div>'
-        });  
-      }, 1000);
-
+          template: `
+            <div class="popover" role="tooltip">
+              <div class="arrow"></div>
+              <h3 class="popover-header"></h3>
+              <div class="popover-body"></div>
+            </div>
+          `
+        });
+      }).catch((err) => {
+        console.log(err);
+      });
       
     },
     resetForm() {
@@ -669,6 +688,6 @@ export default {
   padding: 0.5rem 0.75rem;
   color: #212529;
   overflow: auto;
-  height: 3000px !important;
+  max-height: 600px !important;
 }
 </style>

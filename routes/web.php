@@ -2,16 +2,16 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\Admin\MainController;
-use App\Http\Controllers\Admin\TeachersController;
 use App\Http\Controllers\Admin\UnionsController;
-use App\Http\Controllers\Admin\LawsuitManagement\LawsuitsController;
-use App\Http\Controllers\Admin\TeachersListManagement\InstitutionsController;
+use App\Http\Controllers\Admin\TeachersController;
 use App\Http\Controllers\Admin\Search\SearchController;
 use App\Http\Controllers\Admin\DocumentManagement\ListController;
 use App\Http\Controllers\Admin\DocumentManagement\CommentController;
+use App\Http\Controllers\Admin\LawsuitManagement\LawsuitsController;
 use App\Http\Controllers\Admin\DocumentManagement\CategoryController;
 use App\Http\Controllers\Admin\DocumentManagement\DocumentsController;
+use App\Http\Controllers\Admin\LawsuitManagement\StatisticalController;
+use App\Http\Controllers\Admin\TeachersListManagement\InstitutionsController;
 use App\Http\Controllers\Admin\OldRegulation\SearchController as OldSearchController;
 use App\Http\Controllers\Admin\DocumentManagement\SearchController as DcSearchController;
 
@@ -322,4 +322,23 @@ Route::prefix('admin/lawsuit-management')
 		->name('lawsuits.dataList');
 
 		Route::resource('lawsuits', LawsuitsController::class);
+    });
+
+Route::prefix('admin/lawsuit-management')
+    ->middleware('auth')
+    ->controller(StatisticalController::class)
+    ->name('admin.lawsuit_mng.')
+    ->group(function () {
+        /* Statistical */
+		Route::post(
+			'statistical/data-list', 
+			'getDataList'
+		)
+		->name('statistical.dataList');
+
+		Route::get(
+			'statistical', 
+			'index'
+		)
+		->name('statistical.index');
     });

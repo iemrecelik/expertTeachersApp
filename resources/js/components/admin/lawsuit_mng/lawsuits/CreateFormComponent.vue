@@ -106,7 +106,7 @@
       
     </div>
     
-    <div class="col-4">
+    <div class="col-3">
       
       <div class="form-group">
         <label>Durumu </label>
@@ -115,11 +115,20 @@
       
     </div>
 
-    <div class="col-4">
+    <div class="col-3">
       
       <div class="form-group">
         <label>Tarih </label>
         <div :class="'item-date'+0"></div>
+      </div>
+      
+    </div>
+
+     <div class="col-2">
+      
+      <div class="form-group">
+        <label>İçeriği </label>
+        <div :class="'item-info'+0"></div>
       </div>
       
     </div>
@@ -196,7 +205,7 @@
       
     </div>
     
-    <div class="col-4">
+    <div class="col-3">
       
       <div class="form-group">
         <label>Durumu </label>
@@ -205,11 +214,20 @@
       
     </div>
 
-    <div class="col-3">
+    <div class="col-2">
       
       <div class="form-group">
         <label>Tarih </label>
         <div :class="'item-date'+(key+1)"></div>
+      </div>
+      
+    </div>
+
+    <div class="col-2">
+      
+      <div class="form-group">
+        <label>İçeriği </label>
+        <div :class="'item-info'+(key+1)"></div>
       </div>
       
     </div>
@@ -405,8 +423,42 @@ export default {
       .then((res) => {})
 		},
     getDocumentInfos(datas, instanceId) {
-      document.getElementsByClassName('item-date'+instanceId)[0].innerHTML = datas.date;
-      document.getElementsByClassName('item-status'+instanceId)[0].innerHTML = datas.itemStatus;
+      let prom = new Promise((resolve, reject) => {
+        document.getElementsByClassName('item-date'+instanceId)[0].innerHTML = datas.date;
+        document.getElementsByClassName('item-status'+instanceId)[0].innerHTML = datas.itemStatus;
+        document.getElementsByClassName('item-info'+instanceId)[0].innerHTML = `
+          <a tabindex="0" class="btn btn-sm btn-info" 
+            id="show-document-${instanceId}"
+            role="button" 
+            data-toggle="popover" 
+            data-trigger="focus" 
+            title=""
+          >
+            <i class="bi bi-file-text"></i>
+          </a>
+        `;
+
+        resolve();
+      });
+
+      prom.then((result) => {
+        $(`#show-document-${instanceId}`).popover({
+          html: true,
+          content: datas.content,
+          placement: 'left',
+          trigger: 'focus',
+          boundary: 'window',
+          template: `
+            <div class="popover" role="tooltip">
+              <div class="arrow"></div>
+              <h3 class="popover-header"></h3>
+              <div class="popover-body"></div>
+            </div>
+          `
+        });
+      }).catch((err) => {
+        console.log(err);
+      });
     },
     resetForm() {
       this.lawSubjects = [];
