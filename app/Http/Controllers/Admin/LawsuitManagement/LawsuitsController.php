@@ -25,7 +25,7 @@ class LawsuitsController extends Controller
      */
     public function index()
     {
-        /* $dirName = 'yok_uzman_sinav';
+        /* $dirName = 'aile/uzman_sinav';
         $dirs = scandir(storage_path('app/public/'.$dirName.'/'));
 
         // dd($dirs);
@@ -60,7 +60,7 @@ class LawsuitsController extends Controller
         $inputFileType = 'Xlsx';
 
         // $url = Storage::url('belge.xlsx');
-        $url = storage_path('app/public/diger_dis_kurum/bas_sinav_engelli.xlsx');
+        $url = storage_path('app/public/aile/bas_muaf.xlsx');
 
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
         // $reader->setReadDataOnly(true);
@@ -75,7 +75,7 @@ class LawsuitsController extends Controller
         foreach ($datas as $key => $value) {
             if(strlen($value[2]) == 11) {
                 $co++;
-                mkdir(storage_path('app/public/diger_dis_kurum/bas_sinav_engelli/'.$co.'_'.$value[2]));
+                mkdir(storage_path('app/public/aile/bas_muaf/'.$co.'_'.$value[2]));
             }
 
             var_dump($value[0]);
