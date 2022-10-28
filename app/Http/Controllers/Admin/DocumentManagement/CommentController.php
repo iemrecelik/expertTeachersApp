@@ -199,6 +199,7 @@ class CommentController extends Controller
             31- Uzman öğretmen yazışmalarda evrak göster denilince kimin eklediğini göstermiyor.
             32- Davalar kısa konu bilgisi ayrı modül yapılacak
             33- Öğretmen eklerken uzman veya baş öğretmen bilgisi select box olacak
+            34- Dava ekledikten sonra aynı popup da eklemeye kalktığımız undefined subOrders hatası veriyor.
         */
 
         $request->validate(
