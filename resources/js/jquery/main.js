@@ -126,7 +126,3 @@ $(function () {
 	});
 })
 // Document ready end
-
-function myFunction() {
-  alert('bgbgbgbg');
-}

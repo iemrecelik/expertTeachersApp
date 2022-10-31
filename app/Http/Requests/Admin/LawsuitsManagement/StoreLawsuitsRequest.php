@@ -24,7 +24,7 @@ class StoreLawsuitsRequest extends FormRequest
     public function rules()
     {
         return [
-            'law_brief'  => 'required|string',
+            'law_brief'  => 'required|string|max:200',
             'dc_id'  => 'required|integer|unique:lawsuits,dc_id',
             'thr_id'  => 'required_without:uns_id|integer',
             /* 'sub_description'  => 'nullable',
@@ -44,7 +44,8 @@ class StoreLawsuitsRequest extends FormRequest
             'dc_id.unique' => 'Evrak numarası daha önce kaydedilmiş.',
             'dc_id.integer' => 'Evrak numarası sadece rakamlardan oluşamaz.',
             'law_brief.required' => 'Dava kısa açıklaması zorunludur.',
-            'law_brief.string' => 'Dava kısa açıklaması sadece rakamlardan oluşamaz.',
+            'law_brief.string' => 'Davanın kısa açıklaması sadece rakamlardan oluşamaz.',
+            'law_brief.max' => 'Davanın kısa açıklaması en fazla 200 karakterli olmalıdır.',
             'thr_id.required_without' => 'İlgili Öğretmeni yada sendikayı giriniz. ',
             /* 'sub_description.*.min' => ':attribute Lütfen Maddeleri en 10 karakter olacak şekilde yazınız.',
             'sub_description.*.string' => ':attribute Lütfen Maddeleri en 10 karakter olacak şekilde yazınız.', */

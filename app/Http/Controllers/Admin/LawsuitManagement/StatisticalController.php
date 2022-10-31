@@ -2,8 +2,10 @@
 
 namespace App\Http\Controllers\Admin\LawsuitManagement;
 
-use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class StatisticalController extends Controller
 {
@@ -105,5 +107,29 @@ class StatisticalController extends Controller
             'admin.lawsuits_mng.statistical.index', 
             [ 'stats' => $stats]
         );
+    }
+
+    public function writeStatstoPDF(Request $request)
+    {
+        // return view('admin.lawsuits_mng.statistical.deneme');
+
+        $request->validate(
+            [
+                'statsHtml' => 'required|string'
+            ],
+            [
+                'statsHtml.required' => 'İstatistik alanını boş bırakamazsınzı'
+            ],
+        );
+
+        $statsHtml = $request->input('statsHtml');
+        $statsCss = $request->input('statsCss');
+
+
+        $mpdf = New \Mpdf\Mpdf(['tempDir'=>storage_path('tempdir')]);
+        $mpdf->WriteHTML($statsCss, 1);
+        $mpdf->WriteHTML($statsHtml, 2);
+
+        $mpdf->Output();
     }
 }

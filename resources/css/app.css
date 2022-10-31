@@ -31,6 +31,10 @@
 @import '~bootstrap-icons/font/bootstrap-icons.css';
 
 
+/* summernote text editor */
+@import '../plugins/summernote/summernote-bs4.css';
+
+
 /* v-tooltip */
 /* @import './plugins/v-tooltip/v-tooltip.scss'; */
 

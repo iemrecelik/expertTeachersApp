@@ -341,4 +341,16 @@ Route::prefix('admin/lawsuit-management')
 			'index'
 		)
 		->name('statistical.index');
+
+		Route::post(
+			'statistical/stats-to-pdf', 
+			'writeStatstoPDF'
+		)
+		->name('statistical.statsToPdf');
+
+		/* Route::get(
+			'statistical/stats-to-pdf2', 
+			'writeStatstoPDF'
+		)
+		->name('statistical.statsToPdf2'); */
     });

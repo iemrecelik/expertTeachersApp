@@ -149,7 +149,7 @@
             </button>
           </div>
           <div class="col-10">
-            <textarea class="form-control" 
+            <textarea class="form-control click2edit" 
               rows="1"
               name="sub_description[]" 
               placeholder="Dava konusu..."
@@ -159,6 +159,12 @@
             <input type="hidden" name="sub_order[]" :value="(key+1)">
           </div>
           <div class="col-1 text-left">
+            <span
+              @click="editMode(key)"
+            >
+              <i class="bi bi-pen"></i>
+            </span>
+            
             <span
               @click="delSubject(key)"
             >
@@ -336,6 +342,9 @@ export default {
     }, */
   },
   methods: {
+    editMode() {
+      $('.click2edit').summernote();
+    },
     value: function(fieldName){
       return this.$store.state.old[fieldName] || this.item[fieldName];
     },

@@ -50,6 +50,9 @@ require('./adminlte/plugins/jquery-knob/jquery.knob.min');
 /* Chart JS */
 require('chart.js');
 
+/* Summernote JS */
+require('../plugins/summernote/summernote-bs4');
+
 /*Main JS*/
 require('./jquery/main.js');
 require('./jquery/main-ajax.js');
