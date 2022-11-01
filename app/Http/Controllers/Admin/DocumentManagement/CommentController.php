@@ -201,7 +201,7 @@ class CommentController extends Controller
             33- Öğretmen eklerken uzman veya baş öğretmen bilgisi select box olacak
             34- Dava ekledikten sonra aynı popup da eklemeye kalktığımız undefined subOrders hatası veriyor.
             35- dava konuları editör olacak
-            36- dava listesinde önlizleme butonu eklenecek
+            36- dava listesinde önlizleme butonu eklenecek2
         */
 
         $request->validate(
