@@ -25,6 +25,22 @@
           >
             {{ $t('messages.add') }}
           </button>
+          <button type="button" class="btn btn-primary"
+            data-toggle="modal" 
+            :data-target="modalSelector"
+            :data-datas='`{"formTitleName": "\${formTitleName}"}`'
+            :data-component="`${formTitleName}-create-excel-component`"
+          >
+            {{ $t('messages.addLikeExcel') }}
+          </button>
+          <button type="button" class="btn btn-primary"
+            data-toggle="modal" 
+            :data-target="modalSelector"
+            :data-datas='`{"formTitleName": "\${formTitleName}"}`'
+            :data-component="`${formTitleName}-upload-images-component`"
+          >
+            {{ $t('messages.addImages') }}
+          </button>
         </th>
       </tr>
     </tfoot>
@@ -52,6 +68,7 @@
 
 <script>
 import createComponent from './CreateComponent';
+import createExcelComponent from './CreateExcelComponent';
 import editComponent from './EditComponent';
 import showComponent from './ShowComponent';
 import deleteComponent from './DeleteComponent';
@@ -190,13 +207,15 @@ export default {
         { "data": "thr_tc_no" },
         { "data": "thr_name" },
         { "data": "thr_surname" },
-        { "data": "thr_career_ladder" },
         { 
-          "data": "inst_id",
-          "render": (data, type, row) => {
-            return data;
-          }
+          "data": "thr_career_ladder",
+          "render": ( data, type, row ) => {
+              return  data == 0 ? 'Öğretmen' :
+                      data == 1 ? 'Uzman Öğretmen' :
+                      data == 2 ? 'Başöğretmen' : 'Bilinmiyor'
+          },
         },
+        { "data": "inst_name" },
         /* { 
           "data": "bks_start_date",
           "render": (data, type, row) => {
@@ -218,6 +237,7 @@ export default {
   },
   components: {
     [formTitleName + '-create-component']: createComponent,
+    [formTitleName + '-create-excel-component']: createExcelComponent,
     [formTitleName + '-edit-component']: editComponent,
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-delete-component']: deleteComponent,

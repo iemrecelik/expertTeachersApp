@@ -196,12 +196,14 @@ class CommentController extends Controller
             +++ 28. treelselect dili türkçe ye çevirilecek
             +++ 29- Ortak liste yapılacak
             +++ 30- döküman kaydedersken öğretmen eklemek zorunlu olmasın
-            31- Uzman öğretmen yazışmalarda evrak göster denilince kimin eklediğini göstermiyor.
-            32- Davalar kısa konu bilgisi ayrı modül yapılacak
-            33- Öğretmen eklerken uzman veya baş öğretmen bilgisi select box olacak
-            34- Dava ekledikten sonra aynı popup da eklemeye kalktığımız undefined subOrders hatası veriyor.
-            35- dava konuları editör olacak
-            36- dava listesinde önlizleme butonu eklenecek2
+            +++ 31- Uzman öğretmen yazışmalarda evrak göster denilince kimin eklediğini göstermiyor.
+            +++ 32- Davalar kısa konu bilgisi ayrı modül yapılacak
+            +++ 33- Öğretmen eklerken uzman veya baş öğretmen bilgisi select box olacak
+            +++ 34- Dava ekledikten sonra aynı popup da eklemeye kalktığımız undefined subOrders hatası veriyor.
+            +++ 35- dava konuları editör olacak
+            +++ 36- dava listesinde önlizleme butonu eklenecek
+            37- pdf dosyalarını html kodlarına çevirilecek
+            37- pdf çıktısını yatay sayfa olarak çıkartma
         */
 
         $request->validate(

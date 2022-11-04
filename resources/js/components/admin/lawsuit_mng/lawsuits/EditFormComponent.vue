@@ -142,7 +142,7 @@
       <div class="form-group">
         
         <label>Dava Konularını Giriniz: </label>
-        <div class="row mb-1" v-for="(item, key) in lawSubjects">
+        <div class="row mb-1" :key="item" v-for="(item, key) in lawSubjectsUnique">
           <div class="col-1 text-right">
             <button type="button" class="btn btn-md btn-primary">
               {{key + 1}}
@@ -150,21 +150,16 @@
           </div>
           <div class="col-10">
             <textarea class="form-control click2edit" 
+              :data-key="key"
               rows="1"
               name="sub_description[]" 
               placeholder="Dava konusu..."
-              v-model="lawSubjects[key]"
             >
+            {{lawSubjects[key]}}
             </textarea>
             <input type="hidden" name="sub_order[]" :value="(key+1)">
           </div>
           <div class="col-1 text-left">
-            <span
-              @click="editMode(key)"
-            >
-              <i class="bi bi-pen"></i>
-            </span>
-            
             <span
               @click="delSubject(key)"
             >
@@ -321,6 +316,7 @@ export default {
       unionArrOpt: [],
       mainDcNumberArrOpt: [],
       relDcNumberArrOpt: [],
+      lawSubjectsUnique: []
     }
   },
   props: {
@@ -342,9 +338,6 @@ export default {
     }, */
   },
   methods: {
-    editMode() {
-      $('.click2edit').summernote();
-    },
     value: function(fieldName){
       return this.$store.state.old[fieldName] || this.item[fieldName];
     },
@@ -356,10 +349,26 @@ export default {
       }
     },
     addSubject: function() {
-      this.lawSubjects.push('');
+      let addSubjectProm = new Promise( (resolve, reject) => {
+        this.lawSubjects.push('');
+        this.lawSubjectsUnique.push(this.uniqueID());
+        resolve();
+      });
+
+      addSubjectProm.then( resolve => {
+        $('.click2edit').summernote();
+      });
     },
     delSubject: function(index) {
-      this.lawSubjects.splice(index, 1);
+      let delSubjectProm = new Promise( (resolve, reject) => {
+        this.lawSubjects.splice(index, 1);
+        this.lawSubjectsUnique.splice(index, 1);
+        resolve();
+      });
+
+      delSubjectProm.then( resolve => {
+        $('.click2edit').summernote();
+      });
     },
     addDcNumber: function() {
       this.dcNumber.push(this.uniqueID());
@@ -644,6 +653,10 @@ export default {
     });
 
     this.lawSubjects.push(...subjectsSort);
+
+    for (let i = 0; i < this.lawSubjects.length; i++) {
+      this.lawSubjectsUnique.push((this.uniqueID()+i));
+    }
   },
   mounted() {
     this.getDocumentInfos(this.value('mainDcDocument'), 0);
@@ -655,6 +668,7 @@ export default {
     });
 
     // this.showModalBody(this.modalSelector);
+    $('.click2edit').summernote();
   },
   components: {
     Treeselect,

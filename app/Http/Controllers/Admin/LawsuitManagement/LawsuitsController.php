@@ -93,6 +93,40 @@ class LawsuitsController extends Controller
         return view('admin.lawsuits_mng.lawsuits.index');
     }
 
+    public function getLawBriefSearchList(Request $request)
+    {
+        // dd($request->all());
+        $request->validate(
+            [
+                'searchName' => 'required|string'
+            ],
+            [
+                'searchName.required' => 'Dava Kısa açıklaması giriniz.',
+                'searchName.string' => 'Sadece harf giriniz.'
+            ],
+        );
+
+        $params = $request->all();
+
+        $lawsuits = Lawsuits::selectRaw('DISTINCT law_brief')
+        ->whereRaw(
+            'law_brief LIKE :searchName', 
+            [
+                'searchName' => '%'.$params['searchName'].'%'
+            ]
+        )
+        ->get();
+
+        $datas = array_map(function($lawsuit) {
+            return [
+                'id' => $lawsuit['law_brief'],
+                'label' => $lawsuit['law_brief']
+            ];
+        }, $lawsuits->toArray());
+
+        return $datas;
+    }
+
     public function getLawsuits(Request $request)
 	{
         $req = $request->all();
@@ -203,6 +237,8 @@ class LawsuitsController extends Controller
 
             $subDescriptions = $params['sub_description'];
             unset($params['sub_description']);
+        }else {
+            $subOrders = [];
         }
 
         $lawsuit = Lawsuits::create($params);

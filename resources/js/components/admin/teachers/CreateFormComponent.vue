@@ -3,11 +3,11 @@
   <div class="row">
     <div class="col-4">
       <div class="form-group">
-        <label for="tc-no">TcNO</label>
+        <label for="tc-no">{{$t('messages.thr_tc_no')}}</label>
         <input type="text" 
           class="form-control" 
           id="tc-no" 
-          placeholder="Example input placeholder"
+          :placeholder="$t('messages.thr_tc_no')"
           name="thr_tc_no" 
           :value="oldValue('thr_tc_no')"
           data-inputmask='"mask": "99999999999"' 
@@ -38,7 +38,7 @@
   </div>
 
   <div class="row">
-    <div class="col-4">
+    <!-- <div class="col-4">
       <form-form-component
         :ppsettings="{
           type: 'text', 
@@ -47,7 +47,23 @@
         }"
       >
       </form-form-component>
+    </div> -->
+
+    <div class="col-4">
+      <div class="form-group">
+        <label for="career-ladder">{{$t('messages.careerLadder')}} :</label>
+        <select class="form-control" id="career-ladder"
+          name="thr_career_ladder"
+        >
+          <option selected disabled value="">{{$t('messages.selectCareerLadder')}}.</option>
+          <option value="-1">Bilinmiyor</option>
+          <option value="0">Öğretmen</option>
+          <option value="1">Uzman Öğretmen</option>
+          <option value="2">Başöğretmen</option>
+        </select>
+      </div>
     </div>
+
     <div class="col-4">
       <form-form-component
         :ppsettings="{
@@ -133,7 +149,7 @@
   <div class="row">
     <div class="col-12">
       <div class="form-group">
-        <label for="exampleFormControlSelect1">thr_institution :</label>
+        <label for="exampleFormControlSelect1">{{$t('messages.thr_institution')}} :</label>
         <select class="form-control" id="exampleFormControlSelect1"
           name="inst_id"
           :value="oldValue('inst_id')"

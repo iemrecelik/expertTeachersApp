@@ -3,6 +3,7 @@
   <teachers-component
     :pproutes="{ 
       index: '{{ route('admin.teachers.index') }}', 
+      addExcel: '{{ route('admin.teachers.addExcel') }}', 
       dataList: '{{ route('admin.teachers.dataList') }}', 
       getInstitutions: '{{ route('admin.institutions.getInstitutions') }}', 
     }"
