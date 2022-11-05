@@ -84,6 +84,34 @@ return [
 	'showDocument' => 'Evrağı Göster',
 	'docFileDownload' => 'Evrağı İndir',
 
+	/* Teachers Manage List */
+	'thr_tc_no' => 'Tc Kimlik No',
+	'thr_name' => 'İsim',
+	'thr_surname' => 'Soyisim',
+	'thr_career_ladder' => 'Kariyer Durumu',
+	'careerLadder' => 'Kariyer Durumu',
+	'thr_degree' => 'Ünvanı',
+	'thr_gender' => 'Cinsiyeti',
+	'thr_task' => 'Görevi',
+	'thr_education_st' => 'Öğrenim Durumu',
+	'thr_place_of_task' => 'Görev Yeri',
+	'thr_institution' => 'Kurumu',
+	'thr_mobile_no' => 'Tel No',
+	'selectCareerLadder' => 'Kariyer Durumunu Seçiniz',
+	'teachersListManage' => 'Öğretmenler Liste Yönetimi',
+
+	/* Institution */
+	'inst_name' => 'Kurum İsmi',
+	'institutionList' => 'Kurum Listesi',
+	
+	/* Unions */
+	'uns_name' => 'Sendika İsmi',
+	'unionsList' => 'Sendika Listesi',
+	
+	/* Lawsuits */
+	'law_brief' => 'Dava Kısa Açıklaması',
+	'dc_id' => 'Evrak Numarası',
+	'lawsuits_list' => 'Davalar Listesi',
 
 	/* Other */
 	'expertTeachersApp' => 'Uzman Öğretmen Uygulaması',
@@ -140,5 +168,8 @@ return [
 	"You are receiving this email because we received a password reset request for your account." => "Hesabınız için bir parola sıfırlama talebi aldığımız için bu e-postayı alıyorsunuz.",
 	"Your email address is not verified." => "E-posta adresiniz doğrulanmadı.",
 	"Whoops!" => "Hoppala!",
-	"Whoops, something went wrong on our servers." => "Hoppala, sunucularımızda bir şeyler ters gitti."
+	"Whoops, something went wrong on our servers." => "Hoppala, sunucularımızda bir şeyler ters gitti.",
+	'addLikeExcel' => 'Excel Dosyası İle Ekle',
+	'addExcel' => 'Excel Ekle',
+	'addImages' => 'Resimleri Ekle',
 ];

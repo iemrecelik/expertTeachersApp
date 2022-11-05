@@ -196,7 +196,7 @@ export default {
               return this.processesRow({
                 'id': data,
                 'url': row.dc_files.dc_file_path,
-                'userName': 'row.user_name',
+                'userName': row.user_name,
                 'document': row
               });
           },

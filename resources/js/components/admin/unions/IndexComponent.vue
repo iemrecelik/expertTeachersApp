@@ -1,6 +1,6 @@
 <template>
 <template-component
-	:ppTitleName="$t('messages.institutionList')"
+	:ppTitleName="$t('messages.unionsList')"
 >
   <table class="res-dt-table table table-striped table-bordered" 
   style="width:100%">

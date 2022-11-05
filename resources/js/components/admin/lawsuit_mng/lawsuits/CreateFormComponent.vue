@@ -68,14 +68,32 @@
 
   <div class="row">
     <div class="col-12">
-      <form-form-component
+      <div class="form-group">
+        <label for="addLawBrief">{{$t('messages.law_brief')}}: </label>
+        <treeselect
+          :id="'addLawBrief'"
+          :multiple="false"
+          :async="true"
+          :load-options="loadLawBrief"
+          v-model="lawBriefArr"
+          loadingText="Yükleniyor..."
+          clearAllText="Hepsini sil."
+          clearValueText="Değeri sil."
+          noOptionsText="Hiçbir seçenek yok."
+          noResultsText="Mevcut seçenek yok."
+          searchPromptText="Aramak için yazınız."
+          placeholder="Seçiniz..."
+          name="law_brief"
+        />
+      </div>
+      <!-- <form-form-component
         :ppsettings="{
           type: 'text', 
           fieldName: 'law_brief', 
           value: oldValue('law_brief')
         }"
       >
-      </form-form-component>
+      </form-form-component> -->
     </div>
   </div>
 
@@ -139,14 +157,14 @@
       <div class="form-group">
         
         <label>Dava Konularını Giriniz: </label>
-        <div class="row mb-1" v-for="(item, key) in lawSubjects">
+        <div class="row mb-1" :key="item" v-for="(item, key) in lawSubjectsUnique">
           <div class="col-1 text-right">
             <button type="button" class="btn btn-md btn-primary">
               {{key + 1}}
             </button>
           </div>
           <div class="col-10">
-            <textarea class="form-control" 
+            <textarea class="form-control click2edit" 
               rows="1"
               name="sub_description[]" 
               placeholder="Dava konusu..."
@@ -277,9 +295,11 @@ export default {
       ajaxErrorCount: -1,
       selectedLaw: 0,
       lawSubjects: [''],
+      lawSubjectsUnique: [],
       dcNumber: [],
       teacherArr: null,
       unionArr: null,
+      lawBriefArr: null,
       mainDcNumberArr: null,
     }
   },
@@ -300,10 +320,26 @@ export default {
       return this.$store.state.old[fieldName];
     },
     addSubject: function() {
-      this.lawSubjects.push('');
+      let addSubjectProm = new Promise( (resolve, reject) => {
+        this.lawSubjects.push('');
+        this.lawSubjectsUnique.push(this.uniqueID());
+        resolve();
+      });
+
+      addSubjectProm.then( resolve => {
+        $('.click2edit').summernote();
+      });
     },
     delSubject: function(index) {
-      this.lawSubjects.splice(index, 1);
+      let delSubjectProm = new Promise( (resolve, reject) => {
+        this.lawSubjects.splice(index, 1);
+        this.lawSubjectsUnique.splice(index, 1);
+        resolve();
+      });
+
+      delSubjectProm.then( resolve => {
+        $('.click2edit').summernote();
+      });
     },
     addDcNumber: function() {
       this.dcNumber.push(this.uniqueID());
@@ -330,7 +366,7 @@ export default {
           if(searchQuery.length > 2) {
             this.getUnionsSearchList(searchQuery, callback);
           }else {
-            callback(null, [])    
+            callback(null, []); 
           }
         })
       }
@@ -341,6 +377,18 @@ export default {
 
           if(searchQuery.length > 2) {
             this.getDocumentSearchList(searchQuery, callback, instanceId);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
+    },
+    loadLawBrief({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+          if(searchQuery.length > 2) {
+            this.getLawBriefSearchList(searchQuery, callback);
           }else {
             callback(null, [])    
           }
@@ -422,6 +470,33 @@ export default {
       })
       .then((res) => {})
 		},
+    getLawBriefSearchList: function(searchName, callback) {
+      $.ajax({
+        url: this.routes.getLawBriefSearchList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'searchName': searchName}
+      })
+      .done((res) => {
+        res.push({id: searchName, label: searchName+'(manuel girilmiş)' });
+
+				callback(null, res)
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getLawBriefSearchList(searchName, callback);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		},
     getDocumentInfos(datas, instanceId) {
       let prom = new Promise((resolve, reject) => {
         document.getElementsByClassName('item-date'+instanceId)[0].innerHTML = datas.date;
@@ -462,11 +537,18 @@ export default {
     },
     resetForm() {
       this.lawSubjects = [];
+      this.lawSubjectsUnique = [];
       this.dcNumber = [];
       this.teacherArr = null;
       this.unionArr = null;
       this.mainDcNumberArr = null;
     }
+  },
+  created() {
+    this.lawSubjectsUnique.push(this.uniqueID());
+  },
+  mounted() {
+    $('.click2edit').summernote();
   },
   components: {
     Treeselect

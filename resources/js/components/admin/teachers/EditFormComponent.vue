@@ -38,7 +38,7 @@
     </div>
   
     <div class="row">
-      <div class="col-4">
+      <!-- <div class="col-4">
         <form-form-component
           :ppsettings="{
             type: 'text', 
@@ -47,7 +47,22 @@
           }"
         >
         </form-form-component>
+      </div> -->
+      <div class="col-4">
+        <div class="form-group">
+          <label for="career-ladder">{{$t('messages.careerLadder')}} :</label>
+          <select class="form-control" id="career-ladder"
+            name="thr_career_ladder"
+          >
+            <option selected disabled value="">{{$t('messages.selectCareerLadder')}}.</option>
+            <option  :selected="value('thr_career_ladder') == -1" value="-1">Bilinmiyor</option>
+            <option  :selected="value('thr_career_ladder') == 0" value="0">Öğretmen</option>
+            <option  :selected="value('thr_career_ladder') == 1" value="1">Uzman Öğretmen</option>
+            <option  :selected="value('thr_career_ladder') == 2" value="2">Başöğretmen</option>
+          </select>
+        </div>
       </div>
+
       <div class="col-4">
         <form-form-component
           :ppsettings="{
@@ -134,7 +149,7 @@
     <div class="row">
       <div class="col-12">
         <div class="form-group">
-          <label for="exampleFormControlSelect1">thr_institution :</label>
+          <label for="exampleFormControlSelect1">{{$t('messages.thr_institution')}} :</label>
           <select class="form-control" id="exampleFormControlSelect1"
             name="inst_id"
           >

@@ -61,6 +61,12 @@ Route::prefix('admin')
 		)
 		->name('teachers.searchList');
 
+		Route::post(
+			'teachers/add-excel', 
+			'addExcel'
+		)
+		->name('teachers.addExcel');
+
 		Route::resource('teachers', TeachersController::class);
     });
 
@@ -320,6 +326,12 @@ Route::prefix('admin/lawsuit-management')
 			'getDataList'
 		)
 		->name('lawsuits.dataList');
+
+		Route::get(
+			'lawsuits/search-list', 
+			'getLawBriefSearchList'
+		)
+		->name('lawsuits.searchList');
 
 		Route::resource('lawsuits', LawsuitsController::class);
     });

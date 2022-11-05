@@ -8,10 +8,86 @@ use App\Http\Requests\Admin\StoreTeachersRequest;
 use App\Http\Requests\Admin\UpdateTeachersRequest;
 use App\Http\Responsable\isAjaxResponse;
 use App\Models\Admin\Teachers;
+use App\Models\User;
 use Illuminate\Validation\ValidationException;
 
 class TeachersController extends Controller
 {
+    public function addExcel(Request $request)
+    {
+        $request->validate(
+            [
+                'excel_file' => 'required|file|mimes:xlsx,xls,xlx'
+            ],
+            [
+                'excel_file.required' => 'Lütfen excel dosyası yükleyiniz.',
+                'excel_file.file' => 'Lütfen sadece excel dosyası yükleyiniz.',
+                'excel_file.mimes' => 'Lütfen sadece excel dosyası yükleyiniz.'
+            ],
+        );
+
+        $params = $request->all();
+
+        /* Excel satır sayılarının eşitliğnin kontrolü başla */
+        $rowArrLetter = [];
+        $rowArrNumber = [];
+        foreach ($params as $key => $val) {
+            if($key != 'excel_file') {
+                preg_match_all('/([0-9]+|[a-zA-Z]+)/','AA12',$matches);
+
+                $rowArrLetter[] = $matches[1][0];
+                $rowArrNumber[] = $matches[1][1];
+            }
+        }
+
+        $rowArrNumber = array_unique($rowArrNumber);
+
+        if(count($rowArrNumber) > 1) {
+            throw ValidationException::withMessages(
+                ['row' => 'Bütün satır sayıları aynı olmak zorundadır.']
+            );
+        }
+        /* Excel satır sayılarının eşitliğnin kontrolü bitiş */
+
+        $inputFileType = 'Xlsx';
+        $url = $params['excel_file']->getPathname();
+
+        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+
+        $spreadsheet = $reader->load($url);
+
+        // $filterSubset = new \App\Library\PhpOfficeSpreadsheetFilter(3,60,range('A','Z'));
+
+        $datas = $spreadsheet->getActiveSheet()->toArray();
+
+        echo '<pre>';
+        
+        $co = 0;
+        foreach ($datas as $key => $value) {
+
+            var_dump($key);
+            echo ' ****=>**** ';
+            var_dump($value);
+            echo '<hr/>';
+
+            /* if(strlen($value[2]) == 11) {
+                $co++;
+                mkdir(storage_path('app/public/aile/bas_muaf/'.$co.'_'.$value[2]));
+            }
+
+            var_dump($value[0]);
+            var_dump($value[1]);
+            var_dump($value[2]);
+            var_dump($value[3]);
+            var_dump($value[4]);
+            var_dump($value[5]);
+            var_dump($value[6]);
+            echo '<hr/>'; */
+        }
+
+        die;
+        
+    }
     public function showTeacherInfos(Request $request)
     {
         $params = $request->all();
@@ -27,7 +103,12 @@ class TeachersController extends Controller
         foreach ($teacher->dc_documents as $key => $dc_documents) {
             $dc_documents->dcFiles;
             $dc_documents->dcAttachFiles;
+
+            $user = User::select('name as user_name')->find($dc_documents->user_id);
+            $dc_documents->user_name = $user->user_name;
         }
+
+        // dd($teacher);
 /*         
         foreach ($teacher->dc_documents as $key => $dc_documents) {
             $dc_documents->dcFiles
@@ -91,11 +172,16 @@ class TeachersController extends Controller
 	{
 	    $tblInfo = $request->all();
 
+        $notSelectCol = [
+            'inst_name',
+        ];
+
 	    /*Array select and search columns*/
 	    foreach ($tblInfo['columns'] as $column) {
 	        
 	        if (isset($column['data']))
-	            $selectCol[] = $column['data'];
+                if(!in_array($column['data'], $notSelectCol))
+                    $selectCol[] = $column['data'];
 
 	        if($column['searchable'])
 	            $searchCol[] = $column['data'];
@@ -107,21 +193,21 @@ class TeachersController extends Controller
 	    $order = $tblInfo['order'][0]['dir'];
 
         /*join*/
-        /* $join = [
-            "dc_category as t1", 
-            "t0.dc_cat_id", '=', 
+        $join = [
+            "institutions as t1", 
+            "t0.inst_id", '=', 
             "t1.id"
         ];
 
-        $selectJoin = ", t1.dc_cat_name as dc_up_cat_name"; */  
+        $selectJoin = ", t1.inst_name";  
 
 	    $dataList = Teachers::dataList([
 	        'table' => 'teachers',
 	        'fieldIDName' => 'id',
 	        'addLangFields' => [],
-            /* 'choiceJoin' => 'leftJoin',
+            'choiceJoin' => 'leftJoin',
             'join' => $join,
-            'selectJoin' => $selectJoin, */
+            'selectJoin' => $selectJoin,
 	        'selectCol' => $selectCol,
 	        'searchCol' => $searchCol,
 	        'colOrder' => $colOrder,
