@@ -17,12 +17,24 @@ class TeachersController extends Controller
     {
         $request->validate(
             [
-                'excel_file' => 'required|file|mimes:xlsx,xls,xlx'
+                'excel_file' => 'required|file|mimes:xlsx,xls,xlx',
+                'thr_tc_no' => 'required',
+                'thr_name' => 'required',
+                'thr_surname' => 'required',
+                'thr_career_ladder' => 'required',
+                'inst_id' => 'required',
+                'thr_gender' => 'required',
             ],
             [
                 'excel_file.required' => 'Lütfen excel dosyası yükleyiniz.',
                 'excel_file.file' => 'Lütfen sadece excel dosyası yükleyiniz.',
-                'excel_file.mimes' => 'Lütfen sadece excel dosyası yükleyiniz.'
+                'excel_file.mimes' => 'Lütfen sadece excel dosyası yükleyiniz.',
+                'thr_tc_no.required' => 'Tc alanı zorunludur.',
+                'thr_name.required' => 'İsim alanı zorunludur.',
+                'thr_surname.required' => 'Soy isim alanı zorunludur.',
+                'thr_career_ladder.required' => 'Kariyer basamağı alanı zorunludur.',
+                'inst_id.required' => 'Kurum alanı zorunludur.',
+                'thr_gender.required' => 'Cinsiyet alanı zorunludur.',
             ],
         );
 
