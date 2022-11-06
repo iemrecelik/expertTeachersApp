@@ -124,9 +124,12 @@ class StatisticalController extends Controller
 
         $statsHtml = $request->input('statsHtml');
         $statsCss = $request->input('statsCss');
-
+        $statsLandscape = $request->input('statsLandscape');
 
         $mpdf = New \Mpdf\Mpdf(['tempDir'=>storage_path('tempdir')]);
+        if($statsLandscape) {
+            $mpdf->AddPage('L');
+        }
         $mpdf->WriteHTML($statsCss, 1);
         $mpdf->WriteHTML($statsHtml, 2);
 

@@ -33,6 +33,22 @@
           >
             {{ $t('messages.addLikeExcel') }}
           </button>
+          
+          <!-- <form :action="pproutes.addExcel" method="post" enctype='multipart/form-data'>
+            <input type="hidden" name="_token" :value="token">
+            <div class="form-group">
+              <label for=""></label>
+              <input type="file" class="form-control-file" name="excel_file" id="" placeholder="" aria-describedby="fileHelpId">
+              <small id="fileHelpId" class="form-text text-muted">Help text</small>
+            </div>
+
+            <button type="submit" class="btn btn-primary">
+              post ile exceli yükle
+            </button>
+
+          </form> -->
+          
+          
           <button type="button" class="btn btn-primary"
             data-toggle="modal" 
             :data-target="modalSelector"

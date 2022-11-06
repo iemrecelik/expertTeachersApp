@@ -350,9 +350,15 @@
   </div>
 
   <div class="row">
-    <div class="col-12">
+    <div class="col-6">
       <div class="form-group">
         <label for="excel-file">{{$t('messages.addExcel')}}</label>
+        
+        <div class="custom-control custom-switch mb-3">
+          <input type="checkbox" class="custom-control-input" id="update-db" name="updateDb" checked>
+          <label class="custom-control-label" for="update-db">Var olan verileri güncelle</label>
+        </div>
+
         <input type="file" name="excel_file" class="form-control-file" id="excel-file">
       </div>
     </div>
@@ -419,9 +425,9 @@ export default {
       let arr = [];
 
       for (let i = 1; i < 10; i++) {
-        arr = this.letters.map(letter => {
+        arr = this.letters.map((letter, key) => {
           return {
-            id: letter+i,
+            id: (key+1)+'_'+i,
             label: letter+i,
           }
         })

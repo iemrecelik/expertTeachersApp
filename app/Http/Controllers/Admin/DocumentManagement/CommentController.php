@@ -189,7 +189,7 @@ class CommentController extends Controller
             +++ 20- Hangi kullanıcı tarafından ekleneceği
             +++ 21- login yaptıktan sonra evrak arama sayfasına girsin
             +++ 22. dış kurum evrakların içerikleri veri tbanınan kaydedilesin. Ve arama yapılabilsin.
-            23. udf dosyalarını düzgün çekmiyor. Gönderene ilgi yazıyı da ekliyor.
+            23- udf dosyalarını düzgün çekmiyor. Gönderene ilgi yazıyı da ekliyor.
             +++ 25. udf dosyaında göndereni ilgi olarak çekiyor.
             +++ 26. öğretmenler listesi ve crud işlemleri eklenecek
             +++ 27. teachers tablosundaki phone alanı mobile olarak değiştir
@@ -203,7 +203,9 @@ class CommentController extends Controller
             +++ 35- dava konuları editör olacak
             +++ 36- dava listesinde önlizleme butonu eklenecek
             37- pdf dosyalarını html kodlarına çevirilecek
-            37- pdf çıktısını yatay sayfa olarak çıkartma
+            +++ 38- pdf çıktısını yatay sayfa olarak çıkartma
+            39- excel listesini yüklemeden önce ön izleme olsun.
+            +++ 40- excel listesini yüklerken sütunlardan en az bir tanesi seçili olması lazım.
         */
 
         $request->validate(

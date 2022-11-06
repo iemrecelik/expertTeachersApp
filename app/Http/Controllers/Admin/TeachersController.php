@@ -26,17 +26,29 @@ class TeachersController extends Controller
             ],
         );
 
+        // Teachers::where('thr_gender', '0')->delete();die;
+
         $params = $request->all();
 
         /* Excel satır sayılarının eşitliğnin kontrolü başla */
         $rowArrLetter = [];
         $rowArrNumber = [];
         foreach ($params as $key => $val) {
-            if($key != 'excel_file') {
-                preg_match_all('/([0-9]+|[a-zA-Z]+)/','AA12',$matches);
+            /* if(!in_array($key, ['excel_file', 'updateDb'])) {
+                preg_match_all('/([0-9]+|[a-zA-Z]+)/', $val, $matches);
 
-                $rowArrLetter[] = $matches[1][0];
+                $rowArrLetter[$key] = $matches[1][0];
                 $rowArrNumber[] = $matches[1][1];
+            } */
+            if(!in_array($key, ['excel_file', 'updateDb'])) {
+                $rowArr = explode('_', $val);
+                
+                if($key == 'thr_tc_no') {
+                    $uniqueKey = $rowArr[0];
+                }
+                
+                $rowArrLetter[$key] = $rowArr[0];
+                $rowArrNumber[] = $rowArr[1];
             }
         }
 
@@ -46,6 +58,10 @@ class TeachersController extends Controller
             throw ValidationException::withMessages(
                 ['row' => 'Bütün satır sayıları aynı olmak zorundadır.']
             );
+        }else if(count($rowArrNumber) < 1) {
+            throw ValidationException::withMessages(
+                ['row' => 'En az bir sütun seçmelisiniz.']
+            );
         }
         /* Excel satır sayılarının eşitliğnin kontrolü bitiş */
 
@@ -53,39 +69,64 @@ class TeachersController extends Controller
         $url = $params['excel_file']->getPathname();
 
         $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
-
+        
         $spreadsheet = $reader->load($url);
-
-        // $filterSubset = new \App\Library\PhpOfficeSpreadsheetFilter(3,60,range('A','Z'));
 
         $datas = $spreadsheet->getActiveSheet()->toArray();
 
-        echo '<pre>';
+        if ($params['updateDb']) {
+            $tcnoArr = array_column($datas, 1);
+            $existTeachQuery = Teachers::whereIn('thr_tc_no', $tcnoArr);
+
+            $existTeachArr = $existTeachQuery->get()->toArray();
+            $existTeachTcnoArr = array_column($existTeachArr, 'thr_tc_no');
+
+            $existTeachQuery->delete();
+        }else {
+            $existTeachTcnoArr = [];
+        }
         
         $co = 0;
+        $index = 0;
+        $insertArr = [];
         foreach ($datas as $key => $value) {
+            $co++; 
+            $index = $co % 50 == 0 ? $index + 1: $index;
 
-            var_dump($key);
-            echo ' ****=>**** ';
-            var_dump($value);
-            echo '<hr/>';
+            $exIndex = array_search($value[$uniqueKey], $existTeachTcnoArr);
 
-            /* if(strlen($value[2]) == 11) {
-                $co++;
-                mkdir(storage_path('app/public/aile/bas_muaf/'.$co.'_'.$value[2]));
+            if($exIndex < 0) {
+                foreach ($rowArrLetter as $letKey => $letVal) {
+                    $arr[$letKey] = $value[$letVal];
+                }
+                $insertArr[$index][] = $arr;
+                /* $insertArr[$index][] = [
+                    'thr_gender' => '0',
+                    'thr_tc_no' => $value[1],
+                    'thr_name' => $value[2],
+                    'thr_surname' => $value[2],
+                    'thr_career_ladder' => $value[3],
+                    'inst_id' => 1,
+                ]; */
+            }else {
+                foreach ($rowArrLetter as $letKey => $letVal) {
+                    $existTeachArr[$exIndex][$letKey] = $value[$letVal];
+                }
+
+                /* $existTeachArr[$exIndex]['thr_tc_no'] = $value[1];
+                $existTeachArr[$exIndex]['thr_name'] = $value[2];
+                $existTeachArr[$exIndex]['thr_surname'] = $value[2];
+                $existTeachArr[$exIndex]['thr_career_ladder'] = $value[3]; */
+
+                $insertArr[$index] = $existTeachArr[$exIndex];
             }
-
-            var_dump($value[0]);
-            var_dump($value[1]);
-            var_dump($value[2]);
-            var_dump($value[3]);
-            var_dump($value[4]);
-            var_dump($value[5]);
-            var_dump($value[6]);
-            echo '<hr/>'; */
         }
 
-        die;
+        foreach ($insertArr as $insKey => $insVal) {
+            Teachers::insert($insVal); 
+        }
+
+        return ['succeed' => __('messages.add_success')];
         
     }
     public function showTeacherInfos(Request $request)
@@ -266,10 +307,10 @@ class TeachersController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Admin\Category  $category
+     * @param  \App\Models\Admin\Teachers  $teacher
      * @return \Illuminate\Http\Response
      */
-    public function show(DcCategory $category)
+    public function show(Teachers $teacher)
     {
         //
     }
@@ -277,7 +318,7 @@ class TeachersController extends Controller
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\Admin\Teachers  $category
+     * @param  \App\Models\Admin\Teachers  $teacher
      * @return \Illuminate\Http\Response
      */
     public function edit(Teachers $teacher)

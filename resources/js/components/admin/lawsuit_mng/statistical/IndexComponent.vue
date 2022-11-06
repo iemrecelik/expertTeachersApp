@@ -140,8 +140,15 @@
         </div>
       </div>
     </div>
+    
 
     <div class="row mt-3">
+      <div class="col-1">
+        <select class="form-control" name="statsLandscape" id="">
+          <option value="L">Yatay</option>
+          <option value="">Dikey</option>
+        </select>
+      </div>
       <div class="col-1">
         <button type="submit" class="btn btn-block btn-primary btn-flat">
           PDF Çıktısı
