@@ -8,14 +8,28 @@ use App\Http\Requests\Admin\StoreTeachersRequest;
 use App\Http\Requests\Admin\UpdateTeachersRequest;
 use App\Http\Responsable\isAjaxResponse;
 use App\Models\Admin\Teachers;
+use App\Models\Admin\Institutions;
 use App\Models\User;
 use Illuminate\Validation\ValidationException;
 
 class TeachersController extends Controller
 {
+    private $institutions = Array();
+    private $institutionNames = Array();
+
+    private function setInstitutionsInfos()
+    {
+        $this->institutions = Institutions::all()->toArray();
+        $this->institutionNames = array_column($this->institutions, 'inst_name');
+
+        $this->institutionNames = array_map(function($item) {
+            return strtolower($item);
+        }, $this->institutionNames);
+    }
+
     public function addExcel(Request $request)
     {
-        $request->validate(
+        /* $request->validate(
             [
                 'excel_file' => 'required|file|mimes:xlsx,xls,xlx',
                 'thr_tc_no' => 'required',
@@ -36,111 +50,328 @@ class TeachersController extends Controller
                 'inst_id.required' => 'Kurum alanı zorunludur.',
                 'thr_gender.required' => 'Cinsiyet alanı zorunludur.',
             ],
-        );
-
-        // Teachers::where('thr_gender', '0')->delete();die;
+        ); */
 
         $params = $request->all();
 
-        /* Excel satır sayılarının eşitliğnin kontrolü başla */
-        $rowArrLetter = [];
-        $rowArrNumber = [];
-        foreach ($params as $key => $val) {
-            /* if(!in_array($key, ['excel_file', 'updateDb'])) {
-                preg_match_all('/([0-9]+|[a-zA-Z]+)/', $val, $matches);
+        $preview = $params['preview'];
+        unset($params['preview']);
 
-                $rowArrLetter[$key] = $matches[1][0];
-                $rowArrNumber[] = $matches[1][1];
-            } */
-            if(!in_array($key, ['excel_file', 'updateDb'])) {
-                $rowArr = explode('_', $val);
-                
-                if($key == 'thr_tc_no') {
-                    $uniqueKey = $rowArr[0];
+        $previewUniqueId = $params['previewUniqueId'];
+        unset($params['previewUniqueId']);
+        
+
+        $params['thr_tc_no'] = '0_2';
+        $params['thr_name'] = '1_2';
+        $params['thr_surname'] = '2_2';
+        $params['thr_career_ladder'] = '14_2';
+        $params['inst_id'] = '12_2';
+        $params['thr_gender'] = '13_2';
+
+        $previewDatas = $request->session()->get('previewDatas');
+
+        // dd($previewDatas);
+        $sessionPreviewUniqueId = $previewDatas ? $previewDatas['previewUniqueId'] : null; 
+
+        if($sessionPreviewUniqueId != $previewUniqueId) {
+            /* Excel satır sayılarının eşitliğnin kontrolü başla */
+            $rowArrLetter = [];
+            $rowArrNumber = [];
+            foreach ($params as $key => $val) {
+                /* if(!in_array($key, ['excel_file', 'updateDb'])) {
+                    preg_match_all('/([0-9]+|[a-zA-Z]+)/', $val, $matches);
+
+                    $rowArrLetter[$key] = $matches[1][0];
+                    $rowArrNumber[] = $matches[1][1];
+                } */
+                if(!in_array($key, ['excel_file', 'updateDb'])) {
+                    $rowArr = explode('_', $val);
+                    
+                    if($key == 'thr_tc_no') {
+                        $uniqueKey = $rowArr[0];
+                    }
+                    
+                    $rowArrLetter[$key] = $rowArr[0];
+                    $rowArrNumber[] = $rowArr[1];
                 }
-                
-                $rowArrLetter[$key] = $rowArr[0];
-                $rowArrNumber[] = $rowArr[1];
             }
-        }
 
-        $rowArrNumber = array_unique($rowArrNumber);
+            $rowArrNumber = array_unique($rowArrNumber);
 
-        if(count($rowArrNumber) > 1) {
-            throw ValidationException::withMessages(
-                ['row' => 'Bütün satır sayıları aynı olmak zorundadır.']
-            );
-        }else if(count($rowArrNumber) < 1) {
-            throw ValidationException::withMessages(
-                ['row' => 'En az bir sütun seçmelisiniz.']
-            );
-        }
-        /* Excel satır sayılarının eşitliğnin kontrolü bitiş */
+            if(count($rowArrNumber) > 1) {
+                throw ValidationException::withMessages(
+                    ['row' => 'Bütün satır sayıları aynı olmak zorundadır.']
+                );
+            }else if(count($rowArrNumber) < 1) {
+                throw ValidationException::withMessages(
+                    ['row' => 'En az bir sütun seçmelisiniz.']
+                );
+            }
+            /* Excel satır sayılarının eşitliğnin kontrolü bitiş */
 
-        $inputFileType = 'Xlsx';
-        $url = $params['excel_file']->getPathname();
+            $inputFileType = 'Xlsx';
+            $url = $params['excel_file']->getPathname();
 
-        $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
-        
-        $spreadsheet = $reader->load($url);
+            $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
+            
+            $spreadsheet = $reader->load($url);
 
-        $datas = $spreadsheet->getActiveSheet()->toArray();
+            $datas = $spreadsheet->getActiveSheet()->toArray();
 
-        if ($params['updateDb']) {
-            $tcnoArr = array_column($datas, 1);
-            $existTeachQuery = Teachers::whereIn('thr_tc_no', $tcnoArr);
+            if ($params['updateDb']) {
+                $tcnoArr = array_column($datas, $uniqueKey);
+                $existTeachQuery = Teachers::whereIn('thr_tc_no', $tcnoArr);
 
-            $existTeachArr = $existTeachQuery->get()->toArray();
-            $existTeachTcnoArr = array_column($existTeachArr, 'thr_tc_no');
+                $existTeachArr = $existTeachQuery->get()->toArray();
+                $existTeachTcnoArr = array_column($existTeachArr, 'thr_tc_no');
 
-            $existTeachQuery->delete();
-        }else {
-            $existTeachTcnoArr = [];
-        }
-        
-        $co = 0;
-        $index = 0;
-        $insertArr = [];
-        foreach ($datas as $key => $value) {
-            $co++; 
-            $index = $co % 50 == 0 ? $index + 1: $index;
-
-            $exIndex = array_search($value[$uniqueKey], $existTeachTcnoArr);
-
-            if($exIndex < 0) {
-                foreach ($rowArrLetter as $letKey => $letVal) {
-                    $arr[$letKey] = $value[$letVal];
-                }
-                $insertArr[$index][] = $arr;
-                /* $insertArr[$index][] = [
-                    'thr_gender' => '0',
-                    'thr_tc_no' => $value[1],
-                    'thr_name' => $value[2],
-                    'thr_surname' => $value[2],
-                    'thr_career_ladder' => $value[3],
-                    'inst_id' => 1,
-                ]; */
+                $existTeachQuery->delete();
             }else {
-                foreach ($rowArrLetter as $letKey => $letVal) {
-                    $existTeachArr[$exIndex][$letKey] = $value[$letVal];
-                }
-
-                /* $existTeachArr[$exIndex]['thr_tc_no'] = $value[1];
-                $existTeachArr[$exIndex]['thr_name'] = $value[2];
-                $existTeachArr[$exIndex]['thr_surname'] = $value[2];
-                $existTeachArr[$exIndex]['thr_career_ladder'] = $value[3]; */
-
-                $insertArr[$index] = $existTeachArr[$exIndex];
+                $existTeachTcnoArr = [];
             }
+            
+            $co = 0;
+            $min = min($rowArrNumber);
+
+            $insertArr = [];
+            $updateArr = [];
+            foreach ($datas as $key => $value) {
+                $co++;
+                if(($min - 1) == $co) {
+                    continue;
+                }
+                $arr = [];
+
+                $exIndex = array_search($value[$uniqueKey], $existTeachTcnoArr);
+
+                $this->setInstitutionsInfos();
+
+                if(empty($exIndex)) {
+                    foreach ($rowArrLetter as $letKey => $letVal) {
+                        $val = $this->validateExcelField($letKey, $value[$letVal]);
+
+                        if($val === null) {
+                            $arr = null;
+                            break;
+                        }
+                        $arr[$letKey] = $val;
+                    }
+
+                    if(!empty($arr)) {
+                        $insertArr[] = $arr;
+                    }
+
+                }else {
+                    foreach ($rowArrLetter as $letKey => $letVal) {
+                        $val = $this->validateExcelField($letKey, $value[$letVal]);
+                        
+                        if($val === null) {
+                            $existTeachArr[$exIndex] = null;
+                            break;
+                        }
+                        $existTeachArr[$exIndex][$letKey] = $val;
+                    }
+
+                    if(!empty($existTeachArr[$exIndex])) {
+                        $updateArr[] = $existTeachArr[$exIndex];
+                    }
+                }
+            }
+        }else {
+            $insertArr = $previewDatas['insertArr'];
+            $updateArr = $previewDatas['updateArr'];
         }
 
-        foreach ($insertArr as $insKey => $insVal) {
-            Teachers::insert($insVal); 
+        if($preview !== 'true') {
+            if(count($insertArr) > 0) {
+                $insertArr = array_chunk($insertArr, 50);
+    
+                foreach ($insertArr as $insKey => $insVal) {
+                    Teachers::insert($insVal); 
+                }
+            }
+    
+            if(count($updateArr) > 0) {
+                $updateArr = array_chunk($updateArr, 50);
+    
+                foreach ($updateArr as $updKey => $updVal) {
+                    Teachers::insert($updVal);
+                }
+            }
+
+        }else {
+            $datas = [
+                'insertArr' => $insertArr,
+                'updateArr' => $updateArr,
+                'institutions' => $this->institutions,
+                'previewUniqueId' => $previewUniqueId,
+            ];
+    
+            $request->session()->put('previewDatas', $datas);
         }
 
-        return ['succeed' => __('messages.add_success')];
-        
+        return [
+            'succeed' => __('messages.add_success')
+        ];
     }
+
+    public function preview(Request $request)
+    {
+        $datas = $request->session()->get('previewDatas');
+        
+        $css = '
+            table {
+                border-collapse: collapse;
+            }
+            th, td {
+                padding: 5px;
+                text-align: left;
+            }
+            th, td {
+                border: 1px solid #000;
+                margin: 0px;
+            }
+        ';
+
+        $title = '
+            <thead>
+                <tr>
+                    <td>TC NO</td>
+                    <td>AD</td>
+                    <td>SOYAD</td>
+                    <td>İL</td>
+                    <td>İLÇE</td>
+                    <td>MAİL</td>
+                    <td>TEL NO</td>
+                    <td>CİNSİYET</td>
+                    <td>KARİYER DURUMU</td>
+                    <td>ÜNVANI</td>
+                    <td>GÖREVİ</td>
+                    <td>GÖREV YERİ</td>
+                    <td>EĞİTİM DURUMU</td>
+                    <td>KURUMU</td>
+                </tr>
+            </thead>
+        ';
+
+        $tblContentInsertArr = $this->createHtmlTable($datas['insertArr'], $datas['institutions']);
+        $tblContentUpdateArr = $this->createHtmlTable($datas['updateArr'], $datas['institutions']);
+
+        $html = '
+            <div class="table-wrapper">
+                <table class="fl-table table table-striped table-inverse table-responsive table-bordered">
+                    '.$title.'
+                    '.$tblContentInsertArr.'
+                    '.$tblContentUpdateArr.'
+                </table>
+            </div>
+        ';
+
+        return $html;
+
+        $mpdf = New \Mpdf\Mpdf(['tempDir'=>storage_path('tempdir')]);
+        
+        $mpdf->AddPage('L');
+        $mpdf->WriteHTML($css,1);
+        $mpdf->WriteHTML($html,2);
+
+        $mpdf->Output();
+
+        return view(
+            'admin.teachers.preview',
+            ['datas' => $request->session()->get('previewDatas')]
+        );
+    }
+
+    private function createHtmlTable($datas, $institutions)
+    {
+        $careerLadderArr = ['Bilinmiyor', 'Öğretmen', 'Uzman Öğretmen', 'Başöğretmen'];
+        $tblContent = '';
+        
+        foreach ($datas as $updKey => $updVal) {
+            $instIndex = array_search($updVal['inst_id'], array_column($institutions, 'id'));
+            $careerLadderIndex = strval($updVal['thr_career_ladder']) + 1;
+
+            $tcNo       = $updVal['thr_tc_no'];
+            $name       = $updVal['thr_name'];
+            $surname    = $updVal['thr_surname'];
+            $province   = empty($updVal['thr_province']) ? '': $updVal['thr_province'];
+            $town       = empty($updVal['thr_town']) ? '': $updVal['thr_town'];
+            $email      = empty($updVal['thr_email']) ? '': $updVal['thr_email'];
+            $mobileNo   = empty($updVal['thr_mobile_no']) ? '': $updVal['thr_mobile_no'];
+            $gender     = $updVal['thr_gender'] == 0 ? 'Erkek' : 'Bayan';
+            $careerLadder = $careerLadderArr[$careerLadderIndex];
+            $degree     = empty($updVal['thr_degree']) ? '': $updVal['thr_degree'];
+            $task       = empty($updVal['thr_task']) ? '': $updVal['thr_task'];
+            $placeOfTask = empty($updVal['thr_place_of_task']) ? '': $updVal['thr_place_of_task'];
+            $educationSt = empty($updVal['thr_education_st']) ? '': $updVal['thr_education_st'];
+            $instId     = $institutions[$instIndex]['inst_name'];
+
+            $tblContent .= '
+                <tr>
+                    <td>'.$tcNo.'</td>
+                    <td>'.$name.'</td>
+                    <td>'.$surname.'</td>
+                    <td>'.$province.'</td>
+                    <td>'.$town.'</td>
+                    <td>'.$email.'</td>
+                    <td>'.$mobileNo.'</td>
+                    <td>'.$gender.'</td>
+                    <td>'.$careerLadder.'</td>
+                    <td>'.$degree.'</td>
+                    <td>'.$task.'</td>
+                    <td>'.$placeOfTask.'</td>
+                    <td>'.$educationSt.'</td>
+                    <td>'.$instId.'</td>
+                </tr>
+            ';
+        }
+
+        return $tblContent;
+    }
+
+    private function validateExcelField($name, $value)
+    {
+        $val = null;
+        switch ($name) {
+            case 'thr_tc_no':
+                if(strlen($value) == 11) {
+                    $val = $value;
+                }
+                break;
+            case 'thr_gender':
+                $val = array_search(mb_strtolower($value), ['erkek', 'bayan']);
+                $val = $val !== false ? strval($val) : null;
+                break;
+            case 'thr_career_ladder':
+                $val = array_search(mb_strtolower($value), ['bilinmiyor', 'öğretmen', 'uzman öğretmen', 'başöğretmen']);
+                $val = ($val - 1);
+                $val = $val !== false ? strval($val) : null;
+                break;
+            case 'inst_id':
+                $val = array_search(mb_strtolower($value), $this->institutionNames);
+                $val = $val !== false ? $this->institutions[$val]['id'] : null;
+                break;
+            case 'thr_birth_day':
+                if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])[.|\/](0[1-9]|1[0-2])[.|\/][0-9]{4}$/", $value)) {
+                    $val = strtotime($value);
+                }
+                break;
+            default:
+                if(in_array($name, [
+                    'thr_name', 'thr_surname', 'thr_province', 
+                    'thr_town', 'thr_email', 'thr_degree', 
+                    'thr_task', 'thr_education', 'thr_mobile_no', 
+                    'thr_place_of_task', 'thr_birth_day'
+                ])) {
+                    $val = $value;
+                }
+                break;
+        }
+
+        return $val;
+    }
+
     public function showTeacherInfos(Request $request)
     {
         $params = $request->all();

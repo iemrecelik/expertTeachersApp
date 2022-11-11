@@ -6,6 +6,7 @@
       addExcel: '{{ route('admin.teachers.addExcel') }}', 
       dataList: '{{ route('admin.teachers.dataList') }}', 
       getInstitutions: '{{ route('admin.institutions.getInstitutions') }}', 
+      preview: '{{ route('admin.teachers.preview') }}', 
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
   >
