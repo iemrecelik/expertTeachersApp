@@ -1,11 +1,12 @@
 <template>
-<form-modal-component
+<excel-form-modal-component
   :ppmodalinfonames="{
     'titleName': $t('messages.create'),
     'saveBtnName': $t('messages.save'),
     'cancelBtnName': $t('messages.cancel'),
   }"
   @saveMethod="saveForm"
+  @previewMethod="previewForm"
 >
   <form
     @submit.prevent
@@ -18,12 +19,12 @@
     </create-excel-form-component>
   </form>
 
-</form-modal-component>
+</excel-form-modal-component>
 
 </template>
 
 <script>
-import formModalComponent from './FormModalComponent';
+import excelFormModalComponent from './ExcelFormModalComponent';
 import createExcelFormComponent from './CreateExcelFormComponent';
 
 import { mapState, mapMutations } from 'vuex';
@@ -69,6 +70,8 @@ export default {
         data.append(item.name, item.value);
       });
 
+      data.append('preview', false);
+
       $.ajax({
         url: this.routes.addExcel,
         enctype: 'multipart/form-data',
@@ -97,9 +100,57 @@ export default {
       });
 
     },
+    previewForm: function(){
+      let form = $('#' + this.formIDName);
+
+      let file = document.getElementById('excel-file');
+      let data = new FormData();
+      
+      data.append(file.name, file.files[0]);
+
+      let otherDatas = form.serializeArray();
+
+      otherDatas.forEach(item => {
+        data.append(item.name, item.value);
+      });
+
+      data.append('preview', true);
+
+      $.ajax({
+        url: this.routes.addExcel,
+        enctype: 'multipart/form-data',
+        type: 'POST',
+        dataType: 'JSON',
+        processData: false,
+        contentType: false,
+        cache: false,
+        data: data,
+        beforeSend: function( xhr ) {
+        }
+      })
+      .done((res) => {
+        /* this.setErrors('');
+        this.setSucceed(res.succeed);
+        document.getElementById(this.formIDName).reset(); */
+        // location.href = this.routes.preview;
+        console.log('sadasdas');
+        window.open(this.routes.preview, '_blank');
+      })
+      .fail((error) => {
+        this.setSucceed('');
+        this.setErrors(error.responseJSON.errors);
+      })
+      .then((res) => {
+        this.$parent.$parent.dataTable.ajax.reload();
+      })
+      .always(() => {
+        // this.$refs.createExcelFormComponent.getCategory();
+        this.formElement.scrollTo(0, 0);
+      });
+    },
   },
   components: {
-    'form-modal-component': formModalComponent,
+    'excel-form-modal-component': excelFormModalComponent,
     'create-excel-form-component': createExcelFormComponent,
   }
 }

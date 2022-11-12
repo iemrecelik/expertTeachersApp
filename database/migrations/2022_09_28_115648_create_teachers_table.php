@@ -30,6 +30,7 @@ class CreateTeachersTable extends Migration
             $table->string('thr_mobile_no')->nullable(true);
             $table->string('thr_place_of_task')->nullable(true);
             $table->string('thr_photo')->nullable(true);
+            $table->integer('thr_birth_day')->nullable(true);
 
             $table->unsignedBigInteger('inst_id'); 
             $table->foreign('inst_id')

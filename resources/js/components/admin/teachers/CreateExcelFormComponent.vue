@@ -28,7 +28,7 @@
           noResultsText="Mevcut seçenek yok."
           searchPromptText="Aramak için yazınız."
           placeholder="Seçiniz..."
-          name="law_brief"
+          name="thr_tc_no"
         />
       </div>
     </div>
@@ -359,7 +359,9 @@
           <label class="custom-control-label" for="update-db">Var olan verileri güncelle</label>
         </div>
 
-        <input type="file" name="excel_file" class="form-control-file" id="excel-file">
+        <input type="hidden" name="previewUniqueId" v-model="previewUniqueId">
+
+        <input type="file" name="excel_file" class="form-control-file" id="excel-file" @change="createPreviewUniqueId">
       </div>
     </div>
   </div>
@@ -368,8 +370,6 @@
 </template>
 
 <script>
-// import createLangFormComponent from './CreateLangFormComponent';
-
 import Treeselect from '@riophae/vue-treeselect'
 // import the styles
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
@@ -384,6 +384,7 @@ export default {
       ajaxErrorCount: -1,
       options: [],
       letters: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z'],
+      previewUniqueId: null,
     }
   },
   computed: {
@@ -392,6 +393,9 @@ export default {
     ]),
   },
   methods: {
+    createPreviewUniqueId: function() {
+      this.previewUniqueId = this.uniqueID()+'-'+Math.floor(Math.random() * 10000);
+    },
     oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
     },
@@ -427,7 +431,7 @@ export default {
       for (let i = 1; i < 10; i++) {
         arr = this.letters.map((letter, key) => {
           return {
-            id: (key+1)+'_'+i,
+            id: key+'_'+i,
             label: letter+i,
           }
         })
@@ -440,16 +444,10 @@ export default {
     this.getInstitutions();
   },
   mounted() {
-    /* var mobileNoEl = document.getElementById("mobile-no");
-    var tcNo = document.getElementById("tc-no");
-
-    var im = new Inputmask();
-    im.mask(mobileNoEl);
-    im.mask(tcNo); */
+    this.createPreviewUniqueId();
   },
   components: {
     Treeselect
-    // 'create-lang-form-component': createLangFormComponent,
   }
   
 }

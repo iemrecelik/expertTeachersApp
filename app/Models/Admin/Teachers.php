@@ -23,6 +23,7 @@ class Teachers extends Model
         'thr_mobile_no',
         'thr_place_of_task',
         'thr_gender',
+        'thr_birth_day',
         'thr_photo',
         'inst_id',
     ];

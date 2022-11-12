@@ -66,6 +66,12 @@ Route::prefix('admin')
 			'addExcel'
 		)
 		->name('teachers.addExcel');
+		
+		Route::get(
+			'teachers/preview/', 
+			'preview'
+		)
+		->name('teachers.preview');
 
 		Route::resource('teachers', TeachersController::class);
     });
