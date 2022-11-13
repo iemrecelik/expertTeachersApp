@@ -11,12 +11,17 @@
   <form
     @submit.prevent
     :id="formIDName"
+    method="post"
+    enctype='multipart/form-data'
   >
     <error-msg-list-component></error-msg-list-component>
     <succeed-msg-component></succeed-msg-component>
 
     <create-excel-form-component ref="createExcelFormComponent">
     </create-excel-form-component>
+    
+    <input type="hidden" name="preview" v-model="preview">
+    <input type="hidden" name="_token" :value="token">
   </form>
 
 </excel-form-modal-component>
@@ -35,6 +40,7 @@ export default {
     return {
       datas: this.ppdatas,
       formElement: document.getElementById(this.$parent.$parent.modalIDName),
+      preview:false,
     };
   },
   props: {
@@ -46,6 +52,7 @@ export default {
   computed: {
     ...mapState([
       'routes',
+      'token'
     ]),
     formIDName: function(){
       return this.uniqueDomID(_.toLower(this.datas.formTitleName));
@@ -56,7 +63,21 @@ export default {
       'setErrors',
       'setSucceed',
     ]),
-    saveForm: function(){
+    previewForm: function(){
+      // let form = $('#' + this.formIDName);
+
+      this.preview = true;
+
+      setTimeout(() => {
+        let form = document.getElementById(this.formIDName);
+        form.action = this.routes.addExcel;
+        
+        form.submit();  
+      }, 1000);
+      
+      
+    }
+    /* saveForm: function(){
       let form = $('#' + this.formIDName);
 
       let file = document.getElementById('excel-file');
@@ -129,9 +150,9 @@ export default {
         }
       })
       .done((res) => {
-        /* this.setErrors('');
-        this.setSucceed(res.succeed);
-        document.getElementById(this.formIDName).reset(); */
+        // this.setErrors('');
+        // this.setSucceed(res.succeed);
+        // document.getElementById(this.formIDName).reset();
         // location.href = this.routes.preview;
         console.log('sadasdas');
         window.open(this.routes.preview, '_blank');
@@ -147,7 +168,7 @@ export default {
         // this.$refs.createExcelFormComponent.getCategory();
         this.formElement.scrollTo(0, 0);
       });
-    },
+    }, */
   },
   components: {
     'excel-form-modal-component': excelFormModalComponent,

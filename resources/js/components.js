@@ -19,6 +19,7 @@ import lawsuitMngStatisticalComponent from './components/admin/lawsuit_mng/stati
 
 /* Teacehrs */
 import teachersComponent from './components/admin/teachers/IndexComponent';
+import teachersPreviewComponent from './components/admin/teachers/TeachersPreviewComponent';
 import teachMngInstitutionsComponent from './components/admin/institutions/IndexComponent';
 
 /* Unions */
@@ -38,6 +39,7 @@ export default {
 	'doc-mng-search-component': docMngSearchComponent,
 
 	'teachers-component': teachersComponent,
+	'teachers-preview-component': teachersPreviewComponent,
 	'teach-mng-institutions-component': teachMngInstitutionsComponent,
 
 	'unions-mng-component': unionsMngComponent,
