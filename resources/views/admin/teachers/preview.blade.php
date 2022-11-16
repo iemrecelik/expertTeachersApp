@@ -6,10 +6,11 @@
       addExcel: '{{ route('admin.teachers.addExcel') }}', 
       dataList: '{{ route('admin.teachers.dataList') }}', 
       getInstitutions: '{{ route('admin.institutions.getInstitutions') }}', 
-      preview: '{{ route('admin.teachers.preview') }}', 
+      storeExcel: '{{ route('admin.teachers.store.excel') }}', 
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
-    :pptbodyHtml="{{ json_encode($tbodyHtml) }}"
+    :ppsucceed="{{ empty($succeed) ? '{}': $succeed }}"
+    :ppdatas="{{ json_encode($datas) }}"
   >
   </teachers-preview-component>
 @endsection

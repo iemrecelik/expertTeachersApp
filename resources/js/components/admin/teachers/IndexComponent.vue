@@ -2,6 +2,16 @@
 <template-component
 	:ppTitleName="$t('messages.teachersListManage')"
 >
+  <div class="alert alert-info" role="info"
+		v-if="succeed != ''"
+	>
+    {{ succeed }}<br/>
+    Aşağıdaki Bilgiler Yüklenememiştir.
+    <br/>
+	  {{ insertErrorArr.join(', ') }}
+	</div>
+
+
   <table class="res-dt-table table table-striped table-bordered" 
     style="width:100%">
     <thead>
@@ -101,6 +111,9 @@ export default {
       modalIDName: 'formModalLong',
       formTitleName,
       dataTable: null,
+      datas: this.ppdatas,
+      succeed: this.ppdatas.succeed,
+      insertErrorArr: this.ppdatas.insertErrorArr,
     };
   },
   props: {
@@ -112,9 +125,9 @@ export default {
       type: Object,
       required: true,
     },
-    ppimgfilters: {
+    ppdatas: {
       type: Object,
-      required: false,
+      required: true,
     },
   },
   computed: {

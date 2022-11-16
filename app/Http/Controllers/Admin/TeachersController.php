@@ -15,19 +15,6 @@ use App\Http\Requests\Admin\UpdateTeachersRequest;
 
 class TeachersController extends Controller
 {
-    /* private $institutions = Array();
-    private $institutionNames = Array();
-
-    private function setInstitutionsInfos()
-    {
-        $this->institutions = Institutions::all()->toArray();
-        $this->institutionNames = array_column($this->institutions, 'inst_name');
-
-        $this->institutionNames = array_map(function($item) {
-            return strtolower($item);
-        }, $this->institutionNames);
-    } */
-
     public function addExcel(Request $request)
     {
         /* $request->validate(
@@ -71,126 +58,24 @@ class TeachersController extends Controller
 
         $previewDatas = $request->session()->get('previewDatas');
 
-        // dd($previewDatas);
         $sessionPreviewUniqueId = $previewDatas ? $previewDatas['previewUniqueId'] : null; 
-
         
         if($sessionPreviewUniqueId != $previewUniqueId) {
+            $request->session()->forget('previewDatas');
             $insertArr = [];
             $updateArr = [];
+            $insertErrorArr = [];
 
             $excelProcess = new ExcelProcess();
             $excelDatas = $excelProcess->getExcelDatas($params, 'thr_tc_no', 'Teachers');
 
             $insertArr = $excelDatas['insertArr'];
             $updateArr = $excelDatas['updateArr'];
-            
-            // /* Excel satır sayılarının eşitliğnin kontrolü başla */
-            // $rowArrLetter = [];
-            // $rowArrNumber = [];
-            // foreach ($params as $key => $val) {
-            //     /* if(!in_array($key, ['excel_file', 'updateDb'])) {
-            //         preg_match_all('/([0-9]+|[a-zA-Z]+)/', $val, $matches);
-
-            //         $rowArrLetter[$key] = $matches[1][0];
-            //         $rowArrNumber[] = $matches[1][1];
-            //     } */
-            //     if(!in_array($key, ['excel_file', 'updateDb'])) {
-            //         $rowArr = explode('_', $val);
-
-            //         if($key == 'thr_tc_no') {
-            //             $uniqueKey = $rowArr[0];
-            //         }
-                    
-            //         $rowArrLetter[$key] = $rowArr[0];
-            //         $rowArrNumber[] = $rowArr[1];
-            //     }
-            // }
-
-            // $rowArrNumber = array_unique($rowArrNumber);
-
-            // if(count($rowArrNumber) > 1) {
-            //     throw ValidationException::withMessages(
-            //         ['row' => 'Bütün satır sayıları aynı olmak zorundadır.']
-            //     );
-            // }else if(count($rowArrNumber) < 1) {
-            //     throw ValidationException::withMessages(
-            //         ['row' => 'En az bir sütun seçmelisiniz.']
-            //     );
-            // }
-            // /* Excel satır sayılarının eşitliğnin kontrolü bitiş */
-
-            // $inputFileType = 'Xlsx';
-            // $url = $params['excel_file']->getPathname();
-
-            // $reader = \PhpOffice\PhpSpreadsheet\IOFactory::createReader($inputFileType);
-            
-            // $spreadsheet = $reader->load($url);
-
-            // $datas = $spreadsheet->getActiveSheet()->toArray();
-
-            // if ($params['updateDb']) {
-            //     $tcnoArr = array_column($datas, $uniqueKey);
-            //     $existTeachQuery = Teachers::whereIn('thr_tc_no', $tcnoArr);
-
-            //     $existTeachArr = $existTeachQuery->get()->toArray();
-            //     $existTeachTcnoArr = array_column($existTeachArr, 'thr_tc_no');
-
-            //     $existTeachQuery->delete();
-            // }else {
-            //     $existTeachTcnoArr = [];
-            // }
-            
-            // $co = 0;
-            // $min = min($rowArrNumber);
-
-            // $insertArr = [];
-            // $updateArr = [];
-            // foreach ($datas as $key => $value) {
-            //     $co++;
-            //     if(($min - 1) == $co) {
-            //         continue;
-            //     }
-            //     $arr = [];
-
-            //     $exIndex = array_search($value[$uniqueKey], $existTeachTcnoArr);
-
-            //     $this->setInstitutionsInfos();
-
-            //     if(empty($exIndex)) {
-            //         foreach ($rowArrLetter as $letKey => $letVal) {
-            //             $val = $this->validateExcelField($letKey, $value[$letVal]);
-
-            //             if($val === null) {
-            //                 $arr = null;
-            //                 break;
-            //             }
-            //             $arr[$letKey] = $val;
-            //         }
-
-            //         if(!empty($arr)) {
-            //             $insertArr[] = $arr;
-            //         }
-
-            //     }else {
-            //         foreach ($rowArrLetter as $letKey => $letVal) {
-            //             $val = $this->validateExcelField($letKey, $value[$letVal]);
-                        
-            //             if($val === null) {
-            //                 $existTeachArr[$exIndex] = null;
-            //                 break;
-            //             }
-            //             $existTeachArr[$exIndex][$letKey] = $val;
-            //         }
-
-            //         if(!empty($existTeachArr[$exIndex])) {
-            //             $updateArr[] = $existTeachArr[$exIndex];
-            //         }
-            //     }
-            // }
+            $insertErrorArr = $excelDatas['insertErrorArr'];
         }else {
             $insertArr = $previewDatas['insertArr'];
             $updateArr = $previewDatas['updateArr'];
+            $insertErrorArr = $previewDatas['insertErrorArr'];
         }
 
         if($preview !== 'true') {
@@ -209,17 +94,86 @@ class TeachersController extends Controller
                     Teachers::insert($updVal);
                 }
             }
+        }else {
+            $institutions = Institutions::all()->toArray();
+
+            $tbodyInsertHtml = $this->createHtmlTable($insertArr, $institutions, 10);
+            $tbodyUpdateHtml = $this->createHtmlTable($updateArr, $institutions, 10);
+
+            $request->session()->put('previewDatas', [
+                'insertArr' => $insertArr,
+                'updateArr' => $updateArr,
+                'insertErrorArr' => $insertErrorArr,
+                'previewUniqueId' => $previewUniqueId,
+            ]);
+
+            return view(
+                'admin.teachers.preview',
+                [
+                    'datas' => [
+                        'tbodyHtml' => $tbodyInsertHtml.$tbodyUpdateHtml,
+                        'insertArr' => $insertArr,
+                        'updateArr' => $updateArr,
+                        'insertErrorArr' => $insertErrorArr,
+                    ]
+                ]
+            );
         }
 
-        $institutions = Institutions::all()->toArray();
-
-        $tbodyInsertHtml = $this->createHtmlTable($insertArr, $institutions);
-        $tbodyUpdateHtml = $this->createHtmlTable($updateArr, $institutions);
+        // return ['succeed' => __('messages.add_success')];
 
         return [
-            'tbodyHtml' => $tbodyInsertHtml.$tbodyUpdateHtml,
-            'succeed' => __('messages.add_success')
+            'datas' => [
+                'succeed' => __('messages.add_success'),
+                'insertErrorArr' => $insertErrorArr,
+            ]
         ];
+    }
+
+    public function storeExcel(Request $request)
+    {
+        $previewDatas = $request->session()->get('previewDatas');
+        $insertArr = $previewDatas['insertArr'];
+        $updateArr = $previewDatas['updateArr'];
+        $insertErrorArr = $previewDatas['insertErrorArr'];
+
+        /* $insertArr = empty($params['insertArr']) ? []: $params['insertArr'];
+        $updateArr = empty($params['updateArr']) ? []: $params['updateArr']; */
+
+        if(count($insertArr) > 0) {
+            $insertArr = array_chunk($insertArr, 50);
+
+            foreach ($insertArr as $insKey => $insVal) {
+                Teachers::insert($insVal); 
+            }
+        }
+
+        if(count($updateArr) > 0) {
+            $updateArr = array_chunk($updateArr, 50);
+
+            foreach ($updateArr as $updKey => $updVal) {
+                Teachers::insert($updVal);
+            }
+        }
+
+        $request->session()->forget('previewDatas');
+
+        redirect()->route('admin.teachers.index', [
+            'datas' => [
+                'insertErrorArr' => $insertErrorArr,
+                'succeed' => __('messages.add_success')
+            ],
+        ]);
+
+        /* return view(
+            'admin.teachers.index',
+            [
+                'datas' => [
+                    'insertErrorArr' => $insertErrorArr,
+                    'succeed' => __('messages.add_success')
+                ],
+            ]
+        ); */
     }
 
     public function preview($datas)
@@ -261,8 +215,8 @@ class TeachersController extends Controller
             </thead>
         ';
 
-        $tblContentInsertArr = $this->createHtmlTable($datas['insertArr'], $institutions);
-        $tblContentUpdateArr = $this->createHtmlTable($datas['updateArr'], $institutions);
+        $tblContentInsertArr = $this->createHtmlTable($datas['insertArr'], $institutions, 10);
+        $tblContentUpdateArr = $this->createHtmlTable($datas['updateArr'], $institutions, 10);
 
         $html = '
             <div class="table-wrapper">
@@ -290,12 +244,17 @@ class TeachersController extends Controller
         );
     }
 
-    private function createHtmlTable($datas, $institutions)
+    private function createHtmlTable($datas, $institutions, $limit = 50)
     {
         $careerLadderArr = ['Bilinmiyor', 'Öğretmen', 'Uzman Öğretmen', 'Başöğretmen'];
         $tblContent = '';
+        $co = 0;
         
         foreach ($datas as $updKey => $updVal) {
+            $co++;
+            if($co === $limit){
+                break;
+            }
             $instIndex = array_search($updVal['inst_id'], array_column($institutions, 'id'));
             $careerLadderIndex = strval($updVal['thr_career_ladder']) + 1;
 
@@ -379,7 +338,13 @@ class TeachersController extends Controller
      */
     public function index()
     {
-        return view('admin.teachers.index');
+        return view(
+            'admin.teachers.index', 
+            ['datas' => [
+                'succeed' => [],
+                'insertErrorArr' => [],
+            ]]
+        );
     }
 
     public function getSearchTeacherList(Request $request)
