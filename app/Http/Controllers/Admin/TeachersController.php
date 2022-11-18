@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
 use Illuminate\Http\Request;
+use App\Library\FileUpload;
 use App\Library\ExcelProcess;
 use App\Models\Admin\Teachers;
 use App\Models\Admin\Institutions;
@@ -17,6 +18,7 @@ class TeachersController extends Controller
 {
     public function addExcel(Request $request)
     {
+        // Teachers::whereNotIn('id', ['1'])->delete();
         /* $request->validate(
             [
                 'excel_file' => 'required|file|mimes:xlsx,xls,xlx',
@@ -48,7 +50,6 @@ class TeachersController extends Controller
         $previewUniqueId = $params['previewUniqueId'];
         unset($params['previewUniqueId']);
         
-
         $params['thr_tc_no'] = '0_2';
         $params['thr_name'] = '1_2';
         $params['thr_surname'] = '2_2';
@@ -79,6 +80,7 @@ class TeachersController extends Controller
         }
 
         if($preview !== 'true') {
+            $sumInsertData = count($insertArr) + count($updateArr);
             if(count($insertArr) > 0) {
                 $insertArr = array_chunk($insertArr, 50);
     
@@ -122,12 +124,55 @@ class TeachersController extends Controller
 
         // return ['succeed' => __('messages.add_success')];
 
-        return [
+        /* return [
             'datas' => [
-                'succeed' => __('messages.add_success'),
                 'insertErrorArr' => $insertErrorArr,
+                'sumErrorData' => count($insertErrorArr),
+                'sumInsertData' => $sumInsertData,
+                'succeed' => __('messages.add_success')
             ]
-        ];
+        ]; */
+
+        return redirect()->route('admin.teachers.index')->with('datas', 
+            [
+                'insertErrorArr' => $insertErrorArr,
+                'sumErrorData' => count($insertErrorArr),
+                'sumInsertData' => $sumInsertData,
+                'succeed' => __('messages.add_success')
+            ]
+        );
+    }
+
+    public function storeImages(Request $request)
+    {
+        $request->validate(
+            [
+                'images_file.*' => 'required|file|image|max:2048'
+            ],
+            [
+                'images_file.*.required' => 'Lütfen resim dosyası giriniz.',
+                'images_file.*.image' => 'Sadece resim dosyası giriniz.',
+                'images_file.*.file' => 'Lütfen resim dosyası giriniz.',
+                'images_file.*.max' => 'Lütfen 2gb dan daha küçük resim dosyası yükleyiniz.',
+            ],
+        );
+
+        $params = $request->all();
+
+        $fileUpload = new FileUpload();
+
+        foreach ($params['images_file'] as $key => $val) {
+            $tcno[] = pathinfo($val->getClientOriginalName(), PATHINFO_FILENAME);
+
+            var_dump($tcno);
+
+            /* $fileUpload->setConfig($val, null, 'JPG');
+            $fileUpload->saveFile(); */
+        }
+
+        die;
+
+        
     }
 
     public function storeExcel(Request $request)
@@ -136,9 +181,7 @@ class TeachersController extends Controller
         $insertArr = $previewDatas['insertArr'];
         $updateArr = $previewDatas['updateArr'];
         $insertErrorArr = $previewDatas['insertErrorArr'];
-
-        /* $insertArr = empty($params['insertArr']) ? []: $params['insertArr'];
-        $updateArr = empty($params['updateArr']) ? []: $params['updateArr']; */
+        $sumInsertData = count($insertArr) + count($updateArr);
 
         if(count($insertArr) > 0) {
             $insertArr = array_chunk($insertArr, 50);
@@ -158,89 +201,13 @@ class TeachersController extends Controller
 
         $request->session()->forget('previewDatas');
 
-        redirect()->route('admin.teachers.index', [
-            'datas' => [
-                'insertErrorArr' => $insertErrorArr,
-                'succeed' => __('messages.add_success')
-            ],
-        ]);
-
-        /* return view(
-            'admin.teachers.index',
+        return redirect()->route('admin.teachers.index')->with('datas', 
             [
-                'datas' => [
-                    'insertErrorArr' => $insertErrorArr,
-                    'succeed' => __('messages.add_success')
-                ],
+                'insertErrorArr' => $insertErrorArr,
+                'sumErrorData' => count($insertErrorArr),
+                'sumInsertData' => $sumInsertData,
+                'succeed' => __('messages.add_success')
             ]
-        ); */
-    }
-
-    public function preview($datas)
-    {
-        $institutions = Institutions::all()->toArray();
-
-        $css = '
-            table {
-                border-collapse: collapse;
-            }
-            th, td {
-                padding: 5px;
-                text-align: left;
-            }
-            th, td {
-                border: 1px solid #000;
-                margin: 0px;
-            }
-        ';
-
-        $title = '
-            <thead>
-                <tr>
-                    <td>TC NO</td>
-                    <td>AD</td>
-                    <td>SOYAD</td>
-                    <td>İL</td>
-                    <td>İLÇE</td>
-                    <td>MAİL</td>
-                    <td>TEL NO</td>
-                    <td>CİNSİYET</td>
-                    <td>KARİYER DURUMU</td>
-                    <td>ÜNVANI</td>
-                    <td>GÖREVİ</td>
-                    <td>GÖREV YERİ</td>
-                    <td>EĞİTİM DURUMU</td>
-                    <td>KURUMU</td>
-                </tr>
-            </thead>
-        ';
-
-        $tblContentInsertArr = $this->createHtmlTable($datas['insertArr'], $institutions, 10);
-        $tblContentUpdateArr = $this->createHtmlTable($datas['updateArr'], $institutions, 10);
-
-        $html = '
-            <div class="table-wrapper">
-                <table class="fl-table table table-striped table-inverse table-responsive table-bordered">
-                    '.$title.'
-                    '.$tblContentInsertArr.'
-                    '.$tblContentUpdateArr.'
-                </table>
-            </div>
-        ';
-
-        return $html;
-
-        $mpdf = New \Mpdf\Mpdf(['tempDir'=>storage_path('tempdir')]);
-        
-        $mpdf->AddPage('L');
-        $mpdf->WriteHTML($css,1);
-        $mpdf->WriteHTML($html,2);
-
-        $mpdf->Output();
-
-        return view(
-            'admin.teachers.preview',
-            ['datas' => $request->session()->get('previewDatas')]
         );
     }
 
@@ -336,7 +303,7 @@ class TeachersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
         return view(
             'admin.teachers.index', 
@@ -349,7 +316,6 @@ class TeachersController extends Controller
 
     public function getSearchTeacherList(Request $request)
     {
-        // dd($request->all());
         $request->validate(
             [
                 'searchTcNo' => 'required|integer'

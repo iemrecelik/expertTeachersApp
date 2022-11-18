@@ -4,11 +4,12 @@
     :pproutes="{ 
       index: '{{ route('admin.teachers.index') }}', 
       addExcel: '{{ route('admin.teachers.addExcel') }}', 
+      storeImages: '{{ route('admin.teachers.store.images') }}', 
       dataList: '{{ route('admin.teachers.dataList') }}', 
       getInstitutions: '{{ route('admin.institutions.getInstitutions') }}', 
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
-    :ppdatas="{{ json_encode($datas) }}"
+    :ppdatas="{{ empty(session('datas')) ? json_encode($datas) : json_encode(session('datas')) }}"
   >
   </teachers-component>
 @endsection

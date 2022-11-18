@@ -72,6 +72,12 @@ Route::prefix('admin')
 			'storeExcel'
 		)
 		->name('teachers.store.excel');
+		
+		Route::post(
+			'teachers/store/images', 
+			'storeImages'
+		)
+		->name('teachers.store.images');
 
 		Route::resource('teachers', TeachersController::class);
     });

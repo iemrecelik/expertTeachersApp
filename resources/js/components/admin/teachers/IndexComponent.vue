@@ -5,8 +5,8 @@
   <div class="alert alert-info" role="info"
 		v-if="succeed != ''"
 	>
-    {{ succeed }}<br/>
-    Aşağıdaki Bilgiler Yüklenememiştir.
+    {{ sumInsertData + ' Tane ' + succeed + ' ' + sumErrorData + ' tane veri eklenemedi.'}}<br/>
+    Aşağıdaki Tc Numaraları Yüklenememiştir.
     <br/>
 	  {{ insertErrorArr.join(', ') }}
 	</div>
@@ -63,7 +63,7 @@
             data-toggle="modal" 
             :data-target="modalSelector"
             :data-datas='`{"formTitleName": "\${formTitleName}"}`'
-            :data-component="`${formTitleName}-upload-images-component`"
+            :data-component="`${formTitleName}-create-images-component`"
           >
             {{ $t('messages.addImages') }}
           </button>
@@ -98,7 +98,7 @@ import createExcelComponent from './CreateExcelComponent';
 import editComponent from './EditComponent';
 import showComponent from './ShowComponent';
 import deleteComponent from './DeleteComponent';
-// import imagesComponent from './ImagesComponent';
+import createImagesComponent from './CreateImagesComponent';
 
 import { mapState, mapMutations } from 'vuex';
 
@@ -114,6 +114,8 @@ export default {
       datas: this.ppdatas,
       succeed: this.ppdatas.succeed,
       insertErrorArr: this.ppdatas.insertErrorArr,
+      sumInsertData: this.ppdatas.sumInsertData,
+      sumErrorData: this.ppdatas.sumErrorData,
     };
   },
   props: {
@@ -270,7 +272,7 @@ export default {
     [formTitleName + '-edit-component']: editComponent,
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-delete-component']: deleteComponent,
-    // [formTitleName + '-images-component']: imagesComponent,
+    [formTitleName + '-create-images-component']: createImagesComponent,
   }
 }
 </script>

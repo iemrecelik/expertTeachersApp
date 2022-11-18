@@ -64,18 +64,32 @@ export default {
       'setSucceed',
     ]),
     previewForm: function(){
-      // let form = $('#' + this.formIDName);
-
       this.preview = true;
 
       setTimeout(() => {
         let form = document.getElementById(this.formIDName);
         form.action = this.routes.addExcel;
         
-        form.submit();  
-      }, 1000);
-      
-      
+        if(this.preview === true) {
+          form.submit();
+        }else {
+          this.previewForm();
+        }
+      }, 100);
+    },
+    saveForm: function(){
+      this.preview = false;
+
+      setTimeout(() => {
+        let form = document.getElementById(this.formIDName);
+        form.action = this.routes.addExcel;
+
+        if(this.preview === false) {
+          form.submit();
+        }else {
+          this.saveForm();
+        }
+      }, 100);
     }
     /* saveForm: function(){
       let form = $('#' + this.formIDName);
