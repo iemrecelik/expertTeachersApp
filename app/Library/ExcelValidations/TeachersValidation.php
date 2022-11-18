@@ -31,6 +31,12 @@ class TeachersValidation
                     $val = $value;
                 }
                 break;
+            case 'thr_name':
+                $val = ucfirst(mb_strtolower($value));
+                break;
+            case 'thr_surname':
+                $val = mb_strtoupper($value);
+                break;
             case 'thr_gender':
                 $val = array_search(mb_strtolower($value), ['erkek', 'bayan']);
                 $val = $val !== false ? strval($val) : null;

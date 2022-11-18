@@ -22,7 +22,6 @@ class CreateTeachersTable extends Migration
             $table->string('thr_province')->nullable(true);
             $table->string('thr_town')->nullable(true);
             $table->string('thr_email')->nullable(true);
-            // $table->string('thr_career_ladder')->nullable(false);
             $table->enum('thr_career_ladder', [-1, 0, 1, 2])->nullable(false);
             $table->string('thr_degree')->nullable(true);
             $table->string('thr_task')->nullable(true);

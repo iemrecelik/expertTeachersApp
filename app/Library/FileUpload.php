@@ -21,7 +21,6 @@ class FileUpload
 	function __construct(Array $config = null)
 	{
 		if (is_array($config)) {
-			
 			$this->setConfig(
 				$config['file'], 
 				$config['filters'], 
@@ -44,6 +43,12 @@ class FileUpload
 
 	public function setConfig(UploadedFile $file, Array $filters = null, String $extension = null, Bool $rawFileName = false)
 	{
+		$file = null;
+		$hashFileName = null;
+		$guessExtension = null;
+		$filters = null;
+		$savePath = [];
+
 		$extension = $this->udfControl($extension, $file->getClientOriginalName());
 
 		$this->file = $file;

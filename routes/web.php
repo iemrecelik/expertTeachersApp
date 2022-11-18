@@ -67,11 +67,17 @@ Route::prefix('admin')
 		)
 		->name('teachers.addExcel');
 		
-		Route::get(
-			'teachers/preview/', 
-			'preview'
+		Route::post(
+			'teachers/store/excel', 
+			'storeExcel'
 		)
-		->name('teachers.preview');
+		->name('teachers.store.excel');
+		
+		Route::post(
+			'teachers/store/images', 
+			'storeImages'
+		)
+		->name('teachers.store.images');
 
 		Route::resource('teachers', TeachersController::class);
     });

@@ -76,6 +76,8 @@ class ExcelProcess
         $insertArr = [];
         $updateArr = [];
         
+        $insertErrorArr = [];
+        
         $excelValidClass = "\App\Library\ExcelValidations\\".$modelName."Validation";
         $excelValidClass = new $excelValidClass();
 
@@ -93,6 +95,7 @@ class ExcelProcess
                     $val = $excelValidClass->validateExcelField($letKey, $value[$letVal]);
 
                     if($val === null) {
+                        $insertErrorArr[] = $value[$uniqueKey];
                         $arr = null;
                         break;
                     }
@@ -108,6 +111,7 @@ class ExcelProcess
                     $val = $excelValidClass->validateExcelField($letKey, $value[$letVal]);
                     
                     if($val === null) {
+                        $insertErrorArr[] = $value[$uniqueKey];
                         $existTeachArr[$exIndex] = null;
                         break;
                     }
@@ -123,6 +127,7 @@ class ExcelProcess
         return [
             'insertArr' => $insertArr,
             'updateArr' => $updateArr,
+            'insertErrorArr' => $insertErrorArr,
         ];
     }
 }
