@@ -15,6 +15,7 @@
   >
     <error-msg-list-component></error-msg-list-component>
     <succeed-msg-component></succeed-msg-component>
+    <info-msg-component></info-msg-component>
 
     <create-images-form-component ref="createImagesFormComponent">
     </create-images-form-component>
@@ -59,6 +60,7 @@ export default {
     ...mapMutations([
       'setErrors',
       'setSucceed',
+      'setInfoMsg',
     ]),
     saveForm: function(){
       let file = document.getElementById('images-file');
@@ -81,6 +83,7 @@ export default {
       .done((res) => {
         this.setErrors('');
         this.setSucceed(res.succeed);
+        this.setInfoMsg(res.infoMsg);
         document.getElementById(this.formIDName).reset();
       })
       .fail((error) => {

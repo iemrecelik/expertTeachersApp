@@ -3,6 +3,7 @@ export const state = i18n => ({
 	langs: [],
 	errors: {},
 	succeed: '',
+	infoMsg: '',
 	old: {},
 	authUser: {},
 	token: document.head.querySelector('meta[name="csrf-token"]').content,
@@ -47,6 +48,9 @@ export const mutations = i18n => ({
 	},
 	setErrors(state, errors){
 		state.errors = errors
+	},
+	setInfoMsg(state, infoMsg){
+		state.infoMsg = infoMsg
 	},
 	setSucceed(state, succeed){
 		state.succeed = succeed

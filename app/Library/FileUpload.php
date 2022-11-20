@@ -16,7 +16,8 @@ class FileUpload
 	protected $hashFileName;
 	protected $guessExtension;
 	protected $filters;
-	protected $savePath = [];
+	protected $savePath;
+	protected $savePaths = [];
 	
 	function __construct(Array $config = null)
 	{
@@ -43,11 +44,11 @@ class FileUpload
 
 	public function setConfig(UploadedFile $file, Array $filters = null, String $extension = null, Bool $rawFileName = false)
 	{
-		$file = null;
-		$hashFileName = null;
-		$guessExtension = null;
-		$filters = null;
-		$savePath = [];
+		$this->file = null;
+		$this->hashFileName = null;
+		$this->guessExtension = null;
+		$this->filters = null;
+		$this->savePath = null;
 
 		$extension = $this->udfControl($extension, $file->getClientOriginalName());
 
@@ -147,6 +148,7 @@ class FileUpload
 		// dump($pathAndFileName);die;
 
 		$this->setSavePath("/{$pathName}/{$fileName}");
+		$this->setSavePaths("/{$pathName}/{$fileName}");
 
 		return [
 			'fileName' => $fileName,
@@ -180,7 +182,26 @@ class FileUpload
      */
     public function setSavePath($savePath)
     {
-        $this->savePath[] = $savePath;
+        $this->savePath = $savePath;
+
+        return $this;
+    }
+/**
+     * @return mixed
+     */
+    public function getSavePaths()
+    {
+        return $this->savePaths;
+    }
+
+    /**
+     * @param mixed $savePaths
+     *
+     * @return self
+     */
+    public function setSavePaths($savePaths)
+    {
+        $this->savePaths[] = $savePaths;
 
         return $this;
     }

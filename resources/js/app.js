@@ -22,6 +22,7 @@ const store = new Vuex.Store(storeObj(i18n));
 /*Global Components Start*/
 import templateComponent from './components/admin/template/TemplateComponent.vue';
 
+import infoMsgComponent from './components/messages/InfoMsgComponent';
 import succeedMsgComponent from './components/messages/SucceedMsgComponent';
 import errorMsgListComponent from './components/messages/ErrorMsgListComponent';
 import errorMsgComponent from './components/messages/ErrorMsgComponent';
@@ -30,6 +31,7 @@ import formComponent from './components/form/FormComponent';
 
 Vue.component('template-component', templateComponent);
 
+Vue.component('info-msg-component', infoMsgComponent);
 Vue.component('succeed-msg-component', succeedMsgComponent);
 Vue.component('error-msg-list-component', errorMsgListComponent);
 Vue.component('error-msg-component', errorMsgComponent);

@@ -18,7 +18,7 @@ class TeachersValidation
         $this->institutionNames = array_column($this->institutions, 'inst_name');
 
         $this->institutionNames = array_map(function($item) {
-            return strtolower($item);
+            return \Transliterator::create('tr-lower')->transliterate($item);
         }, $this->institutionNames);
     }
     
@@ -32,22 +32,31 @@ class TeachersValidation
                 }
                 break;
             case 'thr_name':
-                $val = ucfirst(mb_strtolower($value));
+                $val = \Transliterator::create('tr-title')->transliterate($value);
                 break;
             case 'thr_surname':
-                $val = mb_strtoupper($value);
+                $val = \Transliterator::create('tr-upper')->transliterate($value);
                 break;
             case 'thr_gender':
-                $val = array_search(mb_strtolower($value), ['erkek', 'bayan']);
+                $val = array_search(
+                    \Transliterator::create('tr-lower')->transliterate($value), 
+                    ['erkek', 'bayan']
+                );
                 $val = $val !== false ? strval($val) : null;
                 break;
             case 'thr_career_ladder':
-                $val = array_search(mb_strtolower($value), ['bilinmiyor', 'öğretmen', 'uzman öğretmen', 'başöğretmen']);
+                $val = array_search(
+                    \Transliterator::create('tr-lower')->transliterate($value), 
+                    ['bilinmiyor', 'öğretmen', 'uzman öğretmen', 'başöğretmen']
+                );
                 $val = ($val - 1);
                 $val = $val !== false ? strval($val) : null;
                 break;
             case 'inst_id':
-                $val = array_search(mb_strtolower($value), $this->institutionNames);
+                $val = array_search(
+                    \Transliterator::create('tr-lower')->transliterate($value), 
+                    $this->institutionNames
+                );
                 $val = $val !== false ? $this->institutions[$val]['id'] : null;
                 break;
             case 'thr_birth_day':

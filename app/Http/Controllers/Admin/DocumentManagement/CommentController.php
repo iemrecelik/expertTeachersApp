@@ -204,7 +204,7 @@ class CommentController extends Controller
             +++ 36- dava listesinde önlizleme butonu eklenecek
             37- pdf dosyalarını html kodlarına çevirilecek
             +++ 38- pdf çıktısını yatay sayfa olarak çıkartma
-            39- excel listesini yüklemeden önce ön izleme olsun.
+            +++ 39- excel listesini yüklemeden önce ön izleme olsun.
             +++ 40- excel listesini yüklerken sütunlardan en az bir tanesi seçili olması lazım.
         */
 

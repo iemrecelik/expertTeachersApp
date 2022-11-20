@@ -4,11 +4,8 @@
 >
   <div class="alert alert-info" role="info"
 		v-if="succeed != ''"
+    v-html="infoMsg()"
 	>
-    {{ sumInsertData + ' Tane ' + succeed + ' ' + sumErrorData + ' tane veri eklenemedi.'}}<br/>
-    Aşağıdaki Tc Numaraları Yüklenememiştir.
-    <br/>
-	  {{ insertErrorArr.join(', ') }}
 	</div>
 
 
@@ -157,6 +154,21 @@ export default {
       'setEditItem',
       'setImgFilters',
     ]),
+    infoMsg: function() {
+      let msg = '';
+      if(this.succeed != '') {
+        msg += this.sumInsertData + ' Tane ' + this.succeed + ' ' + this.sumErrorData + ' tane veri eklenemedi.';
+        msg += '<br/>';
+
+        if(this.sumErrorData > 0) {
+          msg += 'Aşağıdaki Tc Numaraları Yüklenememiştir:' ;
+          msg += '<br/>';
+          msg += this.insertErrorArr.join(', ');
+        }
+      }
+
+      return msg;
+    },
     processesRow: function(id){
       let row = '';
       row += this.editBtnHtml(id);
@@ -164,7 +176,6 @@ export default {
       // row += this.imageBtnHtml(id);
       return row;
     },
-    
     editBtnHtml: function(id){
       return  `
         <span 
@@ -221,7 +232,6 @@ export default {
           </button>
         </span>`;
     },
-
   },
   created(){
     this.setRoutes(this.pproutes);

@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
-use Illuminate\Http\Request;
 use App\Library\FileUpload;
+use Illuminate\Http\Request;
 use App\Library\ExcelProcess;
 use App\Models\Admin\Teachers;
 use App\Models\Admin\Institutions;
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Responsable\isAjaxResponse;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\StoreTeachersRequest;
@@ -53,9 +54,9 @@ class TeachersController extends Controller
         $params['thr_tc_no'] = '0_2';
         $params['thr_name'] = '1_2';
         $params['thr_surname'] = '2_2';
-        $params['thr_career_ladder'] = '14_2';
-        $params['inst_id'] = '12_2';
-        $params['thr_gender'] = '13_2';
+        $params['thr_career_ladder'] = '13_2';
+        $params['inst_id'] = '11_2';
+        $params['thr_gender'] = '12_2';
 
         $previewDatas = $request->session()->get('previewDatas');
 
@@ -66,10 +67,10 @@ class TeachersController extends Controller
             $insertArr = [];
             $updateArr = [];
             $insertErrorArr = [];
-
+            
             $excelProcess = new ExcelProcess();
             $excelDatas = $excelProcess->getExcelDatas($params, 'thr_tc_no', 'Teachers');
-
+            
             $insertArr = $excelDatas['insertArr'];
             $updateArr = $excelDatas['updateArr'];
             $insertErrorArr = $excelDatas['insertErrorArr'];
@@ -159,20 +160,48 @@ class TeachersController extends Controller
 
         $params = $request->all();
 
+        foreach ($params['images_file'] as $key => $val) {
+            $tcNoArr[] = pathinfo($val->getClientOriginalName(), PATHINFO_FILENAME);
+        }
+
+        $teachers = Teachers::select('thr_tc_no')
+            ->whereIn('thr_tc_no', $tcNoArr)
+            ->get()
+            ->toArray();
+
+        $existTcNo = array_column($teachers, 'thr_tc_no');
+
         $fileUpload = new FileUpload();
 
         foreach ($params['images_file'] as $key => $val) {
-            $tcno[] = pathinfo($val->getClientOriginalName(), PATHINFO_FILENAME);
+            $tcNo = pathinfo($val->getClientOriginalName(), PATHINFO_FILENAME);
+            
+            if(in_array($tcNo, $existTcNo)) {
+                $fileUpload->setConfig($val, null, 'JPG');
+                $fileUpload->saveFile();
 
-            var_dump($tcno);
+                $teacQuery = Teachers::where('thr_tc_no', $tcNo);
+                $teach = $teacQuery->first();
 
-            /* $fileUpload->setConfig($val, null, 'JPG');
-            $fileUpload->saveFile(); */
+                if($teach->thr_photo) {
+                    Storage::delete('/public/upload/images/raw'.$teach->thr_photo);
+                }
+
+                $teacQuery->update(['thr_photo' => $fileUpload->getSavePath()]);
+            }
         }
 
-        die;
+        $infoMsg = array_diff($tcNoArr, $existTcNo);
+        if(count($infoMsg) > 0) {
+            $infoMsg = join(',', $infoMsg).' T.C Numara(ları) veritabanında bulunamadığından eklenemedi.';
+        }else {
+            $infoMsg = '';
+        }
 
-        
+        return [
+            'infoMsg' => $infoMsg,
+            'succeed' => count($existTcNo) > 0 ? count($existTcNo).' Tane '.__('messages.add_success') : ''
+        ];
     }
 
     public function storeExcel(Request $request)
