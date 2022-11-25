@@ -100,9 +100,9 @@
 
     <div class="col-4">
       <div class="form-group">
-        <label for="career-ladder">{{$t('messages.careerLadder')}}</label>
+        <label for="thr-gender">{{$t('messages.dateOfBirth')}} (**/**/****, **.**.****)</label>
         <treeselect
-          :id="'career-ladder'"
+          :id="'thr-gender'"
           :multiple="false"
           :options="options"
           loadingText="Yükleniyor..."
@@ -112,22 +112,9 @@
           noResultsText="Mevcut seçenek yok."
           searchPromptText="Aramak için yazınız."
           placeholder="Seçiniz..."
-          name="thr_career_ladder"
+          name="thr_birth_day"
         />
       </div>
-
-      <!-- <div class="form-group">
-        <label for="career-ladder">{{$t('messages.careerLadder')}} :</label>
-        <select class="form-control" id="career-ladder"
-          name="thr_career_ladder"
-        >
-          <option selected disabled value="">{{$t('messages.selectCareerLadder')}}.</option>
-          <option value="-1">Bilinmiyor</option>
-          <option value="0">Öğretmen</option>
-          <option value="1">Uzman Öğretmen</option>
-          <option value="2">Başöğretmen</option>
-        </select>
-      </div> -->
     </div>
 
     <div class="col-4">
@@ -188,7 +175,7 @@
   <div class="row">
     <div class="col-4">
       <div class="form-group">
-        <label for="thr-gender">{{$t('messages.thr_gender')}}</label>
+        <label for="thr-gender">{{$t('messages.thr_gender')}} (erkek, bayan)</label>
         <treeselect
           :id="'thr-gender'"
           :multiple="false"
@@ -203,18 +190,27 @@
           name="thr_gender"
         />
       </div>
-
-      <!-- <div class="form-group">
-        <label for="exampleFormControlSelect1">Cinsiyet :</label>
-        <select class="form-control" id="exampleFormControlSelect1"
-          name="thr_gender"
-        >
-          <option selected disabled value="">Cinsiyet Seçiniz.</option>
-          <option value="0">Erkek</option>
-          <option value="1">Bayan</option>
-        </select>
-      </div> -->
     </div>
+    
+    <div class="col-8">
+      <div class="form-group">
+        <label for="career-ladder">{{$t('messages.careerLadder')}}(öğretmen, uzman öğretmen, başöğretmen)</label>
+        <treeselect
+          :id="'career-ladder'"
+          :multiple="false"
+          :options="options"
+          loadingText="Yükleniyor..."
+          clearAllText="Hepsini sil."
+          clearValueText="Değeri sil."
+          noOptionsText="Hiçbir seçenek yok."
+          noResultsText="Mevcut seçenek yok."
+          searchPromptText="Aramak için yazınız."
+          placeholder="Seçiniz..."
+          name="thr_career_ladder"
+        />
+      </div>
+    </div>
+    
   </div>
 
   <div class="row">

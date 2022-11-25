@@ -62,6 +62,12 @@ Route::prefix('admin')
 		->name('teachers.searchList');
 
 		Route::post(
+			'teachers/add-excel-validation', 
+			'addExcelValidation'
+		)
+		->name('teachers.addExcelValidation');
+
+		Route::post(
 			'teachers/add-excel', 
 			'addExcel'
 		)

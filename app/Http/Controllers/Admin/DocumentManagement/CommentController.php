@@ -206,6 +206,10 @@ class CommentController extends Controller
             +++ 38- pdf çıktısını yatay sayfa olarak çıkartma
             +++ 39- excel listesini yüklemeden önce ön izleme olsun.
             +++ 40- excel listesini yüklerken sütunlardan en az bir tanesi seçili olması lazım.
+            +++ 41- tc kimlik kontrolü yapılacak.
+            41- tc kimlik kontrolü excel yüklemelerinde de yapılacak.
+            +++ 42- excel olarak yüklerken select box la girilecek verilerin parantez ile bilgilendirme.
+            43- excel ile yüklerken aynı verileri güncelle veya olmayanları ekle seçeneği kontrol edilecek.
         */
 
         $request->validate(

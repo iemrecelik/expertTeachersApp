@@ -14,13 +14,79 @@ use App\Http\Responsable\isAjaxResponse;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\StoreTeachersRequest;
 use App\Http\Requests\Admin\UpdateTeachersRequest;
+use App\Rules\ValidateTCNo;
+
+
+use PhpOffice\PhpWord\PhpWord;
+use PhpOffice\PhpWord\Shared\Html;
 
 class TeachersController extends Controller
 {
+    public function addExcelValidation(Request $request)
+    {
+        $request->validate(
+            [
+                'excel_file' => 'required|file|mimes:xlsx,xls,xlx',
+                'thr_tc_no' => 'required',
+                'thr_name' => 'required',
+                'thr_surname' => 'required',
+                'thr_career_ladder' => 'required',
+                'inst_id' => 'required',
+                'thr_gender' => 'required',
+                'thr_birth_day' => 'required',
+            ],
+            [
+                'excel_file.required' => 'Lütfen excel dosyası yükleyiniz.',
+                'excel_file.file' => 'Lütfen sadece excel dosyası yükleyiniz.',
+                'excel_file.mimes' => 'Lütfen sadece excel dosyası yükleyiniz.',
+                'thr_tc_no.required' => 'Tc alanı zorunludur.',
+                'thr_name.required' => 'İsim alanı zorunludur.',
+                'thr_surname.required' => 'Soy isim alanı zorunludur.',
+                'thr_career_ladder.required' => 'Kariyer basamağı alanı zorunludur.',
+                'inst_id.required' => 'Kurum alanı zorunludur.',
+                'thr_gender.required' => 'Cinsiyet alanı zorunludur.',
+                'thr_birth_day.required' => 'Doğum Tarihi alanı zorunludur.',
+            ],
+        );
+
+        $params = $request->all();
+        $uniqueKeyName = 'thr_tc_no';
+
+        /* Excel satır sayılarının eşitliğnin kontrolü başla */
+        $rowArrLetter = [];
+        $rowArrNumber = [];
+        foreach ($params as $key => $val) {
+            if(!in_array($key, ['excel_file', 'updateDb', '_token', 'previewUniqueId', 'preview'])) {
+                $rowArr = explode('_', $val);
+
+                if($key == $uniqueKeyName) {
+                    $uniqueKey = $rowArr[0];
+                }
+                
+                $rowArrLetter[$key] = $rowArr[0];
+                $rowArrNumber[] = $rowArr[1];
+            }
+        }
+
+        $rowArrNumber = array_unique($rowArrNumber);
+
+        if(count($rowArrNumber) > 1) {
+            throw ValidationException::withMessages(
+                ['row' => 'Bütün satır sayıları aynı olmak zorundadır.']
+            );
+        }else if(count($rowArrNumber) < 1) {
+            throw ValidationException::withMessages(
+                ['row' => 'En az bir sütun seçmelisiniz.']
+            );
+        }
+        /* Excel satır sayılarının eşitliğnin kontrolü bitiş */
+
+        return true;
+    }
     public function addExcel(Request $request)
     {
         // Teachers::whereNotIn('id', ['1'])->delete();
-        /* $request->validate(
+        $request->validate(
             [
                 'excel_file' => 'required|file|mimes:xlsx,xls,xlx',
                 'thr_tc_no' => 'required',
@@ -41,7 +107,7 @@ class TeachersController extends Controller
                 'inst_id.required' => 'Kurum alanı zorunludur.',
                 'thr_gender.required' => 'Cinsiyet alanı zorunludur.',
             ],
-        ); */
+        );
 
         $params = $request->all();
 
@@ -51,12 +117,12 @@ class TeachersController extends Controller
         $previewUniqueId = $params['previewUniqueId'];
         unset($params['previewUniqueId']);
         
-        $params['thr_tc_no'] = '0_2';
+        /* $params['thr_tc_no'] = '0_2';
         $params['thr_name'] = '1_2';
         $params['thr_surname'] = '2_2';
         $params['thr_career_ladder'] = '13_2';
         $params['inst_id'] = '11_2';
-        $params['thr_gender'] = '12_2';
+        $params['thr_gender'] = '12_2'; */
 
         $previewDatas = $request->session()->get('previewDatas');
 
@@ -175,6 +241,7 @@ class TeachersController extends Controller
 
         foreach ($params['images_file'] as $key => $val) {
             $tcNo = pathinfo($val->getClientOriginalName(), PATHINFO_FILENAME);
+            $tcNo = intval($tcNo);
             
             if(in_array($tcNo, $existTcNo)) {
                 $fileUpload->setConfig($val, null, 'JPG');
@@ -334,6 +401,27 @@ class TeachersController extends Controller
      */
     public function index(Request $request)
     {
+        $phpWord = new PhpWord();
+
+        $htmlTemplate = ' <p style="background-color:#FFFF00;color:#FF0000;">Some text</p>';
+        $htmlTemplate .= "<h1>HELLO WORLD!</h1>";
+        $htmlTemplate .= "<p>This is a paragraph of random text</p>";
+        $htmlTemplate .= "<table style='border: 1px solid black'><tr><td>A table</td><td>Cell</td></tr></table>";
+
+        $targetFile = storage_path('app/public/upload/lawsuitInfoWords/file1.docx');
+        
+        $section = $phpWord->addSection();
+
+        Html::addHtml($section, $htmlTemplate);
+
+        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        try {
+            $objWriter->save($targetFile);
+        } catch (Exception $e) {
+        }
+
+        return response()->download($targetFile);
+
         return view(
             'admin.teachers.index', 
             ['datas' => [
@@ -452,11 +540,39 @@ class TeachersController extends Controller
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \App\Http\Requests\Admin\StoreTeachersRequest  $request
+     * @param  \App\Http\Requests\Admin\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreTeachersRequest $request)
+    public function store(Request $request)
     {
+        $date = explode('/', $request->input('thr_birth_day'));
+        $date = empty($date[2]) ? 1000: $date[2];
+
+        $request->validate(
+            [
+                'thr_tc_no' => ['required', new ValidateTCNo($request->thr_name, $request->thr_surname, $date )],
+                'thr_name' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+                'thr_surname' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+                'thr_career_ladder' => 'required|numeric',
+                'inst_id' => 'required|integer',
+                'thr_gender' => 'required|in:0,1',
+                'thr_birth_day' => 'required',
+            ],
+            [
+                'thr_tc_no.required' => 'Tc alanı zorunludur.',
+                'thr_tc_no.digit' => 'Tc alanı sadece rakamlardan ve 11 tane olmalıdır.',
+                'thr_name.required' => 'İsim alanı zorunludur.',
+                'thr_name.regex' => 'İsim alanı sadece harflerden oluşmalıdır.',
+                'thr_surname.required' => 'Soy isim alanı zorunludur.',
+                'thr_surname.regex' => 'Soy isim alanı sadece harflerden oluşmalıdır.',
+                'thr_career_ladder.required' => 'Kariyer basamağı alanı zorunludur.',
+                'inst_id.required' => 'Kurum alanı zorunludur.',
+                'thr_birth_day.required' => 'Doğum Tarihi alanı zorunludur.',
+                'thr_gender.required' => 'Cinsiyet alanı zorunludur.',
+                'thr_gender.in' => 'Cinsiyet sadece erkek veya bayan olmalıdır.',
+            ],
+        );
+
         $params = $request->all();
 
         $teacherExist = Teachers::where('thr_tc_no', $params['thr_tc_no']);
@@ -471,6 +587,29 @@ class TeachersController extends Controller
 
         return ['succeed' => __('messages.add_success')];
     }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \App\Http\Requests\Admin\StoreTeachersRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    /* public function store(StoreTeachersRequest $request)
+    {
+        $params = $request->all();
+
+        $teacherExist = Teachers::where('thr_tc_no', $params['thr_tc_no']);
+
+        if(!empty($teacherExist->first())) {
+            throw ValidationException::withMessages(
+                ['thr_tc_no' => "Aynı Tc'li veri ekleyemezsiniz."]
+            );
+        }
+
+        $teacher = Teachers::create($params);
+
+        return ['succeed' => __('messages.add_success')];
+    } */
 
     /**
      * Display the specified resource.

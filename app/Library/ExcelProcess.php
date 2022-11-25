@@ -72,6 +72,7 @@ class ExcelProcess
         
         $co = 0;
         $min = min($rowArrNumber);
+        $min = intval($min);
 
         $insertArr = [];
         $updateArr = [];
@@ -83,7 +84,8 @@ class ExcelProcess
 
         foreach ($datas as $key => $value) {
             $co++;
-            if(($min - 1) == $co) {
+
+            if($min > $co) {
                 continue;
             }
             $arr = [];

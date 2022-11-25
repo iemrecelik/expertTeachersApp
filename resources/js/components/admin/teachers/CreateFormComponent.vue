@@ -99,6 +99,21 @@
         </select>
       </div>
     </div>
+
+    <div class="col-4">
+      <div class="form-group">
+        <label for="date-of-birth">{{$t('messages.dateOfBirth')}}</label>
+        <input type="text" 
+          class="form-control" 
+          id="date-of-birth" 
+          :placeholder="$t('messages.dateOfBirth')"
+          name="thr_birth_day" 
+          :value="oldValue('date_of_birth')"
+          data-inputmask='"mask": "99/99/9999"' 
+          data-mask
+        >
+      </div>
+    </div>
   </div>
 
   <div class="row">
@@ -228,10 +243,12 @@ export default {
   mounted() {
     var mobileNoEl = document.getElementById("mobile-no");
     var tcNo = document.getElementById("tc-no");
+    var dateOfBirth = document.getElementById("date-of-birth");
 
     var im = new Inputmask();
     im.mask(mobileNoEl);
     im.mask(tcNo);
+    im.mask(dateOfBirth);
   },
   components: {
     Treeselect
