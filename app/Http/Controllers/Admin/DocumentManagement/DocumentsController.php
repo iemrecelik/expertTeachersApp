@@ -461,7 +461,7 @@ class DocumentsController extends Controller
             $path = str_replace('public', 'storage', $path);
             return new $modelName([$filePath => $path]);
 
-        }, $fileUpload->getSavePath());
+        }, $fileUpload->getSavePaths());
 
         return $filesArr;
     }

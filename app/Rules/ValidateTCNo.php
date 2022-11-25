@@ -6,6 +6,10 @@ use Illuminate\Contracts\Validation\Rule;
 
 class ValidateTCNo implements Rule
 {
+    public string $name;
+    public string $surname;
+    public int $birthYear;
+
     /**
      * Create a new rule instance.
      *
@@ -17,7 +21,10 @@ class ValidateTCNo implements Rule
         int $birthYear
     )
     {
-        //
+        $this->name = $name;
+        $this->surname = $surname;
+        $this->surname = $surname;
+        $this->birthYear = $birthYear;
     }
 
     /**
@@ -37,7 +44,6 @@ class ValidateTCNo implements Rule
             'Soyad' => \Transliterator::create("tr-Upper")->transliterate($this->surname),
             'DogumYili' => $this->birthYear
         ]);
-
         return $response->TCKimlikNoDogrulaResult;
     }
 
@@ -48,6 +54,6 @@ class ValidateTCNo implements Rule
      */
     public function message()
     {
-        return 'The validation error message.';
+        return 'Tc Numarası, Ad, Soyad ve Doğum Tarihi uyuşmamaktadır. Lütfen kontrol ediniz.';
     }
 }

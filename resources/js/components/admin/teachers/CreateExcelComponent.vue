@@ -62,8 +62,9 @@ export default {
     ...mapMutations([
       'setErrors',
       'setSucceed',
+      'setInfoMsg',
     ]),
-    previewForm: function(){
+    previewFormSubmit: function(){
       this.preview = true;
 
       setTimeout(() => {
@@ -73,67 +74,9 @@ export default {
         if(this.preview === true) {
           form.submit();
         }else {
-          this.previewForm();
+          this.previewFormSubmit();
         }
       }, 100);
-    },
-    saveForm: function(){
-      this.preview = false;
-
-      setTimeout(() => {
-        let form = document.getElementById(this.formIDName);
-        form.action = this.routes.addExcel;
-
-        if(this.preview === false) {
-          form.submit();
-        }else {
-          this.saveForm();
-        }
-      }, 100);
-    }
-    /* saveForm: function(){
-      let form = $('#' + this.formIDName);
-
-      let file = document.getElementById('excel-file');
-      let data = new FormData();
-      
-      data.append(file.name, file.files[0]);
-
-      let otherDatas = form.serializeArray();
-
-      otherDatas.forEach(item => {
-        data.append(item.name, item.value);
-      });
-
-      data.append('preview', false);
-
-      $.ajax({
-        url: this.routes.addExcel,
-        enctype: 'multipart/form-data',
-        type: 'POST',
-        dataType: 'JSON',
-        processData: false,
-        contentType: false,
-        cache: false,
-        data: data,
-      })
-      .done((res) => {
-        this.setErrors('');
-        this.setSucceed(res.succeed);
-        document.getElementById(this.formIDName).reset();
-      })
-      .fail((error) => {
-        this.setSucceed('');
-        this.setErrors(error.responseJSON.errors);
-      })
-      .then((res) => {
-        this.$parent.$parent.dataTable.ajax.reload();
-      })
-      .always(() => {
-        // this.$refs.createExcelFormComponent.getCategory();
-        this.formElement.scrollTo(0, 0);
-      });
-
     },
     previewForm: function(){
       let form = $('#' + this.formIDName);
@@ -152,7 +95,7 @@ export default {
       data.append('preview', true);
 
       $.ajax({
-        url: this.routes.addExcel,
+        url: this.routes.addExcelValidation,
         enctype: 'multipart/form-data',
         type: 'POST',
         dataType: 'JSON',
@@ -160,16 +103,71 @@ export default {
         contentType: false,
         cache: false,
         data: data,
-        beforeSend: function( xhr ) {
-        }
       })
       .done((res) => {
-        // this.setErrors('');
-        // this.setSucceed(res.succeed);
-        // document.getElementById(this.formIDName).reset();
-        // location.href = this.routes.preview;
-        console.log('sadasdas');
-        window.open(this.routes.preview, '_blank');
+        this.previewFormSubmit();
+        /* this.setErrors('');
+        this.setSucceed(res.succeed);
+        document.getElementById(this.formIDName).reset(); */
+      })
+      .fail((error) => {
+        this.setSucceed('');
+        this.setInfoMsg('');
+        this.setErrors(error.responseJSON.errors);
+      })
+      .then((res) => {
+        this.$parent.$parent.dataTable.ajax.reload();
+      })
+      .always(() => {
+        // this.$refs.createExcelFormComponent.getCategory();
+        this.formElement.scrollTo(0, 0);
+      });
+    },
+    saveFormSubmit: function(){
+      this.preview = false;
+
+      setTimeout(() => {
+        let form = document.getElementById(this.formIDName);
+        form.action = this.routes.addExcel;
+
+        if(this.preview === false) {
+          form.submit();
+        }else {
+          this.saveFormSubmit();
+        }
+      }, 100);
+    },
+    saveForm: function(){
+      let form = $('#' + this.formIDName);
+
+      let file = document.getElementById('excel-file');
+      let data = new FormData();
+      
+      data.append(file.name, file.files[0]);
+
+      let otherDatas = form.serializeArray();
+
+      otherDatas.forEach(item => {
+        data.append(item.name, item.value);
+      });
+
+      data.append('preview', true);
+
+      $.ajax({
+        url: this.routes.addExcelValidation,
+        enctype: 'multipart/form-data',
+        type: 'POST',
+        dataType: 'JSON',
+        processData: false,
+        contentType: false,
+        cache: false,
+        data: data,
+      })
+      .done((res) => {
+        this.saveFormSubmit();
+        /* this.setErrors('');
+        this.setSucceed(res.succeed);
+        document.getElementById(this.formIDName).reset(); */
       })
       .fail((error) => {
         this.setSucceed('');
@@ -182,7 +180,7 @@ export default {
         // this.$refs.createExcelFormComponent.getCategory();
         this.formElement.scrollTo(0, 0);
       });
-    }, */
+    }
   },
   components: {
     'excel-form-modal-component': excelFormModalComponent,

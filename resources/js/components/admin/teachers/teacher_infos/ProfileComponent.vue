@@ -3,6 +3,9 @@
 <div class="card card-primary card-outline">
   <div class="card-body box-profile">
     <div class="text-center">
+      <img class="profile-user-img img-fluid img-circle" :src="'/storage/upload/images/raw/'+teacher.thr_photo"/>
+    </div>
+    <div class="text-center">
       <!-- <img class="profile-user-img img-fluid img-circle"
             src="../../dist/img/user4-128x128.jpg"
             alt="User profile picture"> -->
@@ -10,7 +13,7 @@
 
     <h3 class="profile-username text-center">{{ teacher.thr_name}} {{ teacher.thr_surname}}</h3>
 
-    <p class="text-muted text-center">{{ teacher.thr_career_ladder}}</p>
+    <p class="text-muted text-center">{{ getCareerLadder(teacher.thr_career_ladder)}}</p>
 
     <ul class="list-group list-group-unbordered mb-3">
       <li class="list-group-item">
@@ -52,6 +55,25 @@ export default {
   data() {
     return {
       teacher: this.ppteacher,
+    }
+  },
+  methods: {
+    getCareerLadder: function(key) {
+      let value = 'Bilinmiyor';
+      switch (parseInt(key)) {
+        case 0:
+          value = 'Öğretmen'
+          break;
+        case 1:
+          value = 'Uzman Öğretmen'
+          break;
+        case 2:
+          value = 'Başöğretmen'
+          break;
+        default:
+          break;
+      }
+      return value;
     }
   },
   props: {

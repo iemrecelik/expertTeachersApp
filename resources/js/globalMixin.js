@@ -105,6 +105,7 @@ export default {
         // $('body').css('opacity', "1");
         store.commit('setErrors', {});
         store.commit('setSucceed', '');
+        store.commit('setInfoMsg', '');
         store.commit('setFormModalBody', {show: false});
       });
     },

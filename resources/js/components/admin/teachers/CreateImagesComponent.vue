@@ -79,6 +79,9 @@ export default {
         contentType: false,
         cache: false,
         data: data,
+        beforeSend: function () {
+          $('.images-loading').show();
+        }
       })
       .done((res) => {
         this.setErrors('');
@@ -88,6 +91,7 @@ export default {
       })
       .fail((error) => {
         this.setSucceed('');
+        this.setInfoMsg('');
         this.setErrors(error.responseJSON.errors);
       })
       .then((res) => {
@@ -96,6 +100,7 @@ export default {
       .always(() => {
         // this.$refs.createExcelFormComponent.getCategory();
         this.formElement.scrollTo(0, 0);
+        $('.images-loading').hide();
       });
 
     },

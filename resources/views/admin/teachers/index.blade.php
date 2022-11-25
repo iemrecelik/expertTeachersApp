@@ -4,6 +4,7 @@
     :pproutes="{ 
       index: '{{ route('admin.teachers.index') }}', 
       addExcel: '{{ route('admin.teachers.addExcel') }}', 
+      addExcelValidation: '{{ route('admin.teachers.addExcelValidation') }}', 
       storeImages: '{{ route('admin.teachers.store.images') }}', 
       dataList: '{{ route('admin.teachers.dataList') }}', 
       getInstitutions: '{{ route('admin.institutions.getInstitutions') }}', 

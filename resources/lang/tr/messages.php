@@ -103,6 +103,9 @@ return [
 	'thr_mobile_no' => 'Tel No',
 	'selectCareerLadder' => 'Kariyer Durumunu Seçiniz',
 	'teachersListManage' => 'Öğretmenler Liste Yönetimi',
+	'preview' => 'Ön izleme',
+	'storeImages' => 'Yüklenecek Resimler',
+	'dateOfBirth' => 'Doğum Tarihi',
 
 	/* Institution */
 	'inst_name' => 'Kurum İsmi',
@@ -176,4 +179,5 @@ return [
 	'addLikeExcel' => 'Excel Dosyası İle Ekle',
 	'addExcel' => 'Excel Ekle',
 	'addImages' => 'Resimleri Ekle',
+	'loading' => 'Yükleniyor',
 ];
