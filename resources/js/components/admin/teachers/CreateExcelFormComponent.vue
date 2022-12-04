@@ -192,9 +192,26 @@
       </div>
     </div>
     
-    <div class="col-8">
+    <div class="col-2">
       <div class="form-group">
-        <label for="career-ladder">{{$t('messages.careerLadder')}}(öğretmen, uzman öğretmen, başöğretmen)</label>
+        <label>Erkek</label>
+        <input type="text" class="form-control" name="enter[gender][0]" placeholder="erkek" value="erkek">
+      </div>
+    </div>
+
+    <div class="col-2">
+      <div class="form-group">
+        <label>Bayan</label>
+        <input type="text" class="form-control" name="enter[gender][1]" placeholder="bayan" value="bayan">
+      </div>
+    </div>
+
+  </div>
+
+  <div class="row">
+    <div class="col-4">
+      <div class="form-group">
+        <label for="career-ladder">{{$t('messages.careerLadder')}}(öğrt, uzman öğrt, başöğrt)</label>
         <treeselect
           :id="'career-ladder'"
           :multiple="false"
@@ -210,7 +227,42 @@
         />
       </div>
     </div>
-    
+
+    <input type="hidden" name="enter[career][0]">
+
+    <div class="col-2">
+      <div class="form-group">
+        <label>Öğretmen</label>
+        <input type="text" class="form-control" 
+          name="enter[career][1]" 
+          placeholder="öğretmen" 
+          value="öğretmen"
+        >
+      </div>
+    </div>
+
+    <div class="col-2">
+      <div class="form-group">
+        <label>Uzman Öğretmen</label>
+        <input type="text" class="form-control" 
+          name="enter[career][2]" 
+          placeholder="uzman öğretmen" 
+          value="uzman öğretmen"
+        >
+      </div>
+    </div>
+
+    <div class="col-2">
+      <div class="form-group">
+        <label>Başöğretmen</label>
+        <input type="text" class="form-control" 
+          name="enter[career][3]" 
+          placeholder="başöğretmen" 
+          value="başöğretmen"
+        >
+      </div>
+    </div>
+
   </div>
 
   <div class="row">

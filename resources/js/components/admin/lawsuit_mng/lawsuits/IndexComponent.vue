@@ -1,33 +1,84 @@
 <template>
-<template-component
+<multi-section-template-component
 	:ppTitleName="$t('messages.lawsuits_list')"
 >
-  <table class="res-dt-table table table-striped table-bordered" 
-  style="width:100%">
-    <thead>
-      <tr>
-        <th>{{ $t("messages.dc_id") }}</th>
-        <th>{{ $t("messages.thr_name") }}</th>
-        <th>{{ $t("messages.law_brief") }}</th>
-        <th>{{ $t("messages.dc_date") }}</th>
-        <th>{{ $t("messages.processes") }}</th>
-      </tr>
-    </thead>
-    <tfoot>
-      <tr>
-        <th colspan="5">
-          <button type="button" class="btn btn-primary"
-            data-toggle="modal" 
-            :data-target="modalSelector"
-            :data-datas='`{"formTitleName": "\${formTitleName}"}`'
-            :data-component="`${formTitleName}-create-component`"
-          >
-            {{ $t('messages.add') }}
-          </button>
-        </th>
-      </tr>
-    </tfoot>
-  </table>
+  <error-msg-list-component></error-msg-list-component>
+
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <form :action="routes.lawInfos" method="post">
+            <input type="hidden" name="_token" :value="token">
+            <div class="row">
+              <div class="col-2">
+                <h5 class="text-center">Bilgi Notu Listesi</h5>
+
+                <div class="law-info-card-list">
+                  <div class="row" :key="key" v-for="(item, key) in addLawInfoListArr">
+                    <input type="hidden" name="law_id[]" :value="parseInt(item.id)">
+                    <div class="col-10">{{item.label}}</div>
+                    <div class="col-2 text-right">
+                      <span
+                        @click="delSubject(key)"
+                      >
+                        <i class="bi bi-x-circle-fill delete-list-icon"></i>
+                      </span>
+                    </div>
+                    <hr>
+                  </div>
+
+                </div><!-- /.info-card-list -->
+              </div><!-- /.col-2 -->
+              <div class="col-10"></div>
+            </div>
+
+            <div class="row mt-3">
+              <div class="col-6">
+                <button type="submit" class="btn btn-info bg-gradient-info">Bilgi Notunu Çıkar</button>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <table class="res-dt-table table table-striped table-bordered" 
+            style="width:100%">
+            <thead>
+              <tr>
+                <th>{{ $t("messages.dc_id") }}</th>
+                <th>{{ $t("messages.thr_name") }}</th>
+                <th>{{ $t("messages.law_brief") }}</th>
+                <th>{{ $t("messages.dc_date") }}</th>
+                <th>{{ $t("messages.processes") }}</th>
+              </tr>
+            </thead>
+            <tfoot>
+              <tr>
+                <th colspan="5">
+                  <button type="button" class="btn btn-primary"
+                    data-toggle="modal" 
+                    :data-target="modalSelector"
+                    :data-datas='`{"formTitleName": "\${formTitleName}"}`'
+                    :data-component="`${formTitleName}-create-component`"
+                  >
+                    {{ $t('messages.add') }}
+                  </button>
+                </th>
+              </tr>
+            </tfoot>
+          </table>
+        </div><!-- /.card-body-->
+      </div><!-- /.card-->
+    </div><!-- /.col-md-12-->
+  </div><!-- /.row-->
+  
 
   <!-- Modal -->
   <div class="modal fade" tabindex="-1" role="dialog" 
@@ -46,7 +97,7 @@
     </div>
   </div>
   
-</template-component>
+</multi-section-template-component>
 </template>
 
 <script>
@@ -54,7 +105,6 @@ import createComponent from './CreateComponent';
 import editComponent from './EditComponent';
 import showComponent from './ShowComponent';
 import deleteComponent from './DeleteComponent';
-// import imagesComponent from './ImagesComponent';
 
 import { mapState, mapMutations } from 'vuex';
 
@@ -67,6 +117,7 @@ export default {
       modalIDName: 'formModalLong',
       formTitleName,
       dataTable: null,
+      addLawInfoListArr: [],
     };
   },
   props: {
@@ -108,15 +159,16 @@ export default {
       'setEditItem',
       'setImgFilters',
     ]),
-    processesRow: function(id){
+    processesRow: function(id, dcNumber, teacherName){
       let row = '';
       row += this.editBtnHtml(id);
       row += this.deleteBtnHtml(id);
-      /* row += this.showBtnHtml(id);
-      row += this.fileDownloadBtnHtml(id); */
+      if(teacherName == null) {
+        row += this.addLawInfoBtnHtml(id, dcNumber);
+      }
       return row;
     },
-    
+
     editBtnHtml: function(id){
       return  `
         <span 
@@ -155,53 +207,69 @@ export default {
         </span>`;
     },
 
-    /* fileDownloadBtnHtml: function(datas){
+    addLawInfoBtnHtml: function(id, dcNumber){
       return  `
         <span 
-          data-toggle="tooltip" data-placement="top" 
-          title="${this.$t('messages.docFileDownload')}"
-        >
-          <a type="button" class="btn btn-sm btn-success"
-            data-file-download
-            href="/storage/upload/images/raw${datas.url}"
-            download
+            data-toggle="tooltip" data-placement="top" 
+            title="${this.$t('messages.addlawInfoList')}"
+          >
+          <button type="button" class="btn btn-sm btn-info add-law-info-list"
             data-datas='{
-              "id": ${datas.id},
-              "formTitleName": "${this.formTitleName}"
+              "id": ${id},
+              "label": "${dcNumber}"
             }'
           >
-            <i class="bi bi-file-earmark-arrow-down"></i>
-          </a>
+            <i class="bi bi-list-ol"></i>
+          </button>
         </span>`;
     },
 
-    showBtnHtml: function(datas){
-      return  `
-        <span 
-          data-toggle="tooltip" data-placement="top" 
-          title="${this.$t('messages.showDocument')}"
-        >
-          <button type="button" class="btn btn-sm btn-info"
-            data-toggle="modal" data-target="${this.modalSelector}"
-            data-component="${this.formTitleName}-show-component" 
-            data-datas='{
-              "id": ${datas.id},
-              "formTitleName": "${this.formTitleName}",
-              "userName": "${datas.userName}"
-            }'
-          >
-            <i class="bi bi-file-text"></i>
-          </button>
-        </span>`;
-    }, */
+    addLawInfoListItem() {
+      setTimeout(() => {
+        let el = $('.add-law-info-list');
+        let vueThis = this;
 
+        if(el.length > 0) {
+          el.click(function(e) {
+            
+            let datas = $(this).data('datas');
+
+            let co = 0;
+            let exist = false;
+            if(vueThis.addLawInfoListArr.length > 0) {
+              vueThis.addLawInfoListArr.find((item) => {
+                co++;
+    
+                if(item.id == datas.id) {
+                  exist = true;
+                }
+
+                if(co == vueThis.addLawInfoListArr.length && !exist) {
+                  vueThis.addLawInfoListArr.push(datas);
+                }
+              });
+            }else {
+              vueThis.addLawInfoListArr.push(datas);
+            }
+            
+          });
+        }else{
+          this.addLawInfoListItem()
+        }
+      }, 100);
+    },
+
+    delSubject: function(index) {
+      this.addLawInfoListArr.splice(index, 1);
+    },
   },
   created(){
     this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
-    // this.setImgFilters(this.ppimgfilters);
   },
   mounted(){
+    this.addLawInfoListItem();
+
     this.showModalBody(this.modalSelector);
 
     this.dataTable = this.dataTableRun({
@@ -224,7 +292,9 @@ export default {
           "sortable": false,
           "data": "thr_name",
           "render": ( data, type, row ) => {
-            return row.thr_name != null ? row.thr_name : row.uns_name;
+            return row.thr_name != null 
+              ? '(' + row.thr_tc_no + ') ' + row.thr_name + ' ' + row.thr_surname 
+              : row.uns_name;
           },
           "defaultContent": ""
         },
@@ -241,7 +311,11 @@ export default {
           "sortable": false,
           "data": "id",
           "render": ( data, type, row ) => {
-              return this.processesRow(data);
+              return this.processesRow(
+                data, 
+                row.dc_number, 
+                row.thr_name
+              );
           },
           "defaultContent": ""
         },
@@ -256,3 +330,17 @@ export default {
   }
 }
 </script>
+
+<style scoped>
+span > i.delete-list-icon {
+    font-size: 16px;
+}
+div.law-info-card-list {
+  border: 1px solid rgb(195 195 195);
+  padding: 6px;
+}
+div.law-info-card-list > div.row {
+  margin: 6px 0px 0px 0px;
+  border-bottom: 1px solid rgb(195 195 195);
+}
+</style>

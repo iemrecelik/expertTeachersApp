@@ -129,17 +129,17 @@ export default {
       row += this.listBtnHtml(id);
       row += this.commentBtnHtml(id);
       row += this.fileDownloadBtnHtml(id);
-      this.fileDownloadScript();
+      // this.fileDownloadScript();
       return row;
     },
 
-    fileDownloadScript() {
+    /* fileDownloadScript() {
       $( "[data-file-download]" ).on( "click", function(event) {
         event.attr({
           target: '_blank', 
           href  : 'public/upload/2022/09/02/08/Evin KESKİN Eksiz ilgisiz.udf'});
         });
-    },
+    }, */
     
     showBtnHtml: function(datas){
       return  `

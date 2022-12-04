@@ -85,6 +85,18 @@ Route::prefix('admin')
 		)
 		->name('teachers.store.images');
 
+		Route::post(
+			'teacherInfos/add-law-file-name', 
+			'addLawFile'
+		)
+		->name('teachers.teacherInfos.addLawFile');
+
+		Route::delete(
+			'teacherInfos/add-law-file-name/{lawsuitFile}', 
+			'deleteLawFile'
+		)
+		->where(['lawsuitFile' => '[0-9]+']);
+
 		Route::resource('teachers', TeachersController::class);
     });
 
@@ -141,7 +153,7 @@ Route::prefix('admin/search')
     ->controller(SearchController::class)
     ->name('admin.search.')
     ->group(function () {
-        Route::get('/teacher-infos', 'showTeacherInfos')->name('teacherInfos');;
+        Route::get('/teacher-infos', 'showTeacherInfos')->name('teacherInfos');
     });
 
 Route::prefix('admin/old-regulation')
@@ -149,8 +161,8 @@ Route::prefix('admin/old-regulation')
     ->controller(OldSearchController::class)
     ->name('admin.old_regulation.')
     ->group(function () {
-        Route::get('/expert-search', 'expertInfo')->name('search');;
-        Route::post('/expert-search-list', 'getExpertInfos')->name('searchList');;
+        Route::get('/expert-search', 'expertInfo')->name('search');
+        Route::post('/expert-search-list', 'getExpertInfos')->name('searchList');
     });
 
 Route::prefix('admin/document-management')
@@ -350,6 +362,12 @@ Route::prefix('admin/lawsuit-management')
 			'getLawBriefSearchList'
 		)
 		->name('lawsuits.searchList');
+		
+		Route::post(
+			'lawsuits/law-infos', 
+			'lawInfos'
+		)
+		->name('lawsuits.lawInfos');
 
 		Route::resource('lawsuits', LawsuitsController::class);
     });

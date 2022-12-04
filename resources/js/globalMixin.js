@@ -154,7 +154,6 @@ export default {
         changeYear: true,
         altField: altField,
         altFormat: "@",
-        
       };
 
       if(config.settings)
@@ -192,11 +191,18 @@ export default {
       idName = _.kebabCase(_.toLower(idName));
       return  idName + '-form-' + this.uniqueID();
     },
+
+    getFileNameInPathFunc: function (value) {
+      return value.replace(/^.*[\\\/]/, '');
+    },
   },
 
   computed: {},
 
   filters: {
+    getFileNameInPath: function (value) {
+      return value.replace(/^.*[\\\/]/, '');
+    },
     capitalize: function (value) {
       if (!value) return '';
 

@@ -22,7 +22,7 @@ class ExcelProcess
                 $rowArrLetter[$key] = $matches[1][0];
                 $rowArrNumber[] = $matches[1][1];
             } */
-            if(!in_array($key, ['excel_file', 'updateDb', '_token'])) {
+            if(!in_array($key, ['excel_file', 'updateDb', '_token', 'enter'])) {
                 $rowArr = explode('_', $val);
                 
                 if($key == $uniqueKeyName) {
@@ -94,7 +94,7 @@ class ExcelProcess
 
             if(empty($exIndex)) {
                 foreach ($rowArrLetter as $letKey => $letVal) {
-                    $val = $excelValidClass->validateExcelField($letKey, $value[$letVal]);
+                    $val = $excelValidClass->validateExcelField($letKey, $value[$letVal], $params['enter']);
 
                     if($val === null) {
                         $insertErrorArr[] = $value[$uniqueKey];
@@ -110,7 +110,7 @@ class ExcelProcess
                 
             }else {
                 foreach ($rowArrLetter as $letKey => $letVal) {
-                    $val = $excelValidClass->validateExcelField($letKey, $value[$letVal]);
+                    $val = $excelValidClass->validateExcelField($letKey, $value[$letVal], $params['enter']);
                     
                     if($val === null) {
                         $insertErrorArr[] = $value[$uniqueKey];

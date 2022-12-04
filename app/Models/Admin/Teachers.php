@@ -42,4 +42,12 @@ class Teachers extends Model
     {
         return $this->belongsToMany(DcDocuments::class, 'dc_thr', 'thr_id', 'dc_id');
     }
+
+    /**
+     * The lawsuits that belong to the teacher.
+     */
+    public function lawsuits()
+    {
+        return $this->hasMany(Lawsuits::class, 'thr_id', 'id');
+    }
 }

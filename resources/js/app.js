@@ -1,6 +1,5 @@
 require('./bootstrap');
 
-
 import Vue from 'vue';
 
 /*VueI18n*/
@@ -21,6 +20,7 @@ const store = new Vuex.Store(storeObj(i18n));
 
 /*Global Components Start*/
 import templateComponent from './components/admin/template/TemplateComponent.vue';
+import multiSectionTemplateComponent from './components/admin/template/MultiSectionTemplateComponent.vue';
 
 import infoMsgComponent from './components/messages/InfoMsgComponent';
 import succeedMsgComponent from './components/messages/SucceedMsgComponent';
@@ -30,6 +30,7 @@ import errorMsg2Component from './components/messages/ErrorMsg2Component';
 import formComponent from './components/form/FormComponent';
 
 Vue.component('template-component', templateComponent);
+Vue.component('multi-section-template-component', multiSectionTemplateComponent);
 
 Vue.component('info-msg-component', infoMsgComponent);
 Vue.component('succeed-msg-component', succeedMsgComponent);

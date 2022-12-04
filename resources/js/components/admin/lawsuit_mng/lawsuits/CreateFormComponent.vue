@@ -168,8 +168,8 @@
               rows="1"
               name="sub_description[]" 
               placeholder="Dava konusu..."
-              v-model="lawSubjects[key]"
             >
+            {{lawSubjects[key]}}
             </textarea>
             <input type="hidden" name="sub_order[]" :value="(key+1)">
           </div>
@@ -542,6 +542,7 @@ export default {
       this.teacherArr = null;
       this.unionArr = null;
       this.mainDcNumberArr = null;
+      this.lawBriefArr = null;
     }
   },
   created() {

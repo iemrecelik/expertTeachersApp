@@ -61,4 +61,12 @@ class Lawsuits extends Model
     {
         return $this->belongsToMany(Subjects::class, 'law_sub', 'law_id', 'sub_id');
     }
+
+    /**
+     * The files that belong to the lawsuit.
+     */
+    public function lawsuitFiles()
+    {
+        return $this->hasMany(LawsuitFiles::class, 'law_id', 'id');
+    }
 }

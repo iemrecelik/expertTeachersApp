@@ -5,16 +5,19 @@ namespace App\Http\Controllers\Admin\LawsuitManagement;
 use Illuminate\Http\Request;
 use App\Models\Admin\Lawsuits;
 use App\Models\Admin\Subjects;
+use PhpOffice\PhpWord\PhpWord;
 use App\Models\Admin\DcDocuments;
 use Illuminate\Support\Facades\DB;
+use PhpOffice\PhpWord\Shared\Html;
 use App\Http\Controllers\Controller;
+use Intervention\Image\Facades\Image;
+use PhpOffice\PhpWord\Style\Language;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Responsable\isAjaxResponse;
 use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\LawsuitsManagement\StoreLawsuitsRequest;
 use App\Http\Requests\Admin\LawsuitsManagement\UpdateLawsuitsRequest;
-use Intervention\Image\Facades\Image;
-use Illuminate\Support\Facades\Storage;
 
 class LawsuitsController extends Controller
 {
@@ -91,6 +94,112 @@ class LawsuitsController extends Controller
         die; */
         
         return view('admin.lawsuits_mng.lawsuits.index');
+    }
+
+    public function lawInfos(Request $request)
+    {
+        $request->validate(
+            [
+                'law_id' => 'required',
+                'law_id.*' => 'required|numeric'
+            ],
+            [
+                'law_id.required' => 'Bilgi notu listesine en az bir dava eklemelisniz.',
+                'law_id.*.required' => 'Bilgi notu listesine en az bir dava eklemelisniz.',
+                'law_id.*.numeric' => 'Yanlış dava bilgisi lütfen sayfayı yenileyip yeniden deneyiniz.'
+            ],
+        );
+
+        // dd($request->input('law_id'));
+        $lawIds = $request->input('law_id');
+
+        $lawsuits = Lawsuits::whereIn('id', $lawIds)
+        ->with('union')
+        ->with('subjects')
+        ->get();
+
+        $lawInfosArr = [];
+        foreach ($lawsuits->toArray() as $lawKey => $lawVal) {
+            if(array_key_exists($lawVal['union']['uns_name'], $lawInfosArr)) {
+                
+                $lawInfosArr[$lawVal['union']['uns_name']]['subjects'] = array_merge(
+                    $lawInfosArr[$lawVal['union']['uns_name']]['subjects'], 
+                    $lawVal['subjects']
+                );
+                
+            }else {
+                $lawInfosArr[$lawVal['union']['uns_name']]['subjects'] = $lawVal['subjects'];
+            }
+        }
+
+        // dd($lawInfosArr);
+
+        // dd($lawsuits);
+        $alphabets = array(
+            'a', 'b', 'c', 'ç', 'd', 'e', 'f', 'g', 
+            'ğ', 'h', 'ı', 'i', 'j', 'k', 'l', 'm', 
+            'n', 'o', 'ö', 'p', 'r', 's', 'ş','t', 
+            'u', 'ü', 'v', 'y', 'z'
+        );
+
+        $phpWord = new PhpWord();
+
+        $phpWord->getSettings()->setThemeFontLang(new Language(Language::TR_TR));
+        $phpWord->setDefaultFontName('Times New Roman');
+        $phpWord->setDefaultFontSize(12);
+
+        $targetFile = storage_path('app/public/upload/lawsuitInfoWords/file1.docx');
+        
+        $section = $phpWord->addSection();
+
+        $section->addText(
+            "ADAY ÖĞRETMENLİK VE ÖĞRETMENLİK KARİYER BASAMAKLARI YÖNETMELİĞİNE VE YÖNERGEYE AÇILAN DAVALARA İLİŞKİN BİLGİ NOTU",
+            array('name' => 'Times New Roman', 'size' => 12, 'bold'=> true),
+            array('align' => 'center')
+        );
+
+        $html = "<br/><br/>";
+        $lineCo = 0;
+        foreach ($lawInfosArr as $lawInfoKey => $lawInfoVal) {
+            $lineCo++;
+            $html .= "<br/>";
+            
+            if($lawInfoVal['subjects']) {
+                
+                if(count($lawInfoVal['subjects']) > 1) {
+
+                    foreach ($lawInfoVal['subjects'] as $subKey => $subVal) {
+                        if($subKey < 1) {
+        $html .= "<p style='text-align: justify;'>
+        <b>".$lineCo."- {$lawInfoKey} tarafından; </b>
+        </p>";
+
+        $html .= "
+            <p style='text-align: justify;'>\t".$alphabets[$subKey].") {$subVal['sub_description']}
+        </p>";
+                        }else {
+        $html .= "
+            <p style='text-align: justify;'>\t".$alphabets[$subKey].") {$subVal['sub_description']}
+        </p>";
+                        }
+                    }
+                }else {
+    $html .= "<p style='text-align: justify;'>
+    <b>".$lineCo."- {$lawInfoKey} tarafından; </b> ".$lawInfoVal['subjects'][0]['sub_description']."
+    </p>";
+                }
+            }
+        }
+        
+        Html::addHtml($section, $html, false, true);
+
+        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
+        try {
+            $objWriter->save($targetFile);
+        } catch (\Exception $e) {
+        }
+
+        return response()->download($targetFile);
     }
 
     public function getLawBriefSearchList(Request $request)
@@ -189,7 +298,7 @@ class LawsuitsController extends Controller
 	    ]);
 
         $dataList->leftJoin('teachers as t2', 't2.id', '=', 't0.thr_id');
-        $dataList->selectRaw('t2.thr_name');
+        $dataList->selectRaw('t2.thr_name, t2.thr_surname, t2.thr_tc_no');
         
         $dataList->leftJoin('unions as t3', 't3.id', '=', 't0.uns_id');
         $dataList->selectRaw('t3.uns_name');

@@ -210,6 +210,23 @@ class CommentController extends Controller
             41- tc kimlik kontrolü excel yüklemelerinde de yapılacak.
             +++ 42- excel olarak yüklerken select box la girilecek verilerin parantez ile bilgilendirme.
             43- excel ile yüklerken aynı verileri güncelle veya olmayanları ekle seçeneği kontrol edilecek.
+            +++ 44- dava kaydettikten sonra hala bazı formlar temizlenmiyor.
+            +++ 45- tarihler türkiye saatine ayarlanacak
+            +++ 46- dava eklerken farklı yazılar eklendiğinde Duplicate keys hatası veriyor.
+            +++ 47- dava modülünde eklemedeki kısa dava konusundaki treeselect düzenleme formunda da yapılacak.
+            +++ 48- öğretmen detay görüntülemede davalar sekmesi olacak burada yazısmalara ait ekler dosya ekleri olarak eklenecek
+            +++ 49- öğretmenler listesinde öğretmen detayına git kutucuğu olacak
+            50- listelere filtreler eklenecek
+            +++ 51- dava eklerken dava konularını eklemiyor. Daha çok evrak ekleme yaptığımzda yapıyor.
+            +++ 52- öğretmen detayında resim yoksa varsayılan resim olacak.
+            +++ 53- dava listesinde bireysel davalarda isim soyisim ve tc olacak şekilde gözüksün
+            +++ 54- dava modülüne eklenen yazıların ekleri dava dosyası olarak kaydedilecek
+            +++ 55- excel dosyası yüklerken bazı alanların excel dosyasında nasıl kaydedildikleri belirtilmesi lazım.
+            56- ilişkili tablolarda silinen veri diğer tabloda silinmesi gerekiyor.
+            +++ 57- dava dosyasını sildiğimiz zaman ekranı yenilemeden değişikleri göstersin.
+            +++ 58. bilgi notuna bireysel dava eklenemesin
+            59- evrak eklerken hangi sendikayı ilgilendiriyorsa oda eklensin
+            60- Excel veri yüklerken var olan veriler silinmesin sadece güncellensin
         */
 
         $request->validate(

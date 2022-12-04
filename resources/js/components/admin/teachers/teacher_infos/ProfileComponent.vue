@@ -3,7 +3,9 @@
 <div class="card card-primary card-outline">
   <div class="card-body box-profile">
     <div class="text-center">
-      <img class="profile-user-img img-fluid img-circle" :src="'/storage/upload/images/raw/'+teacher.thr_photo"/>
+      <img class="profile-user-img img-fluid img-circle" 
+        :src="getTeacherPhoto(teacher.thr_photo)"
+      />
     </div>
     <div class="text-center">
       <!-- <img class="profile-user-img img-fluid img-circle"
@@ -74,6 +76,17 @@ export default {
           break;
       }
       return value;
+    },
+    getTeacherPhoto: function (path) {
+      let rawPath;
+
+      if(path) {
+        rawPath = '/storage/upload/images/raw/'+path;
+      }else {
+        rawPath = '/images/logo/meb-logo.png';
+      }
+
+      return rawPath;
     }
   },
   props: {

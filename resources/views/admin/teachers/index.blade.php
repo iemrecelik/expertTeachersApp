@@ -8,6 +8,7 @@
       storeImages: '{{ route('admin.teachers.store.images') }}', 
       dataList: '{{ route('admin.teachers.dataList') }}', 
       getInstitutions: '{{ route('admin.institutions.getInstitutions') }}', 
+      showTeacherInfos: '{{ route('admin.teachers.infos') }}',
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
     :ppdatas="{{ empty(session('datas')) ? json_encode($datas) : json_encode(session('datas')) }}"

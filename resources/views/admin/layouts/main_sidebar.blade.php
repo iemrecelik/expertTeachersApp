@@ -141,7 +141,7 @@
         </li>
 
         <li class="nav-item data-menu-open">
-          <a href="#" class="nav-link">
+          <a href="#" class="nav-link teacher-search-bar">
             <i class="nav-icon fas fa-search"></i>
             <p>
                Öğretmenler Liste Yönetimi

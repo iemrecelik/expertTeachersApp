@@ -21,9 +21,24 @@ class TeachersValidation
             return \Transliterator::create('tr-lower')->transliterate($item);
         }, $this->institutionNames);
     }
-    
-    public function validateExcelField($name, $value)
+
+    private function filter($enter)
     {
+        $enter['gender'] = array_map(function($gender) {
+            return \Transliterator::create('tr-lower')->transliterate($gender);
+        }, $enter['gender']);
+        
+        $enter['career'] = array_map(function($career) {
+            return \Transliterator::create('tr-lower')->transliterate($career);
+        }, $enter['career']);
+
+        return $enter;
+    }
+    
+    public function validateExcelField($name, $value, $enter)
+    {
+        $enter = $this->filter($enter);
+        
         $val = null;
         switch ($name) {
             case 'thr_tc_no':
@@ -40,14 +55,16 @@ class TeachersValidation
             case 'thr_gender':
                 $val = array_search(
                     \Transliterator::create('tr-lower')->transliterate($value), 
-                    ['erkek', 'bayan']
+                    $enter['gender']
+                    // ['erkek', 'bayan']
                 );
                 $val = $val !== false ? strval($val) : null;
                 break;
             case 'thr_career_ladder':
                 $val = array_search(
                     \Transliterator::create('tr-lower')->transliterate($value), 
-                    ['bilinmiyor', 'öğretmen', 'uzman öğretmen', 'başöğretmen']
+                    $enter['career']
+                    // ['bilinmiyor', 'öğretmen', 'uzman öğretmen', 'başöğretmen']
                 );
                 $val = ($val - 1);
                 $val = $val !== false ? strval($val) : null;

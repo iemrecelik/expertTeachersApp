@@ -31,9 +31,11 @@ window.moment = require('moment');
 /* InputMask */
 require('inputmask');
 
+/* Sweetalert2 */
+window.Swal = require('sweetalert2');
+
 /*CropperJS*/
 // window.Cropper = require('cropperjs/dist/cropper.js');
-
 
 /* AdminLTE */
 require('./adminlte/js/adminlte.js');

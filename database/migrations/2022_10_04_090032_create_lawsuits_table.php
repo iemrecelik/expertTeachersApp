@@ -20,15 +20,18 @@ class CreateLawsuitsTable extends Migration
 
             $table->unsignedBigInteger('dc_id');
             $table->foreign('dc_id')
-                  ->references('id')->on('dc_documents');
+                  ->references('id')->on('dc_documents')
+                  ->onDelete('cascade');
 
             $table->unsignedBigInteger('uns_id')->nullable();
             $table->foreign('uns_id')
-                  ->references('id')->on('unions');
+                  ->references('id')->on('unions')
+                  ->onDelete('cascade');
 
             $table->unsignedBigInteger('thr_id')->nullable();
             $table->foreign('thr_id')
-                  ->references('id')->on('teachers');
+                  ->references('id')->on('teachers')
+                  ->onDelete('cascade');
 
             /* $table->unsignedBigInteger('law_id')->nullable();
             $table->foreign('law_id')

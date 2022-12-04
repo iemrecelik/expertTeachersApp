@@ -1,6 +1,34 @@
 <template>
+
+<div v-if="Object.keys(teacher).length === 0">
+  <div class="content-wrapper">
+    <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <div class="row mb-2">
+        
+      </div>
+    </div><!-- /.container-fluid -->
+  </section>
+
+    <!-- Main content -->
+    <section class="content">
+      <div class="container-fluid">
+        <div class="row">
+          <div class="col-12">
+            <div class="error-list alert alert-danger text-center" role="alert">
+              ARADIĞINIZ ( {{oldValue('thr_tc_no')}} ) T.C. NUMARASI BULUNAMADI!..
+            </div>
+          </div>
+        </div>
+      </div><!-- /.container-fluid -->
+    </section>
+    <!-- /.content -->
+  </div>
+</div>
+
 <!-- Content Wrapper. Contains page content -->
-<div class="content-wrapper">
+<div v-else class="content-wrapper">
   <!-- Content Header (Page header) -->
   <section class="content-header">
     <div class="container-fluid">
@@ -112,6 +140,18 @@
                   </button>
                 </li>
                 <li class="nav-item" role="presentation">
+                  <button class="nav-link" id="pills-lawsuits-tab" 
+                    data-toggle="pill" 
+                    data-target="#pills-lawsuits" 
+                    type="button" 
+                    role="tab" 
+                    aria-controls="pills-lawsuits" 
+                    aria-selected="false"
+                  >
+                    Açılan Davalar
+                  </button>
+                </li>
+                <li class="nav-item" role="presentation">
                   <button class="nav-link" id="pills-update-profile-tab" 
                     data-toggle="pill" 
                     data-target="#pills-update-profile" 
@@ -139,6 +179,12 @@
                     :ppteacher="teacher"
                   >
                   </teacher-correspondence-component>
+                </div>
+                <div class="tab-pane fade" id="pills-lawsuits" role="tabpanel" aria-labelledby="pills-lawsuits-tab">
+                  <teacher-lawsuits-component
+                    :ppteacher="teacher"
+                  >
+                  </teacher-lawsuits-component>
                 </div>
                 <div class="tab-pane fade" id="pills-update-profile" role="tabpanel" aria-labelledby="pills-update-profile-tab">
                   <!-- <update-knowlange-component></update-knowlange-component> -->
@@ -176,6 +222,7 @@ import OldRegulationComponent from "./OldRegulationComponent.vue";
 import NewRegulationComponent from "./NewRegulationComponent.vue";
 import UpdateKnowlangeComponent from "./UpdateKnowlangeComponent.vue";
 import teacherCorrespondenceComponent from "./CorrespondenceComponent.vue";
+import teacherLawsuitsComponent from "./LawsuitsComponent.vue";
 
 import { mapState, mapMutations } from 'vuex';
 
@@ -195,6 +242,14 @@ export default {
       type: Object,
       required: true,
     },
+    pperrors: {
+      type: Object,
+      required: true,
+    },
+    ppoldinput: {
+      type: String,
+      required: true,
+    },
   },
   computed: {
     ...mapState([
@@ -205,11 +260,27 @@ export default {
     ...mapMutations([
       'setRoutes',
       'setErrors',
+      'setOld',
     ]),
+    oldValue: function(fieldName){
+      return this.$store.state.old[fieldName];
+    },
+    openTeacherSearchMenu: function() {
+      setTimeout(() => {
+        if($('li.nav-item.menu-is-opening > a.teacher-search-bar').length < 1) {
+          $('a.teacher-search-bar').trigger('click');
+          this.openTeacherSearchMenu();
+        }
+      }, 100);
+    }
   },
   created() {
     this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
+    this.setOld(JSON.parse(this.ppoldinput));
+  },
+  mounted() {
+    this.openTeacherSearchMenu();
   },
   components: {
     "profile-component": ProfileComponent,
@@ -217,6 +288,7 @@ export default {
     "new-regulation-component": NewRegulationComponent,
     "update-knowlange-component": UpdateKnowlangeComponent,
     'teacher-correspondence-component': teacherCorrespondenceComponent,
+    'teacher-lawsuits-component': teacherLawsuitsComponent,
   }
 }
 </script>

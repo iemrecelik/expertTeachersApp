@@ -1,7 +1,7 @@
 @extends('admin.base.index')
 @section('contents')
   <teacher-infos-component
-    :ppteacher="{{ json_encode($teacher) }}"
+    :ppteacher="{{ $teacher ? json_encode($teacher) : '{}' }}"
     :pproutes="{
       getSearchDocuments: '{{ route("admin.document_mng.search.getSearchDocuments") }}', 
       show: '/admin/document-management/search', 
@@ -12,7 +12,10 @@
       getComments: '{{ route('admin.document_mng.comment.getComments') }}',
       addComment: '{{ route('admin.document_mng.comment.addComment') }}',
       deleteComment: '{{ route('admin.document_mng.comment.deleteComment') }}',
+      addLawFile: '{{ route('admin.teachers.teacherInfos.addLawFile') }}',
     }"
+    :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
+    :ppoldinput="'{{ json_encode(session()->getOldInput()) }}'"
   >
   </teacher-infos-component>
 @endsection

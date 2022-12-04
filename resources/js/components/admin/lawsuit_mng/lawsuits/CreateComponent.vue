@@ -76,6 +76,7 @@ export default {
       })
       .then((res) => {
         this.$parent.$parent.dataTable.ajax.reload();
+        this.$parent.$parent.addLawInfoListItem();
       })
       .always(() => {
         this.formElement.scrollTo(0, 0);

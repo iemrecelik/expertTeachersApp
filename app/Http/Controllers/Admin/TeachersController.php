@@ -14,11 +14,9 @@ use App\Http\Responsable\isAjaxResponse;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\StoreTeachersRequest;
 use App\Http\Requests\Admin\UpdateTeachersRequest;
+use App\Models\Admin\LawsuitFiles;
 use App\Rules\ValidateTCNo;
 
-
-use PhpOffice\PhpWord\PhpWord;
-use PhpOffice\PhpWord\Shared\Html;
 
 class TeachersController extends Controller
 {
@@ -56,7 +54,7 @@ class TeachersController extends Controller
         $rowArrLetter = [];
         $rowArrNumber = [];
         foreach ($params as $key => $val) {
-            if(!in_array($key, ['excel_file', 'updateDb', '_token', 'previewUniqueId', 'preview'])) {
+            if(!in_array($key, ['excel_file', 'updateDb', '_token', 'previewUniqueId', 'preview', 'enter'])) {
                 $rowArr = explode('_', $val);
 
                 if($key == $uniqueKeyName) {
@@ -362,36 +360,95 @@ class TeachersController extends Controller
     public function showTeacherInfos(Request $request)
     {
         $params = $request->all();
+
         $teacher = Teachers::where(
             'thr_tc_no', 
             $params['thr_tc_no']
         )
         ->with('dc_documents')
         ->with('institution')
+        ->with('lawsuits')
         ->first();
 
+        if(isset($teacher)) {
+            foreach ($teacher->dc_documents as $key => $dc_documents) {
+                $dc_documents->dcFiles;
+                $dc_documents->dcAttachFiles;
+    
+                $user = User::select('name as user_name')->find($dc_documents->user_id);
+                $dc_documents->user_name = $user->user_name;
+            }
+            
+            foreach ($teacher->lawsuits as $key => $lawsuit) {
+                $lawsuit->dc_document;
+                $lawsuit->dc_document->dc_date = date("d/m/Y",$lawsuit->dc_document->dc_date);
+                $lawsuit->dc_document->dcAttachFiles;
+                $lawsuit->dc_document->dcFiles;
+                $lawsuit->dc_documents;
 
-        foreach ($teacher->dc_documents as $key => $dc_documents) {
-            $dc_documents->dcFiles;
-            $dc_documents->dcAttachFiles;
-
-            $user = User::select('name as user_name')->find($dc_documents->user_id);
-            $dc_documents->user_name = $user->user_name;
+                foreach ($lawsuit->dc_documents as $dc_key => $dc_val) {
+                    $dc_val->dcFiles;
+                    $dc_val->dcAttachFiles;
+                    $dc_val->dc_date = date("d/m/Y",$dc_val->dc_date);
+                }
+                $lawsuit->subjects;
+                $lawsuit->lawsuitFiles;
+            }
         }
 
-        // dd($teacher);
-/*         
-        foreach ($teacher->dc_documents as $key => $dc_documents) {
-            $dc_documents->dcFiles
-        }
-        
-        $teacher->dc_documents[0]->dcFiles;
-        $teacher->dc_documents[0]->dcAttachFiles; */
+        $request->flashOnly(['thr_tc_no']);
 
         return view(
             'admin.teachers.teacher_infos.teacher_infos',
-            ['teacher' => $teacher]
+            ['teacher' => $teacher ?? []]
         );
+    }
+
+    public function addLawFile(Request $request)
+    {
+        $request->validate(
+            [
+                'lawf_file_name' => 'required',
+                'lawf_file_path' => 'required|unique:lawsuit_files,lawf_file_path',
+                'dc_id' => 'required',
+                'law_id' => 'required',
+            ],
+            [
+                'lawf_file_name.required' => 'Lütfen dava dosyasının ismini giriniz.',
+                'lawf_file_path.required' => 'Lütfen dava dosyasının yolunu giriniz.',
+                'lawf_file_path.unique' => 'Dosya daha önce kaydedilmiş',
+                'dc_id.required' => 'Lütfen dava dosyasına ait evrağı giriniz.',
+                'law_id.required' => 'Lütfen dava dosyasına ait dava sayısını giriniz.',
+            ],
+        );
+
+        $params = $request->all();
+
+        $lawsuitFile = LawsuitFiles::create($params);
+
+        return [
+            'succeed' => __('messages.add_success'),
+            'lawsuitFile' => $lawsuitFile
+        ];
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Admin\LawsuitFiles $lawsuitFile
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteLawFile(LawsuitFiles $lawsuitFile)
+    {
+        $res = $lawsuitFile->delete();
+        $msg = [];
+
+        if ($res)
+            $msg['succeed'] = __('messages.delete_success');
+        else
+            $msg['error'] = __('messages.delete_error');
+
+        return $msg;
     }
 
     /**
@@ -399,29 +456,8 @@ class TeachersController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index()
     {
-        $phpWord = new PhpWord();
-
-        $htmlTemplate = ' <p style="background-color:#FFFF00;color:#FF0000;">Some text</p>';
-        $htmlTemplate .= "<h1>HELLO WORLD!</h1>";
-        $htmlTemplate .= "<p>This is a paragraph of random text</p>";
-        $htmlTemplate .= "<table style='border: 1px solid black'><tr><td>A table</td><td>Cell</td></tr></table>";
-
-        $targetFile = storage_path('app/public/upload/lawsuitInfoWords/file1.docx');
-        
-        $section = $phpWord->addSection();
-
-        Html::addHtml($section, $htmlTemplate);
-
-        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($phpWord, 'Word2007');
-        try {
-            $objWriter->save($targetFile);
-        } catch (Exception $e) {
-        }
-
-        return response()->download($targetFile);
-
         return view(
             'admin.teachers.index', 
             ['datas' => [

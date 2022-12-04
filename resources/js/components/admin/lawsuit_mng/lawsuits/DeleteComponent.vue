@@ -57,6 +57,7 @@ export default {
       .then((res) => {
         this.$parent.$parent.dataTable.ajax.reload();
         let el = this.$parent.$parent.modalSelector;
+        this.$parent.$parent.addLawInfoListItem();
         $(el).modal('hide');
       });
     },

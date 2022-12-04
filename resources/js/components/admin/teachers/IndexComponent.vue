@@ -169,11 +169,11 @@ export default {
 
       return msg;
     },
-    processesRow: function(id){
+    processesRow: function(id, tcNo){
       let row = '';
       row += this.editBtnHtml(id);
       row += this.deleteBtnHtml(id);
-      // row += this.imageBtnHtml(id);
+      row += this.showTeacherBtnHtml(tcNo);
       return row;
     },
     editBtnHtml: function(id){
@@ -213,24 +213,24 @@ export default {
           </button>
         </span>`;
     },
-    
-    imageBtnHtml: function(id){
+
+    showTeacherBtnHtml: function(tcNo){
       return  `
-        <span 
-            data-toggle="tooltip" data-placement="top" 
-            title="${this.$t('messages.image')}"
-          >
-          <button type="button" class="btn btn-sm btn-info"
-            data-toggle="modal" data-target="${this.modalSelector}"
-            data-component="${this.formTitleName}-images-component" 
-            data-datas='{
-              "id": ${id},
-              "formTitleName": "${this.formTitleName}"
-            }'
-          >
-            <i class="bi bi-image"></i>
-          </button>
-        </span>`;
+        <form class="d-inline-block" action="${this.routes.showTeacherInfos}" method="post">
+          <div class="input-group">
+            <input type="hidden" name="thr_tc_no" value="${tcNo}">
+            <input type="hidden" name="_token" value="${this.token}">
+            <span 
+              data-toggle="tooltip" data-placement="top" 
+              title="${this.$t('messages.showTeacher')}"
+            >
+              <button type="submit" class="btn btn-sm btn-info">
+                <i class="bi bi-info-circle-fill"></i>
+              </button>
+            </span>
+          </div>
+        </form>
+      `;
     },
   },
   created(){
@@ -269,7 +269,7 @@ export default {
           "sortable": false,
           "data": "id",
           "render": ( data, type, row ) => {
-              return this.processesRow(data);
+              return this.processesRow(data, row.thr_tc_no);
           },
           "defaultContent": ""
         },

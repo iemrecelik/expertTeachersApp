@@ -106,6 +106,7 @@ return [
 	'preview' => 'Ön izleme',
 	'storeImages' => 'Yüklenecek Resimler',
 	'dateOfBirth' => 'Doğum Tarihi',
+	'showTeacher' => 'Öğretmenin Bilgilerini Göster',
 
 	/* Institution */
 	'inst_name' => 'Kurum İsmi',
@@ -119,6 +120,8 @@ return [
 	'law_brief' => 'Dava Kısa Açıklaması',
 	'dc_id' => 'Evrak Numarası',
 	'lawsuits_list' => 'Davalar Listesi',
+	'addlawInfoList' => 'Bilgi Notu Listesine Ekle',
+	'add_law_file_name' => 'Dava Dosyası Ekle',
 
 	/* Other */
 	'expertTeachersApp' => 'Uzman Öğretmen Uygulaması',

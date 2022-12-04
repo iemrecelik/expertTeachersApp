@@ -70,14 +70,33 @@
 
   <div class="row">
     <div class="col-12">
-      <form-form-component
+      <div class="form-group">
+        <label for="addLawBrief">{{$t('messages.law_brief')}}: </label>
+        <treeselect
+          :id="'addLawBrief'"
+          :multiple="false"
+          :async="true"
+          :load-options="loadLawBrief"
+          :defaultOptions="lawBriefArrOpt"
+          v-model="lawBriefArr"
+          loadingText="Yükleniyor..."
+          clearAllText="Hepsini sil."
+          clearValueText="Değeri sil."
+          noOptionsText="Hiçbir seçenek yok."
+          noResultsText="Mevcut seçenek yok."
+          searchPromptText="Aramak için yazınız."
+          placeholder="Seçiniz..."
+          name="law_brief"
+        />
+      </div>
+      <!-- <form-form-component
         :ppsettings="{
           type: 'text', 
           fieldName: 'law_brief', 
           value: value('law_brief')
         }"
       >
-      </form-form-component>
+      </form-form-component> -->
     </div>
   </div>
 
@@ -311,11 +330,13 @@ export default {
       teacherArr: null,
       unionArr: null,
       mainDcNumberArr: null,
+      lawBriefArr: null,
       relDcNumberArr: [],
       teacherArrOpt: [],
       unionArrOpt: [],
       mainDcNumberArrOpt: [],
       relDcNumberArrOpt: [],
+      lawBriefArrOpt: [],
       lawSubjectsUnique: []
     }
   },
@@ -414,6 +435,18 @@ export default {
         })
       }
     },
+    loadLawBrief({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+          if(searchQuery.length > 2) {
+            this.getLawBriefSearchList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
+    },
 		getTeachersSearchList: function(searchTcNo, callback) {
       $.ajax({
         url: this.routes.getTeachersSearchList,
@@ -481,6 +514,33 @@ export default {
 
           if(this.ajaxErrorCount < 3)
             this.getDocumentSearchList(dcNumber, callback, instanceId);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		},
+    getLawBriefSearchList: function(searchName, callback) {
+      $.ajax({
+        url: this.routes.getLawBriefSearchList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'searchName': searchName}
+      })
+      .done((res) => {
+        res.push({id: searchName, label: searchName+'(manuel girilmiş)' });
+
+				callback(null, res)
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getLawBriefSearchList(searchName, callback);
           else
             this.ajaxErrorCount = -1;
 
@@ -628,7 +688,7 @@ export default {
     let dcDocuments = this.value('dc_documents');
 
     dcDocuments.forEach((item, key) => {
-      this.dcNumber.push(this.uniqueID());
+      this.dcNumber.push(this.uniqueID()+key);
       this.relDcNumberArrOpt[key] = [
         {
           id: item.id,
@@ -637,6 +697,17 @@ export default {
       ];
       this.relDcNumberArr[key] = item.id;
     });
+
+    /* dava kısa açıklamsını ekle */
+    this.lawBriefArrOpt = [
+      {
+        id: this.value('law_brief'),
+        label: this.value('law_brief')
+      }
+    ];
+
+    this.lawBriefArr = this.value('law_brief');
+    /* dava kısa açıklamsını bitir */
 
     this.setTreeselectOpt('dc_document', 'dc_number', 'mainDcNumber');
     
@@ -648,11 +719,13 @@ export default {
       this.setTreeselectOpt('union', 'uns_name');
     }
 
-    subjectsSort = subjectsSort.map(item => {
-      return item.sub_description;
-    });
+    if (typeof subjectsSort !== 'undefined') {
+      subjectsSort = subjectsSort.map(item => {
+        return item.sub_description;
+      });
 
-    this.lawSubjects.push(...subjectsSort);
+      this.lawSubjects.push(...subjectsSort);
+    }
 
     for (let i = 0; i < this.lawSubjects.length; i++) {
       this.lawSubjectsUnique.push((this.uniqueID()+i));
