@@ -38,10 +38,11 @@ class TeachersValidation
     public function validateExcelField($name, $value, $enter)
     {
         $enter = $this->filter($enter);
-        
+// echo '<pre>';
         $val = null;
         switch ($name) {
             case 'thr_tc_no':
+                // var_dump($value);
                 if(strlen($value) == 11) {
                     $val = $value;
                 }
@@ -77,9 +78,18 @@ class TeachersValidation
                 $val = $val !== false ? $this->institutions[$val]['id'] : null;
                 break;
             case 'thr_birth_day':
-                if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])[.|\/](0[1-9]|1[0-2])[.|\/][0-9]{4}$/", $value)) {
-                    $val = strtotime($value);
+                // var_dump($value);
+                if (preg_match("/^([1-9]|0[1-9]|[1-2][0-9]|3[0-1])[.|\/]([1-9]|0[1-9]|1[0-2])[.|\/][0-9]{4}$/", $value)) {
+                    // var_dump($value);
+                    $val = strtotime(str_replace('/', '-', $value));
+                }else if (is_numeric($value)) {
+                    // var_dump($value);
+                    $UNIX_DATE = ($value - 25569) * 86400;
+                    $val = gmdate("d-m-Y", $UNIX_DATE);
+                    $val = strtotime(str_replace('/', '-', $val));
                 }
+                /* var_dump($val);
+                echo '<hr>'; */
                 break;
             default:
                 if(in_array($name, [

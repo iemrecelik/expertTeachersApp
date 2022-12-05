@@ -46,10 +46,13 @@ class ExcelProcess
             );
         }
         /* Excel satır sayılarının eşitliğnin kontrolü bitiş */
+        /* $locale = 'tr';
+        $validLocale = \PhpOffice\PhpSpreadsheet\Settings::setLocale($locale); */
 
         $inputFileType = 'Xlsx';
         $url = $params['excel_file']->getPathname();
 
+        // IOFactory::setLocale('tr');
         $reader = IOFactory::createReader($inputFileType);
         
         $spreadsheet = $reader->load($url);
@@ -81,7 +84,9 @@ class ExcelProcess
         
         $excelValidClass = "\App\Library\ExcelValidations\\".$modelName."Validation";
         $excelValidClass = new $excelValidClass();
-
+        /* echo '<pre>';
+        var_dump(strtotime('01-01-1970'));
+        var_dump(date('d-m-Y', -7200)); */
         foreach ($datas as $key => $value) {
             $co++;
 
@@ -125,7 +130,7 @@ class ExcelProcess
                 }
             }
         }
-
+// die;
         return [
             'insertArr' => $insertArr,
             'updateArr' => $updateArr,

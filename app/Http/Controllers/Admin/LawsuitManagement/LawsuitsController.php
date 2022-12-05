@@ -162,7 +162,7 @@ class LawsuitsController extends Controller
         $lineCo = 0;
         foreach ($lawInfosArr as $lawInfoKey => $lawInfoVal) {
             $lineCo++;
-            $html .= "<br/>";
+            // $html .= "<br/>";
             
             if($lawInfoVal['subjects']) {
                 
@@ -174,12 +174,10 @@ class LawsuitsController extends Controller
         <b>".$lineCo."- {$lawInfoKey} tarafından; </b>
         </p>";
 
-        $html .= "
-            <p style='text-align: justify;'>\t".$alphabets[$subKey].") {$subVal['sub_description']}
+        $html .= "<p style='text-align: justify;'>\t".$alphabets[$subKey].") {$subVal['sub_description']}
         </p>";
                         }else {
-        $html .= "
-            <p style='text-align: justify;'>\t".$alphabets[$subKey].") {$subVal['sub_description']}
+        $html .= "<p style='text-align: justify;'>\t".$alphabets[$subKey].") {$subVal['sub_description']}
         </p>";
                         }
                     }

@@ -227,6 +227,8 @@ class CommentController extends Controller
             +++ 58. bilgi notuna bireysel dava eklenemesin
             59- evrak eklerken hangi sendikayı ilgilendiriyorsa oda eklensin
             60- Excel veri yüklerken var olan veriler silinmesin sadece güncellensin
+            61- öğretmenleri sildiğimiz resimleri de silinsin
+            62- dava ekledikten sonra bilgi notu eklenmiyor
         */
 
         $request->validate(
