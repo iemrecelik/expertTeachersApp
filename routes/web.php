@@ -368,6 +368,12 @@ Route::prefix('admin/lawsuit-management')
 			'lawInfos'
 		)
 		->name('lawsuits.lawInfos');
+		
+		Route::post(
+			'lawsuits/search-lawsuit-list', 
+			'lawInfos'
+		)
+		->name('lawsuits.searchLawsuitList');
 
 		Route::resource('lawsuits', LawsuitsController::class);
     });

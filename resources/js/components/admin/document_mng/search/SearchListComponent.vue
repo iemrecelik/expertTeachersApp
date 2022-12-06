@@ -60,7 +60,6 @@
     aria-labelledby="formModalLongTitle" aria-hidden="true"
     data-backdrop="static" :id="modalIDName"
   >
-    
     <div class="modal-dialog modal-xl" role="document">
         <component
           v-if="formModalBody.show"
@@ -70,7 +69,6 @@
         >
         </component>
     </div>
-
   </div>
 </div>
 </template>

@@ -254,6 +254,10 @@ class LawsuitsController extends Controller
         $notSelectCol = [
             'thr_name',
             'dc_date',
+            'thr_ids',
+            'uns_id',
+            'dc_ids',
+            'dc_date',
         ];
 
 	    /*Array select and search columns*/
@@ -300,6 +304,63 @@ class LawsuitsController extends Controller
         
         $dataList->leftJoin('unions as t3', 't3.id', '=', 't0.uns_id');
         $dataList->selectRaw('t3.uns_name');
+
+        /* ARAMA BAŞLA */
+        dd($tblInfo['datas']);
+        foreach ($tblInfo['datas'] as $data) {
+			if(!empty($data['value'])) {
+                switch ($data['name']) {
+                    case 'thr_ids':
+                        die('asdasd');
+                        $dataList->whereIn('t0.thr_id', $data['value']);
+                        break;
+                        
+                    case 'uns_id':
+                        $dataList->where('t0.uns_id', $data['value']);
+                        break;
+
+                    case 'dc_ids':
+                        $dataList->whereIn('t0.dc_id', $data['value']);
+                        break;
+
+                    case 'dc_date':
+                        $vals = explode(" - ",$data['value']);
+
+                        $vals = [
+                            strtotime(str_replace('/', '-', $vals[0])),
+                            strtotime(str_replace('/', '-', $vals[1])),
+                        ];
+
+                        $whereQuery = "t1.dc_date BETWEEN ? AND ? AND ";
+                        $dataList->whereRaw($whereQuery, [$vals[0], $vals[1]]);
+                        break;
+                }
+            }
+        }
+
+        /* if(!empty($tblInfo['datas']['thr_ids'])) {
+            die('asdas');
+            $dataList->whereIn('t0.thr_id', $tblInfo['datas']['thr_ids']);
+        }
+        if(!empty($tblInfo['datas']['uns_id'])) {
+            $dataList->where('t0.uns_id', $tblInfo['datas']['uns_id']);
+        }
+        if(!empty($tblInfo['datas']['dc_ids'])) {
+            $dataList->whereIn('t0.dc_id', $tblInfo['datas']['dc_ids']);
+        }
+        if (!empty($tblInfo['datas']['dc_date'])) {
+							
+            $vals = explode(" - ",$tblInfo['datas']['dc_date']);
+
+            $vals = [
+                strtotime(str_replace('/', '-', $vals[0])),
+                strtotime(str_replace('/', '-', $vals[1])),
+            ];
+
+            $whereQuery = "t1.dc_date BETWEEN ? AND ? AND ";
+            $dataList->whereRaw($whereQuery, [$vals[0], $vals[1]]);
+        } */
+        /* ARAMA BİTİŞ */
 
 	    $recordsTotal = Lawsuits::count();
 	    $recordsFiltered = $dataList->count();
