@@ -229,6 +229,7 @@ class CommentController extends Controller
             60- Excel veri yüklerken var olan veriler silinmesin sadece güncellensin
             61- öğretmenleri sildiğimiz resimleri de silinsin
             +++ 62- dava ekledikten sonra bilgi notu eklenmiyor
+            63- Filtre de iller veritabanına eklenecek
         */
 
         $request->validate(

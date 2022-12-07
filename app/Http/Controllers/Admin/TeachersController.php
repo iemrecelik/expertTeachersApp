@@ -16,6 +16,7 @@ use App\Http\Requests\Admin\StoreTeachersRequest;
 use App\Http\Requests\Admin\UpdateTeachersRequest;
 use App\Models\Admin\LawsuitFiles;
 use App\Rules\ValidateTCNo;
+use Illuminate\Support\Facades\DB;
 
 
 class TeachersController extends Controller
@@ -622,6 +623,19 @@ class TeachersController extends Controller
         $teacher = Teachers::create($params);
 
         return ['succeed' => __('messages.add_success')];
+    }
+
+    public function getProvincesList(Request $request)
+    {
+        $searchWords = $request->input('searchWords');
+        $searchWords = $searchWords.'%';
+
+        $provinces = DB::table('provinces as t0')
+                        ->select('t0.id', 't0.prv_name as label')
+                        ->whereRaw("t0.prv_name LIKE ?", $searchWords)
+                        ->get();
+        
+        return $provinces;
     }
 
     /**

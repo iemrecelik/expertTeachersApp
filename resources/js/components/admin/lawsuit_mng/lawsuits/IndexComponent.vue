@@ -75,11 +75,11 @@
                   <div class="col-3">
                     <div class="form-group">
                       <div class="form-group">
-                        <label for="career-ladder">{{$t('messages.uns_name')}} :</label>
-                        <select class="form-control" id="career-ladder"
+                        <label for="unions">{{$t('messages.uns_name')}} :</label>
+                        <select class="form-control" id="unions"
                           name="uns_id"
                         >
-                          <option selected disabled value="">{{$t('messages.uns_name')}}</option>
+                          <option selected value="">{{$t('messages.uns_name')}}</option>
                           <option :key="key" v-for="(union,key) in unions" :value="union.id">{{union.uns_name}}</option>
                         </select>
                       </div>
@@ -87,13 +87,6 @@
                   </div>
                   <div class="col-3">
                     <div class="form-group">
-                      <!-- <label>Evrak Sayısı</label>
-                      <input type="text" 
-                        id="doc-number"
-                        class="form-control" 
-                        name="dc_number"
-                        data-inputmask-regex="^[1-9][0-9]+$"
-                      /> -->
                       <div class="form-group">
                         <label for="addTeacherList">Evrak Numarası </label>
                         <treeselect
@@ -497,14 +490,51 @@ export default {
         this.destroyTable();
       }
       
-      let form = $("#lawsuit-search");
+      // let form = $("#lawsuit-search");
+      let datas = [];
+      let form = document.getElementById("lawsuit-search");
 
+      if(form.elements['thr_ids[]']) {
+        datas['thr_ids'] = [];
+
+        if (form.elements['thr_ids[]'].value == '') {
+          for (let i = 0; i < form.elements['thr_ids[]'].length; i++) {
+            const element = form.elements['thr_ids[]'][i];
+            datas['thr_ids'].push(element.value);
+          }  
+        }else {
+          datas['thr_ids'].push(form.elements['thr_ids[]'].value);
+        }
+      }
+
+      
+      if(form.elements['dc_ids[]']) {
+        datas['dc_ids'] = [];
+
+        if (form.elements['dc_ids[]'].value == '') {
+          for (let i = 0; i < form.elements['dc_ids[]'].length; i++) {
+            const element = form.elements['dc_ids[]'][i];
+            datas['dc_ids'].push(element.value);
+          }
+        }else {
+          datas['dc_ids'].push(form.elements['dc_ids[]'].value);
+        }
+      }
+      
+      if(form.elements['uns_id']) {
+        datas['uns_id'] = form.elements['uns_id'].value;
+      }
+      if(form.elements['dc_date']) {
+        datas['dc_date'] = form.elements['dc_date'].value;
+      }
+      
       this.dataTable = this.dataTableRun({
         jQDomName: '.res-dt-table',
         url: this.routes.dataList,
-        data: {
+        /* data: {
           'datas': form.serializeArray(),
-        },
+        }, */
+        data: datas,
         columns: [
           {
             "orderable": false,

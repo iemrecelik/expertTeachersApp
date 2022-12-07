@@ -91,6 +91,12 @@ Route::prefix('admin')
 		)
 		->name('teachers.teacherInfos.addLawFile');
 
+		Route::get(
+			'teachers/get-province-list', 
+			'getProvincesList'
+		)
+		->name('teachers.getProvincesList');
+
 		Route::delete(
 			'teacherInfos/add-law-file-name/{lawsuitFile}', 
 			'deleteLawFile'
@@ -368,12 +374,6 @@ Route::prefix('admin/lawsuit-management')
 			'lawInfos'
 		)
 		->name('lawsuits.lawInfos');
-		
-		Route::post(
-			'lawsuits/search-lawsuit-list', 
-			'lawInfos'
-		)
-		->name('lawsuits.searchLawsuitList');
 
 		Route::resource('lawsuits', LawsuitsController::class);
     });
