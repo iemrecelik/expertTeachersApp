@@ -107,6 +107,7 @@ return [
 	'storeImages' => 'Yüklenecek Resimler',
 	'dateOfBirth' => 'Doğum Tarihi',
 	'showTeacher' => 'Öğretmenin Bilgilerini Göster',
+	'thr_birth_day' => 'Doğum Tarihi',
 
 	/* Institution */
 	'inst_name' => 'Kurum İsmi',

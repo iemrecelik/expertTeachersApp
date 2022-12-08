@@ -8,37 +8,141 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-body">
-          <form :action="routes.lawInfos" method="post">
-            <input type="hidden" name="_token" :value="token">
-            <div class="row">
-              <div class="col-2">
-                <h5 class="text-center">Bilgi Notu Listesi</h5>
+          <div class="row">
+            <div class="col-2">
 
-                <div class="law-info-card-list">
-                  <div class="row" :key="key" v-for="(item, key) in addLawInfoListArr">
-                    <input type="hidden" name="law_id[]" :value="parseInt(item.id)">
-                    <div class="col-10">{{item.label}}</div>
-                    <div class="col-2 text-right">
-                      <span
-                        @click="delSubject(key)"
-                      >
-                        <i class="bi bi-x-circle-fill delete-list-icon"></i>
-                      </span>
-                    </div>
-                    <hr>
+              <form :action="routes.lawInfos" method="post">
+                <input type="hidden" name="_token" :value="token">
+                <div class="row">
+                  <div class="col-12">
+                    <h5 class="text-center">Bilgi Notu Listesi</h5>
+
+                    <div class="law-info-card-list">
+                      <div class="row" :key="key" v-for="(item, key) in addLawInfoListArr">
+                        <input type="hidden" name="law_id[]" :value="parseInt(item.id)">
+                        <div class="col-10">{{item.label}}</div>
+                        <div class="col-2 text-right">
+                          <span
+                            @click="delSubject(key)"
+                          >
+                            <i class="bi bi-x-circle-fill delete-list-icon"></i>
+                          </span>
+                        </div>
+                        <hr>
+                      </div>
+
+                    </div><!-- /.info-card-list -->
+                  </div><!-- /.col-12 -->
+                </div>
+
+                <div class="row mt-3">
+                  <div class="col-12">
+                    <button type="submit" class="btn btn-info bg-gradient-info">Bilgi Notunu Çıkar</button>
                   </div>
+                </div>
+              </form>
 
-                </div><!-- /.info-card-list -->
-              </div><!-- /.col-2 -->
-              <div class="col-10"></div>
+            </div><!-- /.col-2 -->
+
+            <div class="col-10 border-left">
+              <form id="lawsuit-search" 
+                action="#"
+                @submit.prevent
+              >
+                <div class="row">
+                  <div class="col-3">
+                    <div class="form-group">
+                      <div class="form-group">
+                        <label for="addTeacherList">Tc Kimlik No: </label>
+                        <treeselect
+                          :id="'addTeacherList'"
+                          :multiple="true"
+                          :async="true"
+                          :load-options="loadTeachers"
+                          v-model="teacherArr"
+                          loadingText="Yükleniyor..."
+                          clearAllText="Hepsini sil."
+                          clearValueText="Değeri sil."
+                          noOptionsText="Hiçbir seçenek yok."
+                          noResultsText="Mevcut seçenek yok."
+                          searchPromptText="Aramak için yazınız."
+                          placeholder="Seçiniz..."
+                          name="thr_ids[]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="form-group">
+                      <div class="form-group">
+                        <label for="unions">{{$t('messages.uns_name')}} :</label>
+                        <select class="form-control" id="unions"
+                          name="uns_id"
+                        >
+                          <option selected value="">{{$t('messages.uns_name')}}</option>
+                          <option :key="key" v-for="(union,key) in unions" :value="union.id">{{union.uns_name}}</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="form-group">
+                      <div class="form-group">
+                        <label for="addTeacherList">Evrak Numarası </label>
+                        <treeselect
+                          :id="'addTeacherList'"
+                          :multiple="true"
+                          :async="true"
+                          :load-options="loadDcNumbers"
+                          loadingText="Yükleniyor..."
+                          clearAllText="Hepsini sil."
+                          clearValueText="Değeri sil."
+                          noOptionsText="Hiçbir seçenek yok."
+                          noResultsText="Mevcut seçenek yok."
+                          searchPromptText="Aramak için yazınız."
+                          placeholder="Seçiniz..."
+                          name="dc_ids[]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div class="col-3">
+                    <div class="form-group">
+                      <label>Tarih aralığı:</label>
+          
+                      <div class="input-group">
+                        <div class="input-group-prepend">
+                          <span class="input-group-text">
+                            <i class="far fa-calendar-alt"></i>
+                          </span>
+                        </div>
+                        <input type="text" 
+                          class="form-control float-right" 
+                          id="reservation"
+                          name="dc_date"
+                          autocomplete="off"
+                        >
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-10"></div>
+                  <div class="col-2">
+                    <div class="form-group text-right">
+                      <button type="submit" class="btn btn-primary bg-gradient-primary w-100"
+                        @click="loadDataTable"
+                      >
+                        Ara
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </form>
             </div>
 
-            <div class="row mt-3">
-              <div class="col-6">
-                <button type="submit" class="btn btn-info bg-gradient-info">Bilgi Notunu Çıkar</button>
-              </div>
-            </div>
-          </form>
+          </div><!-- /.row -->
+          
         </div>
       </div>
     </div>
@@ -108,6 +212,16 @@ import deleteComponent from './DeleteComponent';
 
 import { mapState, mapMutations } from 'vuex';
 
+import Treeselect from '@riophae/vue-treeselect'
+import { ASYNC_SEARCH } from '@riophae/vue-treeselect';
+
+const simulateAsyncOperation = fn => {
+  setTimeout(fn, 2000)
+}
+
+// import the styles
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+
 let formTitleName = 'lawsuits'
 
 export default {
@@ -118,6 +232,9 @@ export default {
       formTitleName,
       dataTable: null,
       addLawInfoListArr: [],
+      teacherArr: null,
+      unions: [],
+      ajaxErrorCount: -1
     };
   },
   props: {
@@ -166,6 +283,8 @@ export default {
       if(teacherName == null) {
         row += this.addLawInfoBtnHtml(id, dcNumber);
       }
+
+      this.addLawInfoListItem();
       return row;
     },
 
@@ -262,71 +381,226 @@ export default {
     delSubject: function(index) {
       this.addLawInfoListArr.splice(index, 1);
     },
+
+    loadTeachers({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+          if(searchQuery.length > 2) {
+            this.getTeachersSearchList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
+    },
+    loadDcNumbers({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+          if(searchQuery.length > 2) {
+            this.getDocumentSearchList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
+    },
+    getDocumentSearchList: function(dcNumber, callback) {
+      $.ajax({
+        url: this.routes.getDocumentSearchList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'dcNumber': dcNumber}
+      })
+      .done((res) => {
+				callback(null, res)
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getDocumentSearchList(dcNumber, callback, instanceId);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		},
+    getTeachersSearchList: function(searchTcNo, callback) {
+      $.ajax({
+        url: this.routes.getTeachersSearchList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'searchTcNo': searchTcNo}
+      })
+      .done((res) => {
+				callback(null, res)
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getTeachersSearchList(searchTcNo, callback);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		},
+    getUnions: function() {
+      $.ajax({
+        url: this.routes.getUnions,
+        type: 'GET',
+      })
+      .done((res) => {
+        this.unions = res;
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getUnions();
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		},
+    destroyTable() {
+      if (typeof this.dataTable !== 'undefined') {
+        this.dataTable.destroy();
+        // $("#"+this.form+" tbody").empty();
+      }
+    },
+    loadDataTable() {
+      if(this.dataTable) {
+        this.destroyTable();
+      }
+      
+      // let form = $("#lawsuit-search");
+      let datas = [];
+      let form = document.getElementById("lawsuit-search");
+
+      if(form.elements['thr_ids[]']) {
+        datas['thr_ids'] = [];
+
+        if (form.elements['thr_ids[]'].value == '') {
+          for (let i = 0; i < form.elements['thr_ids[]'].length; i++) {
+            const element = form.elements['thr_ids[]'][i];
+            datas['thr_ids'].push(element.value);
+          }  
+        }else {
+          datas['thr_ids'].push(form.elements['thr_ids[]'].value);
+        }
+      }
+
+      
+      if(form.elements['dc_ids[]']) {
+        datas['dc_ids'] = [];
+
+        if (form.elements['dc_ids[]'].value == '') {
+          for (let i = 0; i < form.elements['dc_ids[]'].length; i++) {
+            const element = form.elements['dc_ids[]'][i];
+            datas['dc_ids'].push(element.value);
+          }
+        }else {
+          datas['dc_ids'].push(form.elements['dc_ids[]'].value);
+        }
+      }
+      
+      if(form.elements['uns_id']) {
+        datas['uns_id'] = form.elements['uns_id'].value;
+      }
+      
+      if(form.elements['dc_date']) {
+        datas['dc_date'] = form.elements['dc_date'].value;
+      }
+      
+      this.dataTable = this.dataTableRun({
+        jQDomName: '.res-dt-table',
+        url: this.routes.dataList,
+        /* data: {
+          'datas': form.serializeArray(),
+        }, */
+        data: datas,
+        columns: [
+          {
+            "orderable": false,
+            "searchable": false,
+            "sortable": false,
+            "data": "dc_id",
+            "render": ( data, type, row ) => {
+              return row.dc_number;
+            },
+            "defaultContent": ""
+          },
+          {
+            "orderable": false,
+            "searchable": false,
+            "sortable": false,
+            "data": "thr_name",
+            "render": ( data, type, row ) => {
+              return row.thr_name != null 
+                ? '(' + row.thr_tc_no + ') ' + row.thr_name + ' ' + row.thr_surname 
+                : row.uns_name;
+            },
+            "defaultContent": ""
+          },
+          { "data": "law_brief" },
+          { 
+            "data": "dc_date",
+            "render": (data, type, row) => {
+              return this.unixTimestamp(data);
+            }
+          },
+          {
+            "orderable": false,
+            "searchable": false,
+            "sortable": false,
+            "data": "id",
+            "render": ( data, type, row ) => {
+                return this.processesRow(
+                  data, 
+                  row.dc_number, 
+                  row.thr_name
+                );
+            },
+            "defaultContent": ""
+          },
+        ],
+      });
+    }
   },
   created(){
     this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
   },
   mounted(){
-    this.addLawInfoListItem();
-
+    this.loadDataTable()
+    
     this.showModalBody(this.modalSelector);
 
-    this.dataTable = this.dataTableRun({
-      jQDomName: '.res-dt-table',
-      url: this.routes.dataList,
-      columns: [
-        {
-          "orderable": false,
-          "searchable": false,
-          "sortable": false,
-          "data": "dc_id",
-          "render": ( data, type, row ) => {
-            return row.dc_number;
-          },
-          "defaultContent": ""
-        },
-        {
-          "orderable": false,
-          "searchable": false,
-          "sortable": false,
-          "data": "thr_name",
-          "render": ( data, type, row ) => {
-            return row.thr_name != null 
-              ? '(' + row.thr_tc_no + ') ' + row.thr_name + ' ' + row.thr_surname 
-              : row.uns_name;
-          },
-          "defaultContent": ""
-        },
-        { "data": "law_brief" },
-        { 
-          "data": "dc_date",
-          "render": (data, type, row) => {
-            return this.unixTimestamp(data);
-          }
-        },
-        {
-          "orderable": false,
-          "searchable": false,
-          "sortable": false,
-          "data": "id",
-          "render": ( data, type, row ) => {
-              return this.processesRow(
-                data, 
-                row.dc_number, 
-                row.thr_name
-              );
-          },
-          "defaultContent": ""
-        },
-      ],
-    });
+    this.getUnions();
   },
   components: {
     [formTitleName + '-create-component']: createComponent,
     [formTitleName + '-edit-component']: editComponent,
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-delete-component']: deleteComponent,
+    Treeselect,
   }
 }
 </script>

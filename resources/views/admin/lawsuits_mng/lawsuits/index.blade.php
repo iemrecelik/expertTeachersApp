@@ -9,6 +9,7 @@
       getDocumentSearchList: '{{ route('admin.document_mng.document.searchList') }}',
       getLawBriefSearchList: '{{ route('admin.lawsuit_mng.lawsuits.searchList') }}',
       lawInfos: '{{ route('admin.lawsuit_mng.lawsuits.lawInfos') }}',
+      getUnions: '{{ route('admin.unions.getUnions') }}',
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
   >

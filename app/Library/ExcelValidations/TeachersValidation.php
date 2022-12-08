@@ -3,7 +3,7 @@
 namespace App\Library\ExcelValidations;
 
 use App\Models\Admin\Institutions;
-
+use Illuminate\Support\Facades\DB;
 
 /**
  * Office File Chunk Proccess
@@ -12,6 +12,8 @@ class TeachersValidation
 {
     private $institutions = Array();
     private $institutionNames = Array();
+    private $provinces = Array();
+    private $towns = Array();
 
     public function __construct() {
         $this->institutions = Institutions::all()->toArray();
@@ -20,6 +22,20 @@ class TeachersValidation
         $this->institutionNames = array_map(function($item) {
             return \Transliterator::create('tr-lower')->transliterate($item);
         }, $this->institutionNames);
+
+        $provincesTbl = DB::table('provinces')->get();
+        foreach ($provincesTbl as $prvKey => $prvVal) {
+            $this->provinces[
+                \Transliterator::create('tr-lower')->transliterate($prvVal->prv_name)
+            ] = \Transliterator::create('tr-lower')->transliterate($prvVal->id);
+        }
+
+        $townsTbl = DB::table('towns')->get();
+        foreach ($townsTbl as $twnKey => $twnVal) {
+            $this->towns[
+                \Transliterator::create('tr-lower')->transliterate($twnVal->twn_name)
+            ] = \Transliterator::create('tr-lower')->transliterate($twnVal->id);
+        }
     }
 
     private function filter($enter)
@@ -36,14 +52,31 @@ class TeachersValidation
     }
     
     public function validateExcelField($name, $value, $enter)
-    {
+    {   
         $enter = $this->filter($enter);
-        
+// echo '<pre>';
         $val = null;
         switch ($name) {
             case 'thr_tc_no':
+                // var_dump($value);
                 if(strlen($value) == 11) {
                     $val = $value;
+                }
+                break;
+            case 'prv_id':
+                $val = \Transliterator::create('tr-lower')->transliterate($value);
+                if(!empty($this->provinces[$val])) {
+                    $val = $this->provinces[$val]; 
+                }else {
+                    $val = null;
+                }
+                break;
+            case 'twn_id':
+                $val = \Transliterator::create('tr-lower')->transliterate($value);
+                if(!empty($this->towns[$val])) {
+                    $val = $this->towns[$val]; 
+                }else {
+                    $val = null;
                 }
                 break;
             case 'thr_name':
@@ -77,9 +110,18 @@ class TeachersValidation
                 $val = $val !== false ? $this->institutions[$val]['id'] : null;
                 break;
             case 'thr_birth_day':
-                if (preg_match("/^(0[1-9]|[1-2][0-9]|3[0-1])[.|\/](0[1-9]|1[0-2])[.|\/][0-9]{4}$/", $value)) {
-                    $val = strtotime($value);
+                // var_dump($value);
+                if (preg_match("/^([1-9]|0[1-9]|[1-2][0-9]|3[0-1])[.|\/]([1-9]|0[1-9]|1[0-2])[.|\/][0-9]{4}$/", $value)) {
+                    // var_dump($value);
+                    $val = strtotime(str_replace('/', '-', $value));
+                }else if (is_numeric($value)) {
+                    // var_dump($value);
+                    $UNIX_DATE = ($value - 25569) * 86400;
+                    $val = gmdate("d-m-Y", $UNIX_DATE);
+                    $val = strtotime(str_replace('/', '-', $val));
                 }
+                /* var_dump($val);
+                echo '<hr>'; */
                 break;
             default:
                 if(in_array($name, [
