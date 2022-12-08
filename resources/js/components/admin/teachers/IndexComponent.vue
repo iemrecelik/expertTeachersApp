@@ -81,6 +81,7 @@
                     <div class="form-group">
                       <label for="add-town">İlçeler </label>
                       <select class="form-control" name="twn_id">
+                        <option value="" selected>Seçiniz</option>
                         <option :value="town.id" :key="key" v-for="(town, key) in townsArr">
                           {{town.label}}
                         </option>
@@ -245,6 +246,11 @@
                     {{ $t('messages.addLikeExcel') }}
                   </button>
                   
+                  <button type="button" class="btn btn-primary"
+                  >
+                    {{ $t('messages.exportExcel') }}
+                  </button>
+                  
                   <!-- <form :action="pproutes.addExcel" method="post" enctype='multipart/form-data'>
                     <input type="hidden" name="_token" :value="token">
                     <div class="form-group">
@@ -332,7 +338,8 @@ export default {
       sumInsertData: this.ppdatas.sumInsertData,
       sumErrorData: this.ppdatas.sumErrorData,
       ajaxErrorCount: -1,
-      townsArr: []
+      townsArr: [],
+      exportExcelDatas: null,
     };
   },
   props: {
@@ -581,6 +588,9 @@ export default {
         jQDomName: '.res-dt-table',
         url: this.routes.dataList,
         data: datas,
+        initComplete: () => {
+          this.exportExcelDatas = this.dataTable.rows().data();
+        },
         columns: [
           { "data": "thr_tc_no" },
           { "data": "thr_name" },

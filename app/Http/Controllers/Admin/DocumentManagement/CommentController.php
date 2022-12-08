@@ -216,7 +216,7 @@ class CommentController extends Controller
             +++ 47- dava modülünde eklemedeki kısa dava konusundaki treeselect düzenleme formunda da yapılacak.
             +++ 48- öğretmen detay görüntülemede davalar sekmesi olacak burada yazısmalara ait ekler dosya ekleri olarak eklenecek
             +++ 49- öğretmenler listesinde öğretmen detayına git kutucuğu olacak
-            50- listelere filtreler eklenecek
+            +++ 50- listelere filtreler eklenecek
             +++ 51- dava eklerken dava konularını eklemiyor. Daha çok evrak ekleme yaptığımzda yapıyor.
             +++ 52- öğretmen detayında resim yoksa varsayılan resim olacak.
             +++ 53- dava listesinde bireysel davalarda isim soyisim ve tc olacak şekilde gözüksün
@@ -233,6 +233,8 @@ class CommentController extends Controller
             64- listeler excel olarak çıkartılabilicek
             65- öğretmen ekleme formundakiler düzenleme formuna da eklenecek
             66- Öğretmen eklerken hem ekleme hem de düzenleme formuna il ve ilçe ekleme eklenecek
+            67- İller ve ilçeler uygululama yüklerken sabit değer olarak yüklensin provider, service, middleware vb. laravelin araçlarına bak.
+            68- Öğretmen Güncelleme de sorunlar düzeltilecek.
         */
 
         $request->validate(

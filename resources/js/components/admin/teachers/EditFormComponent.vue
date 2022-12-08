@@ -3,7 +3,7 @@
     <div class="row">
       <div class="col-4">
         <div class="form-group">
-          <label for="tc-no">TcNO</label>
+          <label for="tc-no2">TcNO</label>
           <input type="text" 
             class="form-control" 
             id="tc-no2" 
@@ -96,6 +96,21 @@
             <option :selected="value('thr_gender') == 0" value="0">Erkek</option>
             <option :selected="value('thr_gender') == 1" value="1">Bayan</option>
           </select>
+        </div>
+      </div>
+
+      <div class="col-4">
+        <div class="form-group">
+          <label for="date-of-birth2">{{$t('messages.dateOfBirth')}}</label>
+          <input type="text" 
+            class="form-control" 
+            id="date-of-birth2" 
+            :placeholder="$t('messages.dateOfBirth')"
+            name="thr_birth_day" 
+            :value="value('thr_birth_day')"
+            data-inputmask='"mask": "99/99/9999"' 
+            data-mask
+          >
         </div>
       </div>
     </div>
@@ -231,11 +246,13 @@ export default {
     this.getInstitutions();
   },
   mounted() {
-    var mobileNoEl = document.getElementById("mobile-no");
-    var tcNo = document.getElementById("tc-no");
+    var mobileNoEl = document.getElementById("mobile-no2");
+    var tcNo = document.getElementById("tc-no2");
+    var dateOfBirth = document.getElementById("date-of-birth2");
 
     var im = new Inputmask();
     im.mask(mobileNoEl);
+    im.mask(dateOfBirth);
     im.mask(tcNo);
   },
 }

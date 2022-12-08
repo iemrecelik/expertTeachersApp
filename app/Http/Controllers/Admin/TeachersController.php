@@ -21,6 +21,26 @@ use Illuminate\Support\Facades\DB;
 
 class TeachersController extends Controller
 {
+    private $provinces = Array();
+    private $towns = Array();
+
+    public function __construct()
+    {
+        $provincesTbl = DB::table('provinces')->get();
+        foreach ($provincesTbl as $prvKey => $prvVal) {
+            $this->provinces[
+                \Transliterator::create('tr-title')->transliterate($prvVal->prv_name)
+            ] = \Transliterator::create('tr-title')->transliterate($prvVal->id);
+        }
+
+        $townsTbl = DB::table('towns')->get();
+        foreach ($townsTbl as $twnKey => $twnVal) {
+            $this->towns[
+                \Transliterator::create('tr-title')->transliterate($twnVal->twn_name)
+            ] = \Transliterator::create('tr-title')->transliterate($twnVal->id);
+        }    
+    }
+
     public function addExcelValidation(Request $request)
     {
         $request->validate(
@@ -312,6 +332,9 @@ class TeachersController extends Controller
         $tblContent = '';
         $co = 0;
         
+        $provinces = array_flip($this->provinces);
+        $towns = array_flip($this->towns);
+
         foreach ($datas as $updKey => $updVal) {
             $co++;
             if($co === $limit){
@@ -323,8 +346,8 @@ class TeachersController extends Controller
             $tcNo       = $updVal['thr_tc_no'];
             $name       = $updVal['thr_name'];
             $surname    = $updVal['thr_surname'];
-            $province   = empty($updVal['thr_province']) ? '': $updVal['thr_province'];
-            $town       = empty($updVal['thr_town']) ? '': $updVal['thr_town'];
+            $province   = empty($updVal['prv_id']) ? '': $provinces[$updVal['prv_id']];
+            $town       = empty($updVal['twn_id']) ? '': $towns[$updVal['twn_id']];
             $email      = empty($updVal['thr_email']) ? '': $updVal['thr_email'];
             $mobileNo   = empty($updVal['thr_mobile_no']) ? '': $updVal['thr_mobile_no'];
             $gender     = $updVal['thr_gender'] == 0 ? 'Erkek' : 'Bayan';
@@ -745,6 +768,7 @@ class TeachersController extends Controller
      */
     public function edit(Teachers $teacher)
     {
+        $teacher->thr_birth_day = date('d/m/Y', $teacher->thr_birth_day);
         return new isAjaxResponse($teacher);
     }
 
