@@ -97,6 +97,12 @@ Route::prefix('admin')
 		)
 		->name('teachers.getProvincesList');
 
+		Route::get(
+			'teachers/get-towns-list', 
+			'getTownsList'
+		)
+		->name('teachers.getTownsList');
+
 		Route::delete(
 			'teacherInfos/add-law-file-name/{lawsuitFile}', 
 			'deleteLawFile'

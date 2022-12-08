@@ -524,6 +524,7 @@ export default {
       if(form.elements['uns_id']) {
         datas['uns_id'] = form.elements['uns_id'].value;
       }
+      
       if(form.elements['dc_date']) {
         datas['dc_date'] = form.elements['dc_date'].value;
       }

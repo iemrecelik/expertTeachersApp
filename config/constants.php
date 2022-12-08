@@ -8,7 +8,7 @@ return [
         ],
         "Adıyaman" => [
         "name" => "Adıyaman",
-        "districts" => ["Adıyaman", "Besni", "Çelikhan", "Gerger", "Gölbaşı", "Kâhta", "Samsat", "Sincik", "Tut"]
+        "districts" => ["Adıyaman", "Besni", "Çelikhan", "Gerger", "Gölbaşı", "Kahta", "Samsat", "Sincik", "Tut"]
         ],
         "Afyonkarahisar" => [
         "name" => "Afyonkarahisar",
@@ -28,7 +28,7 @@ return [
         ],
         "Ankara" => [
         "name" => "Ankara",
-        "districts" => ["Akyurt", "Altındağ", "Ayaş", "Balâ", "Beypazarı", "Çamlıdere", "Çankaya", "Çubuk", "Elmadağ", "Etimesgut", "Evren", "Gölbaşı", "Güdül", "Haymana", "Kalecik", "Kahramankazan", "Keçiören", "Kızılcahamam", "Mamak", "Nallıhan", "Polatlı", "Pursaklar", "Sincan", "Şereflikoçhisar", "Yenimahalle"]
+        "districts" => ["Akyurt", "Altındağ", "Ayaş", "Bala", "Beypazarı", "Çamlıdere", "Çankaya", "Çubuk", "Elmadağ", "Etimesgut", "Evren", "Gölbaşı", "Güdül", "Haymana", "Kalecik", "Kahramankazan", "Keçiören", "Kızılcahamam", "Mamak", "Nallıhan", "Polatlı", "Pursaklar", "Sincan", "Şereflikoçhisar", "Yenimahalle", "Kızılay"]
         ],
         "Antalya" => [
         "name" => "Antalya",
@@ -114,9 +114,9 @@ return [
         "name" => "Edirne",
         "districts" => ["Enez", "Havsa", "İpsala", "Keşan", "Lalapaşa", "Meriç", "Merkez", "Süloğlu", "Uzunköprü"]
         ],
-        "Elâzığ" => [
-        "name" => "Elâzığ",
-        "districts" => ["Ağın", "Alacakaya", "Arıcak", "Baskil", "Elâzığ", "Karakoçan", "Keban", "Kovancılar", "Maden", "Palu", "Sivrice"]
+        "Elazığ" => [
+        "name" => "Elazığ",
+        "districts" => ["Ağın", "Alacakaya", "Arıcak", "Baskil", "Elazığ", "Karakoçan", "Keban", "Kovancılar", "Maden", "Palu", "Sivrice", "Merkez"]
         ],
         "Erzincan" => [
         "name" => "Erzincan",
@@ -132,7 +132,7 @@ return [
         ],
         "Gaziantep" => [
         "name" => "Gaziantep",
-        "districts" => ["Araban", "İslahiye", "Karkamış", "Nizip", "Nurdağı", "Oğuzeli", "Şahinbey", "Şehitkâmil", "Yavuzeli"]
+        "districts" => ["Araban", "İslahiye", "Karkamış", "Nizip", "Nurdağı", "Oğuzeli", "Şahinbey", "Şehitkamil", "Yavuzeli"]
         ],
         "Giresun" => [
         "name" => "Giresun",
@@ -142,9 +142,9 @@ return [
         "name" => "Gümüşhane",
         "districts" => ["Gümüşhane", "Kelkit", "Köse", "Kürtün", "Şiran", "Torul"]
         ],
-        "Hakkâri" => [
-        "name" => "Hakkâri",
-        "districts" => ["Çukurca", "Hakkâri", "Şemdinli", "Yüksekova"]
+        "Hakkari" => [
+        "name" => "Hakkari",
+        "districts" => ["Çukurca", "Hakkari", "Şemdinli", "Yüksekova"]
         ],
         "Hatay" => [
         "name" => "Hatay",

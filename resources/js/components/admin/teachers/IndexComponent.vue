@@ -17,7 +17,7 @@
           <div class="row">
 
             <div class="col-12">
-              <form id="lawsuit-search" 
+              <form id="teacher-search" 
                 action="#"
                 @submit.prevent
               >
@@ -57,18 +57,10 @@
                     </form-form-component>
                   </div>
                   <div class="col-2">
-                    <!-- <form-form-component
-                        :ppsettings="{
-                          type: 'text', 
-                          fieldName: 'thr_province', 
-                          value: ''
-                        }"
-                      >
-                      </form-form-component> -->
                     <div class="form-group">
-                      <label for="addProvince">İller </label>
+                      <label for="add-province">İller </label>
                       <treeselect
-                        :id="'addProvince'"
+                        :id="'add-province'"
                         :multiple="false"
                         :async="true"
                         :load-options="loadProvinces"
@@ -80,18 +72,33 @@
                         searchPromptText="Aramak için yazınız."
                         placeholder="Seçiniz..."
                         name="prv_id"
+                        @select="getTownsList"
+                        @input="clearTownsList"
                       />
                     </div>
                   </div>
                   <div class="col-2">
-                    <form-form-component
-                        :ppsettings="{
-                          type: 'text', 
-                          fieldName: 'thr_town', 
-                          value: ''
-                        }"
-                      >
-                      </form-form-component>
+                    <div class="form-group">
+                      <label for="add-town">İlçeler </label>
+                      <select class="form-control" name="twn_id">
+                        <option :value="town.id" :key="key" v-for="(town, key) in townsArr">
+                          {{town.label}}
+                        </option>
+                      </select>
+                      <!-- <treeselect
+                        :id="'add-town'"
+                        :multiple="false"
+                        :options="townsArr"
+                        loadingText="Yükleniyor..."
+                        clearAllText="Hepsini sil."
+                        clearValueText="Değeri sil."
+                        noOptionsText="Hiçbir seçenek yok."
+                        noResultsText="Mevcut seçenek yok."
+                        searchPromptText="Aramak için yazınız."
+                        placeholder="Seçiniz..."
+                        name="twn_id"  
+                      /> -->
+                    </div>
                   </div>
                   <div class="col-2">
                     <div class="form-group">
@@ -324,7 +331,8 @@ export default {
       insertErrorArr: this.ppdatas.insertErrorArr,
       sumInsertData: this.ppdatas.sumInsertData,
       sumErrorData: this.ppdatas.sumErrorData,
-      ajaxErrorCount: -1
+      ajaxErrorCount: -1,
+      townsArr: []
     };
   },
   props: {
@@ -473,7 +481,7 @@ export default {
           this.ajaxErrorCount++
 
           if(this.ajaxErrorCount < 3)
-            this.getProvincesList(searchWords, callback, instanceId);
+            this.getProvincesList(searchWords, callback);
           else
             this.ajaxErrorCount = -1;
 
@@ -481,6 +489,35 @@ export default {
       })
       .then((res) => {})
 		},
+
+    getTownsList: function(node) {
+      $.ajax({
+        url: this.routes.getTownsList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'prv_id': node.id}
+      })
+      .done((res) => {
+				this.townsArr = res;
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getTownsList(node);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+      })
+      .then((res) => {})
+		},
+
+    clearTownsList: function() {
+      this.townsArr = [];
+    },
 
     destroyTable() {
       if (typeof this.dataTable !== 'undefined') {
@@ -493,9 +530,57 @@ export default {
         this.destroyTable();
       }
 
+      let datas = [];
+      let form = document.getElementById("teacher-search");
+
+      if(form.elements['thr_tc_no']) {
+        datas['thr_tc_no'] = form.elements['thr_tc_no'].value;
+      }
+      
+      if(form.elements['thr_name']) {
+        datas['thr_name'] = form.elements['thr_name'].value;
+      }
+
+      if(form.elements['thr_surname']) {
+        datas['thr_surname'] = form.elements['thr_surname'].value;
+      }
+
+      if(form.elements['prv_id']) {
+        datas['prv_id'] = form.elements['prv_id'].value;
+      }
+
+      if(form.elements['twn_id']) {
+        datas['twn_id'] = form.elements['twn_id'].value;
+      }
+
+      if(form.elements['thr_email']) {
+        datas['thr_email'] = form.elements['thr_email'].value;
+      }
+
+      if(form.elements['thr_career_ladder']) {
+        datas['thr_career_ladder'] = form.elements['thr_career_ladder'].value;
+      }
+
+      if(form.elements['thr_degree']) {
+        datas['thr_degree'] = form.elements['thr_degree'].value;
+      }
+
+      if(form.elements['thr_education_st']) {
+        datas['thr_education_st'] = form.elements['thr_education_st'].value;
+      }
+
+      if(form.elements['thr_place_of_task']) {
+        datas['thr_place_of_task'] = form.elements['thr_place_of_task'].value;
+      }
+
+      if(form.elements['thr_birth_day']) {
+        datas['thr_birth_day'] = form.elements['thr_birth_day'].value;
+      }
+
       this.dataTable = this.dataTableRun({
         jQDomName: '.res-dt-table',
         url: this.routes.dataList,
+        data: datas,
         columns: [
           { "data": "thr_tc_no" },
           { "data": "thr_name" },
@@ -543,6 +628,7 @@ export default {
     var email = document.getElementById("thr-email");
 
     var im = new Inputmask();
+    
     im.mask(tcNo);
     im.mask(dateOfBirth);
     im.mask(email);

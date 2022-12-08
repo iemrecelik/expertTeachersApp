@@ -533,7 +533,7 @@ class TeachersController extends Controller
             "t1.id"
         ];
 
-        $selectJoin = ", t1.inst_name";  
+        $selectJoin = ", t1.inst_name";
 
 	    $dataList = Teachers::dataList([
 	        'table' => 'teachers',
@@ -548,6 +548,55 @@ class TeachersController extends Controller
 	        'order' => $order,
 	        'search' => $tblInfo['search']['value'],
 	    ]);
+
+        /* Arama Başla */
+        if(!empty($tblInfo['thr_tc_no'])) {
+            $dataList->where('t0.thr_tc_no', $tblInfo['thr_tc_no']);
+        }
+        
+        if(!empty($tblInfo['thr_name'])) {
+            $dataList->where('t0.thr_name', $tblInfo['thr_name']);
+        }
+
+        if(!empty($tblInfo['thr_surname'])) {
+            $dataList->where('t0.thr_surname', $tblInfo['thr_surname']);
+        }
+
+        if(!empty($tblInfo['thr_email'])) {
+            $dataList->where('t0.thr_email', $tblInfo['thr_email']);
+        }
+
+        if(!empty($tblInfo['thr_degree'])) {
+            $dataList->where('t0.thr_degree', $tblInfo['thr_degree']);
+        }
+
+        if(!empty($tblInfo['thr_education_st'])) {
+            $dataList->where('t0.thr_education_st', $tblInfo['thr_education_st']);
+        }
+
+        if(!empty($tblInfo['thr_place_of_task'])) {
+            $dataList->where('t0.thr_place_of_task', $tblInfo['thr_place_of_task']);
+        }
+
+        if(!empty($tblInfo['thr_career_ladder'])) {
+            $dataList->where('t0.thr_career_ladder', $tblInfo['thr_career_ladder']);
+        }
+
+        if(!empty($tblInfo['prv_id'])) {
+            $dataList->where('t0.prv_id', $tblInfo['prv_id']);
+        }
+
+        if(!empty($tblInfo['twn_id'])) {
+            $dataList->where('t0.twn_id', $tblInfo['twn_id']);
+        }
+
+        if(!empty($tblInfo['thr_birth_day'])) {
+            $date = str_replace('/', '-', $tblInfo['thr_birth_day']);
+            $date = strtotime($date);
+
+            $dataList->where('t0.thr_birth_day', $date);
+        }
+        /* Arama Bitiş */
 
 	    $recordsTotal = Teachers::count();
 	    $recordsFiltered = $dataList->count();
@@ -620,6 +669,10 @@ class TeachersController extends Controller
             );
         }
 
+        $params['thr_birth_day'] = strtotime(str_replace('/', '-', $params['thr_birth_day']));
+        $params['thr_name'] = \Transliterator::create('tr-title')->transliterate($params['thr_name']);
+        $params['thr_surname'] = \Transliterator::create('tr-upper')->transliterate($params['thr_surname']);
+
         $teacher = Teachers::create($params);
 
         return ['succeed' => __('messages.add_success')];
@@ -636,6 +689,18 @@ class TeachersController extends Controller
                         ->get();
         
         return $provinces;
+    }
+
+    public function getTownsList(Request $request)
+    {
+        $prvId = $request->input('prv_id');
+
+        $towns = DB::table('towns as t0')
+                        ->select('t0.id', 't0.twn_name as label')
+                        ->whereRaw("t0.prv_id = ?", $prvId)
+                        ->get();
+        
+        return $towns;
     }
 
     /**

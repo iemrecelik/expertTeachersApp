@@ -6,7 +6,7 @@
           <label for="tc-no">TcNO</label>
           <input type="text" 
             class="form-control" 
-            id="tc-no" 
+            id="tc-no2" 
             placeholder="Example input placeholder"
             name="thr_tc_no" 
             :value="value('thr_tc_no')"
@@ -123,7 +123,7 @@
               <span class="input-group-text"><i class="fas fa-phone"></i></span>
             </div>
             <input type="text" 
-              id="mobile-no" 
+              id="mobile-no2" 
               class="form-control" 
               name="thr_mobile_no"
               data-inputmask='"mask": "0(999) 999 99 99"' 

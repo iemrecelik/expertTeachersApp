@@ -305,14 +305,6 @@ class LawsuitsController extends Controller
         $dataList->leftJoin('unions as t3', 't3.id', '=', 't0.uns_id');
         $dataList->selectRaw('t3.uns_name');
 
-        /* ARAMA DEĞERLERİNİ DÜZENLE BAŞLA */
-        /* $datas = array_map(function($data) {
-            return [
-                'thr_ids' => [$data['value']]
-            ];
-        }, $tblInfo['datas']); */
-        /* ARAMA DEĞERLERİNİ DÜZENLE BİTİŞ */
-
         /* ARAMA BAŞLA */
         if(!empty($tblInfo['thr_ids'])) {
             $dataList->whereIn('t0.thr_id', $tblInfo['thr_ids']);
@@ -337,38 +329,6 @@ class LawsuitsController extends Controller
             $whereQuery = "t1.dc_date BETWEEN ? AND ?";
             $dataList->whereRaw($whereQuery, [$vals[0], $vals[1]]);
         }
-
-        /* foreach ($tblInfo['datas'] as $data) {
-			if(!empty($data['value'])) {
-                switch ($data['name']) {
-                    case 'thr_ids[]':
-                        $dataList->whereIn('t0.thr_id', $data['value']);
-                        break;
-                        
-                    case 'uns_id':
-                        $dataList->where('t0.uns_id', $data['value']);
-                        break;
-
-                    case 'dc_ids[]':
-                        $dataList->whereIn('t0.dc_id', $data['value']);
-                        break;
-
-                    case 'dc_date':
-                        $vals = explode(" - ",$data['value']);
-
-                        $vals = [
-                            strtotime(str_replace('/', '-', $vals[0])),
-                            strtotime(str_replace('/', '-', $vals[1])),
-                        ];
-
-                        $whereQuery = "t1.dc_date BETWEEN ? AND ?";
-                        $dataList->whereRaw($whereQuery, [$vals[0], $vals[1]]);
-                        break;
-                }
-            }
-        } */
-
-        // dd($dataList->toSql());
         /* ARAMA BİTİŞ */
 
 	    $recordsTotal = Lawsuits::count();

@@ -6,7 +6,7 @@
         <label for="tc-no">{{$t('messages.thr_tc_no')}}</label>
         <input type="text" 
           class="form-control" 
-          id="tc-no" 
+          id="tc-no2" 
           :placeholder="$t('messages.thr_tc_no')"
           name="thr_tc_no" 
           :value="oldValue('thr_tc_no')"
@@ -102,10 +102,10 @@
 
     <div class="col-4">
       <div class="form-group">
-        <label for="date-of-birth">{{$t('messages.dateOfBirth')}}</label>
+        <label for="date-of-birth2">{{$t('messages.dateOfBirth')}}</label>
         <input type="text" 
           class="form-control" 
-          id="date-of-birth" 
+          id="date-of-birth2" 
           :placeholder="$t('messages.dateOfBirth')"
           name="thr_birth_day" 
           :value="oldValue('date_of_birth')"
@@ -139,7 +139,7 @@
             <span class="input-group-text"><i class="fas fa-phone"></i></span>
           </div>
           <input type="text" 
-            id="mobile-no" 
+            id="mobile-no2" 
             class="form-control" 
             name="thr_mobile_no"
             data-inputmask='"mask": "0(999) 999 99 99"' 
@@ -241,11 +241,11 @@ export default {
     this.getInstitutions();
   },
   mounted() {
-    var mobileNoEl = document.getElementById("mobile-no");
-    var tcNo = document.getElementById("tc-no");
-    var dateOfBirth = document.getElementById("date-of-birth");
+    let mobileNoEl = document.getElementById("mobile-no2");
+    let tcNo = document.getElementById("tc-no2");
+    let dateOfBirth = document.getElementById("date-of-birth2");
 
-    var im = new Inputmask();
+    let im = new Inputmask();
     im.mask(mobileNoEl);
     im.mask(tcNo);
     im.mask(dateOfBirth);

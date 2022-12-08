@@ -3,7 +3,7 @@
 namespace App\Library\ExcelValidations;
 
 use App\Models\Admin\Institutions;
-
+use Illuminate\Support\Facades\DB;
 
 /**
  * Office File Chunk Proccess
@@ -12,6 +12,8 @@ class TeachersValidation
 {
     private $institutions = Array();
     private $institutionNames = Array();
+    private $provinces = Array();
+    private $towns = Array();
 
     public function __construct() {
         $this->institutions = Institutions::all()->toArray();
@@ -20,6 +22,20 @@ class TeachersValidation
         $this->institutionNames = array_map(function($item) {
             return \Transliterator::create('tr-lower')->transliterate($item);
         }, $this->institutionNames);
+
+        $provincesTbl = DB::table('provinces')->get();
+        foreach ($provincesTbl as $prvKey => $prvVal) {
+            $this->provinces[
+                \Transliterator::create('tr-lower')->transliterate($prvVal->prv_name)
+            ] = \Transliterator::create('tr-lower')->transliterate($prvVal->id);
+        }
+
+        $townsTbl = DB::table('towns')->get();
+        foreach ($townsTbl as $twnKey => $twnVal) {
+            $this->towns[
+                \Transliterator::create('tr-lower')->transliterate($twnVal->twn_name)
+            ] = \Transliterator::create('tr-lower')->transliterate($twnVal->id);
+        }
     }
 
     private function filter($enter)
@@ -36,7 +52,7 @@ class TeachersValidation
     }
     
     public function validateExcelField($name, $value, $enter)
-    {
+    {   
         $enter = $this->filter($enter);
 // echo '<pre>';
         $val = null;
@@ -45,6 +61,22 @@ class TeachersValidation
                 // var_dump($value);
                 if(strlen($value) == 11) {
                     $val = $value;
+                }
+                break;
+            case 'prv_id':
+                $val = \Transliterator::create('tr-lower')->transliterate($value);
+                if(!empty($this->provinces[$val])) {
+                    $val = $this->provinces[$val]; 
+                }else {
+                    $val = null;
+                }
+                break;
+            case 'twn_id':
+                $val = \Transliterator::create('tr-lower')->transliterate($value);
+                if(!empty($this->towns[$val])) {
+                    $val = $this->towns[$val]; 
+                }else {
+                    $val = null;
                 }
                 break;
             case 'thr_name':

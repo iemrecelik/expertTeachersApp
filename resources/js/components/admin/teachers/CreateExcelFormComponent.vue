@@ -175,6 +175,46 @@
   <div class="row">
     <div class="col-4">
       <div class="form-group">
+        <label for="thr-province">{{$t('messages.thr_province')}}</label>
+        <treeselect
+          :id="'thr-province'"
+          :multiple="false"
+          :options="options"
+          loadingText="Yükleniyor..."
+          clearAllText="Hepsini sil."
+          clearValueText="Değeri sil."
+          noOptionsText="Hiçbir seçenek yok."
+          noResultsText="Mevcut seçenek yok."
+          searchPromptText="Aramak için yazınız."
+          placeholder="Seçiniz..."
+          name="prv_id"
+        />
+      </div>
+    </div>
+
+    <div class="col-4">
+      <div class="form-group">
+        <label for="thr-town">{{$t('messages.thr_town')}}</label>
+        <treeselect
+          :id="'thr-town'"
+          :multiple="false"
+          :options="options"
+          loadingText="Yükleniyor..."
+          clearAllText="Hepsini sil."
+          clearValueText="Değeri sil."
+          noOptionsText="Hiçbir seçenek yok."
+          noResultsText="Mevcut seçenek yok."
+          searchPromptText="Aramak için yazınız."
+          placeholder="Seçiniz..."
+          name="twn_id"
+        />
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
+    <div class="col-4">
+      <div class="form-group">
         <label for="thr-gender">{{$t('messages.thr_gender')}} (erkek, bayan)</label>
         <treeselect
           :id="'thr-gender'"

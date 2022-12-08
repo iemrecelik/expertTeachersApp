@@ -19,8 +19,8 @@ class CreateTeachersTable extends Migration
             $table->string('thr_tc_no', 11)->unique();
             $table->string('thr_name')->nullable(false);
             $table->string('thr_surname')->nullable(false);
-            $table->string('thr_province')->nullable(true);
-            $table->string('thr_town')->nullable(true);
+            /* $table->string('thr_province')->nullable(true);
+            $table->string('thr_town')->nullable(true); */
             $table->string('thr_email')->nullable(true);
             $table->enum('thr_career_ladder', [-1, 0, 1, 2])->nullable(false);
             $table->string('thr_degree')->nullable(true);
@@ -34,6 +34,21 @@ class CreateTeachersTable extends Migration
             $table->unsignedBigInteger('inst_id'); 
             $table->foreign('inst_id')
                   ->references('id')->on('institutions');
+
+            $table->unsignedBigInteger('prv_id')
+                  ->nullable(true)
+                  ->default(null);
+            $table->foreign('prv_id')
+                  ->references('id')->on('provinces')
+                  ->onDelete('set null');
+                  
+            $table->unsignedBigInteger('twn_id')
+                  ->nullable(true)
+                  ->default(null);
+            $table->foreign('twn_id')
+                  ->references('id')->on('towns')
+                  ->onDelete('set null');
+
             $table->timestamps();
         });
     }
