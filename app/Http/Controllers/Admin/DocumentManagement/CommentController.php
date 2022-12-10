@@ -235,6 +235,10 @@ class CommentController extends Controller
             66- Öğretmen eklerken hem ekleme hem de düzenleme formuna il ve ilçe ekleme eklenecek
             67- İller ve ilçeler uygululama yüklerken sabit değer olarak yüklensin provider, service, middleware vb. laravelin araçlarına bak.
             68- Öğretmen Güncelleme de sorunlar düzeltilecek.
+            69- excel ile yükleme yaparken tc kontrolü olacak
+            70- eklenmeyen resimlerin tc numaraları alt satıra geçecek
+            71- aynı evrağa sonradan başka öğretmende eklenebilsin.
+            72- evrak silme ve düzenleme olsun.
         */
 
         $request->validate(
