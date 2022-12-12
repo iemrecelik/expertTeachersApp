@@ -302,16 +302,23 @@ class TeachersController extends Controller
             $insertArr = array_chunk($insertArr, 50);
 
             foreach ($insertArr as $insKey => $insVal) {
-                Teachers::insert($insVal); 
+                // Teachers::insert($insVal); 
             }
         }
-
+// dd($updateArr);
         if(count($updateArr) > 0) {
-            $updateArr = array_chunk($updateArr, 50);
+            foreach ($updateArr as $key => $val) {
+                // $update = array_filter($val, fn($value) => !is_null($value) && $value !== '');
+                DB::table('teachers')
+                    ->update($val)
+                    ->where('thr_tc_no', $val['thr_tc_no']);
+            }
 
+            /* $updateArr = array_chunk($updateArr, 50);
+            
             foreach ($updateArr as $updKey => $updVal) {
                 Teachers::insert($updVal);
-            }
+            } */
         }
 
         $request->session()->forget('previewDatas');
@@ -418,6 +425,8 @@ class TeachersController extends Controller
                 $lawsuit->subjects;
                 $lawsuit->lawsuitFiles;
             }
+
+            $teacher->thr_birth_day = date('d/m/Y', $teacher->thr_birth_day);
         }
 
         $request->flashOnly(['thr_tc_no']);
@@ -659,7 +668,9 @@ class TeachersController extends Controller
 
         $request->validate(
             [
-                'thr_tc_no' => ['required', new ValidateTCNo($request->thr_name, $request->thr_surname, $date )],
+                'thr_tc_no' => ['required', new ValidateTCNo(
+                    $request->thr_name ?? '', $request->thr_surname ?? '', $date ?? '' 
+                )],
                 'thr_name' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
                 'thr_surname' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
                 'thr_career_ladder' => 'required|numeric',
@@ -769,19 +780,66 @@ class TeachersController extends Controller
     public function edit(Teachers $teacher)
     {
         $teacher->thr_birth_day = date('d/m/Y', $teacher->thr_birth_day);
+        $teacher->province;
+        $teacher->town;
         return new isAjaxResponse($teacher);
     }
 
     /**
      * Update the specified resource in storage.
      *
-     * @param  \App\Http\Requests\Admin\DocumentManagement\UpdateTeachersRequest  $request
+     * @param  \App\Http\Requests\Admin\Request  $request
      * @param  \App\Models\Admin\Teachers  $teachers
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateTeachersRequest $request, Teachers $teacher)
+    public function update(Request $request, Teachers $teacher)
     {
+        $date = explode('/', $request->input('thr_birth_day'));
+        $date = empty($date[2]) ? 1000: $date[2];
+
+        $request->validate(
+            [
+                'thr_tc_no' => ['required', new ValidateTCNo(
+                    $request->thr_name ?? '', $request->thr_surname ?? '', $date ?? '' 
+                )],
+                'thr_name' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+                'thr_surname' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+                'thr_career_ladder' => 'required|numeric',
+                'inst_id' => 'required|integer',
+                'thr_gender' => 'required|in:0,1',
+                'thr_birth_day' => 'required',
+            ],
+            [
+                'thr_tc_no.required' => 'Tc alanı zorunludur.',
+                'thr_tc_no.digit' => 'Tc alanı sadece rakamlardan ve 11 tane olmalıdır.',
+                'thr_name.required' => 'İsim alanı zorunludur.',
+                'thr_name.regex' => 'İsim alanı sadece harflerden oluşmalıdır.',
+                'thr_surname.required' => 'Soy isim alanı zorunludur.',
+                'thr_surname.regex' => 'Soy isim alanı sadece harflerden oluşmalıdır.',
+                'thr_career_ladder.required' => 'Kariyer basamağı alanı zorunludur.',
+                'inst_id.required' => 'Kurum alanı zorunludur.',
+                'thr_birth_day.required' => 'Doğum Tarihi alanı zorunludur.',
+                'thr_gender.required' => 'Cinsiyet alanı zorunludur.',
+                'thr_gender.in' => 'Cinsiyet sadece erkek veya bayan olmalıdır.',
+            ],
+        );
+        
         $params = $request->all();
+
+        if($teacher->thr_tc_no !== $params['thr_tc_no']) {
+
+            $teacherExist = Teachers::where('thr_tc_no', $params['thr_tc_no']);
+
+            if(!empty($teacherExist->first())) {
+                throw ValidationException::withMessages(
+                    ['thr_tc_no' => "Aynı Tc'li veri ekleyemezsiniz."]
+                );
+            }
+        }
+
+        $params['thr_birth_day'] = strtotime(str_replace('/', '-', $params['thr_birth_day']));
+        $params['thr_name'] = \Transliterator::create('tr-title')->transliterate($params['thr_name']);
+        $params['thr_surname'] = \Transliterator::create('tr-upper')->transliterate($params['thr_surname']);
 
         $teacher->fill($params)->save();
 

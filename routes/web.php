@@ -86,6 +86,12 @@ Route::prefix('admin')
 		->name('teachers.store.images');
 
 		Route::post(
+			'teachers/export/excel', 
+			'exportExcel'
+		)
+		->name('teachers.export.excel');
+
+		Route::post(
 			'teacherInfos/add-law-file-name', 
 			'addLawFile'
 		)

@@ -59,7 +59,7 @@ class ExcelProcess
 
         $datas = $spreadsheet->getActiveSheet()->toArray();
 
-        if ($params['updateDb']) {
+        /* if ($params['updateDb']) {
             $tcnoArr = array_column($datas, $uniqueKey);
             
             $modelPathName  = $modelPath ? $modelPath."\\".$modelName : "\App\Models\Admin\\".$modelName;
@@ -71,7 +71,18 @@ class ExcelProcess
             $existTeachQuery->delete();
         }else {
             $existTeachTcnoArr = [];
-        }
+        } */
+        
+        $tcnoArr = array_column($datas, $uniqueKey);
+        
+        $modelPathName  = $modelPath ? $modelPath."\\".$modelName : "\App\Models\Admin\\".$modelName;
+        $existTeachQuery = $modelPathName::whereIn($uniqueKeyName, $tcnoArr);
+
+        $existTeachArr = $existTeachQuery->get()->toArray();
+        $existTeachTcnoArr = array_column($existTeachArr, $uniqueKeyName);
+
+        // $existTeachQuery->delete();
+        
         
         $co = 0;
         $min = min($rowArrNumber);
@@ -113,7 +124,7 @@ class ExcelProcess
                     $insertArr[] = $arr;
                 }
                 
-            }else {
+            }else if ($params['updateDb']) {
                 foreach ($rowArrLetter as $letKey => $letVal) {
                     $val = $excelValidClass->validateExcelField($letKey, $value[$letVal], $params['enter']);
                     
@@ -124,6 +135,9 @@ class ExcelProcess
                     }
                     $existTeachArr[$exIndex][$letKey] = $val;
                 }
+
+                unset($existTeachArr[$exIndex]['created_at']);
+                unset($existTeachArr[$exIndex]['updated_at']);
 
                 if(!empty($existTeachArr[$exIndex])) {
                     $updateArr[] = $existTeachArr[$exIndex];

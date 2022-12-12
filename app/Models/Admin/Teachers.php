@@ -26,6 +26,8 @@ class Teachers extends Model
         'thr_birth_day',
         'thr_photo',
         'inst_id',
+        'prv_id',
+        'twn_id',
     ];
 
     protected $table = 'teachers';
@@ -49,5 +51,20 @@ class Teachers extends Model
     public function lawsuits()
     {
         return $this->hasMany(Lawsuits::class, 'thr_id', 'id');
+    }
+    
+    /**
+     * The province that belong to the teacher.
+     */
+    public function province()
+    {
+        return $this->hasOne(Provinces::class, 'id', 'prv_id');
+    }
+    /**
+     * The town that belong to the teacher.
+     */
+    public function town()
+    {
+        return $this->hasOne(Towns::class, 'id', 'twn_id');
     }
 }

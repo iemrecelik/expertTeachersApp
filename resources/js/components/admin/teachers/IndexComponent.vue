@@ -86,19 +86,6 @@
                           {{town.label}}
                         </option>
                       </select>
-                      <!-- <treeselect
-                        :id="'add-town'"
-                        :multiple="false"
-                        :options="townsArr"
-                        loadingText="Yükleniyor..."
-                        clearAllText="Hepsini sil."
-                        clearValueText="Değeri sil."
-                        noOptionsText="Hiçbir seçenek yok."
-                        noResultsText="Mevcut seçenek yok."
-                        searchPromptText="Aramak için yazınız."
-                        placeholder="Seçiniz..."
-                        name="twn_id"  
-                      /> -->
                     </div>
                   </div>
                   <div class="col-2">
@@ -246,10 +233,13 @@
                     {{ $t('messages.addLikeExcel') }}
                   </button>
                   
-                  <button type="button" class="btn btn-primary"
-                  >
-                    {{ $t('messages.exportExcel') }}
-                  </button>
+                  <!-- <form :action="routes.exportExcel" method="POST">
+                    <input type="hidden" name="list">
+                    <button type="button" class="btn btn-primary">
+                      {{ $t('messages.exportExcel') }}
+                    </button>
+                  </form> -->
+                  
                   
                   <!-- <form :action="pproutes.addExcel" method="post" enctype='multipart/form-data'>
                     <input type="hidden" name="_token" :value="token">

@@ -38,16 +38,7 @@
     </div>
   
     <div class="row">
-      <!-- <div class="col-4">
-        <form-form-component
-          :ppsettings="{
-            type: 'text', 
-            fieldName: 'thr_career_ladder', 
-            value: value('thr_career_ladder')
-          }"
-        >
-        </form-form-component>
-      </div> -->
+
       <div class="col-4">
         <div class="form-group">
           <label for="career-ladder">{{$t('messages.careerLadder')}} :</label>
@@ -86,7 +77,7 @@
     </div>
   
     <div class="row">
-      <div class="col-4">
+      <div class="col-3">
         <div class="form-group">
           <label for="exampleFormControlSelect1">Cinsiyet :</label>
           <select class="form-control" id="exampleFormControlSelect1"
@@ -99,7 +90,7 @@
         </div>
       </div>
 
-      <div class="col-4">
+      <div class="col-3">
         <div class="form-group">
           <label for="date-of-birth2">{{$t('messages.dateOfBirth')}}</label>
           <input type="text" 
@@ -111,6 +102,41 @@
             data-inputmask='"mask": "99/99/9999"' 
             data-mask
           >
+        </div>
+      </div>
+
+      <div class="col-3">
+        <div class="form-group">
+          <label for="add-province">İller </label>
+          <treeselect
+            :id="'add-province'"
+            :multiple="false"
+            :async="true"
+            :load-options="loadProvinces"
+            :defaultOptions="provinceArrOpt"
+            v-model="provinceArr"
+            loadingText="Yükleniyor..."
+            clearAllText="Hepsini sil."
+            clearValueText="Değeri sil."
+            noOptionsText="Hiçbir seçenek yok."
+            noResultsText="Mevcut seçenek yok."
+            searchPromptText="Aramak için yazınız."
+            placeholder="Seçiniz..."
+            name="prv_id"
+            @select="getTownsList"
+            @input="clearTownsList"
+          />
+        </div>
+      </div>
+      <div class="col-3">
+        <div class="form-group">
+          <label for="add-town">İlçeler </label>
+          <select class="form-control" name="twn_id">
+            <option value="" selected>Seçiniz</option>
+            <option :selected="townSelected(town.id)" :value="town.id" :key="key" v-for="(town, key) in townsArr">
+              {{town.label}}
+            </option>
+          </select>
         </div>
       </div>
     </div>
@@ -184,6 +210,16 @@
 </template>
   
 <script>
+import Treeselect from '@riophae/vue-treeselect'
+import { ASYNC_SEARCH } from '@riophae/vue-treeselect';
+
+const simulateAsyncOperation = fn => {
+  setTimeout(fn, 2000)
+}
+
+// import the styles
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+
 import { mapState } from 'vuex';
 
 export default {
@@ -192,6 +228,10 @@ export default {
     return {
       institutionList: [],
       ajaxErrorCount: -1,
+      townsArr: null,
+      provinceArr: null,
+      provinceArrOpt: [],
+      townArrOpt: []
     }
   },
   props: {
@@ -240,10 +280,99 @@ export default {
       })
       .then((res) => {})
       .always(() => {});
+    },
+    loadProvinces({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+          if(searchQuery.length > 2) {
+            this.getProvincesList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
+    },
+    getProvincesList: function(searchWords, callback) {
+      $.ajax({
+        url: this.routes.getProvincesList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'searchWords': searchWords}
+      })
+      .done((res) => {
+				callback(null, res)
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getProvincesList(searchWords, callback);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+      })
+      .then((res) => {})
+		},
+
+    getTownsList: function(node) {
+      $.ajax({
+        url: this.routes.getTownsList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'prv_id': node.id}
+      })
+      .done((res) => {
+				this.townsArr = res;
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getTownsList(node);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+      })
+      .then((res) => {})
+		},
+
+    clearTownsList: function() {
+      this.townsArr = [];
+    },
+
+    townSelected: function(id) {
+      let selected = false;
+      if(this.item.town) {
+        selected = this.item.town.id == id;
+      }
+
+      return selected;
     }
   },
   created() {
     this.getInstitutions();
+
+    /* il ve ilçeyi ekle başla */
+    if(this.item.province) {
+      this.provinceArrOpt = [
+        {
+          id: this.item.province.id,
+          label: this.item.province.prv_name
+        }
+      ];
+
+      this.provinceArr = this.item.province.id;
+      
+      this.getTownsList({id: this.item.province.id});
+    }
+    /* il ve ilçeyi ekle bitir */
   },
   mounted() {
     var mobileNoEl = document.getElementById("mobile-no2");
@@ -255,5 +384,8 @@ export default {
     im.mask(dateOfBirth);
     im.mask(tcNo);
   },
+  components: {
+    Treeselect
+  }
 }
 </script>

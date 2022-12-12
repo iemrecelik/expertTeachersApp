@@ -267,6 +267,9 @@ export default {
           return bool;
         }
       }
+      if (lawFiles.length < 1) {
+        return bool;  
+      }
     },
     removeLawFile(rmLawFileInfo) {
 

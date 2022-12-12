@@ -23,7 +23,6 @@ class ValidateTCNo implements Rule
     {
         $this->name = $name;
         $this->surname = $surname;
-        $this->surname = $surname;
         $this->birthYear = $birthYear;
     }
 
