@@ -4,6 +4,7 @@
 		:ppfieldname="settings.fieldName"
     :ppvalue="value"
     :ppfuncs="funcs"
+    :ppnecessity="settings.necessity ?? false"
 	>
 	</component>
 </template>

@@ -25,6 +25,9 @@
         <b>Cinsiyet :</b> <a class="float-right">{{ teacher.thr_gender == 0 ? 'Erkek' : 'Bayan' }}</a>
       </li>
       <li class="list-group-item">
+        <b>Doğum Tarihi :</b> <a class="float-right">{{ teacher.thr_birth_day }}</a>
+      </li>
+      <li class="list-group-item">
         <b>Ünvanı :</b> <a class="float-right">{{ teacher.thr_degree}}</a>
       </li>
       <li class="list-group-item">

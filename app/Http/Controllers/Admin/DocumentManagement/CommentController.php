@@ -231,10 +231,17 @@ class CommentController extends Controller
             +++ 62- dava ekledikten sonra bilgi notu eklenmiyor
             +++ 63- Filtre de iller veritabanına eklenecek
             64- listeler excel olarak çıkartılabilicek
-            65- öğretmen ekleme formundakiler düzenleme formuna da eklenecek
-            66- Öğretmen eklerken hem ekleme hem de düzenleme formuna il ve ilçe ekleme eklenecek
+            +++ 65- öğretmen ekleme formundakiler düzenleme formuna da eklenecek
+            +++ 66- Öğretmen eklerken hem ekleme hem de düzenleme formuna il ve ilçe ekleme eklenecek
             67- İller ve ilçeler uygululama yüklerken sabit değer olarak yüklensin provider, service, middleware vb. laravelin araçlarına bak.
-            68- Öğretmen Güncelleme de sorunlar düzeltilecek.
+            +++ 68- Öğretmen Güncelleme de sorunlar düzeltilecek.
+            69- Öğretmene sonradan yazı atama olacak
+            70- Evrak ekleme yaparken manuel dediğimizde textbox larda filtreleme yapılsın.
+            +++ 71- öğretmen eklerken consolda javascript hataları çıkıyor bunlara bakılacak
+            72- evrak sayısı her yıl sıfırlanıyor. Buna göre ayarlanacak
+            +++ 73- Öğretmen eklerken zorun olanlar * olacak.
+            74- excel veri eklerken aynı tc numarası varsa kontrol etsin
+            75- excel formundaki zorunlu alanlar * ile belirtilsin
         */
 
         $request->validate(

@@ -1,15 +1,22 @@
 <template>
 <div>
   <div class="row">
+    <div class="col-12">
+      <div class="alert alert-primary" role="alert">
+        (<span class="text-danger">*</span>) İşareti olan alanların doldurulması zorunludur.
+      </div>
+    </div>
+  </div>
+  <div class="row">
     <div class="col-4">
       <div class="form-group">
-        <label for="tc-no">{{$t('messages.thr_tc_no')}}</label>
+        <label for="tc-no">{{$t('messages.thr_tc_no')}} <span class="text-danger">*</span></label>
         <input type="text" 
           class="form-control" 
           id="tc-no2" 
           :placeholder="$t('messages.thr_tc_no')"
           name="thr_tc_no" 
-          :value="oldValue('thr_tc_no')"
+          value=""
           data-inputmask='"mask": "99999999999"' 
           data-mask
         >
@@ -20,7 +27,8 @@
         :ppsettings="{
           type: 'text', 
           fieldName: 'thr_name', 
-          value: oldValue('thr_name')
+          value: oldValue('thr_name'),
+          necessity: true
         }"
       >
       </form-form-component>
@@ -30,7 +38,8 @@
         :ppsettings="{
           type: 'text', 
           fieldName: 'thr_surname', 
-          value: oldValue('thr_surname')
+          value: oldValue('thr_surname'),
+          necessity: true
         }"
       >
       </form-form-component>
@@ -38,20 +47,12 @@
   </div>
 
   <div class="row">
-    <!-- <div class="col-4">
-      <form-form-component
-        :ppsettings="{
-          type: 'text', 
-          fieldName: 'thr_career_ladder', 
-          value: oldValue('thr_career_ladder')
-        }"
-      >
-      </form-form-component>
-    </div> -->
-
     <div class="col-4">
       <div class="form-group">
-        <label for="career-ladder">{{$t('messages.careerLadder')}} :</label>
+        <label for="career-ladder">
+          {{$t('messages.careerLadder')}} <span class="text-danger">*</span> :
+        </label>
+
         <select class="form-control" id="career-ladder"
           name="thr_career_ladder"
         >
@@ -87,9 +88,11 @@
   </div>
 
   <div class="row">
-    <div class="col-4">
+    <div class="col-3">
       <div class="form-group">
-        <label for="exampleFormControlSelect1">Cinsiyet :</label>
+        <label for="exampleFormControlSelect1">
+          Cinsiyet <span class="text-danger">*</span> :
+        </label>
         <select class="form-control" id="exampleFormControlSelect1"
           name="thr_gender"
         >
@@ -100,18 +103,54 @@
       </div>
     </div>
 
-    <div class="col-4">
+    <div class="col-3">
       <div class="form-group">
-        <label for="date-of-birth2">{{$t('messages.dateOfBirth')}}</label>
+        <label for="date-of-birth2">
+          {{$t('messages.dateOfBirth')}} <span class="text-danger">*</span> :
+        </label>
         <input type="text" 
           class="form-control" 
           id="date-of-birth2" 
           :placeholder="$t('messages.dateOfBirth')"
           name="thr_birth_day" 
-          :value="oldValue('date_of_birth')"
+          value=""
           data-inputmask='"mask": "99/99/9999"' 
           data-mask
         >
+      </div>
+    </div>
+
+    <div class="col-3">
+      <div class="form-group">
+        <label for="add-province">İller </label>
+        <treeselect
+          :id="'add-province'"
+          :multiple="false"
+          :async="true"
+          :load-options="loadProvinces"
+          v-model="provinceArr"
+          loadingText="Yükleniyor..."
+          clearAllText="Hepsini sil."
+          clearValueText="Değeri sil."
+          noOptionsText="Hiçbir seçenek yok."
+          noResultsText="Mevcut seçenek yok."
+          searchPromptText="Aramak için yazınız."
+          placeholder="Seçiniz..."
+          name="prv_id"
+          @select="getTownsList"
+          @input="clearTownsList"
+        />
+      </div>
+    </div>
+    <div class="col-3">
+      <div class="form-group">
+        <label for="add-town">İlçeler </label>
+        <select class="form-control" name="twn_id">
+          <option value="" selected>Seçiniz</option>
+          <option :value="town.id" :key="key" v-for="(town, key) in townsArr">
+            {{town.label}}
+          </option>
+        </select>
       </div>
     </div>
   </div>
@@ -164,10 +203,12 @@
   <div class="row">
     <div class="col-12">
       <div class="form-group">
-        <label for="exampleFormControlSelect1">{{$t('messages.thr_institution')}} :</label>
+        <label for="exampleFormControlSelect1">
+          {{$t('messages.thr_institution')}} <span class="text-danger">*</span> :
+        </label>
         <select class="form-control" id="exampleFormControlSelect1"
           name="inst_id"
-          :value="oldValue('inst_id')"
+          value=""
         >
           <option selected disabled value="">Kurum Seçiniz</option>
           <option v-for="item in institutionList" 
@@ -185,9 +226,13 @@
 </template>
 
 <script>
-// import createLangFormComponent from './CreateLangFormComponent';
-
 import Treeselect from '@riophae/vue-treeselect'
+import { ASYNC_SEARCH } from '@riophae/vue-treeselect';
+
+const simulateAsyncOperation = fn => {
+  setTimeout(fn, 2000)
+}
+
 // import the styles
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
@@ -199,6 +244,8 @@ export default {
     return {
       institutionList: [],
       ajaxErrorCount: -1,
+      townsArr: [],
+      provinceArr: null,
     }
   },
   computed: {
@@ -235,7 +282,78 @@ export default {
       })
       .then((res) => {})
       .always(() => {});
-    }
+    },
+    loadProvinces({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+          if(searchQuery.length > 2) {
+            this.getProvincesList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
+    },
+    getProvincesList: function(searchWords, callback) {
+      $.ajax({
+        url: this.routes.getProvincesList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'searchWords': searchWords}
+      })
+      .done((res) => {
+				callback(null, res)
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getProvincesList(searchWords, callback);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+      })
+      .then((res) => {})
+		},
+
+    getTownsList: function(node) {
+      $.ajax({
+        url: this.routes.getTownsList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'prv_id': node.id}
+      })
+      .done((res) => {
+				this.townsArr = res;
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getTownsList(node);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+      })
+      .then((res) => {})
+		},
+
+    clearTownsList: function() {
+      this.townsArr = [];
+    },
+
+    resetTreeselect: function() {
+      this.provinceArr = null;
+      this.townsArr = null;
+      this.townsArrOpt = [];
+    },
   },
   created() {
     this.getInstitutions();
@@ -252,7 +370,6 @@ export default {
   },
   components: {
     Treeselect
-    // 'create-lang-form-component': createLangFormComponent,
   }
   
 }

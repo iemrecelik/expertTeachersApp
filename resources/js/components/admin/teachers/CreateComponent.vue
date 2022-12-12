@@ -67,7 +67,9 @@ export default {
       .done((res) => {
         this.setErrors('');
         this.setSucceed(res.succeed);
+        
         document.getElementById(this.formIDName).reset();
+        this.$refs.createFormComponent.resetTreeselect();
       })
       .fail((error) => {
         this.setSucceed('');

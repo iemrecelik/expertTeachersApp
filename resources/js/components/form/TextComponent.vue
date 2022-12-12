@@ -1,7 +1,8 @@
 <template>
 	<div class="form-group">
-    <label :for="idName">
-      {{ fieldLabelName }}
+    <label :for="idName"
+      v-html="getLabelHtml()"
+    >
     </label>
     <error-msg-component
       :ppsettings="{
@@ -43,6 +44,10 @@ export default {
       type: Object,
       required: true,
     },
+    ppnecessity: {
+      type: Boolean,
+      required: true,
+    },
   },
   computed: {
     filtFieldName: function(){
@@ -63,6 +68,11 @@ export default {
     renderType: function(){
       return this.ppvalue.settings.renderType || 0;
     },
+  },
+  methods: {
+    getLabelHtml: function() {
+      return this.fieldLabelName + (this.ppnecessity ? " <span class='text-danger'>*</span>" : "");
+    }
   }
 }
 </script>

@@ -108,6 +108,7 @@ return [
 	'dateOfBirth' => 'Doğum Tarihi',
 	'showTeacher' => 'Öğretmenin Bilgilerini Göster',
 	'thr_birth_day' => 'Doğum Tarihi',
+	'exportExcel' => 'Excel Olarak Çıkart',
 
 	/* Institution */
 	'inst_name' => 'Kurum İsmi',
