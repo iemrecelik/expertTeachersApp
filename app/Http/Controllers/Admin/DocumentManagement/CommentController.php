@@ -226,8 +226,8 @@ class CommentController extends Controller
             +++ 57- dava dosyasını sildiğimiz zaman ekranı yenilemeden değişikleri göstersin.
             +++ 58. bilgi notuna bireysel dava eklenemesin
             59- evrak eklerken hangi sendikayı ilgilendiriyorsa oda eklensin
-            60- Excel veri yüklerken var olan veriler silinmesin sadece güncellensin
-            61- öğretmenleri sildiğimiz resimleri de silinsin
+            +++ 60- Excel veri yüklerken var olan veriler silinmesin sadece güncellensin
+            +++ 61- öğretmenleri sildiğimiz resimleri de silinsin
             +++ 62- dava ekledikten sonra bilgi notu eklenmiyor
             +++ 63- Filtre de iller veritabanına eklenecek
             64- listeler excel olarak çıkartılabilicek
@@ -238,18 +238,20 @@ class CommentController extends Controller
             69- Öğretmene sonradan yazı atama olacak
             70- Evrak ekleme yaparken manuel dediğimizde textbox larda filtreleme yapılsın.
             +++ 71- öğretmen eklerken consolda javascript hataları çıkıyor bunlara bakılacak
-            72- evrak sayısı her yıl sıfırlanıyor. Buna göre ayarlanacak
+            72- evrak sayısı her yıl sıfırlanıyor. Bu yüzden tarih ve evrak sayısına göre kontrol yapılacak.
             +++ 73- Öğretmen eklerken zorun olanlar * olacak.
-            74- excel veri eklerken aynı tc numarası varsa kontrol etsin
-            75- excel formundaki zorunlu alanlar * ile belirtilsin.
+            +++ 74- excel veri eklerken aynı tc numarası varsa kontrol etsin
+            +++ 75- excel formundaki zorunlu alanlar * ile belirtilsin.
             +++ 76- Öğretmen Güncelleme de sorunlar düzeltilecek.
-            77- excel ile yükleme yaparken tc kontrolü olacak
-            78- eklenmeyen resimlerin tc numaraları alt satıra geçecek
+            +++ 77- excel ile yükleme yaparken tc kontrolü olacak
+            +++ 78- eklenmeyen resimlerin tc numaraları alt satıra geçecek
             79- aynı evrağa sonradan başka öğretmende eklenebilsin.
             80- evrak silme ve düzenleme olsun.
             81- kullanıcı yönetim paneli yapılacak
             82- evrak kayıt raporu eklenecek
             83- excel veya toplu ekleme ve düzenlemelerde timestamp yüklenecek
+            +++ 84- yüklenen resimler zaten varsa öncekiler silinsin
+            85- dava istatistikleri tarihe göre yapılsın.
         */
 
         $request->validate(

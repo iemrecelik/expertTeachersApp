@@ -13,6 +13,8 @@
       addComment: '{{ route('admin.document_mng.comment.addComment') }}',
       deleteComment: '{{ route('admin.document_mng.comment.deleteComment') }}',
       addLawFile: '{{ route('admin.teachers.teacherInfos.addLawFile') }}',
+      getDocumentSearchList: '{{ route('admin.document_mng.document.searchList') }}',
+      addDocumentToTeacher: '{{ route('admin.teachers.infos.addDocumentToTeacher') }}',
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
     :ppoldinput="'{{ json_encode(session()->getOldInput()) }}'"
