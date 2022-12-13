@@ -7,6 +7,7 @@ use App\Library\FileUpload;
 use Illuminate\Http\Request;
 use App\Library\ExcelProcess;
 use App\Models\Admin\Teachers;
+use App\Models\Admin\DcDocuments;
 use App\Models\Admin\Institutions;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
@@ -39,6 +40,21 @@ class TeachersController extends Controller
                 \Transliterator::create('tr-title')->transliterate($twnVal->twn_name)
             ] = \Transliterator::create('tr-title')->transliterate($twnVal->id);
         }    
+    }
+
+    public function addDocumentToTeacher(Request $request)
+    {
+        $id = $request->input('id');
+        $dcId = $request->input('dc_id');
+
+        $teacher = Teachers::find($id);
+        $document = DcDocuments::find($dcId);
+
+        $teacher->dc_documents()->save($document);
+
+        $document->dcFiles;
+
+        return $document;
     }
 
     public function addExcelValidation(Request $request)
@@ -176,11 +192,20 @@ class TeachersController extends Controller
             }
     
             if(count($updateArr) > 0) {
-                $updateArr = array_chunk($updateArr, 50);
+                foreach ($updateArr as $key => $val) {
+                    $tcNo = $val['thr_tc_no'];
+                    unset($val['thr_tc_no']);
+    
+                    DB::table('teachers')
+                        ->where('thr_tc_no', $tcNo)
+                        ->update($val);
+                }
+
+                /* $updateArr = array_chunk($updateArr, 50);
     
                 foreach ($updateArr as $updKey => $updVal) {
                     Teachers::insert($updVal);
-                }
+                } */
             }
         }else {
             $institutions = Institutions::all()->toArray();
@@ -207,17 +232,6 @@ class TeachersController extends Controller
                 ]
             );
         }
-
-        // return ['succeed' => __('messages.add_success')];
-
-        /* return [
-            'datas' => [
-                'insertErrorArr' => $insertErrorArr,
-                'sumErrorData' => count($insertErrorArr),
-                'sumInsertData' => $sumInsertData,
-                'succeed' => __('messages.add_success')
-            ]
-        ]; */
 
         return redirect()->route('admin.teachers.index')->with('datas', 
             [
@@ -279,7 +293,7 @@ class TeachersController extends Controller
 
         $infoMsg = array_diff($tcNoArr, $existTcNo);
         if(count($infoMsg) > 0) {
-            $infoMsg = join(',', $infoMsg).' T.C Numara(ları) veritabanında bulunamadığından eklenemedi.';
+            $infoMsg = join(', ', $infoMsg).' T.C Numara(ları) veritabanında bulunamadığından eklenemedi.';
         }else {
             $infoMsg = '';
         }
@@ -302,16 +316,18 @@ class TeachersController extends Controller
             $insertArr = array_chunk($insertArr, 50);
 
             foreach ($insertArr as $insKey => $insVal) {
-                // Teachers::insert($insVal); 
+                Teachers::insert($insVal); 
             }
         }
-// dd($updateArr);
+
         if(count($updateArr) > 0) {
             foreach ($updateArr as $key => $val) {
-                // $update = array_filter($val, fn($value) => !is_null($value) && $value !== '');
+                $tcNo = $val['thr_tc_no'];
+                unset($val['thr_tc_no']);
+
                 DB::table('teachers')
-                    ->update($val)
-                    ->where('thr_tc_no', $val['thr_tc_no']);
+                    ->where('thr_tc_no', $tcNo)
+                    ->update($val);
             }
 
             /* $updateArr = array_chunk($updateArr, 50);
@@ -857,7 +873,12 @@ class TeachersController extends Controller
      */
     public function destroy(Teachers $teacher)
     {
+        if($teach->thr_photo) {
+            Storage::delete('/public/upload/images/raw'.$teach->thr_photo);
+        }
+
         $res = $teacher->delete();
+
         $msg = [];
 
         if ($res)

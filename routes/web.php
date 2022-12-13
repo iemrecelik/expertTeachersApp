@@ -48,6 +48,12 @@ Route::prefix('admin')
 			'showTeacherInfos'
 		)
 		->name('teachers.infos');
+		
+		Route::post(
+			'teachers/infos/add-document-teacher', 
+			'addDocumentToTeacher'
+		)
+		->name('teachers.infos.addDocumentToTeacher');
 
 		Route::post(
 			'teachers/data-list', 

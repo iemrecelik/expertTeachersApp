@@ -81,6 +81,9 @@ class ExcelProcess
         $existTeachArr = $existTeachQuery->get()->toArray();
         $existTeachTcnoArr = array_column($existTeachArr, $uniqueKeyName);
 
+        /* var_dump(count($existTeachTcnoArr));
+        dd($existTeachTcnoArr); */
+
         // $existTeachQuery->delete();
         
         
@@ -98,6 +101,10 @@ class ExcelProcess
         /* echo '<pre>';
         var_dump(strtotime('01-01-1970'));
         var_dump(date('d-m-Y', -7200)); */
+
+        // echo '<pre>';
+        // var_dump($existTeachTcnoArr);
+        // var_dump($datas);
         foreach ($datas as $key => $value) {
             $co++;
 
@@ -108,7 +115,12 @@ class ExcelProcess
 
             $exIndex = array_search($value[$uniqueKey], $existTeachTcnoArr);
 
-            if(empty($exIndex)) {
+            /* var_dump($exIndex);
+            var_dump($value[$uniqueKey]); */
+
+            if(!is_numeric($exIndex)) {
+                /* var_dump('insert');
+                var_dump($value[$uniqueKey]); */
                 foreach ($rowArrLetter as $letKey => $letVal) {
                     $val = $excelValidClass->validateExcelField($letKey, $value[$letVal], $params['enter']);
 
@@ -124,7 +136,9 @@ class ExcelProcess
                     $insertArr[] = $arr;
                 }
                 
-            }else if ($params['updateDb']) {
+            }else if (isset($params['updateDb'])) {
+                /* var_dump('update');
+                var_dump($value[$uniqueKey]); */
                 foreach ($rowArrLetter as $letKey => $letVal) {
                     $val = $excelValidClass->validateExcelField($letKey, $value[$letVal], $params['enter']);
                     
@@ -136,6 +150,7 @@ class ExcelProcess
                     $existTeachArr[$exIndex][$letKey] = $val;
                 }
 
+                unset($existTeachArr[$exIndex]['id']);
                 unset($existTeachArr[$exIndex]['created_at']);
                 unset($existTeachArr[$exIndex]['updated_at']);
 
@@ -144,6 +159,9 @@ class ExcelProcess
                 }
             }
         }
+        /* echo '<pre>';
+        var_dump($insertArr);
+        dd($updateArr); */
 // die;
         return [
             'insertArr' => $insertArr,
