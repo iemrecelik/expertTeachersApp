@@ -77,6 +77,7 @@
 import showComponent from './ShowComponent';
 import addlistComponent from './AddListComponent';
 import addCommentComponent from './AddCommentComponent';
+import deleteComponent from './DeleteComponent';
 
 import Treeselect from '@riophae/vue-treeselect'
 import { ASYNC_SEARCH } from '@riophae/vue-treeselect';
@@ -126,10 +127,8 @@ export default {
     processesRow: function(id){
       let row = '';
       row += this.showBtnHtml(id);
-      // row += this.listBtnHtml(id);
-      // row += this.commentBtnHtml(id);
       row += this.fileDownloadBtnHtml(id);
-      // this.fileDownloadScript();
+      row += this.deleteBtnHtml(id);
       return row;
     },
 
@@ -188,6 +187,26 @@ export default {
             }'
           >
             <i class="bi bi-file-text"></i>
+          </button>
+        </span>`;
+    },
+
+    deleteBtnHtml: function(datas){
+      return  `
+        <span 
+            data-toggle="tooltip" data-placement="top" 
+            title="${this.$t('messages.delete')}"
+          >
+          <button type="button" class="btn btn-sm btn-danger"
+            data-toggle="modal" data-target="${this.modalSelector}"
+            data-component="${this.formTitleName}-delete-component" 
+            data-datas='{
+              "dcId": ${datas.id},
+              "thrId": ${this.teacher.id},
+              "formTitleName": "${this.formTitleName}"
+            }'
+          >
+            <i class="bi bi-trash"></i>
           </button>
         </span>`;
     },
@@ -273,7 +292,9 @@ export default {
       })
       .then((res) => {
         // this.dataTable.reload();
-        this.loadDataTable();
+        if(res) {
+          this.loadDataTable();
+        }
       })
       .always(() => {
         // this.formElement.scrollTo(0, 0);
@@ -330,6 +351,7 @@ export default {
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-add-list-component']: addlistComponent,
     [formTitleName + '-add-comment-component']: addCommentComponent,
+    [formTitleName + '-delete-component']: deleteComponent,
     Treeselect,
   }
 }

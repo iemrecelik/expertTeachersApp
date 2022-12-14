@@ -235,7 +235,7 @@ class CommentController extends Controller
             +++ 66- Öğretmen eklerken hem ekleme hem de düzenleme formuna il ve ilçe ekleme eklenecek
             67- İller ve ilçeler uygululama yüklerken sabit değer olarak yüklensin provider, service, middleware vb. laravelin araçlarına bak.
             +++ 68- Öğretmen Güncelleme de sorunlar düzeltilecek.
-            69- Öğretmene sonradan yazı atama olacak
+            +++ 69- Öğretmene sonradan yazı atama olacak
             70- Evrak ekleme yaparken manuel dediğimizde textbox larda filtreleme yapılsın.
             +++ 71- öğretmen eklerken consolda javascript hataları çıkıyor bunlara bakılacak
             72- evrak sayısı her yıl sıfırlanıyor. Bu yüzden tarih ve evrak sayısına göre kontrol yapılacak.
@@ -245,7 +245,7 @@ class CommentController extends Controller
             +++ 76- Öğretmen Güncelleme de sorunlar düzeltilecek.
             +++ 77- excel ile yükleme yaparken tc kontrolü olacak
             +++ 78- eklenmeyen resimlerin tc numaraları alt satıra geçecek
-            79- aynı evrağa sonradan başka öğretmende eklenebilsin.
+            +++ 79- aynı evrağa sonradan başka öğretmende eklenebilsin.
             80- evrak silme ve düzenleme olsun.
             81- kullanıcı yönetim paneli yapılacak
             82- evrak kayıt raporu eklenecek

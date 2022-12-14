@@ -629,4 +629,22 @@ class DocumentsController extends Controller
 
         return $showContent;
     }
+
+    public function edit(DcDocuments $document)
+    {
+        $document->dcFiles;
+        $document->dcAttachFiles;
+        $document->dc_ralatives;
+        $document->dc_lists;
+
+        return view(
+            'admin.document_mng.edit_document',
+            ['data' => $document]
+        );
+    }
+
+    public function update()
+    {
+
+    }
 }
