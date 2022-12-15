@@ -80,18 +80,27 @@
 					Dosya(ları) buraya sürükleyip bırakınız.
 					<div id="fileNameList">
 						<div class="mt-2" v-for="(item, key) in htmlFileList">
-							<div v-if="!item.uploaded" class="progress">
-								<div :class="`progress-bar progress-bar-striped progress-bar-animated progress-${elUniqueID}-${item.fileKey}`"
-									role="progressbar" 
-									aria-valuenow="0" 
-									aria-valuemin="0" 
-									aria-valuemax="100" 
-									style="width: 0%"
-								>
-								</div>
+							<div v-if="item.uploaded == false">
+								<b><u>Ön yükleme tamamlandı.</u></b> 
+								<a class="text-success">
+									<i class="bi bi-check-circle-fill"></i>
+								</a>
+							</div>
+							<div v-else-if="item.uploaded == true">
+								<b><u>Yüklü Dosya :</u></b>
+								<input type="hidden" :name="fieldNames.uploadedAttachFiles" :value="item.id">
 							</div>
 							<div v-else>
-								<b><u>Yüklü Dosya :</u></b>
+								<div  class="progress">
+									<div :class="`progress-bar progress-bar-striped progress-bar-animated progress-${elUniqueID}-${item.fileKey}`"
+										role="progressbar" 
+										aria-valuenow="0" 
+										aria-valuemin="0" 
+										aria-valuemax="100" 
+										style="width: 0%"
+									>
+									</div>
+								</div>
 							</div>
 
 							<div class="w-75 float-left">{{item.fileName}}</div>
@@ -230,7 +239,14 @@ export default {
 			elUniqueID: this.uniqueID(),
 			// manuelEnter: 'manuelEnter'+elUniqueID;
 			manuelEnter: false,
-			data: this.ppdata
+			data: Object.keys(this.ppdata).length > 0 ? 
+				this.ppdata :
+				{
+					dc_item_status: '',
+					dc_attach_files: []
+				},
+			attachFileCount: 0,
+			copyHtmlFileList: []
 		}
   },
 	props: {
@@ -245,7 +261,7 @@ export default {
 		ppdata: {
 			type: Object,
 			required: false,
-			default: null
+			default: {}
 		}
 	},
 	watch: {
@@ -432,9 +448,19 @@ export default {
 					el.style.width = progress+"%";
 					el.style['aria-valuenow'] = progress+"%";
 
-					/* if(progress === 100) {
-						el.classList.add("bg-success");
-					} */
+					if(progress === 100) {
+						setTimeout(() => {
+							// el.classList.add("bg-success");
+							el.parentElement.parentElement.innerHTML=`
+								<b><u>Ön yükleme tamamlandı.</u></b> 
+								<a class="text-success">
+									<i class="bi bi-check-circle-fill"></i>
+								</a>
+							`;
+							el.parentElement.remove();
+						}, 500);
+						// el.classList.add("bg-success");
+					}
 				};
 
 				reader.onloadend = () => {
@@ -460,28 +486,57 @@ export default {
 		fileOnDragenter: function(evt) {
 			evt.preventDefault();
 		},
+		reloadHtmlFileList: function(key) {
+			this.copyHtmlFileList.splice(key, 1);
+			/* console.log('***************************');
+			console.log('key: ', key);
+			console.log(this.copyHtmlFileList); */
+
+			this.copyHtmlFileList.forEach((item, itemKey) => {
+				this.htmlFileList.push({
+					fileName: item.fileName, 
+					fileKey: itemKey,
+					uploaded: item.uploaded == true ? true : false 
+				});
+			});
+
+			/* console.log('------------------');
+			console.log(this.dT.files); */
+		},
 		delFileList: function(key) {
 			let fileInput = this.getFileInputElement();
 
 			let fileListItemProm = new Promise((resolve, reject) => {
+				//this.copyHtmlFileList = JSON.parse(JSON.stringify(nestedNumthis.htmlFileListbers));;
+				this.copyHtmlFileList = [...this.htmlFileList];
+				this.htmlFileList = [];
 
-				this.htmlFileList.find(obj => {
+				this.copyHtmlFileList.forEach((obj, objKey) => {
 					if(obj.fileKey === key) {
-						resolve(obj.fileName);
+						if(obj.uploaded) {
+							this.attachFileCount--;
+							this.reloadHtmlFileList(key);
+
+							resolve(obj.uploaded);
+						}else {
+							resolve(obj.fileName);
+						}
 					}
 				});
 			});
 
 			fileListItemProm.then((fileName) => {
 
-				this.htmlFileList = [];
-				for (const [key, file] of Object.entries(this.dT.files)) {
+				if(fileName !== true) {
+					for (const [key, file] of Object.entries(this.dT.files)) {
 
-					if(file.name === fileName) {
-						this.dT.items.remove(key);
-					}else {
-						this.htmlFileList.push({fileName: file.name, fileKey: key});
-					}					
+						if(file.name === fileName) {
+							this.dT.items.remove(key);
+							this.reloadHtmlFileList((parseInt(key)+parseInt(this.attachFileCount)));
+						}/* else {
+							this.htmlFileList.push({fileName: file.name, fileKey: key});
+						} */					
+					}
 				}
 
 				fileInput.files = this.dT.files;
@@ -506,13 +561,17 @@ export default {
 				'showContent': this.data.showContent,
 			}
 
-			this.data.dc_attach_files.forEach((file, key) => {
-				this.htmlFileList.push({
-					fileName: this.getFileNameInPathFunc(file.dc_att_file_path),
-					fileKey: key,
-					uploaded: true
+			if(this.data.dc_attach_files !== undefined) {
+				this.attachFileCount = this.data.dc_attach_files.length;
+
+				this.data.dc_attach_files.forEach((file, key) => {
+					this.htmlFileList.push({
+						fileName: this.getFileNameInPathFunc(file.dc_att_file_path),
+						fileKey: key,
+						uploaded: true
+					});
 				});
-			});
+			}
 		}
 	}
 }

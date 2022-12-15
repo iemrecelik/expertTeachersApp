@@ -50,7 +50,7 @@
 				<div class="col-12">
 
 					<!-- SELECT2 EXAMPLE -->
-					<div class="card card-default" :key="key" v-for="(key, val) in relFormCount">
+					<div class="card card-default" :key="key" v-for="(val, key) in relFormCount">
 						<div class="card-header">
 							<h3 class="card-title">İlgili Evrak</h3>
 
@@ -64,7 +64,7 @@
 								> -->
 								<button type="button" class="btn btn-tool" 
 									data-card-widget="remove"
-									@click="dropRelForm(val)"
+									@click="dropRelForm(key)"
 								>
 									<i class="fas fa-times"></i>
 								</button>
@@ -75,9 +75,10 @@
 							<div class="row">
 								<div class="col-12">
 									<edit-file-upload-form
-										:ppfieldNames="getDocRelFieldNames(val)"
+										:ppfieldNames="getDocRelFieldNames(key)"
 										:ppitemStatus="0"
 										ref="fileUploadFormComponent"
+										:ppdata="typeof val == 'object' ? val : {}"
 									>
 									</edit-file-upload-form>
 								</div>
@@ -97,7 +98,7 @@
 						</div>
 					</div>
 
-					<div class="row">
+					<!-- <div class="row">
 						<div class="col-4">
 							
 							<div class="form-group">
@@ -111,10 +112,10 @@
 							</div>
 							
 						</div>
-					</div>
+					</div> -->
 
 					<div class="row">
-						<div class="col-4">
+						<!-- <div class="col-4">
 							<div class="form-group">
 								<label for="exampleFormControlSelect1">Listeler</label>
 								<select class="form-control" 
@@ -127,7 +128,7 @@
 									</option>
 								</select>
 							</div>
-						</div>
+						</div> -->
 
 						<div class="col-4">
 							<div class="form-group">
@@ -153,7 +154,7 @@
 
 				</div>
 			</div>
-			<button id="document-submit" disabled type="submit" class="btn btn-primary">Kaydet</button>
+			<button id="document-submit" disabled type="submit" class="btn btn-primary">Güncelle</button>
 		</div>
 	</form>
 
@@ -282,32 +283,32 @@ export default {
 			let element = document.getElementById('document-submit');
 			let disabled = false;
 
-			let files = document.getElementsByClassName(
+			/* let files = document.getElementsByClassName(
 				this.getFileInputClassName(this.docFieldNames.senderFile)
 			);
 			
 			let relFiles = document.getElementsByClassName(
 				this.getFileInputClassName('rel_dc_sender_file')
 			);
-// console.log("relFiles.length", relFiles.length);
+
 			for (let i = 0; i < relFiles.length; i++) {
 				disabled = relFiles[i].value ? false : true;
-// console.log(1, disabled);
+
 				if (disabled === true) {
 					element.disabled = disabled ? true : false
 					break;
 				}
 			}
-// console.log(2, disabled);
+
 			if(disabled === false) {
 				for (let i = 0; i < files.length; i++) {
 					disabled = files[i].value ? false : true;
 				}
 			}
-// console.log("files.length", files.length )
+
 			if(files.length < 1) {
 				disabled = true;
-			}
+			} */
 
 			element.disabled = disabled ? true : false
 		},
@@ -339,6 +340,7 @@ export default {
 				itemStatus: `rel_dc_item_status[${key}]`,
 				senderFile: `rel_dc_sender_file[${key}]`,
 				senderAttachFiles: `rel_dc_sender_attach_files[${key}][]`,
+				uploadedAttachFiles: `rel_dc_uploaded_sender_attach_files[${key}][]`,
 				sender: `rel_dc_who_send[${key}]`,
 				receiver: `rel_dc_who_receiver[${key}]`,
 				number: `rel_dc_number[${key}]`,
@@ -444,9 +446,14 @@ export default {
 		this.setSucceed(this.ppsuccess);
     this.getCategory();		
 		this.setOld(this.ppoldinput);
+
+		this.data.dc_ralatives.forEach((relVal, key) => {
+			this.relFormCount.push(relVal);
+		});
   },
 	mounted() {
-		this.modalErrorMsgShow();		
+		this.modalErrorMsgShow();
+		this.checkForm();
 	},
   components: {
     Treeselect,

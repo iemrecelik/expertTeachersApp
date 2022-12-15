@@ -252,6 +252,7 @@ class CommentController extends Controller
             83- excel veya toplu ekleme ve düzenlemelerde timestamp yüklenecek
             +++ 84- yüklenen resimler zaten varsa öncekiler silinsin
             85- dava istatistikleri tarihe göre yapılsın.
+            86- dava modülünde aynı evrak başka öğretmenlerede atanabilsin
         */
 
         $request->validate(
