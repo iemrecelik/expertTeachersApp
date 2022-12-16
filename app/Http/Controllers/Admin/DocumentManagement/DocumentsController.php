@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\DocumentManagement\StoreDcDocumentsRequest;
 use App\Http\Requests\Admin\DocumentManagement\StoreManualDcDocumentsRequest;
+use App\Http\Requests\Admin\DocumentManagement\UpdateDcDocumentsRequest;
 
 class DocumentsController extends Controller
 {
@@ -413,17 +414,33 @@ class DocumentsController extends Controller
         extract($arr);
 
         if($exist === false) {
-            $filesArr = $this->saveFileToStorage(
-                $dcFile, 
-                'DcFiles', 
-                'dc_file_path',
-                // 'udf'
-            );
+            if($dcFile) {
+                Storage::delete($dcDocuments->dcFiles->dc_file_path);
+                $dcDocuments->dcFiles()->detach();
+
+                $filesArr = $this->saveFileToStorage(
+                    $dcFile, 
+                    'DcFiles', 
+                    'dc_file_path',
+                    // 'udf'
+                );
+            }
         }
         
         if(isset($dcAttachFiles)) {
 
-            $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
+            if(isset($dcUploadedAttachFiles)) {
+                $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
+
+                foreach ($dcAttachFilesCollection as $dcAttFileKey => $dcAttFileVal) {
+                    if(in_array($dcAttFileVal->id, $dcUploadedAttachFiles) ){
+                        unset($dcAttachFilesCollection[$dcAttFileKey]);
+                    }
+                }
+            }else {
+                $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
+            }
+            
             $this->deleteImageFromStorage($dcAttachFilesCollection->get());
             
             $dcAttachFilesCollection->delete();
@@ -636,6 +653,14 @@ class DocumentsController extends Controller
         $document->dcAttachFiles;
         $document->dc_ralatives;
         $document->dc_lists;
+        $document->dc_teachers;
+
+        /* timestamp verisini tarih formatına çevirme başla */
+        $document->dc_date = date('d.m.Y', $document->dc_date);
+        foreach ($document->dc_ralatives as $key => $val) {
+            $val->dc_date = date('d.m.Y', $val->dc_date);
+        }
+        /* timestamp verisini tarih formatına çevirme bitiş */
 
         return view(
             'admin.document_mng.edit_document',
@@ -643,8 +668,238 @@ class DocumentsController extends Controller
         );
     }
 
-    public function update()
+    private function updateDcDocument($params, $dcFile = null, $dcAttachFiles = null, $dcDocuments = null, $dcUploadedAttachFiles = null)
     {
+        $listId = $params['list_id'] ?? 0;
+        $teacherIds = $params['thr_id'] ?? [];
+        $dcComText = $params['dc_com_text'] ?? '';
+        $id = $params['id'];
 
+        unset($params['list_id']);
+        unset($params['thr_id']);
+        unset($params['dc_com_text']);
+        unset($params['id']);
+        
+        if(empty($dcDocuments)) {
+            
+            $dcDocuments = DcDocuments::where([
+                ['id', $id],
+                ['dc_main_status', "1"],
+            ])->first();
+            
+            if(empty($dcDocuments)) {
+                throw ValidationException::withMessages(
+                    [
+                        'document' => '
+                            Düzenlemeye çalışılan evrak mevcut değildir. 
+                            Başkası tarafından silinmiş olabilir. 
+                            Lütfen evrağı yeniden seçiniz.
+                        '
+                    ]
+                );
+            }
+
+            $dcDocumentExist = DcDocuments::where([
+                ['id', '!=', $id],
+                ['dc_number', '=', $params['dc_number']],
+                ['dc_main_status', "1"],
+            ])->first();
+
+            if($dcDocumentExist) {
+                throw ValidationException::withMessages(
+                    [
+                        'document' => 'Yeni yazdığınız evrak sayısı zaten yüklü. Lütfen dosya sayısını değiştiriniz.'
+                    ]
+                );
+            }
+
+            /* $dcDocuments = DcDocuments::where(
+                ['dc_number' => $params['dc_number']],
+            )->first(); */
+
+            $params = array_filter($params, fn($value) => !is_null($value) && $value !== '');
+            $dcDocuments->fill($params);
+
+            // dd($params);
+
+            dd($dcDocuments);
+
+            $dcDocuments->save();
+
+            /* $dcDocuments = DcDocuments::where(
+                ['dc_number' => $params['dc_number']],
+            )->first();
+
+            $exist = empty($dcDocuments) ? false : true;
+            
+            if ($exist === false) {
+                $dcDocuments = DcDocuments::create(
+                    // ['dc_number' => array_shift($params)],
+                    $params
+                );
+            }else {
+                $dcDocuments->dc_main_status = "1";
+                $dcDocuments->save();
+            } */
+
+            $exist = false;
+
+            /* Listeye ekleme */
+            if($listId > 0) {
+                $dcDocuments->dc_lists()->detach();
+
+                $dcList = DcLists::find($listId);
+                $dcDocuments->dc_lists()->save($dcList);
+            }
+
+            /* Öğretmenleri ekleme */
+            if(count($teacherIds) > 0) {
+                $dcDocuments->dc_teachers()->detach();
+
+                $teachers = Teachers::whereIn('id', $teacherIds)->get();
+                $dcDocuments->dc_teachers()->saveMany($teachers);
+            }
+
+            /* İzinli kullanıcıları ekleme */
+
+            /* Dökümana not ekleme */
+            if(!empty($dcComText)) {
+
+                DcComment::where('dc_id', $dcDocuments->id)->delete();
+
+                $dcComment = DcComment::create([
+                    'dc_com_text'   => $dcComText,
+                    'dc_id'         => $dcDocuments->id,
+                    'user_id'       => $params['user_id'],
+                ]);
+            }
+
+            $this->uploadFile([
+                'dcDocuments'           => $dcDocuments,
+                'params'                => $params,
+                'dcFile'                => $dcFile,
+                'dcAttachFiles'         => $dcAttachFiles,
+                'exist'                 => $exist,
+                'dcUploadedAttachFiles' => $dcUploadedAttachFiles,
+            ]);
+            
+        }else {
+            $dcRelative = DcDocuments::where(
+                ['dc_number' => $params['dc_number']]
+            )->first();
+
+            $exist = empty($dcRelative) ? false : true;
+
+            if($exist === false) {
+                $dcRelative = DcDocuments::create(
+                    // ['dc_number' => array_shift($params)],
+                    $params
+                );
+            }
+
+            $dcDocuments->dc_ralatives()->save($dcRelative);
+
+            $this->uploadFile([
+                'dcDocuments'           => $dcRelative,
+                'params'                => $params,
+                'dcFile'                => $dcFile,
+                'dcAttachFiles'         => $dcAttachFiles,
+                'exist'                 => $exist,
+                'dcUploadedAttachFiles' => $dcUploadedAttachFiles,
+            ]);
+        }
+
+        return $dcDocuments;
+    }
+
+    /**
+     * Store a newly manual created resource in storage.
+     *
+     * @param  UpdateDcDocumentsRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateDcDocumentsRequest $request)
+    {
+        $params = $request->all();
+
+        $this->sameDocumentControl($params);
+        
+        $arr = [
+            'id'                => $params['id'],
+            'dc_number'         => trim($params['dc_number']),
+            'dc_item_status'    => $params['dc_item_status'],
+            'dc_main_status'    => "1",
+            'dc_cat_id'         => $params['dc_cat_id'],
+            'dc_subject'        => $params['dc_subject'],
+            'dc_who_send'       => $params['dc_who_send'],
+            'dc_who_receiver'   => $params['dc_who_receiver'],
+            'dc_content'        => $params['dc_content'] ?? '',
+            'dc_show_content'   => $params['dc_show_content'] ?? '',
+            'dc_raw_content'    => $params['dc_raw_content'] ?? '',
+            'dc_date'           => strtotime($params['dc_date']),
+            'user_id'           => $request->user()->id,
+            'list_id'           => $params['list_id'] ?? null,
+            'thr_id'            => $params['thr_id'] ?? null,
+            'dc_com_text'       => $params['dc_com_text'] ?? null,
+            'dc_manuel'         => $params['dc_manuel'],
+        ];
+
+        $dcDocuments = $this->updateDcDocument(
+            $arr, 
+            [
+                $request->file('dc_sender_file')
+            ], 
+            $request->file('dc_sender_attach_files'),
+            null,
+            $request->file('dc_uploaded_sender_attach_files')
+        );
+
+        /* Save Relative Document */
+        $this->updateRelDocument($dcDocuments, $params, $request);
+        
+
+        $msg = ['succeed' => __('messages.edit_success')];
+        
+        return redirect()->route('admin.document_mng.document.create')
+                        ->with($msg);
+    }
+
+    private function updateRelDocument($dcDocuments, $params, $request)
+    {
+        if (isset($params['rel_dc_number'])) {
+            
+            foreach ($params['rel_dc_number'] as $key => $val) {
+
+                $arr = [
+                    'id'                => $params['rel_dc_id'][$key],
+                    'dc_number'         => trim($params['rel_dc_number'][$key]),
+                    'dc_item_status'    => $params['rel_dc_item_status'][$key],
+                    'dc_cat_id'         => $params['dc_cat_id'],
+                    'dc_subject'        => $params['rel_dc_subject'][$key],
+                    'dc_who_send'       => $params['rel_dc_who_send'][$key],
+                    'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
+                    'dc_content'        => $params['rel_dc_content'][$key] ?? '',
+                    'dc_show_content'   => $params['rel_dc_show_content'][$key] ?? '',
+                    'dc_raw_content'    => $params['rel_dc_raw_content'][$key] ?? '',
+                    'dc_date'           => strtotime($params['rel_dc_date'][$key]),
+                    'user_id'           => $request->user()->id,
+                    'dc_manuel'         => $params['dc_manuel'],
+                ];
+
+                $relDcSenderAttachFiles = $request->file('rel_dc_sender_attach_files');
+                $relDcSenderAttachFiles = isset($relDcSenderAttachFiles[$key]) ? 
+                                            $relDcSenderAttachFiles[$key] : 
+                                            null;
+
+                $this->updateDcDocument(
+                    $arr,
+                    [
+                        $request->file('rel_dc_sender_file')[$key]
+                    ],
+                    $relDcSenderAttachFiles,
+                    $dcDocuments
+                );
+            }
+        }
     }
 }

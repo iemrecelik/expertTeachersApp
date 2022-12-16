@@ -9,10 +9,11 @@
   <!-- <form :id="formIDName" @submit.prevent> -->
   <form :id="formIDName" 
 		method="post" 
-		action="/admin/document-management/document/manual-store"
+		action="/admin/document-management/document/update"
 		enctype="multipart/form-data"
 	>
 		<input type="hidden" name="_token" :value="token">
+		<input type="hidden" name="id" :value="data.id">
 
 		<div class="row">
 
@@ -138,6 +139,8 @@
 									:multiple="true"
 									:async="true"
 									:load-options="loadOptions"
+									:defaultOptions="teacherArrOpt"
+          				v-model="teacherArr"
 									loadingText="Yükleniyor..."
 									clearAllText="Hepsini sil."
 									clearValueText="Değeri sil."
@@ -207,6 +210,7 @@ export default {
 				itemStatus: 'dc_item_status',
 				senderFile: 'dc_sender_file',
 				senderAttachFiles: 'dc_sender_attach_files[]',
+				uploadedSenderAttachFiles: 'dc_uploaded_sender_attach_files[]',
 				sender: 'dc_who_send',
 				receiver: 'dc_who_receiver',
 				number: 'dc_number',
@@ -219,7 +223,9 @@ export default {
 			relFormCount: [],
 			showForm: true,
 			docList: [],
-			data: this.ppdata
+			data: this.ppdata,
+			teacherArr: [],
+			teacherArrOpt: []
 		}
   },
 	props: {
@@ -337,6 +343,7 @@ export default {
 		getDocRelFieldNames: function(key) {
 
 			return {
+				id: `rel_dc_id[${key}]`,
 				itemStatus: `rel_dc_item_status[${key}]`,
 				senderFile: `rel_dc_sender_file[${key}]`,
 				senderAttachFiles: `rel_dc_sender_attach_files[${key}][]`,
@@ -450,6 +457,17 @@ export default {
 		this.data.dc_ralatives.forEach((relVal, key) => {
 			this.relFormCount.push(relVal);
 		});
+
+		/* öğretmenleri ekle başla */
+		this.data.dc_teachers.forEach(teacher => {
+			this.teacherArrOpt.push({
+				id: teacher.id,
+				label: `(${teacher.thr_tc_no}) ${teacher.thr_name} ${teacher.thr_surname}`
+			});
+
+			this.teacherArr.push(teacher.id);
+		});
+    /* öğretmenleri ekle bitir */
   },
 	mounted() {
 		this.modalErrorMsgShow();

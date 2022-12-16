@@ -1,7 +1,7 @@
 <template>
 <div>
 	<div class="row">
-		
+		<input type="hidden" :name="fieldNames.id" :value="this.data.id">
 		<div class="col-3">
 			<div class="form-group">
 				<label for="validationCustom04">Evrağın Durumu</label>
