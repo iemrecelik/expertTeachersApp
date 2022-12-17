@@ -46,15 +46,42 @@ class TeachersController extends Controller
     {
         $id = $request->input('id');
         $dcId = $request->input('dc_id');
+        
+        $existDc = DB::table('dc_thr')->where([
+            ['dc_id', $dcId],
+            ['thr_id', $id],
+        ])->get();
 
-        $teacher = Teachers::find($id);
-        $document = DcDocuments::find($dcId);
+        if(count($existDc) > 0) {
+            $result = null;
+        }else {
+            $teacher = Teachers::find($id);
+            $document = DcDocuments::find($dcId);
 
-        $teacher->dc_documents()->save($document);
+            $teacher->dc_documents()->save($document);
+            
+            $document->dcFiles;
 
-        $document->dcFiles;
+            $result = $document;
+        }
 
-        return $document;
+        return $result;
+    }
+    public function delDocumentToTeacher(Teachers $teacher, DcDocuments $document)
+    {
+        $res = DB::table('dc_thr')->where([
+            ['dc_id', $document->id],
+            ['thr_id', $teacher->id]
+        ])->delete();
+
+        $msg = [];
+
+        if ($res)
+            $msg['succeed'] = __('delete_success');
+        else
+            $msg['error'] = __('delete_error');
+
+        return $msg;
     }
 
     public function addExcelValidation(Request $request)

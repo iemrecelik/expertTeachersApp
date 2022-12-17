@@ -63,8 +63,9 @@ return [
 	'categoryManage' => 'Kategori Yönetimi',
 	'dc_up_cat_name' => 'Üst Kategori',
 
-	/* Create Document */
+	/* Document */
 	'createDocument' => 'Evrak Kaydetme',
+	'editDocument' => 'Evrak Düzenleme',
 	'resetForm' => 'Formu Sıfırla',
 	'enterCategoryName' => 'Kategori ismini giriniz.',
 
