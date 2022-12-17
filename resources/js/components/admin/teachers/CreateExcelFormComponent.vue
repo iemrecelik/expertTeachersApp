@@ -1,6 +1,14 @@
 <template>
 <div>
   <div class="row">
+    <div class="col-12">
+      <div class="alert alert-primary" role="alert">
+        (<span class="text-danger">*</span>) İşareti olan alanların doldurulması zorunludur.
+      </div>
+    </div>
+  </div>
+
+  <div class="row">
     <div class="col-4">
       <!-- <div class="form-group">
         <label for="tc-no">{{$t('messages.thr_tc_no')}}</label>
@@ -16,7 +24,9 @@
       </div> -->
 
       <div class="form-group">
-        <label for="tc-no">{{$t('messages.thr_tc_no')}}</label>
+        <label for="tc-no">
+          {{$t('messages.thr_tc_no')}} <span class="text-danger">*</span>
+        </label>
         <treeselect
           :id="'tc-no'"
           :multiple="false"
@@ -34,7 +44,9 @@
     </div>
     <div class="col-4">
       <div class="form-group">
-        <label for="thr-name">{{$t('messages.thr_name')}}</label>
+        <label for="thr-name">
+          {{$t('messages.thr_name')}} <span class="text-danger">*</span>
+        </label>
         <treeselect
           :id="'thr-name'"
           :multiple="false"
@@ -60,7 +72,9 @@
     </div>
     <div class="col-4">
       <div class="form-group">
-        <label for="thr-surname">{{$t('messages.thr_surname')}}</label>
+        <label for="thr-surname">
+          {{$t('messages.thr_surname')}}  <span class="text-danger">*</span>
+        </label>
         <treeselect
           :id="'thr-surname'"
           :multiple="false"
@@ -100,7 +114,9 @@
 
     <div class="col-4">
       <div class="form-group">
-        <label for="thr-gender">{{$t('messages.dateOfBirth')}} (**/**/****, **.**.****)</label>
+        <label for="thr-gender">
+          {{$t('messages.dateOfBirth')}} (**/**/****, **.**.****) <span class="text-danger">*</span>
+        </label>
         <treeselect
           :id="'thr-gender'"
           :multiple="false"
@@ -215,7 +231,10 @@
   <div class="row">
     <div class="col-4">
       <div class="form-group">
-        <label for="thr-gender">{{$t('messages.thr_gender')}} (erkek, bayan)</label>
+        <label for="thr-gender">
+          {{$t('messages.thr_gender')}} (erkek, bayan) 
+          <span class="text-danger">*</span>
+        </label>
         <treeselect
           :id="'thr-gender'"
           :multiple="false"
@@ -251,7 +270,10 @@
   <div class="row">
     <div class="col-4">
       <div class="form-group">
-        <label for="career-ladder">{{$t('messages.careerLadder')}}(öğrt, uzman öğrt, başöğrt)</label>
+        <label for="career-ladder">
+          {{$t('messages.careerLadder')}}(öğrt, uzman öğrt, başöğrt) 
+          <span class="text-danger">*</span>
+        </label>
         <treeselect
           :id="'career-ladder'"
           :multiple="false"
@@ -403,7 +425,9 @@
   <div class="row">
     <div class="col-12">
       <div class="form-group">
-        <label for="inst-id">{{$t('messages.thr_institution')}}</label>
+        <label for="inst-id">
+          {{$t('messages.thr_institution')}} <span class="text-danger">*</span>
+        </label>
         <treeselect
           :id="'inst-id'"
           :multiple="false"

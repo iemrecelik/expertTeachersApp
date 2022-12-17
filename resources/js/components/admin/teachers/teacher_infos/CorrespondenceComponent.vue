@@ -13,6 +13,46 @@
     </thead>
   </table>
 
+  <div class="row mt-3">
+    <div class="row">
+      <div class="col-12">
+        <label for="addDocumentToTeacher">Evrak Ekle </label>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-2">
+        <div class="form-group">
+          <treeselect
+            :id="'addDocumentToTeacher'"
+            :multiple="false"
+            :async="true"
+            :load-options="loadDcNumbers"
+            loadingText="Yükleniyor..."
+            clearAllText="Hepsini sil."
+            clearValueText="Değeri sil."
+            noOptionsText="Hiçbir seçenek yok."
+            noResultsText="Mevcut seçenek yok."
+            searchPromptText="Aramak için yazınız."
+            placeholder="Seçiniz..."
+            name="dc_id"
+          />
+        </div>
+      </div>
+
+      <div class="col-2">
+        <button type="button" 
+          id="add-document" 
+          class="btn btn-primary"
+          @click="addDocumentToTeacher"
+        >
+          {{ $t('messages.add') }}
+        </button>
+      </div>
+    </div>
+    
+  </div>
+
   <!-- Modal -->
   <div class="modal fade" tabindex="-1" role="dialog" 
     aria-labelledby="formModalLongTitle" aria-hidden="true"
@@ -37,6 +77,17 @@
 import showComponent from './ShowComponent';
 import addlistComponent from './AddListComponent';
 import addCommentComponent from './AddCommentComponent';
+import deleteComponent from './DeleteComponent';
+
+import Treeselect from '@riophae/vue-treeselect'
+import { ASYNC_SEARCH } from '@riophae/vue-treeselect';
+
+const simulateAsyncOperation = fn => {
+  setTimeout(fn, 2000)
+}
+
+// import the styles
+import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 let formTitleName= 'teacher-dc-search-list';
 
@@ -50,6 +101,7 @@ export default {
       modalIDName: 'formModalLong',
       formTitleName,
       dcContent: '',
+      dataTable: null,
     }
   },
   props: {
@@ -75,21 +127,49 @@ export default {
     processesRow: function(id){
       let row = '';
       row += this.showBtnHtml(id);
-      // row += this.listBtnHtml(id);
-      // row += this.commentBtnHtml(id);
       row += this.fileDownloadBtnHtml(id);
-      // this.fileDownloadScript();
+      row += this.deleteBtnHtml(id);
       return row;
     },
 
-    fileDownloadScript() {
-      $( "[data-file-download]" ).on( "click", function(event) {
-        event.attr({
-          target: '_blank', 
-          href  : 'public/upload/2022/09/02/08/Evin KESKİN Eksiz ilgisiz.udf'
-        });
-      });
+    loadDcNumbers({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+          if(searchQuery.length > 2) {
+            this.getDocumentSearchList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
     },
+
+    getDocumentSearchList: function(dcNumber, callback) {
+      $.ajax({
+        url: this.routes.getDocumentSearchList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'dcNumber': dcNumber}
+      })
+      .done((res) => {
+				callback(null, res)
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getDocumentSearchList(dcNumber, callback, instanceId);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		},
     
     showBtnHtml: function(datas){
       return  `
@@ -107,6 +187,26 @@ export default {
             }'
           >
             <i class="bi bi-file-text"></i>
+          </button>
+        </span>`;
+    },
+
+    deleteBtnHtml: function(datas){
+      return  `
+        <span 
+            data-toggle="tooltip" data-placement="top" 
+            title="${this.$t('messages.delete')}"
+          >
+          <button type="button" class="btn btn-sm btn-danger"
+            data-toggle="modal" data-target="${this.modalSelector}"
+            data-component="${this.formTitleName}-delete-component" 
+            data-datas='{
+              "dcId": ${datas.id},
+              "thrId": ${this.teacher.id},
+              "formTitleName": "${this.formTitleName}"
+            }'
+          >
+            <i class="bi bi-trash"></i>
           </button>
         </span>`;
     },
@@ -168,42 +268,82 @@ export default {
           </a>
         </span>`;
     },
+
+    addDocumentToTeacher: function() {
+      let val = document.getElementsByName('dc_id')[0].value;
+
+      $.ajax({
+        url: this.routes.addDocumentToTeacher,
+        type: 'POST',
+        dataType: 'JSON',
+        data: {id: this.teacher.id, dc_id: val},
+      })
+      .done((res) => {
+        this.teacher.dc_documents.push(res);
+        /* this.setErrors('');
+        this.setSucceed(res.succeed);
+        
+        document.getElementById(this.formIDName).reset();
+        this.$refs.createFormComponent.resetTreeselect(); */
+      })
+      .fail((error) => {
+        /* this.setSucceed('');
+        this.setErrors(error.responseJSON.errors); */
+      })
+      .then((res) => {
+        // this.dataTable.reload();
+        if(res) {
+          this.loadDataTable();
+        }
+      })
+      .always(() => {
+        // this.formElement.scrollTo(0, 0);
+      });
+    },
+
+    loadDataTable() {
+      if(this.dataTable) {
+        this.dataTable.destroy();
+      }
+
+      this.dataTable = $('.res-dt-table').DataTable({
+        data: this.teacher.dc_documents,
+        columns: [
+          { 
+            'data': 'dc_item_status' ,
+            'render': (data, type, row) => {
+              return data < 1 ? "Gelen" : "Giden";
+            }
+          },
+          { 'data': 'dc_number' },
+          { 'data': 'dc_subject' },
+          { 
+            "data": "dc_date",
+            "render": (data, type, row) => {
+              return this.unixTimestamp(data);
+            }
+          },
+          {
+            "orderable": false,
+            "searchable": false,
+            "sortable": false,
+            "data": "id",
+            "render": ( data, type, row ) => {
+                return this.processesRow({
+                  'id': data,
+                  'url': row.dc_files.dc_file_path,
+                  'userName': row.user_name,
+                  'document': row
+                });
+            },
+            "defaultContent": ""
+          },
+        ],
+      });
+    }
   },
   mounted() {
-    $('.res-dt-table').DataTable({
-      data: this.teacher.dc_documents,
-      columns: [
-        { 
-          'data': 'dc_item_status' ,
-          'render': (data, type, row) => {
-            return data < 1 ? "Gelen" : "Giden";
-          }
-        },
-        { 'data': 'dc_number' },
-        { 'data': 'dc_subject' },
-        { 
-          "data": "dc_date",
-          "render": (data, type, row) => {
-            return this.unixTimestamp(data);
-          }
-        },
-        {
-          "orderable": false,
-          "searchable": false,
-          "sortable": false,
-          "data": "id",
-          "render": ( data, type, row ) => {
-              return this.processesRow({
-                'id': data,
-                'url': row.dc_files.dc_file_path,
-                'userName': row.user_name,
-                'document': row
-              });
-          },
-          "defaultContent": ""
-        },
-      ],
-    });
+    this.loadDataTable();
 
     this.showModalBody(this.modalSelector);
   },
@@ -211,6 +351,8 @@ export default {
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-add-list-component']: addlistComponent,
     [formTitleName + '-add-comment-component']: addCommentComponent,
+    [formTitleName + '-delete-component']: deleteComponent,
+    Treeselect,
   }
 }
 </script>

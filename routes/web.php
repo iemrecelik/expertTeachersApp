@@ -48,6 +48,22 @@ Route::prefix('admin')
 			'showTeacherInfos'
 		)
 		->name('teachers.infos');
+		
+		Route::post(
+			'teachers/infos/add-document-teacher', 
+			'addDocumentToTeacher'
+		)
+		->name('teachers.infos.addDocumentToTeacher');
+
+		Route::delete(
+			'teachers/infos/del-document-teacher/{teacher}/{document}', 
+			'delDocumentToTeacher'
+		)
+		->where([
+			'teacher' => '[0-9]+',
+			'document' => '[0-9]+'
+		])
+		->name('teachers.infos.delDocumentToTeacher');
 
 		Route::post(
 			'teachers/data-list', 
@@ -218,6 +234,19 @@ Route::prefix('admin/document-management')
 			'store'
 		)
 		->name('document.store');
+		
+		Route::get(
+			'document/edit/{document}', 
+			'edit'
+		)
+		->where('document', '[0-9]+')
+		->name('document.edit');
+
+        Route::post(
+			'document/update', 
+			'update'
+		)
+		->name('document.update');
         
         Route::post(
 			'document/get-file-infos', 

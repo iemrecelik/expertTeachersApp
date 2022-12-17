@@ -10,6 +10,7 @@ import docMngListComponent from './components/admin/document_mng/list/IndexCompo
 import docMngCommentComponent from './components/admin/document_mng/comment/IndexComponent.vue';
 import docMngDocumentComponent from './components/admin/document_mng/document/IndexComponent.vue';
 import docMngCreateDocumentComponent from './components/admin/document_mng/document/CreateComponent.vue';
+import docMngEditDocumentComponent from './components/admin/document_mng/document/EditComponent.vue';
 import docMngManualCreateDocumentComponent from './components/admin/document_mng/document/ManualCreateComponent.vue';
 import docMngSearchComponent from './components/admin/document_mng/search/SearchComponent.vue';
 
@@ -17,7 +18,7 @@ import docMngSearchComponent from './components/admin/document_mng/search/Search
 import lawsuitMngLawsuitsComponent from './components/admin/lawsuit_mng/lawsuits/IndexComponent';
 import lawsuitMngStatisticalComponent from './components/admin/lawsuit_mng/statistical/IndexComponent';
 
-/* Teacehrs */
+/* Teachers */
 import teachersComponent from './components/admin/teachers/IndexComponent';
 import teachersPreviewComponent from './components/admin/teachers/TeachersPreviewComponent';
 import teachMngInstitutionsComponent from './components/admin/institutions/IndexComponent';
@@ -35,6 +36,7 @@ export default {
 	'doc-mng-comment-component': docMngCommentComponent,
 	'doc-mng-document-component': docMngDocumentComponent,
 	'doc-mng-create-document-component': docMngCreateDocumentComponent,
+	'doc-mng-edit-document-component': docMngEditDocumentComponent,
 	'doc-mng-manual-create-document-component': docMngManualCreateDocumentComponent,
 	'doc-mng-search-component': docMngSearchComponent,
 

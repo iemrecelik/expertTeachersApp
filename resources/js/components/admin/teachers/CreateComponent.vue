@@ -82,7 +82,6 @@ export default {
         // this.$refs.createFormComponent.getCategory();
         this.formElement.scrollTo(0, 0);
       });
-
     },
   },
   components: {
