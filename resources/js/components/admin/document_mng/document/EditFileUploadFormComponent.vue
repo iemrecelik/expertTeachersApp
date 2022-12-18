@@ -79,7 +79,7 @@
 				>
 					Dosya(ları) buraya sürükleyip bırakınız.
 					<div id="fileNameList">
-						<div class="mt-2" v-for="(item, key) in htmlFileList">
+						<div class="mt-2" :key="key" v-for="(item, key) in htmlFileList">
 							<div v-if="item.uploaded == false">
 								<b><u>Ön yükleme tamamlandı.</u></b> 
 								<a class="text-success">
@@ -88,7 +88,7 @@
 							</div>
 							<div v-else-if="item.uploaded == true">
 								<b><u>Yüklü Dosya :</u></b>
-								<input type="hidden" :name="fieldNames.uploadedAttachFiles" :value="item.id">
+								<input type="hidden" :name="fieldNames.uploadedSenderAttachFiles" :value="item.id">
 							</div>
 							<div v-else>
 								<div  class="progress">
@@ -496,7 +496,8 @@ export default {
 				this.htmlFileList.push({
 					fileName: item.fileName, 
 					fileKey: itemKey,
-					uploaded: item.uploaded == true ? true : false 
+					uploaded: item.uploaded == true ? true : false,
+					id: item.id ?? null
 				});
 			});
 
@@ -568,7 +569,8 @@ export default {
 					this.htmlFileList.push({
 						fileName: this.getFileNameInPathFunc(file.dc_att_file_path),
 						fileKey: key,
-						uploaded: true
+						uploaded: true,
+						id: file.id
 					});
 				});
 			}

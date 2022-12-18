@@ -89,7 +89,7 @@
 				>
 					Dosya(ları) buraya sürükleyip bırakınız.
 					<div id="fileNameList">
-						<div class="mt-2" v-for="(item, key) in htmlFileList">
+						<div class="mt-2" :key="key" v-for="(item, key) in htmlFileList">
 							<div class="progress">
 								<div :class="`progress-bar progress-bar-striped progress-bar-animated progress-${elUniqueID}-${item.fileKey}`"
 									role="progressbar" 

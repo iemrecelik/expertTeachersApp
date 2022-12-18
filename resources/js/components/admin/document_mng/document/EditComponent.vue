@@ -347,7 +347,7 @@ export default {
 				itemStatus: `rel_dc_item_status[${key}]`,
 				senderFile: `rel_dc_sender_file[${key}]`,
 				senderAttachFiles: `rel_dc_sender_attach_files[${key}][]`,
-				uploadedAttachFiles: `rel_dc_uploaded_sender_attach_files[${key}][]`,
+				uploadedSenderAttachFiles: `rel_dc_uploaded_sender_attach_files[${key}][]`,
 				sender: `rel_dc_who_send[${key}]`,
 				receiver: `rel_dc_who_receiver[${key}]`,
 				number: `rel_dc_number[${key}]`,

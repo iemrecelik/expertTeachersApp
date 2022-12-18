@@ -412,38 +412,32 @@ class DocumentsController extends Controller
     public function uploadFile($arr)
     {
         extract($arr);
-
-        if($exist === false) {
-            if($dcFile) {
-                Storage::delete($dcDocuments->dcFiles->dc_file_path);
-                $dcDocuments->dcFiles()->detach();
-
-                $filesArr = $this->saveFileToStorage(
-                    $dcFile, 
-                    'DcFiles', 
-                    'dc_file_path',
-                    // 'udf'
-                );
-            }
-        }
         
-        if(isset($dcAttachFiles)) {
-
-            if(isset($dcUploadedAttachFiles)) {
-                $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
-
-                foreach ($dcAttachFilesCollection as $dcAttFileKey => $dcAttFileVal) {
-                    if(in_array($dcAttFileVal->id, $dcUploadedAttachFiles) ){
-                        unset($dcAttachFilesCollection[$dcAttFileKey]);
-                    }
-                }
-            }else {
-                $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
+        if($dcFile[0]) {
+            if($exist === true) {
+                Storage::delete($dcDocuments->dcFiles->dc_file_path);
+                $dcDocuments->dcFiles()->delete();
             }
-            
-            $this->deleteImageFromStorage($dcAttachFilesCollection->get());
-            
-            $dcAttachFilesCollection->delete();
+
+            $filesArr = $this->saveFileToStorage(
+                $dcFile, 
+                'DcFiles', 
+                'dc_file_path',
+                // 'udf'
+            );
+        }
+
+        $dcAttachFilesCollection = $dcDocuments->dcAttachFiles()
+                ->whereNotIn('id', $dcUploadedAttachFiles ?? null);
+
+        $dcAttachFilesItems = $dcAttachFilesCollection->get();
+        $dcAttachFilesCollection->delete();
+        
+
+        $this->deleteImageFromStorage($dcAttachFilesItems);
+
+        // dd($dcAttachFilesItems);
+        if(isset($dcAttachFiles)) {
 
             $attachFilesArr = $this->saveFileToStorage(
                 $dcAttachFiles,
@@ -659,6 +653,8 @@ class DocumentsController extends Controller
         $document->dc_date = date('d.m.Y', $document->dc_date);
         foreach ($document->dc_ralatives as $key => $val) {
             $val->dc_date = date('d.m.Y', $val->dc_date);
+            $val->dcFiles;
+            $val->dcAttachFiles;
         }
         /* timestamp verisini tarih formatına çevirme bitiş */
 
@@ -713,36 +709,12 @@ class DocumentsController extends Controller
                 );
             }
 
-            /* $dcDocuments = DcDocuments::where(
-                ['dc_number' => $params['dc_number']],
-            )->first(); */
-
             $params = array_filter($params, fn($value) => !is_null($value) && $value !== '');
             $dcDocuments->fill($params);
 
-            // dd($params);
-
-            dd($dcDocuments);
-
             $dcDocuments->save();
 
-            /* $dcDocuments = DcDocuments::where(
-                ['dc_number' => $params['dc_number']],
-            )->first();
-
-            $exist = empty($dcDocuments) ? false : true;
-            
-            if ($exist === false) {
-                $dcDocuments = DcDocuments::create(
-                    // ['dc_number' => array_shift($params)],
-                    $params
-                );
-            }else {
-                $dcDocuments->dc_main_status = "1";
-                $dcDocuments->save();
-            } */
-
-            $exist = false;
+            $exist = true;
 
             /* Listeye ekleme */
             if($listId > 0) {
@@ -767,12 +739,15 @@ class DocumentsController extends Controller
 
                 DcComment::where('dc_id', $dcDocuments->id)->delete();
 
-                $dcComment = DcComment::create([
+                DcComment::create([
                     'dc_com_text'   => $dcComText,
                     'dc_id'         => $dcDocuments->id,
                     'user_id'       => $params['user_id'],
                 ]);
             }
+
+            /* İlgi evrakları sil */
+            $dcDocuments->dc_ralatives()->detach();
 
             $this->uploadFile([
                 'dcDocuments'           => $dcDocuments,
@@ -780,21 +755,24 @@ class DocumentsController extends Controller
                 'dcFile'                => $dcFile,
                 'dcAttachFiles'         => $dcAttachFiles,
                 'exist'                 => $exist,
-                'dcUploadedAttachFiles' => $dcUploadedAttachFiles,
+                'dcUploadedAttachFiles' => $dcUploadedAttachFiles ?? [],
             ]);
             
         }else {
             $dcRelative = DcDocuments::where(
-                ['dc_number' => $params['dc_number']]
+                ['id' => $id]
             )->first();
 
             $exist = empty($dcRelative) ? false : true;
 
             if($exist === false) {
                 $dcRelative = DcDocuments::create(
-                    // ['dc_number' => array_shift($params)],
                     $params
                 );
+            }else {
+                $params = array_filter($params, fn($value) => !is_null($value) && $value !== '');
+                $dcRelative->fill($params);
+                $dcRelative->save();
             }
 
             $dcDocuments->dc_ralatives()->save($dcRelative);
@@ -805,7 +783,7 @@ class DocumentsController extends Controller
                 'dcFile'                => $dcFile,
                 'dcAttachFiles'         => $dcAttachFiles,
                 'exist'                 => $exist,
-                'dcUploadedAttachFiles' => $dcUploadedAttachFiles,
+                'dcUploadedAttachFiles' => $dcUploadedAttachFiles ?? [],
             ]);
         }
 
@@ -821,7 +799,7 @@ class DocumentsController extends Controller
     public function update(UpdateDcDocumentsRequest $request)
     {
         $params = $request->all();
-
+// dd($params);
         $this->sameDocumentControl($params);
         
         $arr = [
@@ -851,13 +829,12 @@ class DocumentsController extends Controller
             ], 
             $request->file('dc_sender_attach_files'),
             null,
-            $request->file('dc_uploaded_sender_attach_files')
+            $params['dc_uploaded_sender_attach_files'] ?? null
         );
 
         /* Save Relative Document */
         $this->updateRelDocument($dcDocuments, $params, $request);
         
-
         $msg = ['succeed' => __('messages.edit_success')];
         
         return redirect()->route('admin.document_mng.document.create')
@@ -886,20 +863,81 @@ class DocumentsController extends Controller
                     'dc_manuel'         => $params['dc_manuel'],
                 ];
 
+                $relDcSenderFiles = $request->file('rel_dc_sender_file');
+                $relDcSenderFiles = isset($relDcSenderFiles[$key]) ? 
+                                        $relDcSenderFiles[$key] : 
+                                        null;
+                                            
                 $relDcSenderAttachFiles = $request->file('rel_dc_sender_attach_files');
                 $relDcSenderAttachFiles = isset($relDcSenderAttachFiles[$key]) ? 
                                             $relDcSenderAttachFiles[$key] : 
                                             null;
 
+                $relDcUploadedSenderAttachFiles = isset($params['rel_dc_uploaded_sender_attach_files'][$key]) ?
+                                                    $params['rel_dc_uploaded_sender_attach_files'][$key] :
+                                                    null;
+
                 $this->updateDcDocument(
                     $arr,
                     [
-                        $request->file('rel_dc_sender_file')[$key]
+                        $relDcSenderFiles
                     ],
                     $relDcSenderAttachFiles,
-                    $dcDocuments
+                    $dcDocuments,
+                    $relDcUploadedSenderAttachFiles
                 );
             }
         }
     }
+
+    /* public function editUploadFile($arr)
+    {
+        extract($arr);
+
+        if($exist === false) {
+            if($dcFile) {
+                Storage::delete($dcDocuments->dcFiles->dc_file_path);
+                $dcDocuments->dcFiles()->detach();
+
+                $filesArr = $this->saveFileToStorage(
+                    $dcFile, 
+                    'DcFiles', 
+                    'dc_file_path',
+                    // 'udf'
+                );
+            }
+        }
+        
+        if(isset($dcAttachFiles)) {
+
+            if(isset($dcUploadedAttachFiles)) {
+                $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
+
+                foreach ($dcAttachFilesCollection as $dcAttFileKey => $dcAttFileVal) {
+                    if(in_array($dcAttFileVal->id, $dcUploadedAttachFiles) ){
+                        unset($dcAttachFilesCollection[$dcAttFileKey]);
+                    }
+                }
+            }else {
+                $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
+            }
+            
+            $this->deleteImageFromStorage($dcAttachFilesCollection->get());
+            
+            $dcAttachFilesCollection->delete();
+
+            $attachFilesArr = $this->saveFileToStorage(
+                $dcAttachFiles,
+                'DcAttachFiles',
+                'dc_att_file_path'
+            );
+        }
+            
+        // New images will be saved to database
+        if(isset($filesArr))
+            $dcDocuments->dcFiles()->saveMany($filesArr);
+        
+        if(isset($attachFilesArr))
+            $dcDocuments->dcAttachFiles()->saveMany($attachFilesArr);
+    } */
 }
