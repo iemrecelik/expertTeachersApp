@@ -52,7 +52,7 @@
 		<input type="hidden" :name="fieldNames.showContent" :value="fieldValues.showContent">
 		<input type="hidden" name="dc_manuel" :value="manuel">
 		
-		<div class="col-3">
+		<div class="col-4">
 			<div class="form-group">
 
 				<label for="file_upload">Evrak Dosyasını Ekle</label>
@@ -72,16 +72,6 @@
 			<div class="form-group">
 
 				<label for="file_upload">Evrak Ek(leri)ini Ekle</label>
-				<!-- <div class="upload-container">
-					<input type="file" id="file_upload" multiple
-						:name="fieldNames.senderAttachFiles"
-					/>
-				</div> -->
-
-				<!-- <small id="emailHelp" 
-					class="form-text text-muted">
-						Buraya evrakın eklerini ekleyiniz.
-				</small> -->
 
 				<div id="dropContainer"
 					@dragover="fileOnDragenter"
@@ -90,14 +80,22 @@
 					Dosya(ları) buraya sürükleyip bırakınız.
 					<div id="fileNameList">
 						<div class="mt-2" :key="key" v-for="(item, key) in htmlFileList">
-							<div class="progress">
-								<div :class="`progress-bar progress-bar-striped progress-bar-animated progress-${elUniqueID}-${item.fileKey}`"
-									role="progressbar" 
-									aria-valuenow="0" 
-									aria-valuemin="0" 
-									aria-valuemax="100" 
-									style="width: 0%"
-								>
+							<div v-if="item.uploaded == false">
+								<b><u>Ön yükleme tamamlandı.</u></b> 
+								<a class="text-success">
+									<i class="bi bi-check-circle-fill"></i>
+								</a>
+							</div>
+							<div v-else>
+								<div class="progress">
+									<div :class="`progress-bar progress-bar-striped progress-bar-animated progress-${elUniqueID}-${item.fileKey}`"
+										role="progressbar" 
+										aria-valuenow="0" 
+										aria-valuemin="0" 
+										aria-valuemax="100" 
+										style="width: 0%"
+									>
+									</div>
 								</div>
 							</div>
 
@@ -115,7 +113,7 @@
 			</div>
 		</div>
 
-		<div class="col-5">
+		<div class="col-4">
 
 			<div class="form-group mb-1">
 				<label for="exampleInputEmail1">Evrak Numarası</label>
@@ -433,9 +431,18 @@ export default {
 					el.style.width = progress+"%";
 					el.style['aria-valuenow'] = progress+"%";
 
-					/* if(progress === 100) {
-						el.classList.add("bg-success");
-					} */
+					if(progress === 100) {
+						setTimeout(() => {
+							el.parentElement.parentElement.innerHTML=`
+								<b><u>Ön yükleme tamamlandı.</u></b> 
+								<a class="text-success">
+									<i class="bi bi-check-circle-fill"></i>
+								</a>
+							`;
+							el.parentElement.remove();
+						}, 500);
+						// el.classList.add("bg-success");
+					}
 				};
 
 				reader.onloadend = () => {
@@ -481,7 +488,7 @@ export default {
 					if(file.name === fileName) {
 						this.dT.items.remove(key);
 					}else {
-						this.htmlFileList.push({fileName: file.name, fileKey: key});
+						this.htmlFileList.push({fileName: file.name, fileKey: key, uploaded: false});
 					}					
 				}
 

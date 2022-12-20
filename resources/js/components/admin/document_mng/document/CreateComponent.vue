@@ -88,9 +88,95 @@
 					</div>
 					<!-- /.card -->
 
-					<div class="row">
-						<div class="col-12 mb-2">
-							<button type="button" class="btn btn-primary" @click="addRelForm()">
+					<div class="row my-4 border-top" :key="dcItemKey" v-for="(dcItemVal,dcItemKey) in addedDcNumbers">
+						<input type="hidden" name="add_dc_number_id[]" :value="dcItemVal.id">
+						<div class="col-3">
+							<div>
+								<label>Evrak Sayısı</label>
+							</div>
+							<div>
+								<span>{{ dcItemVal.label }}</span>	
+							</div>
+						</div>
+						<div class="col-3">
+							<div>
+								<label>Evrak Durumu</label>
+							</div>
+							<div>
+								<span>{{ dcItemVal.itemStatus }}</span>	
+							</div>
+						</div>
+						<div class="col-3">
+							<div>
+								<label>Evrak Tarihi</label>
+							</div>
+							<div>
+								<span>{{ dcItemVal.date }}</span>	
+							</div>
+						</div>
+						<div class="col-3">
+							<div class="mt-4">
+								<span 
+									data-toggle="tooltip" 
+									data-placement="top" 
+									:title="$t('messages.showDocument')"
+								>
+									<a tabindex="0" class="btn btn-sm btn-info" 
+										:id="'dc-show-document-'+dcItemKey"
+										role="button" 
+										data-toggle="popover" 
+										data-trigger="focus" 
+										title=""
+									>
+										<i class="bi bi-file-text"></i>
+									</a>
+								</span>
+
+								<span 
+									data-toggle="tooltip" 
+									data-placement="top" 
+									:title="$t('messages.delete')"
+								>
+									<button type="button" class="btn btn-sm btn-danger"
+										@click="delDocument(dcItemKey)"
+									>
+										<i class="bi bi-trash"></i>
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="row mt-3">
+						<div class="col-12">
+							<label for="addTeacherList">Evrak Numarası Seçiniz: </label>
+						</div>
+					</div>
+					<div class="row mb-2">
+						<div class="col-3">
+							<div class="form-group">
+								<treeselect
+									:id="'addTeacherList'"
+									:multiple="false"
+									:async="true"
+									:load-options="loadDcNumbers"
+									v-model="selectedDcNumber"
+									loadingText="Yükleniyor..."
+									clearAllText="Hepsini sil."
+									clearValueText="Değeri sil."
+									noOptionsText="Hiçbir seçenek yok."
+									noResultsText="Mevcut seçenek yok."
+									searchPromptText="Aramak için yazınız."
+									placeholder="Evrak Numarasını Seçiniz..."
+									name=""
+								/>
+							</div>
+						</div>
+						<div class="col-2">
+							<button type="button" class="btn btn-primary" @click="addDcNumber">
+								Ekle
+							</button>
+							<button type="button" class="btn btn-primary ml-2" @click="addRelForm()">
 								İlgi Formu Ekle
 							</button>
 						</div>
@@ -217,6 +303,9 @@ export default {
 			relFormCount: [],
 			showForm: false,
 			docList: [],
+			searchedDcNumber: [],
+			selectedDcNumber: null,
+			addedDcNumbers: []
 		}
   },
 	props: {
@@ -411,10 +500,13 @@ export default {
         url: this.routes.getTeachersSearchList,
         type: 'GET',
         dataType: 'JSON',
-				data: {'searchTcNo': searchTcNo}
+				data: {
+					'searchTcNo': searchTcNo,
+					'allData': true
+				}
       })
       .done((res) => {
-				callback(null, res)
+				callback(null, res);
         this.ajaxErrorCount = -1;
       })
       .fail((error) => {
@@ -430,7 +522,95 @@ export default {
         
       })
       .then((res) => {})
-		}  
+		},
+		loadDcNumbers({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+          if(searchQuery.length > 2) {
+            this.getDocumentSearchList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
+    },
+    getDocumentSearchList: function(dcNumber, callback) {
+      $.ajax({
+        url: this.routes.getDocumentSearchList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'dcNumber': dcNumber}
+      })
+      .done((res) => {
+				callback(null, res);
+				this.searchedDcNumber = res;
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getDocumentSearchList(dcNumber, callback, instanceId);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		},
+		loadPoppever: function (key, content) {
+			setTimeout(() => {
+				if($(`#dc-show-document-${key}`).length > 0) {
+					$(`#dc-show-document-${key}`).popover({
+						html: true,
+						content: content,
+						placement: 'left',
+						trigger: 'focus',
+						boundary: 'window',
+						template: `
+							<div class="popover" role="tooltip">
+								<div class="arrow"></div>
+								<h3 class="popover-header"></h3>
+								<div class="popover-body"></div>
+							</div>
+						`
+					});	
+				}else {
+					this.loadPoppever(key, content);
+				}
+			}, 100);
+		},
+		addDcNumber: function() {
+			for (let i = 0; i < this.searchedDcNumber.length; i++) {
+				const item = this.searchedDcNumber[i];
+				
+				if(this.selectedDcNumber == item.id) {
+					if(Object.keys(this.addedDcNumbers).length > 0) {
+						for (let j = 0; j < this.addedDcNumbers.length; j++) {
+							const addedItem = this.addedDcNumbers[j];
+
+							if(addedItem.id == this.selectedDcNumber) {
+								break;
+							}
+
+							if(Object.keys(this.addedDcNumbers).length == (j+1)) {
+								this.addedDcNumbers.push(item);
+								this.loadPoppever((this.addedDcNumbers.length-1), item.content);
+							}
+						}
+					}else {
+						this.addedDcNumbers.push(item);
+						this.loadPoppever((this.addedDcNumbers.length-1), item.content);
+					}
+				}//if (this.selectedDcNumber == item.id) end
+			}//for end
+		},
+		delDocument: function (key) {
+			this.addedDcNumbers.splice(key, 1);
+		}
   },
   created() {
 		this.setRoutes(this.pproutes);

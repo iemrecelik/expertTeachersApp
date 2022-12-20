@@ -46,12 +46,18 @@ class DocumentsController extends Controller
         ->get();
 
         $datas = array_map(function($dcDocument) {
+            $dcFilePath = DcFiles::select('dc_file_path')
+                ->where('dc_file_owner_id', $dcDocument['id'])
+                ->get()
+                ->toArray();
+            
             return [
                 'id' => $dcDocument['id'],
                 'label' => $dcDocument['dc_number'],
                 'date' => date("d/m/Y", $dcDocument['dc_date']),
                 'itemStatus' => $dcDocument['dc_item_status'] == 0?'Gelen Evrak':'Giden Evrak',
-                'content' => $dcDocument['dc_show_content']
+                'content' => $dcDocument['dc_show_content'],
+                'path' => $dcFilePath[0]['dc_file_path']
             ];
         }, $dcDocuments->toArray());
 
@@ -160,7 +166,13 @@ class DocumentsController extends Controller
 
         /* Save Relative Document */
         $this->manualSaveRelDocument($dcDocuments, $params, $request);
-        
+
+        if(isset($params['add_dc_number_id'])) {
+            foreach ($params['add_dc_number_id'] as $key => $val) {
+                $dcRel = DcDocuments::find($val);
+                $dcDocuments->dc_ralatives()->save($dcRel);
+            }
+        }
 
         $msg = ['succeed' => __('messages.edit_success')];
         
@@ -285,9 +297,36 @@ class DocumentsController extends Controller
 
     private function sameDocumentControl($params)
     {
+        if(isset($params['add_dc_number_id'])) {
+            $ex = DcDocuments::whereIn('dc_number', $params['add_dc_number_id'])->get();
+        
+            if($ex->count() > 0) {
+                throw ValidationException::withMessages(
+                    [
+                        'add_dc_number_id' => '
+                            Eklediğiniz evraklardan biri veri tabanında bulunamadı. Siz eklerken silinmiş olabilir. 
+                            Lütfen tekrardan ilişkilendirip yükleyiniz.
+                        '
+                    ]
+                );
+            }
+        }
+
         $rel_dc_number = [];
-            
         if(isset($params['rel_dc_number'])) {
+            $existDc = DcDocuments::whereIn('dc_number', $params['rel_dc_number'])->get();
+
+            if($existDc->count() > 0) {
+                throw ValidationException::withMessages(
+                    [
+                        'relDcNumber' => '
+                            Yüklü olan evrağı yeniden yükleyemezsiniz. 
+                            Yüklü dosyalardan ilgiye ekleyiniz.
+                        '
+                    ]
+                );
+            }
+
             foreach ($params['rel_dc_number'] as $key => $val) {
                 
                 if(trim($params['dc_number']) == trim($params['rel_dc_number'][$key])) {
@@ -428,7 +467,7 @@ class DocumentsController extends Controller
         }
 
         $dcAttachFilesCollection = $dcDocuments->dcAttachFiles()
-                ->whereNotIn('id', $dcUploadedAttachFiles ?? null);
+                ->whereNotIn('id', $dcUploadedAttachFiles ?? []);
 
         $dcAttachFilesItems = $dcAttachFilesCollection->get();
         $dcAttachFilesCollection->delete();
@@ -834,10 +873,17 @@ class DocumentsController extends Controller
 
         /* Save Relative Document */
         $this->updateRelDocument($dcDocuments, $params, $request);
+
+        if(isset($params['add_dc_number_id'])) {
+            foreach ($params['add_dc_number_id'] as $key => $val) {
+                $dcRel = DcDocuments::find($val);
+                $dcDocuments->dc_ralatives()->save($dcRel);
+            }
+        }
         
         $msg = ['succeed' => __('messages.edit_success')];
         
-        return redirect()->route('admin.document_mng.document.create')
+        return redirect()->route('admin.document_mng.document.edit', $params['id'])
                         ->with($msg);
     }
 
@@ -888,6 +934,17 @@ class DocumentsController extends Controller
                 );
             }
         }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Admin\DcDocument $document
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteDocument(DcDocument $document)
+    {
+        dd($document);
     }
 
     /* public function editUploadFile($arr)

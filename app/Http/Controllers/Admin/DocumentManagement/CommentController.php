@@ -253,6 +253,9 @@ class CommentController extends Controller
             +++ 84- yüklenen resimler zaten varsa öncekiler silinsin
             85- dava istatistikleri tarihe göre yapılsın.
             86- dava modülünde aynı evrak başka öğretmenlerede atanabilsin
+            +++ 87- Evraklardan main status durumu kaldırılacak. Bütün evrak lar ana evrak olacak
+            +++ 88- Evrak eklemedeki veri tabanındaki evrağı ilgi gösterme güncelleme formuna da eklenecek
+            89- bilgisayara kodlar yüklendikten sonra kodları ilgilendiren dosya yı girmek kopyalama gibi işlemler için şifre istesin
         */
 
         $request->validate(

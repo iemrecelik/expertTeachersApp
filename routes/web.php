@@ -259,6 +259,12 @@ Route::prefix('admin/document-management')
 			'getDocumentSearchList'
 		)
 		->name('document.searchList');
+
+		Route::delete(
+			'document/{document}', 
+			'deleteDocument'
+		)
+		->where(['document' => '[0-9]+']);
     });
     
 Route::prefix('admin/document-management')

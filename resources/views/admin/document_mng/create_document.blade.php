@@ -17,6 +17,7 @@
       getList: '{{ route('admin.document_mng.list.getList') }}',
       getReqList: '{{ route('admin.document_mng.list.getReqList') }}',
       getTeachersSearchList: '{{ route('admin.teachers.searchList') }}',
+      getDocumentSearchList: '{{ route('admin.document_mng.document.searchList') }}',
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
     :ppsuccess="'{{ session('succeed') ?? '' }}'"

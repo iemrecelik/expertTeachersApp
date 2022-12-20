@@ -79,7 +79,7 @@ import editComponent from './EditComponent'; */
 import showComponent from './ShowComponent';
 import addlistComponent from './AddListComponent';
 import addCommentComponent from './AddCommentComponent';
-// import deleteComponent from './DeleteComponent';
+import deleteComponent from './DeleteComponent';
 // import imagesComponent from './ImagesComponent';
 
 let formTitleName= 'dc-search-list';
@@ -127,18 +127,46 @@ export default {
       row += this.listBtnHtml(id);
       row += this.commentBtnHtml(id);
       row += this.fileDownloadBtnHtml(id);
-      // this.fileDownloadScript();
+      row += this.editBtnHtml(id);
+      row += this.deleteBtnHtml(id);
       return row;
     },
-
-    /* fileDownloadScript() {
-      $( "[data-file-download]" ).on( "click", function(event) {
-        event.attr({
-          target: '_blank', 
-          href  : 'public/upload/2022/09/02/08/Evin KESKİN Eksiz ilgisiz.udf'});
-        });
-    }, */
     
+    deleteBtnHtml: function(datas){
+      return  `
+        <span 
+            data-toggle="tooltip" data-placement="top" 
+            title="${this.$t('messages.delete')}"
+          >
+          <button type="button" class="btn btn-sm btn-danger"
+            data-toggle="modal" data-target="${this.modalSelector}"
+            data-component="${this.formTitleName}-delete-component" 
+            data-datas='{
+              "id": ${datas.id},
+              "formTitleName": "${this.formTitleName}"
+            }'
+          >
+            <i class="bi bi-trash"></i>
+          </button>
+        </span>`;
+    },
+    
+    editBtnHtml: function(datas){
+      return  `
+      <span 
+        data-toggle="tooltip" data-placement="top" 
+        title="${this.$t('messages.edit')}"
+      >
+        <a tabindex="0" class="btn btn-sm btn-warning" 
+          role="button" 
+          href="/admin/document-management/document/edit/${datas.id}"
+          target="_blank"
+        >
+          <i class="bi bi-pencil"></i>
+        </a>
+      </span>`;
+    },
+
     showBtnHtml: function(datas){
       return  `
         <span 
@@ -302,7 +330,7 @@ export default {
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-add-list-component']: addlistComponent,
     [formTitleName + '-add-comment-component']: addCommentComponent,
-    // [formTitleName + '-delete-component']: deleteComponent,
+    [formTitleName + '-delete-component']: deleteComponent,
     // [formTitleName + '-images-component']: imagesComponent,
   }
 }

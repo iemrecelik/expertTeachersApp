@@ -18,6 +18,7 @@
       getReqList: '{{ route('admin.document_mng.list.getReqList') }}',
       getTeachersSearchList: '{{ route('admin.teachers.searchList') }}',
       update: '{{ route('admin.document_mng.document.update') }}',
+      getDocumentSearchList: '{{ route('admin.document_mng.document.searchList') }}',
     }"
     :ppdata="{{ json_encode($data) }}"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
