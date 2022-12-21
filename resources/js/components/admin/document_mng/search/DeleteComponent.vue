@@ -55,9 +55,9 @@ export default {
         console.log(error);
       })
       .then((res) => {
-        /* this.$parent.$parent.dataTable.ajax.reload();
-        let el = this.$parent.$parent.modalSelector;
-        $(el).modal('hide'); */
+        this.$parent.dataTable.ajax.reload();
+        let el = this.$parent.modalSelector;
+        $(el).modal('hide');
       });
     },
   },

@@ -28,6 +28,15 @@ class LawsuitsController extends Controller
      */
     public function index()
     {
+        /* echo '<pre>';
+        var_dump($dt = strtotime('12.02.2022'));
+        var_dump(date('Y', $dt));
+        var_dump(date('d-m-Y', $dt));
+        $dtt = strtotime('01.01.2023');
+        var_dump($dtt);
+        $yearEnd = date('d-m-Y', strtotime('01/01/2024'));
+        dd($yearEnd);
+        dd(date('d-m-Y', $dtt)); */
         /* $dirName = 'aile/uzman_sinav';
         $dirs = scandir(storage_path('app/public/'.$dirName.'/'));
 

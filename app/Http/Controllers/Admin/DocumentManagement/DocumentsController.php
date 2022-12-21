@@ -298,9 +298,9 @@ class DocumentsController extends Controller
     private function sameDocumentControl($params)
     {
         if(isset($params['add_dc_number_id'])) {
-            $ex = DcDocuments::whereIn('dc_number', $params['add_dc_number_id'])->get();
-        
-            if($ex->count() > 0) {
+            $ex = DcDocuments::whereIn('id', $params['add_dc_number_id'])->get();
+
+            if($ex->count() < 1) {
                 throw ValidationException::withMessages(
                     [
                         'add_dc_number_id' => '
@@ -314,7 +314,7 @@ class DocumentsController extends Controller
 
         $rel_dc_number = [];
         if(isset($params['rel_dc_number'])) {
-            $existDc = DcDocuments::whereIn('dc_number', $params['rel_dc_number'])->get();
+            /* $existDc = DcDocuments::whereIn('dc_number', $params['rel_dc_number'])->get();
 
             if($existDc->count() > 0) {
                 throw ValidationException::withMessages(
@@ -325,9 +325,26 @@ class DocumentsController extends Controller
                         '
                     ]
                 );
-            }
+            } */
 
             foreach ($params['rel_dc_number'] as $key => $val) {
+                
+                $year = date('Y', $params['rel_dc_date'][$key]);
+
+                $existDc = DcDocuments::where('dc_number', $val)
+                            ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
+                            ->get();
+
+                if($existDc->count() > 0) {
+                    throw ValidationException::withMessages(
+                        [
+                            'relDcNumber' => '
+                                Yüklü olan evrağı yeniden yükleyemezsiniz. 
+                                Yüklü dosyalardan ilgiye ekleyiniz.
+                            '
+                        ]
+                    );
+                }
                 
                 if(trim($params['dc_number']) == trim($params['rel_dc_number'][$key])) {
                     throw ValidationException::withMessages(
@@ -351,6 +368,7 @@ class DocumentsController extends Controller
         $listId = $params['list_id'] ?? 0;
         $teacherIds = $params['thr_id'] ?? [];
         $dcComText = $params['dc_com_text'] ?? '';
+        $year = date('Y', $params['dc_date']);
 
         unset($params['list_id']);
         unset($params['thr_id']);
@@ -362,7 +380,9 @@ class DocumentsController extends Controller
             $dcDocuments = DcDocuments::where([
                 ['dc_number', $params['dc_number']],
                 ['dc_main_status', "1"],
-            ])->first();
+            ])
+            ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
+            ->first();
             
             if(!empty($dcDocuments)) {
                 throw ValidationException::withMessages(
@@ -370,9 +390,11 @@ class DocumentsController extends Controller
                 );
             }
 
-            $dcDocuments = DcDocuments::where(
-                ['dc_number'    => $params['dc_number']],
-            )->first();
+            /* $dcDocuments = DcDocuments::where(
+                ['dc_number' => $params['dc_number']],
+            )
+            ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
+            ->first(); */
 
             $exist = empty($dcDocuments) ? false : true;
             
@@ -381,10 +403,10 @@ class DocumentsController extends Controller
                     // ['dc_number' => array_shift($params)],
                     $params
                 );
-            }else {
+            }/* else {
                 $dcDocuments->dc_main_status = "1";
                 $dcDocuments->save();
-            }
+            } */
 
             /* Listeye ekleme */
             if($listId > 0) {
@@ -423,7 +445,9 @@ class DocumentsController extends Controller
         }else {
             $dcRelative = DcDocuments::where(
                 ['dc_number' => $params['dc_number']]
-            )->first();
+            )
+            ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
+            ->first();
 
             $exist = empty($dcRelative) ? false : true;
 
@@ -709,6 +733,7 @@ class DocumentsController extends Controller
         $teacherIds = $params['thr_id'] ?? [];
         $dcComText = $params['dc_com_text'] ?? '';
         $id = $params['id'];
+        $year = date('Y', $params['dc_date']);
 
         unset($params['list_id']);
         unset($params['thr_id']);
@@ -738,7 +763,9 @@ class DocumentsController extends Controller
                 ['id', '!=', $id],
                 ['dc_number', '=', $params['dc_number']],
                 ['dc_main_status', "1"],
-            ])->first();
+            ])
+            ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
+            ->first();
 
             if($dcDocumentExist) {
                 throw ValidationException::withMessages(
@@ -939,12 +966,34 @@ class DocumentsController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Admin\DcDocument $document
+     * @param  \App\Models\Admin\DcDocuments $document
      * @return \Illuminate\Http\Response
      */
-    public function deleteDocument(DcDocument $document)
+    public function deleteDocument(DcDocuments $document)
     {
-        dd($document);
+        if(isset($document->dcFiles->dc_file_path)) {
+            Storage::delete($document->dcFiles->dc_file_path);
+            $document->dcFiles()->delete();
+        }
+
+        foreach ($document->dcAttachFiles as $attachKey => $attachVal) {
+            Storage::delete($attachVal->dc_file_path);
+        }
+
+        if(count($document->dcAttachFiles) > 0) {
+            $document->dcAttachFiles()->delete();
+        }
+
+        $res = $document->delete();
+
+        $msg = [];
+
+        if ($res)
+            $msg['succeed'] = __('delete_success');
+        else
+            $msg['error'] = __('delete_error');
+
+        return $msg;
     }
 
     /* public function editUploadFile($arr)
