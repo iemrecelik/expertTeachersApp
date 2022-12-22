@@ -258,6 +258,7 @@ class CommentController extends Controller
             89- bilgisayara kodlar yüklendikten sonra kodları ilgilendiren dosya yı girmek kopyalama gibi işlemler için şifre istesin
             +++ 90- formlarda treeselect de evrak ekleme yaparken id numarasına göre kontrol etsin
             91- evrak eklerken genel müdür ve vekillerin kontrolü yapılacak ve de tarih kontrolü yapılacak
+            92- güncelle yaparken güncelle butonu pasif çıkıyor
         */
 
         $request->validate(

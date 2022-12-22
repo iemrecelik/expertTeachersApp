@@ -24,7 +24,7 @@ class StoreManualDcDocumentsRequest extends FormRequest
     public function rules()
     {
         return [
-            'dc_cat_id'                 => 'required|integer|notIn:0',
+            'dc_cat_id.*'               => 'required|integer|notIn:0',
             'dc_sender_file'            => 'required|file',
             'dc_sender_attach_files.*'  => 'file',
             'dc_who_send'               => 'required|string',
@@ -52,8 +52,8 @@ class StoreManualDcDocumentsRequest extends FormRequest
     public function messages()
     {
         return [
-            'dc_cat_id.required'            => 'Lütfen kategori seçiniz.',
-            'dc_cat_id.not_in'              => 'Lütfen kategori seçiniz.',
+            'dc_cat_id.*.required'          => 'Lütfen kategori seçiniz.',
+            'dc_cat_id.*.not_in'            => 'Lütfen kategori seçiniz.',
             'dc_sender_file.required'       => 'Yüklenecek evrağın udf dosyasını yükleyiniz.',
             'dc_sender_attach_files.*.file' => 'Lütfen sadece dosya yükleyiniz.',
             'dc_who_send.required'          => 'Gönderici bilgilerini giriniz.',

@@ -10,6 +10,7 @@ use App\Models\Admin\DcFiles;
 use App\Models\Admin\DcLists;
 use App\Models\Admin\Teachers;
 use App\Models\Admin\DcComment;
+use App\Models\Admin\DcCategory;
 use App\Models\Admin\DcDocuments;
 use App\Models\Admin\DcAttachFiles;
 use App\Http\Controllers\Controller;
@@ -369,11 +370,12 @@ class DocumentsController extends Controller
         $teacherIds = $params['thr_id'] ?? [];
         $dcComText = $params['dc_com_text'] ?? '';
         $year = date('Y', $params['dc_date']);
+        $catIds = $params['dc_cat_id'];
 
         unset($params['list_id']);
         unset($params['thr_id']);
         unset($params['dc_com_text']);
-        
+        unset($params['dc_cat_id']);   
 
         if(empty($dcDocuments)) {
             
@@ -383,7 +385,7 @@ class DocumentsController extends Controller
             ])
             ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
             ->first();
-            
+
             if(!empty($dcDocuments)) {
                 throw ValidationException::withMessages(
                     ['document' => 'Yüklenmeye çalışılan evrak zaten mevcuttur.']
@@ -407,6 +409,11 @@ class DocumentsController extends Controller
                 $dcDocuments->dc_main_status = "1";
                 $dcDocuments->save();
             } */
+            
+            /* Kategorileri ekleme başla*/
+            $categories = DcCategory::whereIn('id', $catIds)->get();
+            $dcDocuments->dcCategories()->saveMany($categories);
+            /* Kategorileri ekleme bitiş*/
 
             /* Listeye ekleme */
             if($listId > 0) {
@@ -711,6 +718,7 @@ class DocumentsController extends Controller
         $document->dc_ralatives;
         $document->dc_lists;
         $document->dc_teachers;
+        $document->dcCategories;
 
         /* timestamp verisini tarih formatına çevirme başla */
         $document->dc_date = date('d.m.Y', $document->dc_date);
@@ -734,11 +742,13 @@ class DocumentsController extends Controller
         $dcComText = $params['dc_com_text'] ?? '';
         $id = $params['id'];
         $year = date('Y', $params['dc_date']);
+        $catIds = $params['dc_cat_id'];
 
         unset($params['list_id']);
         unset($params['thr_id']);
         unset($params['dc_com_text']);
         unset($params['id']);
+        unset($params['dc_cat_id']);  
         
         if(empty($dcDocuments)) {
             
@@ -812,6 +822,12 @@ class DocumentsController extends Controller
                 ]);
             }
 
+            /* Kategorileri ekleme başla*/
+            $dcDocuments->dcCategories()->detach();
+            $categories = DcCategory::whereIn('id', $catIds)->get();
+            $dcDocuments->dcCategories()->saveMany($categories);
+            /* Kategorileri ekleme bitiş*/
+
             /* İlgi evrakları sil */
             $dcDocuments->dc_ralatives()->detach();
 
@@ -865,7 +881,7 @@ class DocumentsController extends Controller
     public function update(UpdateDcDocumentsRequest $request)
     {
         $params = $request->all();
-// dd($params);
+
         $this->sameDocumentControl($params);
         
         $arr = [

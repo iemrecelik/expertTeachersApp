@@ -23,11 +23,11 @@
 					</label>
 					<treeselect
 						id="doc-category"
-						name="dc_cat_id"
-						@select="setShowForm"
+						name="dc_cat_id[]"
+						:multiple="true"
 						:options="categoryList"
-						:value=0
-						:disable-branch-nodes="false"
+						v-model=categoryArr
+						:disable-branch-nodes="true"
 						:show-count="true"
 						:placeholder="$t('messages.enterCategoryName')"
 					/>
@@ -301,11 +301,11 @@ export default {
 				date: 'dc_date',
 			},
 			relFormCount: [],
-			showForm: false,
 			docList: [],
 			searchedDcNumber: [],
 			selectedDcNumber: null,
-			addedDcNumbers: []
+			addedDcNumbers: [],
+			categoryArr: []
 		}
   },
 	props: {
@@ -336,6 +336,9 @@ export default {
 		formIDName: function(){
       return this.uniqueDomID(_.toLower(this.formTitleName));
     },
+		showForm: function() {
+			return this.categoryArr.length > 0;
+		}
   },
   methods: {
 		...mapMutations([
@@ -394,9 +397,11 @@ export default {
 
 			element.disabled = disabled ? true : false
 		},
-		setShowForm: function(node, instanceId) {
+		/* setShowForm: function(node, instanceId) {
+			console.log(node);
+			console.log(this.categoryArr);
 			this.showForm =  node.id > 0;
-		},
+		}, */
 		oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
     },

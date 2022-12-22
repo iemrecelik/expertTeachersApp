@@ -10,10 +10,11 @@
             {{ $t('messages.categoryName') }}
           </label> -->
           <treeselect
-            name="dc_cat_id"
+            name="dc_cat_id[]"
+            :multiple="true"
             :options="categoryList"
-            :value=0
-            :disable-branch-nodes="false"
+            v-model=categoryArr
+            :disable-branch-nodes="true"
             :show-count="true"
             :placeholder="$t('messages.enterCategoryName')"
           />
@@ -189,6 +190,7 @@ export default {
       list: [],
       ajaxErrorCount: -1,
       mainStatus: 0,
+      categoryArr: []
     }
   },
   computed: {
@@ -205,7 +207,6 @@ export default {
       }
     },
     getCategoryAndList: function() {
-      
       $.ajax({
         url: this.routes.getCategoryAndList,
         type: 'POST',

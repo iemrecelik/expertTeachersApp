@@ -27,9 +27,9 @@ class CreateDcDocumentsTable extends Migration
             $table->integer('dc_date');
             $table->enum('dc_manuel', [0, 1])->default(0);
             
-            $table->unsignedBigInteger('dc_cat_id'); 
+            /* $table->unsignedBigInteger('dc_cat_id'); 
             $table->foreign('dc_cat_id')
-                  ->references('id')->on('dc_category');
+                  ->references('id')->on('dc_category'); */
 
             $table->unsignedBigInteger('user_id'); 
             $table->foreign('user_id')

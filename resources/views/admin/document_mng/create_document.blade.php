@@ -23,7 +23,7 @@
     :ppsuccess="'{{ session('succeed') ?? '' }}'"
     :ppoldinput="{
       dc_item_status: '{{ old('dc_item_status') }}', 
-      dc_cat_id: '{{ old('dc_cat_id') ?? 0 }}', 
+      dc_cat_id: '{{ json_encode(old('dc_cat_id')) ?? [] }}', 
     }"
   >
   </doc-mng-create-document-component>
