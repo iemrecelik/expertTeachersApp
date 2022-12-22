@@ -36,12 +36,12 @@ class CategoryController extends Controller
         
         if(isset($req['startData'])) {
             array_unshift($categoryList, $req['startData']);
-        }else {
+        }/* else {
             array_unshift($categoryList, [
                 'id' => 0,
                 'label' => 'Üst Kategori Yok'
             ]);
-        }
+        } */
 
         return $categoryList;
     }

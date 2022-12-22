@@ -24,11 +24,11 @@
 					</label>
 					<treeselect
 						id="doc-category"
-						name="dc_cat_id"
-						@select="setShowForm"
+						name="dc_cat_id[]"
+						:multiple="true"
+						v-model=categoryArr
 						:options="categoryList"
-						:value=data.dc_cat_id
-						:disable-branch-nodes="false"
+						:disable-branch-nodes="true"
 						:show-count="true"
 						:placeholder="$t('messages.enterCategoryName')"
 					/>
@@ -51,7 +51,7 @@
 				<div class="col-12">
 
 					<!-- SELECT2 EXAMPLE -->
-					<div class="card card-default" :key="key" v-for="(val, key) in relFormCount">
+					<div class="card card-default" :key="val" v-for="(val, key) in relFormCount">
 						<div class="card-header">
 							<h3 class="card-title">İlgili Evrak</h3>
 
@@ -91,13 +91,122 @@
 					</div>
 					<!-- /.card -->
 
-					<div class="row">
+					<div class="row mt-3">
+						<div class="col-12">
+							<label for="addTeacherList">Evrak Numarası Seçiniz: </label>
+						</div>
+					</div>
+					<div class="row mb-2">
+						<div class="col-3">
+							<div class="form-group">
+								<treeselect
+									:id="'addTeacherList'"
+									:multiple="false"
+									:async="true"
+									:load-options="loadDcNumbers"
+									v-model="selectedDcNumber"
+									loadingText="Yükleniyor..."
+									clearAllText="Hepsini sil."
+									clearValueText="Değeri sil."
+									noOptionsText="Hiçbir seçenek yok."
+									noResultsText="Mevcut seçenek yok."
+									searchPromptText="Aramak için yazınız."
+									placeholder="Evrak Numarasını Seçiniz..."
+									name=""
+								/>
+							</div>
+						</div>
+						<div class="col-2">
+							<button type="button" class="btn btn-primary" @click="addDcNumber">
+								Ekle
+							</button>
+							<button type="button" class="btn btn-primary ml-2" @click="addRelForm()">
+								İlgi Formu Ekle
+							</button>
+						</div>
+					</div>
+
+					<div class="row my-4 border-top" :key="dcItemKey" v-for="(dcItemVal,dcItemKey) in addedDcNumbers">
+						<input type="hidden" name="add_dc_number_id[]" :value="dcItemVal.id">
+						<div class="col-3">
+							<div>
+								<label>Evrak Sayısı</label>
+							</div>
+							<div>
+								<span>{{ dcItemVal.label }}</span>	
+							</div>
+						</div>
+						<div class="col-3">
+							<div>
+								<label>Evrak Durumu</label>
+							</div>
+							<div>
+								<span>{{ dcItemVal.itemStatus }}</span>	
+							</div>
+						</div>
+						<div class="col-3">
+							<div>
+								<label>Evrak Tarihi</label>
+							</div>
+							<div>
+								<span>{{ dcItemVal.date }}</span>	
+							</div>
+						</div>
+						<div class="col-3">
+							<div class="mt-4">
+								<span v-if="extUdfControl(dcItemVal.path)"
+									data-toggle="tooltip" 
+									data-placement="top" 
+									:title="$t('messages.showDocument')"
+								>
+									<a tabindex="0" class="btn btn-sm btn-info" 
+										:id="'dc-show-document-'+dcItemKey"
+										role="button" 
+										data-toggle="popover" 
+										data-trigger="focus" 
+										title=""
+									>
+										<i class="bi bi-file-text"></i>
+									</a>
+								</span>
+
+								<span v-else
+									data-toggle="tooltip" 
+									data-placement="top" 
+									:title="$t('messages.showDocument')"
+								>
+									<a tabindex="0" class="btn btn-sm btn-info" 
+										:id="'dc-show-document-'+dcItemKey"
+										role="button" 
+										:href="'/storage/upload/images/raw'+dcItemVal.path"
+              			target="_blank"
+									>
+										<i class="bi bi-file-text"></i>
+									</a>
+								</span>
+
+								<span 
+									data-toggle="tooltip" 
+									data-placement="top" 
+									:title="$t('messages.delete')"
+								>
+									<button type="button" class="btn btn-sm btn-danger"
+										@click="delDocument(dcItemKey)"
+									>
+										<i class="bi bi-trash"></i>
+									</button>
+								</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- <div class="row">
 						<div class="col-12 mb-2">
 							<button type="button" class="btn btn-primary" @click="addRelForm()">
 								İlgi Formu Ekle
 							</button>
 						</div>
-					</div>
+					</div> -->
 
 					<!-- <div class="row">
 						<div class="col-4">
@@ -221,11 +330,15 @@ export default {
 				date: 'dc_date',
 			},
 			relFormCount: [],
-			showForm: true,
 			docList: [],
 			data: this.ppdata,
 			teacherArr: [],
-			teacherArrOpt: []
+			teacherArrOpt: [],
+			searchedDcNumber: [],
+			selectedDcNumber: null,
+			addedDcNumbers: [],
+			categoryArr: [],
+			categoryOptArr: []
 		}
   },
 	props: {
@@ -260,6 +373,9 @@ export default {
 		formIDName: function(){
       return this.uniqueDomID(_.toLower(this.formTitleName));
     },
+		showForm: function() {
+			return this.categoryArr.length > 0;
+		}
   },
   methods: {
 		...mapMutations([
@@ -317,9 +433,6 @@ export default {
 			} */
 
 			element.disabled = disabled ? true : false
-		},
-		setShowForm: function(node, instanceId) {
-			this.showForm =  node.id > 0;
 		},
 		oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
@@ -445,7 +558,106 @@ export default {
         
       })
       .then((res) => {})
-		}  
+		},
+		loadDcNumbers({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+          if(searchQuery.length > 2) {
+            this.getDocumentSearchList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
+    },
+    getDocumentSearchList: function(dcNumber, callback) {
+      $.ajax({
+        url: this.routes.getDocumentSearchList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'dcNumber': dcNumber}
+      })
+      .done((res) => {
+				callback(null, res);
+				this.searchedDcNumber = res;
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getDocumentSearchList(dcNumber, callback, instanceId);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		},
+		loadPoppever: function (key, content, path) {
+			if(this.extUdfControl(path)) {
+				setTimeout(() => {
+					if($(`#dc-show-document-${key}`).length > 0) {
+						$(`#dc-show-document-${key}`).popover({
+							html: true,
+							content: content,
+							placement: 'left',
+							trigger: 'focus',
+							boundary: 'window',
+							template: `
+								<div class="popover" role="tooltip">
+									<div class="arrow"></div>
+									<h3 class="popover-header"></h3>
+									<div class="popover-body"></div>
+								</div>
+							`
+						});	
+					}else {
+						this.loadPoppever(key, content, path);
+					}
+				}, 100);	
+			}
+		},
+		addDcNumber: function() {
+			for (let i = 0; i < this.searchedDcNumber.length; i++) {
+				const item = this.searchedDcNumber[i];
+				
+				if(this.selectedDcNumber == item.id) {
+					if(Object.keys(this.addedDcNumbers).length > 0) {
+						for (let j = 0; j < this.addedDcNumbers.length; j++) {
+							const addedItem = this.addedDcNumbers[j];
+
+							if(addedItem.id == this.selectedDcNumber || this.data.id == this.selectedDcNumber) {
+								break;
+							}
+
+							if(Object.keys(this.addedDcNumbers).length == (j+1)) {
+								this.addedDcNumbers.push(item);
+								this.loadPoppever((this.addedDcNumbers.length-1), item.content, item.path);
+							}
+						}
+					}else {
+						this.addedDcNumbers.push(item);
+						this.loadPoppever((this.addedDcNumbers.length-1), item.content, item.path);
+					}
+				}//if (this.selectedDcNumber == item.id) end
+			}//for end
+		},
+		delDocument: function (key) {
+			this.addedDcNumbers.splice(key, 1);
+		},
+		extUdfControl: function(path) {
+			let ext = path.match(/\.[0-9a-z]+$/i)[0];
+			let bool = true;
+			if(ext != '.udf') {
+				bool = false
+			}
+
+			return bool;
+		}
   },
   created() {
 		this.setRoutes(this.pproutes);
@@ -454,9 +666,26 @@ export default {
     this.getCategory();		
 		this.setOld(this.ppoldinput);
 
+		/* ilgi evrakları ekleme başla */
 		this.data.dc_ralatives.forEach((relVal, key) => {
-			this.relFormCount.push(relVal);
+			// this.relFormCount.push(relVal);
+
+			this.addedDcNumbers.push({
+				'id': relVal.id,
+				'label': relVal.dc_number,
+				'date': relVal.dc_date,
+				'itemStatus': relVal.dc_item_status == 0?'Gelen Evrak':'Giden Evrak',
+				'content': relVal.dc_show_content,
+				'path': relVal.dc_files.dc_file_path
+			});
+
+			this.loadPoppever(
+				(this.addedDcNumbers.length-1), 
+				relVal.dc_show_content, 
+				relVal.dc_files.dc_file_path
+			);
 		});
+		/* ilgi evrakları ekleme bitiş */
 
 		/* öğretmenleri ekle başla */
 		this.data.dc_teachers.forEach(teacher => {
@@ -468,6 +697,12 @@ export default {
 			this.teacherArr.push(teacher.id);
 		});
     /* öğretmenleri ekle bitir */
+		
+		/* kategorileri ekle başla */
+		this.data.dc_categories.forEach((catVal, catKey) => {
+			this.categoryArr.push(catVal.id)
+		});
+		/* kategorileri ekle bitiş */
   },
 	mounted() {
 		this.modalErrorMsgShow();

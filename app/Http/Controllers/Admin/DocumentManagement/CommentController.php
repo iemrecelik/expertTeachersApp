@@ -238,7 +238,7 @@ class CommentController extends Controller
             +++ 69- Öğretmene sonradan yazı atama olacak
             70- Evrak ekleme yaparken manuel dediğimizde textbox larda filtreleme yapılsın.
             +++ 71- öğretmen eklerken consolda javascript hataları çıkıyor bunlara bakılacak
-            72- evrak sayısı her yıl sıfırlanıyor. Bu yüzden tarih ve evrak sayısına göre kontrol yapılacak.
+            +++ 72- evrak sayısı her yıl sıfırlanıyor. Bu yüzden tarih ve evrak sayısına göre kontrol yapılacak.
             +++ 73- Öğretmen eklerken zorun olanlar * olacak.
             +++ 74- excel veri eklerken aynı tc numarası varsa kontrol etsin
             +++ 75- excel formundaki zorunlu alanlar * ile belirtilsin.
@@ -246,13 +246,19 @@ class CommentController extends Controller
             +++ 77- excel ile yükleme yaparken tc kontrolü olacak
             +++ 78- eklenmeyen resimlerin tc numaraları alt satıra geçecek
             +++ 79- aynı evrağa sonradan başka öğretmende eklenebilsin.
-            80- evrak silme ve düzenleme olsun.
+            +++ 80- evrak silme ve düzenleme olsun.
             81- kullanıcı yönetim paneli yapılacak
             82- evrak kayıt raporu eklenecek
             83- excel veya toplu ekleme ve düzenlemelerde timestamp yüklenecek
             +++ 84- yüklenen resimler zaten varsa öncekiler silinsin
             85- dava istatistikleri tarihe göre yapılsın.
-            86- dava modülünde aynı evrak başka öğretmenlerede atanabilsin
+            +++ 86- dava modülünde aynı evrak başka öğretmenlerede atanabilsin
+            +++ 87- Evraklardan main status durumu kaldırılacak. Bütün evrak lar ana evrak olacak
+            +++ 88- Evrak eklemedeki veri tabanındaki evrağı ilgi gösterme güncelleme formuna da eklenecek
+            89- bilgisayara kodlar yüklendikten sonra kodları ilgilendiren dosya yı girmek kopyalama gibi işlemler için şifre istesin
+            +++ 90- formlarda treeselect de evrak ekleme yaparken id numarasına göre kontrol etsin
+            91- evrak eklerken genel müdür ve vekillerin kontrolü yapılacak ve de tarih kontrolü yapılacak
+            92- güncelle yaparken güncelle butonu pasif çıkıyor
         */
 
         $request->validate(

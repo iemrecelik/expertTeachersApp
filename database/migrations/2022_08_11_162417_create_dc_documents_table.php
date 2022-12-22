@@ -16,7 +16,7 @@ class CreateDcDocumentsTable extends Migration
         Schema::create('dc_documents', function (Blueprint $table) {
             $table->id();
             $table->enum('dc_item_status', [0, 1]);
-            $table->enum('dc_main_status', [0, 1])->default(0);
+            $table->enum('dc_main_status', [0, 1])->default(1);
             $table->integer('dc_number');
             $table->string('dc_subject');
             $table->longText('dc_raw_content');
@@ -27,9 +27,9 @@ class CreateDcDocumentsTable extends Migration
             $table->integer('dc_date');
             $table->enum('dc_manuel', [0, 1])->default(0);
             
-            $table->unsignedBigInteger('dc_cat_id'); 
+            /* $table->unsignedBigInteger('dc_cat_id'); 
             $table->foreign('dc_cat_id')
-                  ->references('id')->on('dc_category');
+                  ->references('id')->on('dc_category'); */
 
             $table->unsignedBigInteger('user_id'); 
             $table->foreign('user_id')

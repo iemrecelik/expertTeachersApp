@@ -10,6 +10,7 @@ use App\Models\Admin\DcFiles;
 use App\Models\Admin\DcLists;
 use App\Models\Admin\Teachers;
 use App\Models\Admin\DcComment;
+use App\Models\Admin\DcCategory;
 use App\Models\Admin\DcDocuments;
 use App\Models\Admin\DcAttachFiles;
 use App\Http\Controllers\Controller;
@@ -46,12 +47,18 @@ class DocumentsController extends Controller
         ->get();
 
         $datas = array_map(function($dcDocument) {
+            $dcFilePath = DcFiles::select('dc_file_path')
+                ->where('dc_file_owner_id', $dcDocument['id'])
+                ->get()
+                ->toArray();
+            
             return [
                 'id' => $dcDocument['id'],
                 'label' => $dcDocument['dc_number'],
                 'date' => date("d/m/Y", $dcDocument['dc_date']),
                 'itemStatus' => $dcDocument['dc_item_status'] == 0?'Gelen Evrak':'Giden Evrak',
-                'content' => $dcDocument['dc_show_content']
+                'content' => $dcDocument['dc_show_content'],
+                'path' => $dcFilePath[0]['dc_file_path']
             ];
         }, $dcDocuments->toArray());
 
@@ -160,7 +167,13 @@ class DocumentsController extends Controller
 
         /* Save Relative Document */
         $this->manualSaveRelDocument($dcDocuments, $params, $request);
-        
+
+        if(isset($params['add_dc_number_id'])) {
+            foreach ($params['add_dc_number_id'] as $key => $val) {
+                $dcRel = DcDocuments::find($val);
+                $dcDocuments->dc_ralatives()->save($dcRel);
+            }
+        }
 
         $msg = ['succeed' => __('messages.edit_success')];
         
@@ -285,10 +298,54 @@ class DocumentsController extends Controller
 
     private function sameDocumentControl($params)
     {
+        if(isset($params['add_dc_number_id'])) {
+            $ex = DcDocuments::whereIn('id', $params['add_dc_number_id'])->get();
+
+            if($ex->count() < 1) {
+                throw ValidationException::withMessages(
+                    [
+                        'add_dc_number_id' => '
+                            Eklediğiniz evraklardan biri veri tabanında bulunamadı. Siz eklerken silinmiş olabilir. 
+                            Lütfen tekrardan ilişkilendirip yükleyiniz.
+                        '
+                    ]
+                );
+            }
+        }
+
         $rel_dc_number = [];
-            
         if(isset($params['rel_dc_number'])) {
+            /* $existDc = DcDocuments::whereIn('dc_number', $params['rel_dc_number'])->get();
+
+            if($existDc->count() > 0) {
+                throw ValidationException::withMessages(
+                    [
+                        'relDcNumber' => '
+                            Yüklü olan evrağı yeniden yükleyemezsiniz. 
+                            Yüklü dosyalardan ilgiye ekleyiniz.
+                        '
+                    ]
+                );
+            } */
+
             foreach ($params['rel_dc_number'] as $key => $val) {
+                
+                $year = date('Y', $params['rel_dc_date'][$key]);
+
+                $existDc = DcDocuments::where('dc_number', $val)
+                            ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
+                            ->get();
+
+                if($existDc->count() > 0) {
+                    throw ValidationException::withMessages(
+                        [
+                            'relDcNumber' => '
+                                Yüklü olan evrağı yeniden yükleyemezsiniz. 
+                                Yüklü dosyalardan ilgiye ekleyiniz.
+                            '
+                        ]
+                    );
+                }
                 
                 if(trim($params['dc_number']) == trim($params['rel_dc_number'][$key])) {
                     throw ValidationException::withMessages(
@@ -312,28 +369,34 @@ class DocumentsController extends Controller
         $listId = $params['list_id'] ?? 0;
         $teacherIds = $params['thr_id'] ?? [];
         $dcComText = $params['dc_com_text'] ?? '';
+        $year = date('Y', $params['dc_date']);
+        $catIds = $params['dc_cat_id'];
 
         unset($params['list_id']);
         unset($params['thr_id']);
         unset($params['dc_com_text']);
-        
+        unset($params['dc_cat_id']);   
 
         if(empty($dcDocuments)) {
             
             $dcDocuments = DcDocuments::where([
                 ['dc_number', $params['dc_number']],
                 ['dc_main_status', "1"],
-            ])->first();
-            
+            ])
+            ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
+            ->first();
+
             if(!empty($dcDocuments)) {
                 throw ValidationException::withMessages(
                     ['document' => 'Yüklenmeye çalışılan evrak zaten mevcuttur.']
                 );
             }
 
-            $dcDocuments = DcDocuments::where(
-                ['dc_number'    => $params['dc_number']],
-            )->first();
+            /* $dcDocuments = DcDocuments::where(
+                ['dc_number' => $params['dc_number']],
+            )
+            ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
+            ->first(); */
 
             $exist = empty($dcDocuments) ? false : true;
             
@@ -342,10 +405,15 @@ class DocumentsController extends Controller
                     // ['dc_number' => array_shift($params)],
                     $params
                 );
-            }else {
+            }/* else {
                 $dcDocuments->dc_main_status = "1";
                 $dcDocuments->save();
-            }
+            } */
+            
+            /* Kategorileri ekleme başla*/
+            $categories = DcCategory::whereIn('id', $catIds)->get();
+            $dcDocuments->dcCategories()->saveMany($categories);
+            /* Kategorileri ekleme bitiş*/
 
             /* Listeye ekleme */
             if($listId > 0) {
@@ -384,7 +452,9 @@ class DocumentsController extends Controller
         }else {
             $dcRelative = DcDocuments::where(
                 ['dc_number' => $params['dc_number']]
-            )->first();
+            )
+            ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
+            ->first();
 
             $exist = empty($dcRelative) ? false : true;
 
@@ -428,7 +498,7 @@ class DocumentsController extends Controller
         }
 
         $dcAttachFilesCollection = $dcDocuments->dcAttachFiles()
-                ->whereNotIn('id', $dcUploadedAttachFiles ?? null);
+                ->whereNotIn('id', $dcUploadedAttachFiles ?? []);
 
         $dcAttachFilesItems = $dcAttachFilesCollection->get();
         $dcAttachFilesCollection->delete();
@@ -648,6 +718,7 @@ class DocumentsController extends Controller
         $document->dc_ralatives;
         $document->dc_lists;
         $document->dc_teachers;
+        $document->dcCategories;
 
         /* timestamp verisini tarih formatına çevirme başla */
         $document->dc_date = date('d.m.Y', $document->dc_date);
@@ -670,11 +741,14 @@ class DocumentsController extends Controller
         $teacherIds = $params['thr_id'] ?? [];
         $dcComText = $params['dc_com_text'] ?? '';
         $id = $params['id'];
+        $year = date('Y', $params['dc_date']);
+        $catIds = $params['dc_cat_id'];
 
         unset($params['list_id']);
         unset($params['thr_id']);
         unset($params['dc_com_text']);
         unset($params['id']);
+        unset($params['dc_cat_id']);  
         
         if(empty($dcDocuments)) {
             
@@ -699,7 +773,9 @@ class DocumentsController extends Controller
                 ['id', '!=', $id],
                 ['dc_number', '=', $params['dc_number']],
                 ['dc_main_status', "1"],
-            ])->first();
+            ])
+            ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
+            ->first();
 
             if($dcDocumentExist) {
                 throw ValidationException::withMessages(
@@ -745,6 +821,12 @@ class DocumentsController extends Controller
                     'user_id'       => $params['user_id'],
                 ]);
             }
+
+            /* Kategorileri ekleme başla*/
+            $dcDocuments->dcCategories()->detach();
+            $categories = DcCategory::whereIn('id', $catIds)->get();
+            $dcDocuments->dcCategories()->saveMany($categories);
+            /* Kategorileri ekleme bitiş*/
 
             /* İlgi evrakları sil */
             $dcDocuments->dc_ralatives()->detach();
@@ -799,7 +881,7 @@ class DocumentsController extends Controller
     public function update(UpdateDcDocumentsRequest $request)
     {
         $params = $request->all();
-// dd($params);
+
         $this->sameDocumentControl($params);
         
         $arr = [
@@ -834,10 +916,17 @@ class DocumentsController extends Controller
 
         /* Save Relative Document */
         $this->updateRelDocument($dcDocuments, $params, $request);
+
+        if(isset($params['add_dc_number_id'])) {
+            foreach ($params['add_dc_number_id'] as $key => $val) {
+                $dcRel = DcDocuments::find($val);
+                $dcDocuments->dc_ralatives()->save($dcRel);
+            }
+        }
         
         $msg = ['succeed' => __('messages.edit_success')];
         
-        return redirect()->route('admin.document_mng.document.create')
+        return redirect()->route('admin.document_mng.document.edit', $params['id'])
                         ->with($msg);
     }
 
@@ -888,6 +977,39 @@ class DocumentsController extends Controller
                 );
             }
         }
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  \App\Models\Admin\DcDocuments $document
+     * @return \Illuminate\Http\Response
+     */
+    public function deleteDocument(DcDocuments $document)
+    {
+        if(isset($document->dcFiles->dc_file_path)) {
+            Storage::delete($document->dcFiles->dc_file_path);
+            $document->dcFiles()->delete();
+        }
+
+        foreach ($document->dcAttachFiles as $attachKey => $attachVal) {
+            Storage::delete($attachVal->dc_file_path);
+        }
+
+        if(count($document->dcAttachFiles) > 0) {
+            $document->dcAttachFiles()->delete();
+        }
+
+        $res = $document->delete();
+
+        $msg = [];
+
+        if ($res)
+            $msg['succeed'] = __('delete_success');
+        else
+            $msg['error'] = __('delete_error');
+
+        return $msg;
     }
 
     /* public function editUploadFile($arr)

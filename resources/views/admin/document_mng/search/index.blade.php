@@ -2,7 +2,7 @@
 @section('contents')
   <doc-mng-search-component
     :pproutes="{
-      getSearchDocuments: '{{ route("admin.document_mng.search.getSearchDocuments") }}', 
+      getSearchDocuments: '{{ route('admin.document_mng.search.getSearchDocuments') }}', 
       show: '/admin/document-management/search', 
       getCategoryAndList: '{{ route('admin.document_mng.search.getCategoryAndList') }}', 
       getCategory: '{{ route('admin.document_mng.category.getCategory') }}', 

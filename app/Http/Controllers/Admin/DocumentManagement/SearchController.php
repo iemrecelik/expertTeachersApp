@@ -46,15 +46,22 @@ class SearchController extends Controller
             
         
         $categoryList = $this->getTreeviewCat(null, $id);
+
+		if(empty($req['startData'])) {
+			array_unshift($categoryList, [
+                'id' => 0,
+                'label' => 'Üst Kategori Yok'
+            ]);
+		}
         
-        if(isset($req['startData'])) {
+        /* if(isset($req['startData'])) {
             array_unshift($categoryList, $req['startData']);
         }else {
             array_unshift($categoryList, [
                 'id' => 0,
                 'label' => 'Üst Kategori Yok'
             ]);
-        }
+        } */
 
         return $categoryList;
     }
@@ -117,7 +124,22 @@ class SearchController extends Controller
 		$dcDocuments->selectRaw($selectCol);
 
 		$necessity = false;
-		
+
+		$dcCatIds = [];
+		foreach ($tblInfo['datas'] as $key => $data) {
+			if($data['name'] == 'dc_cat_id[]') {
+				$dcCatIds[] = $data['value'];
+				unset($tblInfo['datas'][$key]);
+			}
+		}
+
+		array_unshift($tblInfo['datas'], [
+			'name' => 'dc_cat_id',
+			'value' => $dcCatIds
+		]);
+
+		// dd($tblInfo['datas']);
+
 		foreach ($tblInfo['datas'] as $data) {
 
 			if(isset($data['value'])) {
@@ -132,9 +154,21 @@ class SearchController extends Controller
 						break;
 						
 					case 'dc_cat_id':
-						if ($data['value'] > 0) {
+						/* if ($data['value'] > 0) {
 							$whereQuery .= "{$data['name']} = ? AND ";
 							$whereQueryParams[] = $data['value'];
+
+							$necessity = true;
+						} */
+						if (count($data['value']) > 0) {
+							// dd($data['value']);
+							$dcDocuments->join('dc_cat as t6', 't6.dc_id', '=', 't0.id');
+            				$dcDocuments->join('dc_category as t7', 't7.id', '=', 't6.cat_id');
+
+							$dcDocuments->whereIn('t7.id', $data['value']);
+
+							/* $whereQuery .= "t7.id IN ? AND ";
+							$whereQueryParams[] = '('.implode(',', $data['value']).')'; */
 
 							$necessity = true;
 						}
@@ -164,7 +198,6 @@ class SearchController extends Controller
 
 							$necessity = true;
 						}
-						
 						break;
 						
 					case 'dc_list_id':
@@ -221,12 +254,13 @@ class SearchController extends Controller
 
 		$dcDocuments->join('users as t4', 't4.id', '=', 't0.user_id');
 		$dcDocuments->selectRaw('t4.name as user_name');
+		$dcDocuments->distinct();
 
-		$dcDocuments->join('dc_category as t5', 't5.id', '=', 't0.dc_cat_id');
-		$dcDocuments->selectRaw('t5.dc_cat_name as dc_cat_name');
+		/* $dcDocuments->join('dc_category as t5', 't5.id', '=', 't0.dc_cat_id');
+		$dcDocuments->selectRaw('t5.dc_cat_name as dc_cat_name'); */
 		
 		$dcDocuments = $dcDocuments->orderBy($colOrder, $order);
-
+// dd($dcDocuments->toSql());
         $recordsTotal = DcDocuments::count();
 	    $recordsFiltered = $dcDocuments->count();
 

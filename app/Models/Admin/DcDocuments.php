@@ -58,7 +58,6 @@ class DcDocuments extends Model
         return $this->belongsToMany(Teachers::class, 'dc_thr', 'dc_id', 'thr_id');
     }
 
-
     /**
      * The dc_list that belong to the dc_document.
      */
@@ -73,5 +72,13 @@ class DcDocuments extends Model
     public function dc_user_pers()
     {
         return $this->morphMany(User::class, 'dc_per_owner');
+    }
+
+    /**
+     * The dc_cat that belong to the dc_document.
+     */
+    public function dcCategories()
+    {
+        return $this->belongsToMany(DcCategory::class, 'dc_cat', 'dc_id', 'cat_id');
     }
 }

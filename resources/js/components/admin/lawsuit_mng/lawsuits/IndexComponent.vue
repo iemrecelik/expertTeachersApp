@@ -87,23 +87,21 @@
                   </div>
                   <div class="col-3">
                     <div class="form-group">
-                      <div class="form-group">
-                        <label for="addTeacherList">Evrak Numarası </label>
-                        <treeselect
-                          :id="'addTeacherList'"
-                          :multiple="true"
-                          :async="true"
-                          :load-options="loadDcNumbers"
-                          loadingText="Yükleniyor..."
-                          clearAllText="Hepsini sil."
-                          clearValueText="Değeri sil."
-                          noOptionsText="Hiçbir seçenek yok."
-                          noResultsText="Mevcut seçenek yok."
-                          searchPromptText="Aramak için yazınız."
-                          placeholder="Seçiniz..."
-                          name="dc_ids[]"
-                        />
-                      </div>
+                      <label for="addTeacherList">Evrak Numarası </label>
+                      <treeselect
+                        :id="'addTeacherList'"
+                        :multiple="true"
+                        :async="true"
+                        :load-options="loadDcNumbers"
+                        loadingText="Yükleniyor..."
+                        clearAllText="Hepsini sil."
+                        clearValueText="Değeri sil."
+                        noOptionsText="Hiçbir seçenek yok."
+                        noResultsText="Mevcut seçenek yok."
+                        searchPromptText="Aramak için yazınız."
+                        placeholder="Seçiniz..."
+                        name="dc_ids[]"
+                      />
                     </div>
                   </div>
                   <div class="col-3">
