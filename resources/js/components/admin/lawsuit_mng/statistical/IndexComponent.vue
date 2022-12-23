@@ -1,6 +1,34 @@
 <template>
 <template-component>
-   <!-- Small boxes (Stat box) -->
+  <form class="mb-3" :action="routes.index" method="get">
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="exampleInputEmail1">
+            {{ $t('messages.year_list') }}
+          </label>
+          <treeselect
+            name="years[]"
+            :multiple="true"
+            :options="yearList"
+            v-model="years"
+            :disable-branch-nodes="false"
+            :show-count="true"
+            :placeholder="$t('messages.enter_showing_years')"
+          />
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-3">
+        <button type="submit" class="btn btn-md btn-primary">
+          Listele
+        </button>
+      </div>
+    </div>
+  </form>
+
+  <!-- Small boxes (Stat box) -->
   <div class="row">
     <div class="col-lg-4 col-6">
       <!-- small box -->
@@ -161,6 +189,10 @@
 </template>
 
 <script>
+import Treeselect from '@riophae/vue-treeselect';
+// import the styles
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+
 import { Chart, registerables } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 Chart.register(ChartDataLabels, ...registerables);
@@ -172,6 +204,7 @@ export default {
   data () {
     return {
       stats: this.ppstats,
+      years: this.ppyears ?? null,
       backgroundColor: [
         'rgba(255, 99, 132, 0.2)',
         'rgba(255, 159, 64, 0.2)',
@@ -336,6 +369,10 @@ export default {
       required: true,
     },
     ppstats: {
+      type: Object,
+      required: false,
+    },
+    ppyears: {
       type: Object,
       required: false,
     },
@@ -703,12 +740,21 @@ export default {
   created(){
     this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
+
+    for (let i = 2022; i < 2045; i++) {
+      this.yearList.push({
+        id: i,
+        label: i
+      });
+    }
   },
   mounted() {
     this.createStats().then(() => {
       document.getElementById('stats-html').value = document.getElementsByClassName('table-wrapper')[0].innerHTML;
-    });
-    
+    }); 
+  },
+  components: {
+    Treeselect
   }
 }
 </script>
