@@ -125,6 +125,8 @@ return [
 	'lawsuits_list' => 'Davalar Listesi',
 	'addlawInfoList' => 'Bilgi Notu Listesine Ekle',
 	'add_law_file_name' => 'Dava Dosyası Ekle',
+	'enter_showing_years' => 'Gösterilecek Tarih Listesi',
+	'year_list' => 'Tarih Listesi',
 
 	/* Other */
 	'expertTeachersApp' => 'Uzman Öğretmen Uygulaması',

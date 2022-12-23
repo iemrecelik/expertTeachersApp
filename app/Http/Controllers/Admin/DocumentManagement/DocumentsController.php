@@ -560,6 +560,27 @@ class DocumentsController extends Controller
         Storage::delete($deleteImgs);
     }
 
+    private function signatureControl($file)
+    {
+        try {
+            $sign = file_get_contents("zip://{$file->getPathName()}#sign.sgn");
+        } catch (\Throwable $th) {
+            throw ValidationException::withMessages(
+                ['signature' => 'Lütfen dys tarafından onaylanmış dosya yükleyiniz.']
+            );
+        }
+
+        $pattern = '/cevdet vural|nejat işler/si';
+
+        preg_match($pattern, $sign, $existSignature);
+
+        if(count($existSignature) < 1) {
+            throw ValidationException::withMessages(
+                ['signature' => 'ÜÇ KAĞITÇI BAŞKANA ŞİKAYET EDİLECEKSİN.']
+            );
+        }
+    }
+
     public function getFileInfos(Request $request)
     {
         if($request->hasFile('dc_sender_file')) {
@@ -580,6 +601,10 @@ class DocumentsController extends Controller
         ]);
 
         $file = $request->file($name);
+
+        /* İmza kontrolü yapma başla */
+        $this->signatureControl($file);
+        /* İmza kontrolü yapma bitiş */
 
         try {
             $result = file_get_contents("zip://{$file->getPathName()}#content.xml");

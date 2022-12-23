@@ -7,6 +7,7 @@
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
     :ppstats="{{ json_encode($stats) }}"
+    :ppyears="{{ json_encode($years) }}"
   >
   </lawsuit-mng-statistical-component>
 @endsection
