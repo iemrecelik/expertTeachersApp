@@ -251,7 +251,7 @@ class CommentController extends Controller
             82- evrak kayıt raporu eklenecek
             83- excel veya toplu ekleme ve düzenlemelerde timestamp yüklenecek
             +++ 84- yüklenen resimler zaten varsa öncekiler silinsin
-            85- dava istatistikleri tarihe göre yapılsın.
+            +++ 85- dava istatistikleri tarihe göre yapılsın.
             +++ 86- dava modülünde aynı evrak başka öğretmenlerede atanabilsin
             +++ 87- Evraklardan main status durumu kaldırılacak. Bütün evrak lar ana evrak olacak
             +++ 88- Evrak eklemedeki veri tabanındaki evrağı ilgi gösterme güncelleme formuna da eklenecek

@@ -205,6 +205,7 @@ export default {
     return {
       stats: this.ppstats,
       years: this.ppyears ?? null,
+      yearList: [],
       backgroundColor: [
         'rgba(255, 99, 132, 0.2)',
         'rgba(255, 159, 64, 0.2)',
@@ -373,7 +374,7 @@ export default {
       required: false,
     },
     ppyears: {
-      type: Object,
+      type: Array,
       required: false,
     },
   },
@@ -747,6 +748,13 @@ export default {
         label: i
       });
     }
+
+    /* setTimeout(() => {
+      this.ppyears.forEach(year => {
+        this.years.push(parseInt(year));
+      });  
+    }, 3000); */
+    
   },
   mounted() {
     this.createStats().then(() => {

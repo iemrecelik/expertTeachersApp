@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Admin\DocumentManagement;
 
-use setasign\Fpdi\Fpdi;
 use App\Library\FileUpload;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
@@ -126,6 +125,47 @@ class DocumentsController extends Controller
 		return $arr;
     }
 
+    private function setParamsIntoArr(Array $params, Request $request, Int $main, Int $key = null)
+    {
+        if($main > 0) {
+            $arr = [
+                'dc_number'         => trim($params['dc_number']),
+                'dc_item_status'    => $params['dc_item_status'],
+                'dc_main_status'    => "1",
+                'dc_cat_id'         => $params['dc_cat_id'],
+                'dc_subject'        => $params['dc_subject'],
+                'dc_who_send'       => $params['dc_who_send'],
+                'dc_who_receiver'   => $params['dc_who_receiver'],
+                'dc_content'        => $params['dc_content'] ?? '',
+                'dc_show_content'   => $params['dc_show_content'] ?? '',
+                'dc_raw_content'    => $params['dc_raw_content'] ?? '',
+                'dc_date'           => strtotime($params['dc_date']),
+                'user_id'           => $request->user()->id,
+                'list_id'           => $params['list_id'],
+                'thr_id'            => $params['thr_id'] ?? null,
+                'dc_com_text'       => $params['dc_com_text'],
+                'dc_manuel'         => $params['dc_manuel'],
+            ];
+        }else {
+            $arr = [
+                'dc_number'         => trim($params['rel_dc_number'][$key]),
+                'dc_item_status'    => $params['rel_dc_item_status'][$key],
+                'dc_cat_id'         => $params['dc_cat_id'],
+                'dc_subject'        => $params['rel_dc_subject'][$key],
+                'dc_who_send'       => $params['rel_dc_who_send'][$key],
+                'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
+                'dc_content'        => $params['rel_dc_content'][$key] ?? '',
+                'dc_show_content'   => $params['rel_dc_show_content'][$key] ?? '',
+                'dc_raw_content'    => $params['rel_dc_raw_content'][$key] ?? '',
+                'dc_date'           => strtotime($params['rel_dc_date'][$key]),
+                'user_id'           => $request->user()->id,
+                'dc_manuel'         => $params['dc_manuel'],
+            ];   
+        }
+
+        return $arr;
+    }
+
     /**
      * Store a newly manual created resource in storage.
      *
@@ -137,8 +177,10 @@ class DocumentsController extends Controller
         $params = $request->all();
 
         $this->sameDocumentControl($params);
+
+        $arr = $this->setParamsIntoArr($params, $request, 1);
         
-        $arr = [
+        /* $arr = [
             'dc_number'         => trim($params['dc_number']),
             'dc_item_status'    => $params['dc_item_status'],
             'dc_main_status'    => "1",
@@ -155,7 +197,21 @@ class DocumentsController extends Controller
             'thr_id'            => $params['thr_id'] ?? null,
             'dc_com_text'       => $params['dc_com_text'],
             'dc_manuel'         => $params['dc_manuel'],
-        ];
+        ]; */
+
+        /* Dosya içeriği ile girilen bilgilerin benzerliğini kontrol etme başla */
+        $this->fileContentCtrl($request->file('dc_sender_file'), $arr);
+
+        if (isset($params['rel_dc_number'])) {
+            
+            foreach ($params['rel_dc_number'] as $key => $val) {
+                
+                $relArr = $this->setParamsIntoArr($params, $request, 0, $key);
+
+                $this->fileContentCtrl($request->file('dc_sender_file'), $relArr);
+            }
+        }
+        /* Dosya içeriği ile girilen bilgilerin benzerliğini kontrol etme bitiş */
 
         $dcDocuments = $this->saveDcDocument(
             $arr, 
@@ -187,7 +243,9 @@ class DocumentsController extends Controller
             
             foreach ($params['rel_dc_number'] as $key => $val) {
 
-                $arr = [
+                $arr = $this->setParamsIntoArr($params, $request, 0, $key);
+
+                /* $arr = [
                     'dc_number'         => trim($params['rel_dc_number'][$key]),
                     'dc_item_status'    => $params['rel_dc_item_status'][$key],
                     'dc_cat_id'         => $params['dc_cat_id'],
@@ -200,7 +258,7 @@ class DocumentsController extends Controller
                     'dc_date'           => strtotime($params['rel_dc_date'][$key]),
                     'user_id'           => $request->user()->id,
                     'dc_manuel'         => $params['dc_manuel'],
-                ];
+                ]; */
 
                 $relDcSenderAttachFiles = $request->file('rel_dc_sender_attach_files');
                 $relDcSenderAttachFiles = isset($relDcSenderAttachFiles[$key]) ? 
@@ -576,9 +634,123 @@ class DocumentsController extends Controller
 
         if(count($existSignature) < 1) {
             throw ValidationException::withMessages(
-                ['signature' => 'ÜÇ KAĞITÇI BAŞKANA ŞİKAYET EDİLECEKSİN.']
+                ['signature' => '
+                    Genel Müdür ve Genel Müdür vekillerin imzasıyla uyuşmamaktadır.
+                    Yaptığınız işlem uyarı raporuna eklendi.
+                ']
             );
         }
+    }
+
+    private function fileContentCtrl($file, $params)
+    {
+        $datas = $this->getFileContent(
+            file_get_contents("zip://{$file->getPathName()}#content.xml")
+        );
+
+        extract($datas);
+
+        /* dc_number kontrolü başla */
+        $pattern = '/'.$params['dc_number'].'/si';
+
+        $none = $params['dc_number'] !== trim($number[2]);
+
+        // preg_match($pattern, $number[2], $exist);
+
+        if($none) {
+            throw ValidationException::withMessages(
+                ['exist' => '
+                    Girdiğiniz evrak sayısı yüklediğniz evrak bilgileri ile uyuşmamaktadır. 
+                    Lütfen doğru bilgileri giriniz.'
+                ]
+            );
+        }
+        /* dc_number kontrolü bitiş */
+        
+        /* dc_date kontrolü başla */
+        /* $pattern = '/'.date('d.m.Y', $params['dc_date']).'/si';
+
+        preg_match($pattern, $number[3], $exist); */
+
+        $none = $number[3] !== date('d.m.Y', $params['dc_date']);
+
+        if($none) {
+            throw ValidationException::withMessages(
+                ['exist' => '
+                    Girdiğiniz tarih sayısı yüklediğniz evrak bilgileri ile uyuşmamaktadır. 
+                    Lütfen doğru bilgileri giriniz.'
+                ]
+            );
+        }
+        /* dc_date kontrolü bitiş */
+        
+        /* dc_who_send kontrolü başla */
+        /* $pattern = '/'.$params['dc_who_send'].'/si';
+        preg_match($pattern, $sender[1], $exist); */
+
+        var_dump($sender[1]);
+        dd(trim($params['dc_who_send']));
+
+        $none = strlen($params['dc_who_send']) > 5 
+                    ? stripos($sender[1], trim($params['dc_who_send']))
+                    : false;
+
+        if(!$none) {
+            throw ValidationException::withMessages(
+                ['exist' => '
+                    Girdiğiniz gönderici bilgisi yüklediğniz evrak bilgileri ile uyuşmamaktadır. 
+                    Lütfen doğru bilgileri giriniz.'
+                ]
+            );
+        }
+        /* dc_who_send kontrolü bitiş */
+
+        /* dc_who_receiver kontrolü başla */
+        /* $pattern = '/'.$params['dc_who_receiver'].'/si';
+        preg_match($pattern, $receiver[1], $exist); */
+
+        $none = strlen($params['dc_who_receiver']) > 5 
+                    ? stripos($receiver[1], trim($params['dc_who_receiver']))
+                    : false;
+
+        if(!$none) {
+            throw ValidationException::withMessages(
+                ['exist' => '
+                    Girdiğiniz alıcı bilgisi yüklediğniz evrak bilgileri ile uyuşmamaktadır. 
+                    Lütfen doğru bilgileri giriniz.'
+                ]
+            );
+        }
+        /* dc_who_receiver kontrolü bitiş */
+    }
+
+    private function getFileContent($result)
+    {
+        $pattern = '/<!\[CDATA\[\¸(.*)\n{2,10}sayı/si';
+        preg_match($pattern, $result, $sender);
+
+        // $pattern = '/konu\s*:.*([A-ZİĞÜŞÖÇ ]{10,1000}\n{2,10})/si';
+        // $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
+        $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
+        preg_match($pattern, $result, $receiver);
+        
+        $pattern = '/<!\[CDATA\[\¸(.*)]]>/si';
+        preg_match($pattern, $result, $content);
+
+        // $pattern = '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
+        $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
+        preg_match($pattern, $result, $number);
+        
+        $receiver[3] = preg_replace('/\n/', '<br/>', $receiver[3]);
+        $receiver[3] = preg_replace('/\t{3,100}/', '<span class="mr-5"></span>', $receiver[3]);
+        $receiver[3] = preg_replace('/\t/', '<span class="mr-5"></span>', $receiver[3]);
+
+        return [
+            'sender' => $sender,
+            'receiver' => $receiver,
+            'content' => $sender,
+            'number' => $number,
+        ];
     }
 
     public function getFileInfos(Request $request)
@@ -606,27 +778,12 @@ class DocumentsController extends Controller
         $this->signatureControl($file);
         /* İmza kontrolü yapma bitiş */
 
+        $result = file_get_contents("zip://{$file->getPathName()}#content.xml");
+
         try {
-            $result = file_get_contents("zip://{$file->getPathName()}#content.xml");
-
-            $pattern = '/<!\[CDATA\[\¸(.*)\n{2,10}sayı/si';
-            preg_match($pattern, $result, $sender);
-
-            // $pattern = '/konu\s*:.*([A-ZİĞÜŞÖÇ ]{10,1000}\n{2,10})/si';
-            // $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
-            $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
-            preg_match($pattern, $result, $receiver);
-            
-            $pattern = '/<!\[CDATA\[\¸(.*)]]>/si';
-            preg_match($pattern, $result, $content);
-
-            // $pattern = '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
-            $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
-            preg_match($pattern, $result, $number);
-            
-            $receiver[3] = preg_replace('/\n/', '<br/>', $receiver[3]);
-            $receiver[3] = preg_replace('/\t{3,100}/', '<span class="mr-5"></span>', $receiver[3]);
-            $receiver[3] = preg_replace('/\t/', '<span class="mr-5"></span>', $receiver[3]);
+            $datas = $this->getFileContent($result);
+// dd($datas);
+            extract($datas);
 
             /* dd([
                 'sender'    => $sender,

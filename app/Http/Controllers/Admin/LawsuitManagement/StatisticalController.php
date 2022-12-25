@@ -12,34 +12,56 @@ class StatisticalController extends Controller
     public function index(Request $request)
     {
         $years = $request->input('years');
-// dd($years);
-        if($years) {
+
+        $years = $years ?? [date('Y')];
+
+        // dd($years);
+        /* if($years) {
             $firstYear = min($years);
             $lastYear = max($years);
         }else {
             $firstYear = date('Y');
             $lastYear = date('Y');
+        } */
+
+        $query = '(';
+        $params = [];
+        foreach ($years as $yearKey => $yearVal) {
+            if(count($years) == ($yearKey+1)) {
+                $query .= 't1.dc_date BETWEEN ? AND ? )';
+            }else {
+                $query .= 't1.dc_date BETWEEN ? AND ? OR ';
+            }
+            $params[] = [strtotime('01.01.'.$yearVal), strtotime('31.12.'.$yearVal)];
         }
 
+        /* var_dump($query);
+        dd($params);
+ */
         /* Sendika toplam dava sayısı */
         $unsSum = DB::table('lawsuits as t0')
             ->join('dc_documents as t1', 't1.id', '=', 't0.dc_id')
             ->where('t0.uns_id', '!=', null)
-            ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
+            ->whereRaw($query, $params)
+            // ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
             ->count();
+
+            // dd($unsSum->toSql());
             
         /* Öğretmenlerin toplam dava sayısı */
         $thrSum = DB::table('lawsuits as t0')
             ->join('dc_documents as t1', 't1.id', '=', 't0.dc_id')
             ->where('t0.thr_id', '!=', null)
-            ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
+            ->whereRaw($query, $params)
+            // ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
             ->count();
         
         /* Sendikalar konularına göre sayılar */
         $sumBriefCount = DB::table('lawsuits as t0')
             ->selectRaw('t0.law_brief, count(*) as count')
             ->join('dc_documents as t1', 't1.id', '=', 't0.dc_id')
-            ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
+            ->whereRaw($query, $params)
+            // ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
             ->groupBy('t0.law_brief')
             ->get();
 
@@ -48,7 +70,8 @@ class StatisticalController extends Controller
             ->selectRaw('t0.law_brief, count(*) as count')
             ->join('dc_documents as t1', 't1.id', '=', 't0.dc_id')
             ->where('t0.uns_id', '!=', null)
-            ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
+            ->whereRaw($query, $params)
+            // ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
             ->groupBy('t0.law_brief')
             ->get();
 
@@ -57,18 +80,20 @@ class StatisticalController extends Controller
             ->join('dc_documents as t1', 't1.id', '=', 't0.dc_id')
             ->selectRaw('t0.law_brief, count(*) as count')
             ->where('t0.thr_id', '!=', null)
-            ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
+            ->whereRaw($query, $params)
+            // ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
             ->groupBy('t0.law_brief')
             ->get();
 
         /* Sendikalar göre davaların sayıları */
         $unsCount = DB::table('lawsuits as t0')
-            ->selectRaw('t1.uns_name, count(*) as count')
-            ->join('unions as t1', 't0.uns_id', '=', 't1.id')
-            ->join('dc_documents as t2', 't2.id', '=', 't0.dc_id')
+            ->selectRaw('t2.uns_name, count(*) as count')
+            ->join('unions as t2', 't0.uns_id', '=', 't2.id')
+            ->join('dc_documents as t1', 't1.id', '=', 't0.dc_id')
             ->where('t0.uns_id', '!=', null)
-            ->whereBetween('t2.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
-            ->groupBy('t1.uns_name')
+            ->whereRaw($query, $params)
+            // ->whereBetween('t1.dc_date', [strtotime('01.01.'.$firstYear), strtotime('31.12.'.$lastYear)])
+            ->groupBy('t2.uns_name')
             ->get();
 
         // dd($sumBriefCount->toArray());
@@ -124,12 +149,14 @@ class StatisticalController extends Controller
 
         // dd($stats);
 
-        $years = array_map(function($item) {
+        /* $years = array_map(function($item) {
             return [
                 'id' => $item,
                 'label' => $item
             ];
-        }, $years);
+        }, $years); */
+
+        $years = array_map('intVal', $years);
 
         return view(
             'admin.lawsuits_mng.statistical.index', 
