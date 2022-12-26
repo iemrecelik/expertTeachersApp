@@ -342,6 +342,8 @@ export default {
 				}else if(res.content) {
 					this.fieldValues.content = res.content;
 					this.inputReadonly = false;
+				}else {
+					event.target.value = "";
 				}
         /* this.setErrors('');
         this.setSucceed(res.succeed); */

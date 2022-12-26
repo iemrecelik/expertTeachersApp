@@ -259,6 +259,7 @@ class CommentController extends Controller
             +++ 90- formlarda treeselect de evrak ekleme yaparken id numarasına göre kontrol etsin
             91- evrak eklerken genel müdür ve vekillerin kontrolü yapılacak ve de tarih kontrolü yapılacak
             +++ 92- güncelle yaparken güncelle butonu pasif çıkıyor
+            93- kategori isimleri listelerde gösterilsin
         */
 
         $request->validate(

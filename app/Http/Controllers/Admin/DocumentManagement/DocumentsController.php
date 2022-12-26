@@ -200,15 +200,49 @@ class DocumentsController extends Controller
         ]; */
 
         /* Dosya içeriği ile girilen bilgilerin benzerliğini kontrol etme başla */
-        $this->fileContentCtrl($request->file('dc_sender_file'), $arr);
+        if ($request->hasFile('dc_sender_file')) {
+
+            $pattern = "/^.*\.(udf)$/i";
+            preg_match(
+                $pattern, 
+                $request->file('dc_sender_file')->getClientOriginalName(),
+                $orjExtension
+            );
+
+            if(!empty($orjExtension[1])) {
+                /* İmza kontrolü yapma başla */
+                $this->signatureControl($request->file('dc_sender_file'));
+                /* İmza kontrolü yapma bitiş */
+
+                $this->fileContentCtrl($request->file('dc_sender_file'), $arr);
+            }
+        }
 
         if (isset($params['rel_dc_number'])) {
             
             foreach ($params['rel_dc_number'] as $key => $val) {
-                
-                $relArr = $this->setParamsIntoArr($params, $request, 0, $key);
+                if($request->hasFile('rel_dc_sender_file')) {
 
-                $this->fileContentCtrl($request->file('dc_sender_file'), $relArr);
+                    if (isset($request->file('rel_dc_sender_file')[$key])) {
+
+                        $pattern = "/^.*\.(udf)$/i";
+                        preg_match(
+                            $pattern, 
+                            $request->file('rel_dc_sender_file')[$key]->getClientOriginalName(),
+                            $orjExtension
+                        );
+
+                        if(!empty($orjExtension[1])) {
+                            $relArr = $this->setParamsIntoArr($params, $request, 0, $key);
+
+                            /* İmza kontrolü yapma başla */
+                            $this->signatureControl($request->file('rel_dc_sender_file')[$key]);
+                            /* İmza kontrolü yapma bitiş */
+
+                            $this->fileContentCtrl($request->file('rel_dc_sender_file')[$key], $relArr);
+                        }
+                    }
+                }
             }
         }
         /* Dosya içeriği ile girilen bilgilerin benzerliğini kontrol etme bitiş */
@@ -388,7 +422,7 @@ class DocumentsController extends Controller
 
             foreach ($params['rel_dc_number'] as $key => $val) {
                 
-                $year = date('Y', $params['rel_dc_date'][$key]);
+                $year = date('Y', strtotime($params['rel_dc_date'][$key]));
 
                 $existDc = DcDocuments::where('dc_number', $val)
                             ->whereBetween('dc_date', [strtotime('01.01.'.$year), strtotime('31.12.'.$year)])
@@ -628,17 +662,28 @@ class DocumentsController extends Controller
             );
         }
 
-        $pattern = '/cevdet vural|nejat işler/si';
+        $datas = $this->getFileContent(
+            file_get_contents("zip://{$file->getPathName()}#content.xml")
+        );
 
-        preg_match($pattern, $sign, $existSignature);
+        extract($datas);
 
-        if(count($existSignature) < 1) {
-            throw ValidationException::withMessages(
-                ['signature' => '
-                    Genel Müdür ve Genel Müdür vekillerin imzasıyla uyuşmamaktadır.
-                    Yaptığınız işlem uyarı raporuna eklendi.
-                ']
-            );
+        $pattern = '/Öğretmen Yetiştirme ve Geliştirme Genel Müdürlüğü/si';
+        preg_match($pattern, $sender[1], $existOygm);
+
+        if(count($existOygm) > 0) {
+            $pattern = '/cevdet vural|nejat işler/si';
+
+            preg_match($pattern, $sign, $existSignature);
+
+            if(count($existSignature) < 1) {
+                throw ValidationException::withMessages(
+                    ['signature' => '
+                        Genel Müdür ve Genel Müdür vekillerin imzasıyla uyuşmamaktadır.
+                        Yaptığınız işlem uyarı raporuna eklendi.
+                    ']
+                );
+            }
         }
     }
 
@@ -651,11 +696,10 @@ class DocumentsController extends Controller
         extract($datas);
 
         /* dc_number kontrolü başla */
-        $pattern = '/'.$params['dc_number'].'/si';
+        /* $pattern = '/'.$params['dc_number'].'/si';
+        preg_match($pattern, $number[2], $exist); */
 
         $none = $params['dc_number'] !== trim($number[2]);
-
-        // preg_match($pattern, $number[2], $exist);
 
         if($none) {
             throw ValidationException::withMessages(
@@ -685,38 +729,74 @@ class DocumentsController extends Controller
         /* dc_date kontrolü bitiş */
         
         /* dc_who_send kontrolü başla */
-        /* $pattern = '/'.$params['dc_who_send'].'/si';
-        preg_match($pattern, $sender[1], $exist); */
+        $senderMain = \Transliterator::create('tr-upper')->transliterate(trim($params['dc_who_send']));
+        $senderSearch = \Transliterator::create('tr-upper')->transliterate(trim($sender[1]));
 
-        var_dump($sender[1]);
-        dd(trim($params['dc_who_send']));
+        $senderSearch = preg_replace("/\s+/", " ", $senderSearch);
+        $senderSearch = trim($senderSearch);
 
-        $none = strlen($params['dc_who_send']) > 5 
-                    ? stripos($sender[1], trim($params['dc_who_send']))
+        $senderMain = preg_replace("/\s+/", " ", $senderMain);
+        $senderMain = trim($senderMain);
+
+        $pattern = '/(.)+ (.)+/si';
+        preg_match($pattern, trim($params['dc_who_send']), $exist);
+
+        $none = strlen($params['dc_who_send']) > 5 && count($exist) > 0
+                    ? stripos($senderSearch, $senderMain) >= 0
                     : false;
+
+                    /* echo '<pre>';
+                    var_dump($senderSearch);
+                    var_dump($senderMain);
+                    dd(stripos($senderSearch, $senderMain)); */
 
         if(!$none) {
             throw ValidationException::withMessages(
                 ['exist' => '
-                    Girdiğiniz gönderici bilgisi yüklediğniz evrak bilgileri ile uyuşmamaktadır. 
+                    Girdiğiniz gönderici bilgisi yüklediğiniz evrak bilgileri ile uyuşmamaktadır. 
                     Lütfen doğru bilgileri giriniz.'
                 ]
             );
         }
         /* dc_who_send kontrolü bitiş */
 
-        /* dc_who_receiver kontrolü başla */
-        /* $pattern = '/'.$params['dc_who_receiver'].'/si';
-        preg_match($pattern, $receiver[1], $exist); */
+        /* evrak gönderim durumu kontrolü başla */
+        $pattern = '/20299769/si';
+        preg_match($pattern, trim($number[1]), $exist);
 
-        $none = strlen($params['dc_who_receiver']) > 5 
-                    ? stripos($receiver[1], trim($params['dc_who_receiver']))
+        $none = (count($exist) > 0 && $params['dc_item_status'] == "1") || (count($exist) < 1 && $params['dc_item_status'] == "0");
+        
+        if(!$none) {
+            throw ValidationException::withMessages(
+                ['exist' => '
+                    Girdiğiniz evrak durum bilgisi evrak bilgileri ile uyuşmamaktadır. 
+                    Lütfen doğru bilgileri giriniz.'
+                ]
+            );
+        }
+        /* evrak gönderim durumu kontrolü bitiş */
+
+        /* dc_who_receiver kontrolü başla */
+        $receiverMain = \Transliterator::create('tr-upper')->transliterate(trim($params['dc_who_receiver']));
+        $receiverSearch = \Transliterator::create('tr-upper')->transliterate(trim($receiver[1]));
+
+        $receiverSearch = preg_replace("/\s+/", " ", $receiverSearch);
+        $receiverSearch = trim($receiverSearch);
+
+        $receiverMain = preg_replace("/\s+/", " ", $receiverMain);
+        $receiverMain = trim($receiverMain);
+
+        $pattern = '/(.)+ (.)+/si';
+        preg_match($pattern, trim($params['dc_who_receiver']), $exist);
+
+        $none = strlen($params['dc_who_receiver']) > 5 && count($exist) > 0
+                    ? stripos($receiverSearch, $receiverMain) >= 0
                     : false;
 
         if(!$none) {
             throw ValidationException::withMessages(
                 ['exist' => '
-                    Girdiğiniz alıcı bilgisi yüklediğniz evrak bilgileri ile uyuşmamaktadır. 
+                    Girdiğiniz alıcı bilgisi yüklediğiniz evrak bilgileri ile uyuşmamaktadır. 
                     Lütfen doğru bilgileri giriniz.'
                 ]
             );
@@ -1054,6 +1134,49 @@ class DocumentsController extends Controller
         return $dcDocuments;
     }
 
+    private function setUpdateParamsIntoArr(Array $params, Request $request, Int $main, Int $key = null)
+    {
+        if($main > 0) {
+            $arr = [
+                'id'                => $params['id'],
+                'dc_number'         => trim($params['dc_number']),
+                'dc_item_status'    => $params['dc_item_status'],
+                'dc_main_status'    => "1",
+                'dc_cat_id'         => $params['dc_cat_id'],
+                'dc_subject'        => $params['dc_subject'],
+                'dc_who_send'       => $params['dc_who_send'],
+                'dc_who_receiver'   => $params['dc_who_receiver'],
+                'dc_content'        => $params['dc_content'] ?? '',
+                'dc_show_content'   => $params['dc_show_content'] ?? '',
+                'dc_raw_content'    => $params['dc_raw_content'] ?? '',
+                'dc_date'           => strtotime($params['dc_date']),
+                'user_id'           => $request->user()->id,
+                'list_id'           => $params['list_id'] ?? null,
+                'thr_id'            => $params['thr_id'] ?? null,
+                'dc_com_text'       => $params['dc_com_text'] ?? null,
+                'dc_manuel'         => $params['dc_manuel'],
+            ];
+        }else {
+            $arr = [
+                'id'                => $params['rel_dc_id'][$key],
+                'dc_number'         => trim($params['rel_dc_number'][$key]),
+                'dc_item_status'    => $params['rel_dc_item_status'][$key],
+                'dc_cat_id'         => $params['dc_cat_id'],
+                'dc_subject'        => $params['rel_dc_subject'][$key],
+                'dc_who_send'       => $params['rel_dc_who_send'][$key],
+                'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
+                'dc_content'        => $params['rel_dc_content'][$key] ?? '',
+                'dc_show_content'   => $params['rel_dc_show_content'][$key] ?? '',
+                'dc_raw_content'    => $params['rel_dc_raw_content'][$key] ?? '',
+                'dc_date'           => strtotime($params['rel_dc_date'][$key]),
+                'user_id'           => $request->user()->id,
+                'dc_manuel'         => $params['dc_manuel'],
+            ];
+        }
+
+        return $arr;
+    }
+
     /**
      * Store a newly manual created resource in storage.
      *
@@ -1065,8 +1188,10 @@ class DocumentsController extends Controller
         $params = $request->all();
 
         $this->sameDocumentControl($params);
+
+        $arr = $this->setUpdateParamsIntoArr($params, $request, 1);
         
-        $arr = [
+        /* $arr = [
             'id'                => $params['id'],
             'dc_number'         => trim($params['dc_number']),
             'dc_item_status'    => $params['dc_item_status'],
@@ -1084,7 +1209,54 @@ class DocumentsController extends Controller
             'thr_id'            => $params['thr_id'] ?? null,
             'dc_com_text'       => $params['dc_com_text'] ?? null,
             'dc_manuel'         => $params['dc_manuel'],
-        ];
+        ]; */
+
+        /* Dosya içeriği ile girilen bilgilerin benzerliğini kontrol etme başla */
+        if ($request->hasFile('dc_sender_file')) {
+            $pattern = "/^.*\.(udf)$/i";
+            preg_match(
+                $pattern, 
+                $request->file('dc_sender_file')->getClientOriginalName(),
+                $orjExtension
+            );
+
+            if(!empty($orjExtension[1])) {
+                $this->fileContentCtrl($request->file('dc_sender_file'), $arr);
+
+                /* İmza kontrolü yapma başla */
+                $this->signatureControl($request->file('dc_sender_file'));
+                /* İmza kontrolü yapma bitiş */
+            }
+        }
+
+        if (isset($params['rel_dc_number'])) {
+
+            foreach ($params['rel_dc_number'] as $key => $val) {
+                if($request->hasFile('rel_dc_sender_file')) {
+
+                    if (isset($request->file('rel_dc_sender_file')[$key])) {
+
+                        $pattern = "/^.*\.(udf)$/i";
+                        preg_match(
+                            $pattern, 
+                            $request->file('rel_dc_sender_file')[$key]->getClientOriginalName(),
+                            $orjExtension
+                        );
+
+                        if(!empty($orjExtension[1])) {
+                            $relArr = $this->setUpdateParamsIntoArr($params, $request, 0, $key);
+                        
+                            /* İmza kontrolü yapma başla */
+                            $this->signatureControl($request->file('rel_dc_sender_file')[$key]);
+                            /* İmza kontrolü yapma bitiş */
+
+                            $this->fileContentCtrl($request->file('rel_dc_sender_file')[$key], $relArr);
+                        }
+                    }
+                }
+            }
+        }
+        /* Dosya içeriği ile girilen bilgilerin benzerliğini kontrol etme bitiş */
 
         $dcDocuments = $this->updateDcDocument(
             $arr, 
