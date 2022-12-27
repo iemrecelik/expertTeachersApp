@@ -2,6 +2,7 @@
 	<component 
 		:is="componentName"
 		:ppfieldname="settings.fieldName"
+		:ppfieldlabelname="settings.ppfieldLabelName"
     :ppvalue="value"
     :ppfuncs="funcs"
     :ppnecessity="settings.necessity ?? false"

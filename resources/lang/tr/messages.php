@@ -68,6 +68,7 @@ return [
 	'editDocument' => 'Evrak Düzenleme',
 	'resetForm' => 'Formu Sıfırla',
 	'enterCategoryName' => 'Kategori ismini giriniz.',
+	'document_record_list' => 'Evrak Kayıt Listesi',
 
 
 	/* Document List */
