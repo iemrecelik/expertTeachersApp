@@ -13,6 +13,7 @@ import docMngCreateDocumentComponent from './components/admin/document_mng/docum
 import docMngEditDocumentComponent from './components/admin/document_mng/document/EditComponent.vue';
 import docMngManualCreateDocumentComponent from './components/admin/document_mng/document/ManualCreateComponent.vue';
 import docMngSearchComponent from './components/admin/document_mng/search/SearchComponent.vue';
+import docMngReportComponent from './components/admin/document_mng/report/IndexComponent.vue';
 
 /* Lawsuit Management*/
 import lawsuitMngLawsuitsComponent from './components/admin/lawsuit_mng/lawsuits/IndexComponent';
@@ -39,6 +40,7 @@ export default {
 	'doc-mng-edit-document-component': docMngEditDocumentComponent,
 	'doc-mng-manual-create-document-component': docMngManualCreateDocumentComponent,
 	'doc-mng-search-component': docMngSearchComponent,
+	'doc-mng-report-component': docMngReportComponent,
 
 	'teachers-component': teachersComponent,
 	'teachers-preview-component': teachersPreviewComponent,

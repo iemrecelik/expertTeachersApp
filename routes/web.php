@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\DocumentManagement\CommentController;
 use App\Http\Controllers\Admin\LawsuitManagement\LawsuitsController;
 use App\Http\Controllers\Admin\DocumentManagement\CategoryController;
 use App\Http\Controllers\Admin\DocumentManagement\DocumentsController;
+use App\Http\Controllers\Admin\DocumentManagement\DcReportController;
 use App\Http\Controllers\Admin\LawsuitManagement\StatisticalController;
 use App\Http\Controllers\Admin\TeachersListManagement\InstitutionsController;
 use App\Http\Controllers\Admin\OldRegulation\SearchController as OldSearchController;
@@ -197,6 +198,31 @@ Route::prefix('admin/old-regulation')
     ->group(function () {
         Route::get('/expert-search', 'expertInfo')->name('search');
         Route::post('/expert-search-list', 'getExpertInfos')->name('searchList');
+    });
+
+Route::prefix('admin/document-management')
+    ->middleware('auth')
+    ->controller(DcReportController::class)
+    ->name('admin.document_mng.')
+    ->group(function () {
+        /* Report */
+        Route::get(
+			'report', 
+			'index'
+		)
+		->name('report.index');
+
+        Route::post(
+			'report/record-count', 
+			'saveDocumentRecordCount'
+		)
+		->name('report.saveDocumentRecordCount');
+
+		Route::get(
+			'report/document-on-date', 
+			'getDocumentOnDate'
+		)
+		->name('report.getDocumentOnDate');
     });
 
 Route::prefix('admin/document-management')

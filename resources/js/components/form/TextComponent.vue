@@ -35,6 +35,10 @@ export default {
       type: String,
       required: true,
     },
+    ppfieldlabelname: {
+      type: String,
+      required: false,
+    },
     ppvalue: {
       type: Object,
       required: false,
@@ -60,7 +64,7 @@ export default {
       return this.funcs.ariaDescribedby(this.filtFieldName);
     },
     fieldLabelName: function(){
-      return this.funcs.fieldLabelName(this.filtFieldName);
+      return this.ppfieldlabelname ?? this.funcs.fieldLabelName(this.filtFieldName);
     },
     value: function(){
       return this.ppvalue.val;
