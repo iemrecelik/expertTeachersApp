@@ -3,11 +3,14 @@
 namespace App\Models\Admin;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\ModelsRepository\Admin\DcDocumentsRepository;
 use Illuminate\Database\Eloquent\Model;
 
 class DcDocuments extends Model
 {
     use HasFactory;
+
+    use DcDocumentsRepository;
 
     protected $fillable = [
         'dc_item_status',

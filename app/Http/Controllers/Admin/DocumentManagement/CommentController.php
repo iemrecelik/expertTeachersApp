@@ -260,6 +260,7 @@ class CommentController extends Controller
             91- evrak eklerken genel müdür ve vekillerin kontrolü yapılacak ve de tarih kontrolü yapılacak
             +++ 92- güncelle yaparken güncelle butonu pasif çıkıyor
             93- kategori isimleri listelerde gösterilsin
+            94- Tablodaki listelere sıra numarası verilecek
         */
 
         $request->validate(

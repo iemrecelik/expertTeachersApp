@@ -217,6 +217,12 @@ Route::prefix('admin/document-management')
 			'saveDocumentRecordCount'
 		)
 		->name('report.saveDocumentRecordCount');
+
+		Route::get(
+			'report/document-on-date', 
+			'getDocumentOnDate'
+		)
+		->name('report.getDocumentOnDate');
     });
 
 Route::prefix('admin/document-management')

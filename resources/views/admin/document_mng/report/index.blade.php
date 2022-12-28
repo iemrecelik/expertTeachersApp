@@ -4,6 +4,7 @@
     :pproutes="{ 
       index: '{{ route('admin.document_mng.report.index') }}', 
       saveDocumentRecordCount: '{{ route('admin.document_mng.report.saveDocumentRecordCount') }}', 
+      getDocumentOnDate: '{{ route('admin.document_mng.report.getDocumentOnDate') }}', 
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
     :ppdatas="{{ json_encode($datas) }}"

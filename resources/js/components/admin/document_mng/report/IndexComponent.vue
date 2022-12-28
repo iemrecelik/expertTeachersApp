@@ -33,13 +33,13 @@
 
             <div class="row">
               <div class="col-2" v-for="(userVal, userKey) in datas.users">
-                <input type="hidden" name="user_id[]">
+                <input type="hidden" name="user_id[]" :value="userVal.id">
                 <form-form-component
                   :ppsettings="{
                     type: 'text', 
                     fieldName: 'rp_count[]', 
                     ppfieldLabelName: userVal.name,
-                    value: oldValue('rp_count')
+                    value: userVal.rpCount ?? 0
                   }"
                 >
                 </form-form-component>
@@ -60,11 +60,11 @@
           <div class="row mt-2">
             <div class="col-4">
               <label>Girilmesi gereken toplam giden evrak: </label>
-              <span>0</span>
+              <span>{{ dcReportNeededCount }}</span>
             </div>
             <div class="col-4">
               <label>Girilen toplam giden evrak: </label>
-              <span>0</span>
+              <span>{{ recordedDocumentsCount }}</span>
             </div>
           </div>
         </div>
@@ -82,14 +82,12 @@
               <tr>
                 <th>{{ $t("messages.dc_id") }}</th>
                 <th>{{ $t("messages.thr_name") }}</th>
-                <th>{{ $t("messages.law_brief") }}</th>
                 <th>{{ $t("messages.dc_date") }}</th>
-                <!-- <th>{{ $t("messages.processes") }}</th> -->
               </tr>
             </thead>
-            <tfoot>
+            <!-- <tfoot>
               <tr>
-                <th colspan="4">
+                <th colspan="3">
                   <button type="button" class="btn btn-primary"
                     data-toggle="modal" 
                     :data-target="modalSelector"
@@ -100,7 +98,7 @@
                   </button>
                 </th>
               </tr>
-            </tfoot>
+            </tfoot> -->
           </table>
         </div><!-- /.card-body-->
       </div><!-- /.card-->
@@ -129,21 +127,12 @@
 </template>
 
 <script>
-/* import createComponent from './CreateComponent';
-import editComponent from './EditComponent';
-import showComponent from './ShowComponent';
-import deleteComponent from './DeleteComponent';
- */
 import { mapState, mapMutations } from 'vuex';
-
-
-// import the styles
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
 
 let formTitleName = 'lawsuits'
 
 export default {
-  // name: this.componentTitleName,
+  name: 'IndexComponent',
   data () {
     return {
       modalIDName: 'formModalLong',
@@ -151,7 +140,9 @@ export default {
       dataTable: null,
       ajaxErrorCount: -1,
       datas: this.ppdatas,
-      formIDName: 'save-document-record-count'
+      formIDName: 'save-document-record-count',
+      dcReportNeededCount: 0,
+      recordedDocumentsCount: this.ppdatas.sum,
     };
   },
   props: {
@@ -190,6 +181,7 @@ export default {
     ...mapMutations([
       'setRoutes',
       'setErrors',
+      'setSucceed',
       'setEditItem',
       'setImgFilters',
     ]),
@@ -207,97 +199,34 @@ export default {
         this.destroyTable();
       }
       
-      // let form = $("#lawsuit-search");
-      let datas = [];
-      let form = document.getElementById("lawsuit-search");
-
-      if(form.elements['thr_ids[]']) {
-        datas['thr_ids'] = [];
-
-        if (form.elements['thr_ids[]'].value == '') {
-          for (let i = 0; i < form.elements['thr_ids[]'].length; i++) {
-            const element = form.elements['thr_ids[]'][i];
-            datas['thr_ids'].push(element.value);
-          }  
-        }else {
-          datas['thr_ids'].push(form.elements['thr_ids[]'].value);
-        }
-      }
-
-      
-      if(form.elements['dc_ids[]']) {
-        datas['dc_ids'] = [];
-
-        if (form.elements['dc_ids[]'].value == '') {
-          for (let i = 0; i < form.elements['dc_ids[]'].length; i++) {
-            const element = form.elements['dc_ids[]'][i];
-            datas['dc_ids'].push(element.value);
-          }
-        }else {
-          datas['dc_ids'].push(form.elements['dc_ids[]'].value);
-        }
-      }
-      
-      if(form.elements['uns_id']) {
-        datas['uns_id'] = form.elements['uns_id'].value;
-      }
-      
-      if(form.elements['dc_date']) {
-        datas['dc_date'] = form.elements['dc_date'].value;
-      }
+      let rpDate = document.getElementById('reservationdate').value;
       
       this.dataTable = this.dataTableRun({
         jQDomName: '.res-dt-table',
-        url: this.routes.dataList,
+        url: this.routes.getDocumentOnDate,
+        method: 'GET',
         /* data: {
           'datas': form.serializeArray(),
         }, */
-        data: datas,
+        data: {rpDate},
         columns: [
-          {
-            "orderable": false,
-            "searchable": false,
-            "sortable": false,
-            "data": "dc_id",
-            "render": ( data, type, row ) => {
-              return row.dc_number;
-            },
-            "defaultContent": ""
-          },
-          {
-            "orderable": false,
-            "searchable": false,
-            "sortable": false,
-            "data": "thr_name",
-            "render": ( data, type, row ) => {
-              return row.thr_name != null 
-                ? '(' + row.thr_tc_no + ') ' + row.thr_name + ' ' + row.thr_surname 
-                : row.uns_name;
-            },
-            "defaultContent": ""
-          },
-          { "data": "law_brief" },
+          { "data": "dc_number" },
           { 
             "data": "dc_date",
             "render": (data, type, row) => {
               return this.unixTimestamp(data);
             }
           },
-          {
-            "orderable": false,
-            "searchable": false,
-            "sortable": false,
-            "data": "id",
+          { 
+            "data": "user_name",
             "render": ( data, type, row ) => {
-                return this.processesRow(
-                  data, 
-                  row.dc_number, 
-                  row.thr_name
-                );
+              return data;
             },
-            "defaultContent": ""
-          },
+          }
         ],
+        initComplete: (settings, json) => {
+          this.recordedDocumentsCount = json.recordsFiltered;
+        }
       });
     },
     saveDocumentRecordCount: function(){
@@ -310,6 +239,7 @@ export default {
         data: form.serialize(),
       })
       .done((res) => {
+        this.dcReportNeededCount = res.sum;
         this.setErrors('');
         this.setSucceed(res.succeed);
         // document.getElementById(this.formIDName).reset();
@@ -322,7 +252,6 @@ export default {
         // this.$parent.$parent.dataTable.ajax.reload();
       })
       .always(() => {});
-
     },
   },
   created(){
@@ -330,10 +259,7 @@ export default {
     this.setErrors(this.pperrors);
   },
   mounted(){
-    // this.loadDataTable()
-    
     // this.showModalBody(this.modalSelector);
-    
     //Date picker
     var today = new Date();
     var dd = String(today.getDate()).padStart(2, '0');
@@ -343,14 +269,18 @@ export default {
     today = dd + '.' + mm + '.' + yyyy;
     $('#reservationdate').datepicker();
     $('#reservationdate').val(today);
+    
+    $('#reservationdate').change(() => {
+      this.loadDataTable();
+    });
+
+    const loadDataTableInterval = setInterval(() => {
+      if(document.getElementById('reservationdate').value) {
+        this.loadDataTable();
+        clearInterval(loadDataTableInterval);
+      }
+    }, 100);
   },
-  /* components: {
-    [formTitleName + '-create-component']: createComponent,
-    [formTitleName + '-edit-component']: editComponent,
-    [formTitleName + '-show-component']: showComponent,
-    [formTitleName + '-delete-component']: deleteComponent,
-    Treeselect,
-  } */
 }
 </script>
 
