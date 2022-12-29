@@ -559,6 +559,11 @@ class DocumentsController extends Controller
 
             $dcDocuments->dc_ralatives()->save($dcRelative);
 
+            /* Kategorileri ekleme başla*/
+            $categories = DcCategory::whereIn('id', $catIds)->get();
+            $dcRelative->dcCategories()->saveMany($categories);
+            /* Kategorileri ekleme bitiş*/
+
             $this->uploadFile([
                 'dcDocuments'   => $dcRelative,
                 'params'        => $params,
@@ -828,7 +833,7 @@ class DocumentsController extends Controller
         return [
             'sender' => $sender,
             'receiver' => $receiver,
-            'content' => $sender,
+            'content' => $content,
             'number' => $number,
         ];
     }

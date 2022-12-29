@@ -272,7 +272,13 @@ export default {
           { 
             "data": "dc_cat_id",
             "render": (data, type, row) => {
-              return row.dc_cat_name;
+              let catNames = [];
+
+              row.dcCatNames.forEach(cat => {
+                catNames.push(cat.dc_cat_name);
+              });
+              
+              return catNames.join(', ');
             }
           },
           { "data": "dc_number" },

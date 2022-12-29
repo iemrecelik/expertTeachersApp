@@ -268,6 +268,13 @@ class SearchController extends Controller
 					->limit($tblInfo['length'])
 					->get();
 
+		foreach ($data as $key => $val) {
+			$val->dcCatNames = DB::table('dc_category as t0')
+				->join('dc_cat as t1', 't1.cat_id', '=', 't0.id')
+				->where('t1.dc_id', $val->id)
+				->get();
+		}
+
 	    return [
 	        'recordsTotal' => $recordsTotal, 
 	        'recordsFiltered' => $recordsFiltered, 
@@ -295,7 +302,9 @@ class SearchController extends Controller
 
 			/* set attach files start*/
 			foreach ($dcDocuments->dc_ralatives as $key => $item) {
-				$dcRelAttFile = DB::table('dc_documents as t0')->join('dc_attach_files as t1', 't1.dc_att_file_owner_id', '=', 't0.id')
+				$dcRelAttFile = DB::table('dc_documents as t0')
+				->select('dc_att_file_path', 'dc_att_file_owner_type', 'dc_att_file_owner_id', 't1.id')
+				->join('dc_attach_files as t1', 't1.dc_att_file_owner_id', '=', 't0.id')
 				->where([
 					['t0.id', $item->id]
 				])
