@@ -223,6 +223,12 @@ Route::prefix('admin/document-management')
 			'getDocumentOnDate'
 		)
 		->name('report.getDocumentOnDate');
+
+		Route::get(
+			'report/report-count-on-date',
+			'getReportCountOnDate'
+		)
+		->name('report.getReportCountOnDate');
     });
 
 Route::prefix('admin/document-management')

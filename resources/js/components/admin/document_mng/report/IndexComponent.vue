@@ -32,17 +32,17 @@
             </div>
 
             <div class="row">
-              <div class="col-2" v-for="(userVal, userKey) in datas.users">
+              <div class="col-2" :key="userKey" v-for="(userVal, userKey) in users">
                 <input type="hidden" name="user_id[]" :value="userVal.id">
-                <form-form-component
-                  :ppsettings="{
-                    type: 'text', 
-                    fieldName: 'rp_count[]', 
-                    ppfieldLabelName: userVal.name,
-                    value: userVal.rpCount ?? 0
-                  }"
-                >
-                </form-form-component>
+                
+                <div class="form-group">
+                  <label v-html="userVal.name"></label>
+                  <input type="text" class="form-control" 
+                    name="rp_count[]" 
+                    :placeholder="userVal.name"
+                    :value="userVal.rpCount ?? 0"
+                  />
+                </div>
               </div>
             </div><!-- /.row -->
 
@@ -143,6 +143,7 @@ export default {
       formIDName: 'save-document-record-count',
       dcReportNeededCount: 0,
       recordedDocumentsCount: this.ppdatas.sum,
+      users: this.ppdatas.users
     };
   },
   props: {
@@ -193,6 +194,41 @@ export default {
         this.dataTable.destroy();
         // $("#"+this.form+" tbody").empty();
       }
+    },
+    loadReportCountOnDate() {
+      
+      setTimeout(() => {
+        $.ajax({
+          url: this.routes.getReportCountOnDate,
+          type: 'GET',
+          dataType: 'JSON',
+          data: {
+            date: document.getElementById('reservationdate').value
+          },
+        })
+        .done((res) => {
+          this.dcReportNeededCount = res.sum;
+          
+          this.users = [];
+
+          res.users.forEach(user => {
+            this.users.push(user);
+          });          
+          
+          this.ajaxErrorCount = -1;
+        })
+        .fail((error) => {
+          setTimeout(() => {
+            this.ajaxErrorCount++
+            if(this.ajaxErrorCount < 3)
+              this.loadReportCountOnDate();
+            else
+              this.ajaxErrorCount = -1;
+          }, 100);
+        })
+        .then((res) => {})
+        .always(() => {});  
+      }, 100);
     },
     loadDataTable() {
       if(this.dataTable) {
@@ -272,6 +308,7 @@ export default {
     
     $('#reservationdate').change(() => {
       this.loadDataTable();
+      this.loadReportCountOnDate();
     });
 
     const loadDataTableInterval = setInterval(() => {

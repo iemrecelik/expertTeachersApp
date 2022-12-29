@@ -44,6 +44,31 @@ class DcReportController extends Controller
         );
     }
 
+    public function getReportCountOnDate(Request $request)
+    {
+        $date = $request->input('date');
+        $date = strtotime($date);
+
+        $sum = 0;
+        $users = User::all()->toArray();
+
+        foreach ($users as $userKey => $userVal) {
+            $users[$userKey]['rpCount'] = DcReport::where([
+                'user_id' => $userVal['id'],
+                'rp_date' => $date
+            ])
+            ->first()
+            ->toArray()['rp_count'];
+
+            $sum += strval($users[$userKey]['rpCount']);
+        }
+
+        return [
+            'users' => $users,
+            'sum' => $sum,
+        ];
+    }
+
     /**
      * Store a newly manual created resource in storage.
      *
