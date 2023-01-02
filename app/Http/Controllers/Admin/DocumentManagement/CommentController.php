@@ -261,6 +261,7 @@ class CommentController extends Controller
             +++ 92- güncelle yaparken güncelle butonu pasif çıkıyor
             93- kategori isimleri listelerde gösterilsin
             94- Tablodaki listelere sıra numarası verilecek
+            95-
         */
 
         $request->validate(
