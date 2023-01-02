@@ -32,15 +32,26 @@
             </div>
 
             <div class="row">
-              <div class="col-2" :key="userKey" v-for="(userVal, userKey) in users">
+              <div class="col-2 border-right" :key="userKey" v-for="(userVal, userKey) in users">
                 <input type="hidden" name="user_id[]" :value="userVal.id">
-                
-                <div class="form-group">
+                <div>
                   <label v-html="userVal.name"></label>
+                </div>
+                <div class="form-group">
+                  <label>Gelen Evrak: </label>
                   <input type="text" class="form-control" 
-                    name="rp_count[]" 
+                    name="incoming_rp_count[]" 
                     :placeholder="userVal.name"
-                    :value="userVal.rpCount ?? 0"
+                    :value="userVal.incomingRpCount ?? 0"
+                  />
+                </div>
+
+                <div class="form-group">
+                  <label>Giden Evrak: </label>
+                  <input type="text" class="form-control" 
+                    name="sender_rp_count[]" 
+                    :placeholder="userVal.name"
+                    :value="userVal.senderRpCount ?? 0"
                   />
                 </div>
               </div>
@@ -59,12 +70,22 @@
           
           <div class="row mt-2">
             <div class="col-4">
+              <label>Girilmesi gereken toplam gelen evrak: </label>
+              <span>{{ inDcReportNeededCount }}</span>
+            </div>
+            <div class="col-4">
+              <label>Girilen toplam gelen evrak: </label>
+              <span>{{ inRecordedDocumentsCount }}</span>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-4">
               <label>Girilmesi gereken toplam giden evrak: </label>
-              <span>{{ dcReportNeededCount }}</span>
+              <span>{{ senDcReportNeededCount }}</span>
             </div>
             <div class="col-4">
               <label>Girilen toplam giden evrak: </label>
-              <span>{{ recordedDocumentsCount }}</span>
+              <span>{{ senRecordedDocumentsCount }}</span>
             </div>
           </div>
         </div>
@@ -81,8 +102,8 @@
             <thead>
               <tr>
                 <th>{{ $t("messages.dc_id") }}</th>
-                <th>{{ $t("messages.thr_name") }}</th>
                 <th>{{ $t("messages.dc_date") }}</th>
+                <th>{{ $t("messages.thr_name") }}</th>
               </tr>
             </thead>
             <!-- <tfoot>
@@ -141,8 +162,10 @@ export default {
       ajaxErrorCount: -1,
       datas: this.ppdatas,
       formIDName: 'save-document-record-count',
-      dcReportNeededCount: 0,
-      recordedDocumentsCount: this.ppdatas.sum,
+      inDcReportNeededCount: this.ppdatas.incomingSum,
+      senDcReportNeededCount: this.ppdatas.senderSum,
+      inRecordedDocumentsCount: this.ppdatas.uincomingSum,
+      senRecordedDocumentsCount: this.ppdatas.usenderSum,
       users: this.ppdatas.users
     };
   },
@@ -207,7 +230,10 @@ export default {
           },
         })
         .done((res) => {
-          this.dcReportNeededCount = res.sum;
+          this.inDcReportNeededCount = res.incomingSum;
+          this.senDcReportNeededCount = res.senderSum;
+          this.inRecordedDocumentsCount = res.uincomingSum;
+          this.senRecordedDocumentsCount = res.usenderSum;
           
           this.users = [];
 
@@ -275,7 +301,8 @@ export default {
         data: form.serialize(),
       })
       .done((res) => {
-        this.dcReportNeededCount = res.sum;
+        this.inDcReportNeededCount = res.incomingSum;
+        this.senDcReportNeededCount = res.senderSum;
         this.setErrors('');
         this.setSucceed(res.succeed);
         // document.getElementById(this.formIDName).reset();

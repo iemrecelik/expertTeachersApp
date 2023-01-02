@@ -143,6 +143,9 @@ return [
 
         /* Fortify Service */
         App\Providers\FortifyServiceProvider::class,
+        
+        /* Spatie Permission */
+        Spatie\Permission\PermissionServiceProvider::class,
 
         /*
          * Laravel Framework Service Providers...

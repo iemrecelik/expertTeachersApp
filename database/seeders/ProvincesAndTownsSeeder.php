@@ -29,6 +29,5 @@ class ProvincesAndTownsSeeder extends Seeder
                 ]);
             }
         }
-
     }
 }

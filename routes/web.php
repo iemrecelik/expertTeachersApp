@@ -272,7 +272,8 @@ Route::prefix('admin/document-management')
 			'edit'
 		)
 		->where('document', '[0-9]+')
-		->name('document.edit');
+		->name('document.edit')
+		->middleware(['permission:edit documents']);
 
         Route::post(
 			'document/update', 

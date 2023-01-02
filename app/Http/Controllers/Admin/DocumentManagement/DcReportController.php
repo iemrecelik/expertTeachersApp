@@ -18,19 +18,29 @@ class DcReportController extends Controller
      */
     public function index()
     {
-        $sum = 0;
+        /* $incomingSum = 0;
+        $senderSum = 0;
         $users = User::all()->toArray();
 
         $dateNow = strtotime(date('d.m.y'));
 
         foreach ($users as $userKey => $userVal) {
-            $users[$userKey]['rpCount'] = DcDocuments::where([
+            $users[$userKey]['incomingRpCount'] = DcDocuments::where([
                 'user_id' => $userVal['id'],
-                'dc_date' => $dateNow
+                'dc_date' => $dateNow,
+                'dc_item_status' => "1"
             ])
             ->count();
 
-            $sum += strval($users[$userKey]['rpCount']);
+            $users[$userKey]['senderRpCount'] = DcDocuments::where([
+                'user_id' => $userVal['id'],
+                'dc_date' => $dateNow,
+                'dc_item_status' => "0"
+            ])
+            ->count();
+
+            $incomingSum += strval($users[$userKey]['incomingRpCount']);
+            $senderSum += strval($users[$userKey]['senderRpCount']);
         }
 
         return view(
@@ -38,7 +48,88 @@ class DcReportController extends Controller
             [
                 'datas' => [
                     'users' => $users,
-                    'sum' => $sum
+                    'incomingSum' => $incomingSum,
+                    'senderSum' => $senderSum
+                ]
+            ]
+        ); */
+
+
+        $date = strtotime(date('d.m.y'));
+
+        $incomingSum = 0;
+        $senderSum = 0;
+        $users = User::all()->toArray();
+
+        foreach ($users as $userKey => $userVal) {
+            /* Gelen başla */
+            $inRp = DcReport::where([
+                'user_id' => $userVal['id'],
+                'rp_date' => $date,
+                'rp_item_status' => "0"
+            ])
+            ->first();
+
+            $users[$userKey]['incomingRpCount'] = $inRp ? $inRp['rp_count'] : 0;
+
+            $incomingSum += strval($users[$userKey]['incomingRpCount']);
+            /* Gelen bitiş */
+            
+            /* Gönderilen başla */
+            $senRp = DcReport::where([
+                'user_id' => $userVal['id'],
+                'rp_date' => $date,
+                'rp_item_status' => "1"
+            ])
+            ->first();
+
+            $users[$userKey]['senderRpCount'] = $senRp ? $senRp['rp_count'] : 0;
+
+            $senderSum += strval($users[$userKey]['senderRpCount']);
+            /* Gönderilen bitiş */
+        }
+
+
+
+        $uincomingSum = 0;
+        $usenderSum = 0;
+
+        foreach ($users as $userKey => $userVal) {
+            $users[$userKey]['uincomingRpCount'] = DcDocuments::where([
+                'user_id' => $userVal['id'],
+                'dc_date' => $date,
+                'dc_item_status' => "1"
+            ])
+            ->count();
+
+            $users[$userKey]['usenderRpCount'] = DcDocuments::where([
+                'user_id' => $userVal['id'],
+                'dc_date' => $date,
+                'dc_item_status' => "0"
+            ])
+            ->count();
+
+            $uincomingSum += strval($users[$userKey]['uincomingRpCount']);
+            $usenderSum += strval($users[$userKey]['usenderRpCount']);
+        }
+
+        /* return [
+            'users' => $users,
+            'incomingSum' => $incomingSum,
+            'senderSum' => $senderSum,
+            'uincomingSum' => $uincomingSum,
+            'usenderSum' => $usenderSum
+        ]; */
+
+        return view(
+            'admin.document_mng.report.index',
+            [
+                'datas' => [
+                    'users' => $users,
+                    'incomingSum' => $incomingSum,
+                    'senderSum' => $senderSum,
+                    'uincomingSum' => $uincomingSum,
+                    'usenderSum' => $usenderSum
                 ]
             ]
         );
@@ -49,23 +140,68 @@ class DcReportController extends Controller
         $date = $request->input('date');
         $date = strtotime($date);
 
-        $sum = 0;
+        $incomingSum = 0;
+        $senderSum = 0;
         $users = User::all()->toArray();
 
         foreach ($users as $userKey => $userVal) {
-            $users[$userKey]['rpCount'] = DcReport::where([
+            /* Gelen başla */
+            $inRp = DcReport::where([
                 'user_id' => $userVal['id'],
-                'rp_date' => $date
+                'rp_date' => $date,
+                'rp_item_status' => "0"
             ])
-            ->first()
-            ->toArray()['rp_count'];
+            ->first();
 
-            $sum += strval($users[$userKey]['rpCount']);
+            $users[$userKey]['incomingRpCount'] = $inRp ? $inRp['rp_count'] : 0;
+
+            $incomingSum += strval($users[$userKey]['incomingRpCount']);
+            /* Gelen bitiş */
+            
+            /* Gönderilen başla */
+            $senRp = DcReport::where([
+                'user_id' => $userVal['id'],
+                'rp_date' => $date,
+                'rp_item_status' => "1"
+            ])
+            ->first();
+
+            $users[$userKey]['senderRpCount'] = $senRp ? $senRp['rp_count'] : 0;
+
+            $senderSum += strval($users[$userKey]['senderRpCount']);
+            /* Gönderilen bitiş */
+        }
+
+
+
+        $uincomingSum = 0;
+        $usenderSum = 0;
+
+        foreach ($users as $userKey => $userVal) {
+            $users[$userKey]['uincomingRpCount'] = DcDocuments::where([
+                'user_id' => $userVal['id'],
+                'dc_date' => $date,
+                'dc_item_status' => "1"
+            ])
+            ->count();
+
+            $users[$userKey]['usenderRpCount'] = DcDocuments::where([
+                'user_id' => $userVal['id'],
+                'dc_date' => $date,
+                'dc_item_status' => "0"
+            ])
+            ->count();
+
+            $uincomingSum += strval($users[$userKey]['uincomingRpCount']);
+            $usenderSum += strval($users[$userKey]['usenderRpCount']);
         }
 
         return [
             'users' => $users,
-            'sum' => $sum,
+            'incomingSum' => $incomingSum,
+            'senderSum' => $senderSum,
+            'uincomingSum' => $uincomingSum,
+            'usenderSum' => $usenderSum
         ];
     }
 
@@ -78,29 +214,55 @@ class DcReportController extends Controller
     public function saveDocumentRecordCount(StoreDocumentRecordCountRequest $request)
     {
         $params = $request->all();
-        $sum = 0;
+        $incomingSum = 0;
+        $senderSum = 0;
 
         foreach ($params['user_id'] as $paramKey => $paramVal) {
-            $datas = [
+            $incomingDt = [
                 'rp_date' => strtotime($params['rp_date']),
-                'rp_count' => $params['rp_count'][$paramKey] ?? 0,
-                'user_id' => $params['user_id'][$paramKey]
+                'rp_count' => $params['incoming_rp_count'][$paramKey] ?? 0,
+                'user_id' => $params['user_id'][$paramKey],
+                'rp_item_status' => "0"
+            ];
+            
+            $senderDt = [
+                'rp_date' => strtotime($params['rp_date']),
+                'rp_count' => $params['sender_rp_count'][$paramKey] ?? 0,
+                'user_id' => $params['user_id'][$paramKey],
+                'rp_item_status' => "1"
             ];
 
-            $sum += strval($datas['rp_count']);
+            $incomingSum += strval($incomingDt['rp_count']);
+            $senderSum += strval($senderDt['rp_count']);
 
-            $res = DcReport::where([
-                'rp_date' => $datas['rp_date'],
-                'user_id' => $datas['user_id']
-            ])->update(['rp_count' => $datas['rp_count']]);
+            /* Gelen evrak sayısı kayıt etme başla */
+            $incomingRes = DcReport::where([
+                'rp_date' => $incomingDt['rp_date'],
+                'user_id' => $incomingDt['user_id'],
+                'rp_item_status' => "0"
+            ])->update(['rp_count' => $incomingDt['rp_count']]);
 
-            if(!$res) {
-                $res = DcReport::create($datas);
+            if(!$incomingRes) {
+                $incomingRes = DcReport::create($incomingDt);
             }
+            /* Gelen evrak sayısı kayıt etme bitiş */
+
+            /* Gönderilen evrak sayısı kayıt etme başla */
+            $senderRes = DcReport::where([
+                'rp_date' => $senderDt['rp_date'],
+                'user_id' => $senderDt['user_id'],
+                'rp_item_status' => "1"
+            ])->update(['rp_count' => $senderDt['rp_count']]);
+
+            if(!$senderRes) {
+                $senderRes = DcReport::create($senderDt);
+            }
+            /* Gönderilen evrak sayısı kayıt etme bitiş */
         }
 
         return [
-            'sum' => $sum,
+            'incomingSum' => $incomingSum,
+            'senderSum' => $senderSum,
         ];
     }
 

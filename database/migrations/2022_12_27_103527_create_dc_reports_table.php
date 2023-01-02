@@ -17,6 +17,7 @@ class CreateDcReportsTable extends Migration
             $table->id();
             $table->integer('rp_date');
             $table->integer('rp_count');
+            $table->enum('rp_item_status', [0, 1])->default(0);
 
             $table->unsignedBigInteger('user_id'); 
             $table->foreign('user_id')

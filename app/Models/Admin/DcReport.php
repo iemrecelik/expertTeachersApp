@@ -15,6 +15,7 @@ class DcReport extends Model
     protected $fillable = [
         'rp_date',
         'rp_count',
+        'rp_item_status',
         'user_id',
     ];
 }
