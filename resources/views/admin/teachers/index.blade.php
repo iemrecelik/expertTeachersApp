@@ -11,7 +11,7 @@
       showTeacherInfos: '{{ route('admin.teachers.infos') }}',
       getProvincesList: '{{ route('admin.teachers.getProvincesList') }}',
       getTownsList: '{{ route('admin.teachers.getTownsList') }}',
-      exportExcel: '{{ route('admin.teachers.export.excel') }}',
+      exportExcelDatas: '{{ route('admin.teachers.exportExcelDatas') }}',
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
     :ppdatas="{{ empty(session('datas')) ? json_encode($datas) : json_encode(session('datas')) }}"

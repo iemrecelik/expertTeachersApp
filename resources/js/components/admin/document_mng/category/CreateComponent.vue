@@ -7,12 +7,15 @@
   }"
   @saveMethod="saveForm"
 >
+  <error-msg-list-component></error-msg-list-component>
+  <succeed-msg-component></succeed-msg-component>
+
   <form
     @submit.prevent
     :id="formIDName"
   >
-    <error-msg-list-component></error-msg-list-component>
-    <succeed-msg-component></succeed-msg-component>
+    <!-- <error-msg-list-component></error-msg-list-component>
+    <succeed-msg-component></succeed-msg-component> -->
     
     <create-form-component ref="createFormComponent">
     </create-form-component>
@@ -70,8 +73,18 @@ export default {
         document.getElementById(this.formIDName).reset();
       })
       .fail((error) => {
+        if(error.responseJSON) {
+          if(error.responseJSON.errors) {
+            this.setErrors(error.responseJSON.errors);
+          }else if(error.responseJSON.message) {
+            this.setErrors(
+              {'permissionMessage': [error.responseJSON.message]}
+            );
+          }
+        }
         this.setSucceed('');
-        this.setErrors(error.responseJSON.errors);
+        /* this.setSucceed('');
+        this.setErrors(error.responseJSON.errors); */
       })
       .then((res) => {
         this.$parent.$parent.dataTable.ajax.reload();

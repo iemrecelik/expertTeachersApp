@@ -110,11 +110,15 @@ class SearchController extends Controller
 		$searchQuery = '';
 		$searchQueryParams = [];
 
+		$notSelectCol = [
+            'dc_cat_id',
+        ];
+
 		foreach ($tblInfo['columns'] as $column) {
-	        
 	        if (isset($column['data'])) {
-				// $selectCol .= "t1.{$column['data']}, ";
-				$selectCol .= "t0.{$column['data']}, ";
+				if(!in_array($column['data'], $notSelectCol)) {
+					$selectCol .= "t0.{$column['data']}, ";
+				}
 			}
 	    }
 		

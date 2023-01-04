@@ -688,6 +688,13 @@ class TeachersController extends Controller
 	    ];
 	}
 
+    public function exportExcelDatas(Request $request)
+    {
+        $params = $request->all();
+
+        dd($params);
+    }
+
     /**
      * Show the form for creating a new resource.
      *

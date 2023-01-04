@@ -677,7 +677,7 @@ class DocumentsController extends Controller
         preg_match($pattern, $sender[1], $existOygm);
 
         if(count($existOygm) > 0) {
-            $pattern = '/cevdet vural|nejat işler/si';
+            $pattern = '/mahmut özer|MAHMUT ÖZER|Mahmut Özer|PETEK AŞKAR|Petek Aşkar|petek aşkar|CEVDET VURAL|Cevdet Vural|cevdet vural|NEJAT İŞLER|Nejat İşler|nejat işler/si';
 
             preg_match($pattern, $sign, $existSignature);
 

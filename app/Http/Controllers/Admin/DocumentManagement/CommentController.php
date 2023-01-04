@@ -247,8 +247,8 @@ class CommentController extends Controller
             +++ 78- eklenmeyen resimlerin tc numaraları alt satıra geçecek
             +++ 79- aynı evrağa sonradan başka öğretmende eklenebilsin.
             +++ 80- evrak silme ve düzenleme olsun.
-            81- kullanıcı yönetim paneli yapılacak
-            82- evrak kayıt raporu eklenecek
+            +++ 81- kullanıcı yönetim paneli yapılacak
+            +++ 82- evrak kayıt raporu eklenecek
             83- excel veya toplu ekleme ve düzenlemelerde timestamp yüklenecek
             +++ 84- yüklenen resimler zaten varsa öncekiler silinsin
             +++ 85- dava istatistikleri tarihe göre yapılsın.
@@ -257,11 +257,12 @@ class CommentController extends Controller
             +++ 88- Evrak eklemedeki veri tabanındaki evrağı ilgi gösterme güncelleme formuna da eklenecek
             89- bilgisayara kodlar yüklendikten sonra kodları ilgilendiren dosya yı girmek kopyalama gibi işlemler için şifre istesin
             +++ 90- formlarda treeselect de evrak ekleme yaparken id numarasına göre kontrol etsin
-            91- evrak eklerken genel müdür ve vekillerin kontrolü yapılacak ve de tarih kontrolü yapılacak
+            +++ 91- evrak eklerken genel müdür ve vekillerin kontrolü yapılacak ve de tarih kontrolü yapılacak
             +++ 92- güncelle yaparken güncelle butonu pasif çıkıyor
-            93- kategori isimleri listelerde gösterilsin
+            +++ 93- kategori isimleri listelerde gösterilsin
             94- Tablodaki listelere sıra numarası verilecek
-            95-
+            +++ 95- kategori düznlerken üst kadegori yoktur seçeneği gelsin
+            96- Dava kısa açıklamasına bütün kısa açıklamaları gelsin.
         */
 
         $request->validate(
