@@ -21,6 +21,13 @@ use App\Http\Requests\Admin\LawsuitsManagement\UpdateLawsuitsRequest;
 
 class LawsuitsController extends Controller
 {
+    public function __construct() {
+        $this->middleware(['permission:create lawsuits'])->only('store');
+        $this->middleware(['permission:edit categories'])->only('edit');
+        $this->middleware(['permission:edit categories'])->only('update');
+        $this->middleware(['permission:delete categories'])->only('destroy');
+    }
+
     /**
      * Display a listing of the resource.
      *

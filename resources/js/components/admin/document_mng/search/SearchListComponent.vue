@@ -5,6 +5,7 @@
       <error-msg-list-component></error-msg-list-component>
     </div>
   </div>
+
   <!-- /.row -->
   <div class="row">
     <div class="col-12">
@@ -74,13 +75,10 @@
 </template>
 
 <script>
-/* import createComponent from './CreateComponent';
-import editComponent from './EditComponent'; */
 import showComponent from './ShowComponent';
 import addlistComponent from './AddListComponent';
 import addCommentComponent from './AddCommentComponent';
 import deleteComponent from './DeleteComponent';
-// import imagesComponent from './ImagesComponent';
 
 let formTitleName= 'dc-search-list';
 
@@ -331,13 +329,10 @@ export default {
     });
   },
   components: {
-    /* [formTitleName + '-create-component']: createComponent,
-    [formTitleName + '-edit-component']: editComponent, */
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-add-list-component']: addlistComponent,
     [formTitleName + '-add-comment-component']: addCommentComponent,
-    [formTitleName + '-delete-component']: deleteComponent,
-    // [formTitleName + '-images-component']: imagesComponent,
+    [formTitleName + '-delete-component']: deleteComponent
   }
 }
 </script>

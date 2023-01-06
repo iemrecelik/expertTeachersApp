@@ -2,6 +2,7 @@
 @section('contents')
   <teacher-infos-component
     :ppteacher="{{ $teacher ? json_encode($teacher) : '{}' }}"
+    :pptcvalid="{{ json_encode($tcValid) }}"
     :pproutes="{
       getSearchDocuments: '{{ route("admin.document_mng.search.getSearchDocuments") }}', 
       show: '/admin/document-management/search', 

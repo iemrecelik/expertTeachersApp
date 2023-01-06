@@ -207,7 +207,7 @@ class CommentController extends Controller
             +++ 39- excel listesini yüklemeden önce ön izleme olsun.
             +++ 40- excel listesini yüklerken sütunlardan en az bir tanesi seçili olması lazım.
             +++ 41- tc kimlik kontrolü yapılacak.
-            41- tc kimlik kontrolü excel yüklemelerinde de yapılacak.
+            +++ 41- tc kimlik kontrolü excel yüklemelerinde de yapılacak.
             +++ 42- excel olarak yüklerken select box la girilecek verilerin parantez ile bilgilendirme.
             43- excel ile yüklerken aynı verileri güncelle veya olmayanları ekle seçeneği kontrol edilecek.
             +++ 44- dava kaydettikten sonra hala bazı formlar temizlenmiyor.
@@ -230,7 +230,7 @@ class CommentController extends Controller
             +++ 61- öğretmenleri sildiğimiz resimleri de silinsin
             +++ 62- dava ekledikten sonra bilgi notu eklenmiyor
             +++ 63- Filtre de iller veritabanına eklenecek
-            64- listeler excel olarak çıkartılabilicek
+            +++ 64- listeler excel olarak çıkartılabilicek
             +++ 65- öğretmen ekleme formundakiler düzenleme formuna da eklenecek
             +++ 66- Öğretmen eklerken hem ekleme hem de düzenleme formuna il ve ilçe ekleme eklenecek
             67- İller ve ilçeler uygululama yüklerken sabit değer olarak yüklensin provider, service, middleware vb. laravelin araçlarına bak.
@@ -247,8 +247,8 @@ class CommentController extends Controller
             +++ 78- eklenmeyen resimlerin tc numaraları alt satıra geçecek
             +++ 79- aynı evrağa sonradan başka öğretmende eklenebilsin.
             +++ 80- evrak silme ve düzenleme olsun.
-            81- kullanıcı yönetim paneli yapılacak
-            82- evrak kayıt raporu eklenecek
+            +++ 81- kullanıcı yönetim paneli yapılacak
+            +++ 82- evrak kayıt raporu eklenecek
             83- excel veya toplu ekleme ve düzenlemelerde timestamp yüklenecek
             +++ 84- yüklenen resimler zaten varsa öncekiler silinsin
             +++ 85- dava istatistikleri tarihe göre yapılsın.
@@ -257,11 +257,24 @@ class CommentController extends Controller
             +++ 88- Evrak eklemedeki veri tabanındaki evrağı ilgi gösterme güncelleme formuna da eklenecek
             89- bilgisayara kodlar yüklendikten sonra kodları ilgilendiren dosya yı girmek kopyalama gibi işlemler için şifre istesin
             +++ 90- formlarda treeselect de evrak ekleme yaparken id numarasına göre kontrol etsin
-            91- evrak eklerken genel müdür ve vekillerin kontrolü yapılacak ve de tarih kontrolü yapılacak
+            +++ 91- evrak eklerken genel müdür ve vekillerin kontrolü yapılacak ve de tarih kontrolü yapılacak
             +++ 92- güncelle yaparken güncelle butonu pasif çıkıyor
-            93- kategori isimleri listelerde gösterilsin
+            +++ 93- kategori isimleri listelerde gösterilsin
             94- Tablodaki listelere sıra numarası verilecek
-            95-
+            +++ 95- kategori düzenlerken üst kadegori yoktur seçeneği gelsin
+            96- Dava kısa açıklamasına bütün kısa açıklamaları gelsin.
+            +++ 97- evrak eksikleri evrak listeleme kısmında göstersin
+            +++ 98- öğretmen detayında il ve ilçe de gözüksün
+            99- öğretmen detayına gittiğimizde isim ve soy isim değişikliği olup olmadığı kontrol edilecek
+            100- öğretmen sınav sonuçları eklenecek
+            101- öğretmen listesinde isim soyisim değişikleri gösterilsin
+            +++ 102- evrak kayıt raporunda girilen evrak sayısı sıfırlanmasın
+            +++ 103- imza kontrolü yaparken başkan ve vekil kontrolleride yapılacak
+            104- ayarlara imza yetkisi olanlar eklenip çıkartılabilecek.
+            +++ 105- imza uyuşmadığında evrilen hata mesajı değiştirilecek.
+            +++ 106- evrak rapor listesi ilk açıldığında sayılar gelmiyor
+            +++ 107- giden evrak sayısı gelen evrak sayısı ile değiştirilecek
+            108- evrak rapor listesinde girilmesi gereken evrak sayısı gösterilsin
         */
 
         $request->validate(

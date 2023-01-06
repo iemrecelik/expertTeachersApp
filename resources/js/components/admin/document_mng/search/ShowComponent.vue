@@ -1,5 +1,5 @@
 <template>
-<div class="modal-content">
+<div class="modal-content" v-if="documentShow">
   <div class="modal-header">
     <h5 class="modal-title">Modal title</h5>
     <button class="btn btn-sm btn-danger ml-3"
@@ -162,14 +162,31 @@
     </div>
 
   </div>
-
-  
 </div>
+
+<div class="modal-content" v-else>
+
+  <div class="modal-header">
+    <h5 class="modal-title" id="formModalLongTitle"></h5>
+    <button type="button" class="close" 
+    data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <error-msg-list-component></error-msg-list-component>
+  </div>
+
+  <div class="modal-footer">
+  </div>
+
+</div><!-- div.modal-content -->
 </template>
 
 <script>
 
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 
 export default {
   name: 'ShowComponent',
@@ -179,6 +196,7 @@ export default {
       items: {},
       dcContent: this.ppDcContent,
       markInstance: null,
+      documentShow: true
     }
   },
   props: {
@@ -200,6 +218,10 @@ export default {
     },
   },
   methods: {
+    ...mapMutations([
+      'setErrors',
+      'setSucceed',
+    ]),
     fileExtensionControl(val) {
       if(val) {
         let ext = val.split('.').pop();
@@ -246,10 +268,17 @@ export default {
   created() {
     $.get(this.showUrl, (data) => {
       this.items = data;
-      this.formShow = true;
+      this.documentShow = true;
     })
-    .fail(function(error) {
-      console.log(error);
+    .fail((error) => {
+      this.setErrors([
+        [error.responseJSON.message]
+      ]);
+
+      this.documentShow = false;
+
+      /* let el = this.$parent.modalSelector;
+      $(el).modal('hide'); */
     })
     .then((res) => {
       this.markSearch();

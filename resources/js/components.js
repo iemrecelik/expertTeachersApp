@@ -3,6 +3,8 @@ import searchComponent from './components/admin/old_regulation/search/SearchComp
 // import teacherInfosComponent from './components/admin/search/teacher_infos/TeacherInfosComponent.vue';
 import teacherInfosComponent from './components/admin/teachers/teacher_infos/TeacherInfosComponent.vue';
 
+/* User */
+import userComponent from './components/admin/user/IndexComponent.vue';
 
 /* Document Management*/
 import docMngCategoryComponent from './components/admin/document_mng/category/IndexComponent.vue';
@@ -31,6 +33,8 @@ export default {
 	'main-component': mainComponent,
 	'search-component': searchComponent,
 	'teacher-infos-component': teacherInfosComponent,
+
+	'user-component': userComponent,
 
 	'doc-mng-category-component': docMngCategoryComponent,
 	'doc-mng-list-component': docMngListComponent,

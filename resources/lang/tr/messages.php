@@ -62,6 +62,7 @@ return [
 	'categoryName' => 'Kategori Adı',
 	'categoryManage' => 'Kategori Yönetimi',
 	'dc_up_cat_name' => 'Üst Kategori',
+	'categories_module' => 'Kategori Modülü',
 
 	/* Document */
 	'createDocument' => 'Evrak Kaydetme',
@@ -69,6 +70,7 @@ return [
 	'resetForm' => 'Formu Sıfırla',
 	'enterCategoryName' => 'Kategori ismini giriniz.',
 	'document_record_list' => 'Evrak Kayıt Listesi',
+	'documents_module' => 'Evrak Modülü',
 
 
 	/* Document List */
@@ -79,6 +81,12 @@ return [
 	/* Comment */
 	'dc_com_text' => 'Not',
 	'DocumentCommentManage' => 'Evrak Notları Yönetimi',
+
+	/* User */
+	'user_manage' => 'Kullanıcı Yönetimi',
+	'name' => 'İsim',
+	'email' => 'Email',
+	'user_permission' => 'Kullanıcı Yetkileri',
 
 	/* Processes */
 	'addcomment' => 'Not Ekle',
@@ -111,6 +119,7 @@ return [
 	'showTeacher' => 'Öğretmenin Bilgilerini Göster',
 	'thr_birth_day' => 'Doğum Tarihi',
 	'exportExcel' => 'Excel Olarak Çıkart',
+	'teachers_manage_module' => 'Öğretmen Yönetim Modülü',
 
 	/* Institution */
 	'inst_name' => 'Kurum İsmi',
@@ -128,6 +137,11 @@ return [
 	'add_law_file_name' => 'Dava Dosyası Ekle',
 	'enter_showing_years' => 'Gösterilecek Tarih Listesi',
 	'year_list' => 'Tarih Listesi',
+	'lawsuits_module' => 'Dava Modülü',
+
+	/* Roles */
+	'role' => 'Rol',
+	'select_role' => 'Rol Seçiniz',
 
 	/* Other */
 	'expertTeachersApp' => 'Uzman Öğretmen Uygulaması',

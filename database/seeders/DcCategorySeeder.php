@@ -14,6 +14,39 @@ class DcCategorySeeder extends Seeder
      */
     public function run()
     {
-        DcCategory::factory(10)->create();
+        $datas = [
+            'Aday Öğretmen',
+            'Uzman Öğretmen',
+            'Baş Öğretmen',
+            'Davalar',
+            'Soru Önergesi',
+            'Olur',
+        ];
+
+        foreach ($datas as $key => $val) {
+            if($val !== 'Davalar') {
+                DcCategory::create([
+                    'dc_cat_name' => $val,
+                ]);
+            }else {
+                $mainCat = DcCategory::create([
+                    'dc_cat_name' => $val,
+                ]);
+
+                $catThr = DcCategory::create([
+                    'dc_cat_name' => 'Bireysel',
+                ]);
+                
+                $catUnion = DcCategory::create([
+                    'dc_cat_name' => 'Sendika',
+                ]);
+
+                $mainCat->childCategory()->save($catThr);
+                $mainCat->childCategory()->save($catUnion);
+            }
+            
+        }
+
+        
     }
 }

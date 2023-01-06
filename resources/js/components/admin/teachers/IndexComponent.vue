@@ -233,12 +233,14 @@
                     {{ $t('messages.addLikeExcel') }}
                   </button>
                   
-                  <!-- <form :action="routes.exportExcel" method="POST">
-                    <input type="hidden" name="list">
-                    <button type="button" class="btn btn-primary">
+                  <!-- <form id="export-excel" :action="routes.exportExcelDatas" method="POST" @submit.prevent> -->
+                    <!-- <input type="hidden" name="list"> -->
+                    <button type="button" class="btn btn-primary"
+                      @click="exportExcelDatas"
+                    >
                       {{ $t('messages.exportExcel') }}
                     </button>
-                  </form> -->
+                  <!-- </form> -->
                   
                   
                   <!-- <form :action="pproutes.addExcel" method="post" enctype='multipart/form-data'>
@@ -272,6 +274,21 @@
       </div><!-- /.card-->
     </div><!-- /.col-md-12-->
   </div><!-- /.row-->
+
+  <form id="export-excel" :action="routes.exportExcelDatas" method="POST" @submit.prevent>
+    <input type="hidden" name="thr_tc_no">
+    <input type="hidden" name="thr_name">
+    <input type="hidden" name="thr_surname">
+    <input type="hidden" name="prv_id">
+    <input type="hidden" name="twn_id">
+    <input type="hidden" name="thr_email">
+    <input type="hidden" name="thr_career_ladder">
+    <input type="hidden" name="thr_degree">
+    <input type="hidden" name="thr_education_st">
+    <input type="hidden" name="thr_place_of_task">
+    <input type="hidden" name="thr_birth_day">
+    <input type="hidden" name="_token" :value="token">
+  </form>
 
   <!-- Modal -->
   <div class="modal fade" tabindex="-1" role="dialog" 
@@ -329,7 +346,7 @@ export default {
       sumErrorData: this.ppdatas.sumErrorData,
       ajaxErrorCount: -1,
       townsArr: [],
-      exportExcelDatas: null,
+      // exportExcelDatas: null,
     };
   },
   props: {
@@ -522,12 +539,8 @@ export default {
         // $("#"+this.form+" tbody").empty();
       }
     },
-    loadDataTable() {
-      if(this.dataTable) {
-        this.destroyTable();
-      }
-
-      let datas = [];
+    getSearchDatas() {
+      let datas = {};
       let form = document.getElementById("teacher-search");
 
       if(form.elements['thr_tc_no']) {
@@ -574,12 +587,21 @@ export default {
         datas['thr_birth_day'] = form.elements['thr_birth_day'].value;
       }
 
+      return datas;
+    },
+    loadDataTable() {
+      if(this.dataTable) {
+        this.destroyTable();
+      }
+
+      let datas = this.getSearchDatas();
+
       this.dataTable = this.dataTableRun({
         jQDomName: '.res-dt-table',
         url: this.routes.dataList,
         data: datas,
         initComplete: () => {
-          this.exportExcelDatas = this.dataTable.rows().data();
+          // this.exportExcelDatas = this.dataTable.rows().data();
         },
         columns: [
           { "data": "thr_tc_no" },
@@ -612,6 +634,57 @@ export default {
           },
         ],
       });
+    },
+    exportExcelDatas() {
+      let datas = this.getSearchDatas();
+
+      let exportExcelForm = document.forms['export-excel'];
+      let length = 0;
+
+      for (const dataKey in datas) {
+        length++;
+        if (Object.hasOwnProperty.call(datas, dataKey)) {
+          const data = datas[dataKey];
+          exportExcelForm.elements[dataKey].value = data ?? '';
+        }
+
+        if(length == Object.keys(datas).length) {
+          exportExcelForm.submit();
+        }
+      }
+
+      /* $.ajax({
+        url: this.routes.exportExcelDatas,
+        type: 'POST',
+        dataType: 'JSON',
+        data: datas,
+      })
+      .done((res) => {
+
+        // this.setErrors('');
+        // this.setSucceed(res.succeed);
+        // document.getElementById(this.formIDName).reset();
+      })
+      .fail((error) => {
+        this.setSucceed('');
+        // this.setErrors(error.responseJSON.errors);
+        if(error.responseJSON) {
+          if(error.responseJSON.errors) {
+            this.setErrors(error.responseJSON.errors);
+          }else if(error.responseJSON.message) {
+            this.setErrors(
+              {'permissionMessage': [error.responseJSON.message]}
+            );
+          }
+        }
+      })
+      .then((res) => {
+        this.$parent.$parent.dataTable.ajax.reload();
+      })
+      .always(() => {
+        // this.$refs.createExcelFormComponent.getCategory();
+        this.formElement.scrollTo(0, 0);
+      }); */
     }
   },
   created(){    

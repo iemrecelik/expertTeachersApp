@@ -172,8 +172,6 @@ class DcReportController extends Controller
             /* Gönderilen bitiş */
         }
 
-
-
         $uincomingSum = 0;
         $usenderSum = 0;
 
@@ -181,14 +179,14 @@ class DcReportController extends Controller
             $users[$userKey]['uincomingRpCount'] = DcDocuments::where([
                 'user_id' => $userVal['id'],
                 'dc_date' => $date,
-                'dc_item_status' => "1"
+                'dc_item_status' => "0"
             ])
             ->count();
 
             $users[$userKey]['usenderRpCount'] = DcDocuments::where([
                 'user_id' => $userVal['id'],
                 'dc_date' => $date,
-                'dc_item_status' => "0"
+                'dc_item_status' => "1"
             ])
             ->count();
 
@@ -337,5 +335,36 @@ class DcReportController extends Controller
 	        'data' => $data,
 	        'draw' => $tblInfo['draw']
 	    ];
+    }
+
+    public function getRecordNeedDocuments()
+    {
+        $users = User::with('dcReports')->get();
+
+        foreach ($users as $userKey => $userVal) {
+            foreach ($userVal->dcReports as $rpKey => $rpVal) {
+                $date = $rpVal->rp_date;
+                $rpVal->rp_date = date('d.m.Y', $rpVal->rp_date);
+                
+                $itemStatus = $rpVal->rp_item_status == 0 ? 'Gelen' : 'Giden' ;
+
+                $count = DcDocuments::where([
+                    ['dc_date', $date],
+                    ['dc_item_status', $rpVal->rp_item_status],
+                    ['user_id', $userVal->id]
+                ])
+                ->count();
+
+                $count = $rpVal->rp_count - $count;
+
+                if($count > 0) {
+                    $dcReports[$rpVal->rp_date][$userVal->name][$itemStatus] = [
+                        'rp_count' => $count
+                    ];
+                }
+            }
+        }
+
+        return $dcReports;
     }
 }

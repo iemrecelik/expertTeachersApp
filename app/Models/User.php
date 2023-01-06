@@ -8,10 +8,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
+use App\ModelsRepository\Admin\UserRepository;
 
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
+    use UserRepository;
 
     /**
      * The attributes that are mass assignable.
@@ -49,5 +51,13 @@ class User extends Authenticatable
     public function dcLists()
     {
         return $this->hasMany(DcLists::class, 'id', 'user_id');
+    }
+
+    /**
+     * Get the report list for the users.
+     */
+    public function dcReports()
+    {
+        return $this->hasMany(\App\Models\Admin\DcReport::class, 'user_id', 'id');
     }
 }

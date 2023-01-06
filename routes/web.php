@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UnionsController;
 use App\Http\Controllers\Admin\TeachersController;
 use App\Http\Controllers\Admin\Search\SearchController;
@@ -82,13 +83,15 @@ Route::prefix('admin')
 			'teachers/add-excel-validation', 
 			'addExcelValidation'
 		)
-		->name('teachers.addExcelValidation');
+		->name('teachers.addExcelValidation')
+		->middleware(['permission:create excel teachers']);
 
 		Route::post(
 			'teachers/add-excel', 
 			'addExcel'
 		)
-		->name('teachers.addExcel');
+		->name('teachers.addExcel')
+		->middleware(['permission:create excel teachers']);
 		
 		Route::post(
 			'teachers/store/excel', 
@@ -100,13 +103,14 @@ Route::prefix('admin')
 			'teachers/store/images', 
 			'storeImages'
 		)
-		->name('teachers.store.images');
+		->name('teachers.store.images')
+		->middleware(['permission:create images teachers']);
 
 		Route::post(
-			'teachers/export/excel', 
-			'exportExcel'
+			'teachers/export-excel-datas', 
+			'exportExcelDatas'
 		)
-		->name('teachers.export.excel');
+		->name('teachers.exportExcelDatas');
 
 		Route::post(
 			'teacherInfos/add-law-file-name', 
@@ -229,6 +233,12 @@ Route::prefix('admin/document-management')
 			'getReportCountOnDate'
 		)
 		->name('report.getReportCountOnDate');
+		
+		Route::get(
+			'report/record-need-documents',
+			'getRecordNeedDocuments'
+		)
+		->name('report.getRecordNeedDocuments');
     });
 
 Route::prefix('admin/document-management')
@@ -241,13 +251,15 @@ Route::prefix('admin/document-management')
 			'document/manual-create', 
 			'manualCreate'
 		)
-		->name('document.manualCreate');
+		->name('document.manualCreate')
+		->middleware(['permission:create documents']);
 
         Route::post(
 			'document/manual-store', 
 			'manualStore'
 		)
-		->name('document.manualStore');
+		->name('document.manualStore')
+		->middleware(['permission:create documents']);
 
 		Route::post(
 			'document/udf-control', 
@@ -259,13 +271,15 @@ Route::prefix('admin/document-management')
 			'document/create', 
 			'create'
 		)
-		->name('document.create');
+		->name('document.create')
+		->middleware(['permission:create documents']);
 
         Route::post(
 			'document/store', 
 			'store'
 		)
-		->name('document.store');
+		->name('document.store')
+		->middleware(['permission:create documents']);
 		
 		Route::get(
 			'document/edit/{document}', 
@@ -297,7 +311,8 @@ Route::prefix('admin/document-management')
 			'document/{document}', 
 			'deleteDocument'
 		)
-		->where(['document' => '[0-9]+']);
+		->where(['document' => '[0-9]+'])
+		->middleware(['permission:delete documents']);
     });
     
 Route::prefix('admin/document-management')
@@ -428,7 +443,8 @@ Route::prefix('admin/document-management')
             "show"
         )
         ->where('dcDocuments', '[0-9]+')
-        ->name('search.show');
+        ->name('search.show')
+		->middleware(['permission:show documents']);
     });
 
 Route::prefix('admin/lawsuit-management')
@@ -487,4 +503,40 @@ Route::prefix('admin/lawsuit-management')
 			'writeStatstoPDF'
 		)
 		->name('statistical.statsToPdf2'); */
+    });
+
+Route::prefix('admin')
+    ->middleware(['auth', 'role:super_admin'])
+    ->controller(UserController::class)
+    ->name('admin.')
+    ->group(function () {
+        /* User */
+		Route::get(
+			'permission/get-permission', 
+			'getPermission'
+		)
+		->name('permission.getPermission');
+		
+		Route::get(
+			'user/{user}/edit-permissions',
+			'userHasPermissions'
+		)
+		->name('permission.editPermissions')
+		->where([
+			'user' => '[0-9]+',
+		]);
+
+		Route::put(
+			'user/{user}/update-permissions', 
+			'updatePermissions'
+		)
+		->name('user.updatePermissions');
+
+        Route::post(
+			'user/data-list', 
+			'getDataList'
+		)
+		->name('user.dataList');
+
+        Route::resource('user', UserController::class);
     });

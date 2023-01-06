@@ -7,13 +7,16 @@
   }"
   @saveMethod="updateForm"
 >
+  <error-msg-list-component></error-msg-list-component>
+  <succeed-msg-component></succeed-msg-component>
+
   <form
     v-if="isFormShow"
     @submit.prevent
     :id="formIDName"
   >
-    <error-msg-list-component></error-msg-list-component>
-    <succeed-msg-component></succeed-msg-component>
+    <!-- <error-msg-list-component></error-msg-list-component>
+    <succeed-msg-component></succeed-msg-component> -->
     
     <edit-form-component
       :ppitem="item"
@@ -88,9 +91,16 @@ export default {
         this.setSucceed(res.succeed);
       })
       .fail((error) => {
-        if(error.responseJSON)
-          this.setSucceed('');
-          this.setErrors(error.responseJSON.errors);
+        if(error.responseJSON) {
+          if(error.responseJSON.errors) {
+            this.setErrors(error.responseJSON.errors);
+          }else if(error.responseJSON.message) {
+            this.setErrors(
+              {'permissionMessage': [error.responseJSON.message]}
+            );
+          }
+        }
+        this.setSucceed('');
       })
       .then((res) => {
         this.$parent.$parent.dataTable.ajax.reload();
@@ -106,8 +116,13 @@ export default {
       this.item = data;
       this.formShow = true;
     })
-    .fail(function(error) {
-      console.log(error);
+    .fail((error) => {
+      this.formShow = false;
+      if(error.responseJSON.message) {
+        this.setErrors(
+          {'permissionMessage': [error.responseJSON.message]}
+        );
+      }
     });
   },
   components: {

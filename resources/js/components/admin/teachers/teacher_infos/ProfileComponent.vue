@@ -13,7 +13,15 @@
             alt="User profile picture"> -->
     </div>
 
-    <h3 class="profile-username text-center">{{ teacher.thr_name}} {{ teacher.thr_surname}}</h3>
+    <h3 class="profile-username text-center">
+      {{ teacher.thr_name}} {{ teacher.thr_surname}} 
+      <a class="text-success" v-if="tcValid">
+        <i class="bi bi-check-circle-fill"></i>
+      </a>
+      <a class="text-danger" v-else>
+        <i class="bi bi-exclamation-circle-fill"></i>
+      </a>
+    </h3>
 
     <p class="text-muted text-center">{{ getCareerLadder(teacher.thr_career_ladder)}}</p>
 
@@ -26,6 +34,12 @@
       </li>
       <li class="list-group-item">
         <b>Doğum Tarihi :</b> <a class="float-right">{{ teacher.thr_birth_day }}</a>
+      </li>
+      <li class="list-group-item">
+        <b>İl :</b> <a class="float-right">{{ teacher.province.prv_name }}</a>
+      </li>
+      <li class="list-group-item">
+        <b>İlçe :</b> <a class="float-right">{{ teacher.town.twn_name }}</a>
       </li>
       <li class="list-group-item">
         <b>Ünvanı :</b> <a class="float-right">{{ teacher.thr_degree}}</a>
@@ -60,6 +74,7 @@ export default {
   data() {
     return {
       teacher: this.ppteacher,
+      tcValid: this.pptcvalid,
     }
   },
   methods: {
@@ -96,7 +111,11 @@ export default {
     ppteacher: {
       type: Object,
       required: true,
-    }
+    },
+    pptcvalid: {
+      type: Boolean,
+      required: true,
+    },
   },
 }
 </script>

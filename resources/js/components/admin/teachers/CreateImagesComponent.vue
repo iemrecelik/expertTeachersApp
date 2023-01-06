@@ -92,7 +92,16 @@ export default {
       .fail((error) => {
         this.setSucceed('');
         this.setInfoMsg('');
-        this.setErrors(error.responseJSON.errors);
+        if(error.responseJSON) {
+          if(error.responseJSON.errors) {
+            this.setErrors(error.responseJSON.errors);
+          }else if(error.responseJSON.message) {
+            this.setErrors(
+              {'permissionMessage': [error.responseJSON.message]}
+            );
+          }
+        }
+        // this.setErrors(error.responseJSON.errors);
       })
       .then((res) => {
         this.$parent.$parent.dataTable.ajax.reload();

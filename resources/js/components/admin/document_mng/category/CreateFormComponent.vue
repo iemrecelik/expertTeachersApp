@@ -68,6 +68,10 @@ export default {
       })
       .done((res) => {
         this.categoryList = res;
+        this.categoryList.push({
+          id: 0,
+          label: 'Üst Kategori Yok'
+        });
         this.ajaxErrorCount = -1;
       })
       .fail((error) => {
