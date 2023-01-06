@@ -52,4 +52,12 @@ class User extends Authenticatable
     {
         return $this->hasMany(DcLists::class, 'id', 'user_id');
     }
+
+    /**
+     * Get the report list for the users.
+     */
+    public function dcReports()
+    {
+        return $this->hasMany(\App\Models\Admin\DcReport::class, 'user_id', 'id');
+    }
 }

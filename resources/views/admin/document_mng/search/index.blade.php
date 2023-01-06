@@ -13,6 +13,7 @@
       getComments: '{{ route('admin.document_mng.comment.getComments') }}',
       addComment: '{{ route('admin.document_mng.comment.addComment') }}',
       deleteComment: '{{ route('admin.document_mng.comment.deleteComment') }}',
+      getRecordNeedDocuments: '{{ route('admin.document_mng.report.getRecordNeedDocuments') }}',
     }"
   >
   </doc-mng-search-component>

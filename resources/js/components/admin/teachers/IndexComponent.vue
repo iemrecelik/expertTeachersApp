@@ -233,7 +233,7 @@
                     {{ $t('messages.addLikeExcel') }}
                   </button>
                   
-                  <!-- <form :action="routes.exportExcelDatas" method="POST"> -->
+                  <!-- <form id="export-excel" :action="routes.exportExcelDatas" method="POST" @submit.prevent> -->
                     <!-- <input type="hidden" name="list"> -->
                     <button type="button" class="btn btn-primary"
                       @click="exportExcelDatas"
@@ -274,6 +274,21 @@
       </div><!-- /.card-->
     </div><!-- /.col-md-12-->
   </div><!-- /.row-->
+
+  <form id="export-excel" :action="routes.exportExcelDatas" method="POST" @submit.prevent>
+    <input type="hidden" name="thr_tc_no">
+    <input type="hidden" name="thr_name">
+    <input type="hidden" name="thr_surname">
+    <input type="hidden" name="prv_id">
+    <input type="hidden" name="twn_id">
+    <input type="hidden" name="thr_email">
+    <input type="hidden" name="thr_career_ladder">
+    <input type="hidden" name="thr_degree">
+    <input type="hidden" name="thr_education_st">
+    <input type="hidden" name="thr_place_of_task">
+    <input type="hidden" name="thr_birth_day">
+    <input type="hidden" name="_token" :value="token">
+  </form>
 
   <!-- Modal -->
   <div class="modal fade" tabindex="-1" role="dialog" 
@@ -623,7 +638,22 @@ export default {
     exportExcelDatas() {
       let datas = this.getSearchDatas();
 
-      $.ajax({
+      let exportExcelForm = document.forms['export-excel'];
+      let length = 0;
+
+      for (const dataKey in datas) {
+        length++;
+        if (Object.hasOwnProperty.call(datas, dataKey)) {
+          const data = datas[dataKey];
+          exportExcelForm.elements[dataKey].value = data ?? '';
+        }
+
+        if(length == Object.keys(datas).length) {
+          exportExcelForm.submit();
+        }
+      }
+
+      /* $.ajax({
         url: this.routes.exportExcelDatas,
         type: 'POST',
         dataType: 'JSON',
@@ -631,9 +661,9 @@ export default {
       })
       .done((res) => {
 
-        /* this.setErrors('');
-        this.setSucceed(res.succeed);
-        document.getElementById(this.formIDName).reset(); */
+        // this.setErrors('');
+        // this.setSucceed(res.succeed);
+        // document.getElementById(this.formIDName).reset();
       })
       .fail((error) => {
         this.setSucceed('');
@@ -654,7 +684,7 @@ export default {
       .always(() => {
         // this.$refs.createExcelFormComponent.getCategory();
         this.formElement.scrollTo(0, 0);
-      });
+      }); */
     }
   },
   created(){    

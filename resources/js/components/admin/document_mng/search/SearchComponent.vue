@@ -12,6 +12,13 @@
   <!-- Main content -->
   <section class="content">
     <div class="container-fluid">
+
+      <div class="row">
+        <div class="col-10 offset-md-1">
+          <record-need-documents-component></record-need-documents-component>
+        </div>
+      </div>
+      
       <form id="search-document-form" action="#">
         <search-form-component>
           <button
@@ -52,6 +59,7 @@
 // import searchTableComponent from "./SearchTableComponent.vue";
 import searchListComponent from "./SearchListComponent.vue";
 import searchFormComponent from "./SearchFormComponent.vue";
+import recordNeedDocumentsComponent from './RecordNeedDocumentsComponent';
 
 import { mapState, mapMutations } from 'vuex';
 
@@ -121,6 +129,7 @@ export default {
     // 'search-table-component': searchTableComponent,
     'search-list-component': searchListComponent,
     'search-form-component': searchFormComponent,
+    'record-need-documents-component': recordNeedDocumentsComponent
   }
 }
 </script>

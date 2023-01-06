@@ -42,7 +42,7 @@
                   <input type="text" class="form-control" 
                     name="incoming_rp_count[]" 
                     :placeholder="userVal.name"
-                    :value="userVal.incomingRpCount ?? 0"
+                    v-model="userVal.incomingRpCount"
                   />
                 </div>
 
@@ -51,7 +51,7 @@
                   <input type="text" class="form-control" 
                     name="sender_rp_count[]" 
                     :placeholder="userVal.name"
-                    :value="userVal.senderRpCount ?? 0"
+                    v-model="userVal.senderRpCount"
                   />
                 </div>
               </div>
@@ -341,6 +341,7 @@ export default {
     const loadDataTableInterval = setInterval(() => {
       if(document.getElementById('reservationdate').value) {
         this.loadDataTable();
+        this.loadReportCountOnDate();
         clearInterval(loadDataTableInterval);
       }
     }, 100);

@@ -54,6 +54,7 @@
 
           <profile-component
             :ppteacher="teacher"
+            :pptcvalid="tcValid"
           >
           </profile-component>
 
@@ -231,11 +232,16 @@ export default {
   data() {
     return {
       teacher: this.ppteacher,
+      tcValid: this.pptcvalid,
     }
   },
   props: {
     ppteacher: {
       type: Object,
+      required: true,
+    },
+    pptcvalid: {
+      type: Boolean,
       required: true,
     },
     pproutes: {

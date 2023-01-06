@@ -677,15 +677,14 @@ class DocumentsController extends Controller
         preg_match($pattern, $sender[1], $existOygm);
 
         if(count($existOygm) > 0) {
-            $pattern = '/mahmut özer|MAHMUT ÖZER|Mahmut Özer|PETEK AŞKAR|Petek Aşkar|petek aşkar|CEVDET VURAL|Cevdet Vural|cevdet vural|NEJAT İŞLER|Nejat İşler|nejat işler/si';
+            $pattern = '/mahmut özer|MAHMUT ÖZER|Mahmut Özer|PETEK AŞKAR|Petek Aşkar|petek aşkar|CEVDET VURAL|Cevdet Vural|cevdet vural|NEJAT İŞLER|Nejat İşler|nejat işler|AYŞE OĞUZ|Ayşe Oğuz|ayşe oğuz|UFUK DİLEKÇİ|Ufuk Dilekçi|ufuk dilekçi/si';
 
             preg_match($pattern, $sign, $existSignature);
 
             if(count($existSignature) < 1) {
                 throw ValidationException::withMessages(
                     ['signature' => '
-                        Genel Müdür ve Genel Müdür vekillerin imzasıyla uyuşmamaktadır.
-                        Yaptığınız işlem uyarı raporuna eklendi.
+                        Yetkili personelin imzasıyla uyuşmamaktadır.
                     ']
                 );
             }

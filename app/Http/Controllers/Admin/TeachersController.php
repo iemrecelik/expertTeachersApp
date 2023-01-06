@@ -442,7 +442,18 @@ class TeachersController extends Controller
         ->with('dc_documents')
         ->with('institution')
         ->with('lawsuits')
+        ->with('province')
+        ->with('town')
         ->first();
+
+        $date = explode('/', date('d/m/Y', $teacher->thr_birth_day));
+        $date = empty($date[2]) ? 1000: $date[2];
+
+        $tcValid = new ValidateTCNo(
+            $teacher->thr_name ?? '', $teacher->thr_surname ?? '', $date ?? '' 
+        );
+
+        $tcValid = $tcValid->passes('thr_tc_no', $teacher->thr_tc_no);
 
         if(isset($teacher)) {
             foreach ($teacher->dc_documents as $key => $dc_documents) {
@@ -476,7 +487,10 @@ class TeachersController extends Controller
 
         return view(
             'admin.teachers.teacher_infos.teacher_infos',
-            ['teacher' => $teacher ?? []]
+            [
+                'teacher' => $teacher ?? [],
+                'tcValid' => $tcValid
+            ]
         );
     }
 
@@ -576,54 +590,8 @@ class TeachersController extends Controller
 
         return $datas;
     }
-        
-    public function getDataList(Request $request)
-	{
-	    $tblInfo = $request->all();
-
-        $notSelectCol = [
-            'inst_name',
-        ];
-
-	    /*Array select and search columns*/
-	    foreach ($tblInfo['columns'] as $column) {
-	        
-	        if (isset($column['data']))
-                if(!in_array($column['data'], $notSelectCol))
-                    $selectCol[] = $column['data'];
-
-	        if($column['searchable'])
-	            $searchCol[] = $column['data'];
-	    }
-
-	    /*Order settings*/
-	    $colIndex = $tblInfo['order'][0]['column'];
-	    $colOrder = $tblInfo['columns'][$colIndex]['data'];
-	    $order = $tblInfo['order'][0]['dir'];
-
-        /*join*/
-        $join = [
-            "institutions as t1", 
-            "t0.inst_id", '=', 
-            "t1.id"
-        ];
-
-        $selectJoin = ", t1.inst_name";
-
-	    $dataList = Teachers::dataList([
-	        'table' => 'teachers',
-	        'fieldIDName' => 'id',
-	        'addLangFields' => [],
-            'choiceJoin' => 'leftJoin',
-            'join' => $join,
-            'selectJoin' => $selectJoin,
-	        'selectCol' => $selectCol,
-	        'searchCol' => $searchCol,
-	        'colOrder' => $colOrder,
-	        'order' => $order,
-	        'search' => $tblInfo['search']['value'],
-	    ]);
-
+    private function getSearchQuery($tblInfo, $dataList)
+    {
         /* Arama Başla */
         if(!empty($tblInfo['thr_tc_no'])) {
             $dataList->where('t0.thr_tc_no', $tblInfo['thr_tc_no']);
@@ -673,6 +641,58 @@ class TeachersController extends Controller
         }
         /* Arama Bitiş */
 
+        return $dataList;
+    }
+        
+    public function getDataList(Request $request)
+	{
+	    $tblInfo = $request->all();
+
+        $notSelectCol = [
+            'inst_name',
+        ];
+
+	    /*Array select and search columns*/
+	    foreach ($tblInfo['columns'] as $column) {
+	        
+	        if (isset($column['data']))
+                if(!in_array($column['data'], $notSelectCol))
+                    $selectCol[] = $column['data'];
+
+	        if($column['searchable'])
+	            $searchCol[] = $column['data'];
+	    }
+
+	    /*Order settings*/
+	    $colIndex = $tblInfo['order'][0]['column'];
+	    $colOrder = $tblInfo['columns'][$colIndex]['data'];
+	    $order = $tblInfo['order'][0]['dir'];
+
+        /*join*/
+        $join = [
+            "institutions as t1", 
+            "t0.inst_id", '=', 
+            "t1.id"
+        ];
+
+        $selectJoin = ", t1.inst_name";
+
+	    $dataList = Teachers::dataList([
+	        'table' => 'teachers',
+	        'fieldIDName' => 'id',
+	        'addLangFields' => [],
+            'choiceJoin' => 'leftJoin',
+            'join' => $join,
+            'selectJoin' => $selectJoin,
+	        'selectCol' => $selectCol,
+	        'searchCol' => $searchCol,
+	        'colOrder' => $colOrder,
+	        'order' => $order,
+	        'search' => $tblInfo['search']['value'],
+	    ]);
+
+        $dataList = $this->getSearchQuery($tblInfo, $dataList);
+
 	    $recordsTotal = Teachers::count();
 	    $recordsFiltered = $dataList->count();
         
@@ -692,7 +712,101 @@ class TeachersController extends Controller
     {
         $params = $request->all();
 
-        dd($params);
+        $dataList = DB::table('teachers as t0')
+                        ->selectRaw('
+                            thr_tc_no, thr_name, thr_surname, thr_gender,
+                            thr_email, thr_career_ladder, thr_degree, 
+                            thr_task, thr_education_st, thr_mobile_no,
+                            thr_place_of_task, thr_photo, thr_birth_day,
+                            t1.inst_name, t2.prv_name, t3.twn_name
+                        ')
+                        ->leftJoin('institutions as t1', 't1.id', '=', 't0.inst_id')
+                        ->leftJoin('provinces as t2', 't2.id', '=', 't0.prv_id')
+                        ->leftJoin('towns as t3', 't3.id', '=', 't0.twn_id');
+
+        $dataList = $this->getSearchQuery($params, $dataList);
+        $arrayData = $dataList->get()->toArray();
+
+        $arrayData = array_map(function($item) {
+
+            $date = date('d.m.Y', $item->thr_birth_day);
+
+            switch ($item->thr_career_ladder) {
+                case '0':
+                    $careerLadder = "öğretmen";
+                    break;
+
+                case '1':
+                    $careerLadder = "uzamn öğretmen";
+                    break;
+                    
+                case '2':
+                    $careerLadder = "başöğretmen";
+                    break;
+                
+                default:
+                    $careerLadder = "bilinmiyor";
+                    break;
+            }
+
+            $gender = $item->thr_gender == "0" ? 'Erkek' : 'Bayan';
+
+            return [
+                "thr_tc_no" => $item->thr_tc_no,
+                "thr_name" => $item->thr_name,
+                "thr_surname" => $item->thr_surname,
+                "thr_gender" => $gender,
+                "thr_email" => $item->thr_email,
+                "thr_career_ladder" => $careerLadder,
+                "thr_degree" => $item->thr_degree,
+                "thr_task" => $item->thr_task,
+                "thr_education_st" => $item->thr_education_st,
+                "thr_mobile_no" => $item->thr_mobile_no,
+                "thr_place_of_task" => $item->thr_place_of_task,
+                "thr_birth_day" => $date,
+                "inst_name" => $item->inst_name,
+                "prv_name" => $item->prv_name,
+                "twn_name" => $item->twn_name
+            ];
+        }, $arrayData);
+
+        array_unshift($arrayData , [
+            "thr_tc_no" => 'Tc Kimlik No',
+            "thr_name" => 'İsim',
+            "thr_surname" => 'Soyisim',
+            "thr_gender" => 'Cinsiyet',
+            "thr_email" => 'Email',
+            "thr_career_ladder" => 'Kariyer Basamağı',
+            "thr_degree" => 'Ünvanı',
+            "thr_task" => 'Görevi',
+            "thr_education_st" => 'Öğrenim Durumu.',
+            "thr_mobile_no" => 'Mobil No',
+            "thr_place_of_task" => 'Görev Yeri',
+            "thr_birth_day" => 'Doğum Tarihi',
+            "inst_name" => 'Kurumu',
+            "prv_name" => 'il',
+            "twn_name" => 'İlçe'
+        ]);
+
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $spreadsheet->getActiveSheet()
+            ->fromArray($arrayData, NULL,'A1');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="01simple.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+        
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
     }
 
     /**
