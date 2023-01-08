@@ -265,7 +265,7 @@ class CommentController extends Controller
             96- Dava kısa açıklamasına bütün kısa açıklamaları gelsin.
             +++ 97- evrak eksikleri evrak listeleme kısmında göstersin
             +++ 98- öğretmen detayında il ve ilçe de gözüksün
-            99- öğretmen detayına gittiğimizde isim ve soy isim değişikliği olup olmadığı kontrol edilecek
+            +++ 99- öğretmen detayına gittiğimizde isim ve soy isim değişikliği olup olmadığı kontrol edilecek
             100- öğretmen sınav sonuçları eklenecek
             101- öğretmen listesinde isim soyisim değişikleri gösterilsin
             +++ 102- evrak kayıt raporunda girilen evrak sayısı sıfırlanmasın
@@ -275,6 +275,9 @@ class CommentController extends Controller
             +++ 106- evrak rapor listesi ilk açıldığında sayılar gelmiyor
             +++ 107- giden evrak sayısı gelen evrak sayısı ile değiştirilecek
             108- evrak rapor listesinde girilmesi gereken evrak sayısı gösterilsin
+            109- evrak kayıt raporu yetkilendirme yapılacak.
+            110- öğretmen düzenleme yaparken mersis kontrolü yapılacak.
+            111- evrak modülünde hangi yazılara ilgi gösterilmiş yazılsın.
         */
 
         $request->validate(

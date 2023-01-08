@@ -1021,8 +1021,8 @@ class TeachersController extends Controller
      */
     public function destroy(Teachers $teacher)
     {
-        if($teach->thr_photo) {
-            Storage::delete('/public/upload/images/raw'.$teach->thr_photo);
+        if($teacher->thr_photo) {
+            Storage::delete('/public/upload/images/raw'.$teacher->thr_photo);
         }
 
         $res = $teacher->delete();
