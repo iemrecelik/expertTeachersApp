@@ -18,6 +18,7 @@ use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\DocumentManagement\StoreDcDocumentsRequest;
 use App\Http\Requests\Admin\DocumentManagement\StoreManualDcDocumentsRequest;
 use App\Http\Requests\Admin\DocumentManagement\UpdateDcDocumentsRequest;
+use App\Library\LogInfo;
 
 class DocumentsController extends Controller
 {
@@ -262,6 +263,11 @@ class DocumentsController extends Controller
             foreach ($params['add_dc_number_id'] as $key => $val) {
                 $dcRel = DcDocuments::find($val);
                 $dcDocuments->dc_ralatives()->save($dcRel);
+
+                $logInfo = new LogInfo();
+                $logInfo->crShowLog(
+                    "create::{$dcDocuments->dc_number} sayısına {$dcRel->dc_number} sayılı yazı ilişkilendirildi."
+                );
             }
         }
 
@@ -519,6 +525,11 @@ class DocumentsController extends Controller
                 $teachers = Teachers::whereIn('id', $teacherIds)->get();
 
                 $dcDocuments->dc_teachers()->saveMany($teachers);
+
+                $logInfo = new LogInfo();
+                $logInfo->crShowLog(
+                    "create::".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)." ilgili(lere) {$dcDocuments->dc_number} sayılı yazı ilişkilendirildi."
+                );
             }
 
             /* İzinli kullanıcıları ekleme */
@@ -559,6 +570,11 @@ class DocumentsController extends Controller
 
             $dcDocuments->dc_ralatives()->save($dcRelative);
 
+            $logInfo = new LogInfo();
+            $logInfo->crShowLog(
+                "create::{$dcDocuments->dc_number} sayısına {$dcRelative->dc_number} sayılı yazı ilişkilendirildi."
+            );
+
             /* Kategorileri ekleme başla*/
             $categories = DcCategory::whereIn('id', $catIds)->get();
             $dcRelative->dcCategories()->saveMany($categories);
@@ -572,6 +588,14 @@ class DocumentsController extends Controller
                 'exist'         => $exist,
             ]);
         }
+
+        $logInfo = new LogInfo();
+        $logInfo->crCreateLog([
+            'sayı' => $dcDocuments->dc_number,
+            'konu' => $dcDocuments->dc_subject,
+            'kime' => $dcDocuments->dc_who_receiver,
+            'gönderen' => $dcDocuments->dc_who_send,
+        ]);
 
         return $dcDocuments;
     }
@@ -1035,6 +1059,8 @@ class DocumentsController extends Controller
                 );
             }
 
+            $oldDcDocuments = $dcDocuments;
+
             $dcDocumentExist = DcDocuments::where([
                 ['id', '!=', $id],
                 ['dc_number', '=', $params['dc_number']],
@@ -1056,6 +1082,22 @@ class DocumentsController extends Controller
 
             $dcDocuments->save();
 
+            $logInfo = new LogInfo();
+            $logInfo->crUpdateLog(
+                [
+                    'sayı' => $oldDcDocuments->dc_number,
+                    'konu' => $oldDcDocuments->dc_subject,
+                    'kime' => $oldDcDocuments->dc_who_receiver,
+                    'gönderen' => $oldDcDocuments->dc_who_send,
+                ], 
+                [
+                    'sayı' => $dcDocuments->dc_number,
+                    'konu' => $dcDocuments->dc_subject,
+                    'kime' => $dcDocuments->dc_who_receiver,
+                    'gönderen' => $dcDocuments->dc_who_send,
+                ]
+            );
+
             $exist = true;
 
             /* Listeye ekleme */
@@ -1072,6 +1114,11 @@ class DocumentsController extends Controller
 
                 $teachers = Teachers::whereIn('id', $teacherIds)->get();
                 $dcDocuments->dc_teachers()->saveMany($teachers);
+
+                $logInfo = new LogInfo();
+                $logInfo->crShowLog(
+                    "create::".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)." ilgili(lere) {$dcDocuments->dc_number} sayılı yazı ilişkilendirildi."
+                );
             }
 
             /* İzinli kullanıcıları ekleme */
@@ -1117,6 +1164,14 @@ class DocumentsController extends Controller
                 $dcRelative = DcDocuments::create(
                     $params
                 );
+
+                $logInfo = new LogInfo();
+                $logInfo->crCreateLog([
+                    'sayı' => $dcRelative->dc_number,
+                    'konu' => $dcRelative->dc_subject,
+                    'kime' => $dcRelative->dc_who_receiver,
+                    'gönderen' => $dcRelative->dc_who_send,
+                ]);
             }else {
                 $params = array_filter($params, fn($value) => !is_null($value) && $value !== '');
                 $dcRelative->fill($params);
@@ -1194,26 +1249,6 @@ class DocumentsController extends Controller
         $this->sameDocumentControl($params);
 
         $arr = $this->setUpdateParamsIntoArr($params, $request, 1);
-        
-        /* $arr = [
-            'id'                => $params['id'],
-            'dc_number'         => trim($params['dc_number']),
-            'dc_item_status'    => $params['dc_item_status'],
-            'dc_main_status'    => "1",
-            'dc_cat_id'         => $params['dc_cat_id'],
-            'dc_subject'        => $params['dc_subject'],
-            'dc_who_send'       => $params['dc_who_send'],
-            'dc_who_receiver'   => $params['dc_who_receiver'],
-            'dc_content'        => $params['dc_content'] ?? '',
-            'dc_show_content'   => $params['dc_show_content'] ?? '',
-            'dc_raw_content'    => $params['dc_raw_content'] ?? '',
-            'dc_date'           => strtotime($params['dc_date']),
-            'user_id'           => $request->user()->id,
-            'list_id'           => $params['list_id'] ?? null,
-            'thr_id'            => $params['thr_id'] ?? null,
-            'dc_com_text'       => $params['dc_com_text'] ?? null,
-            'dc_manuel'         => $params['dc_manuel'],
-        ]; */
 
         /* Dosya içeriği ile girilen bilgilerin benzerliğini kontrol etme başla */
         if ($request->hasFile('dc_sender_file')) {
@@ -1345,6 +1380,7 @@ class DocumentsController extends Controller
      */
     public function deleteDocument(DcDocuments $document)
     {
+        $oldDocument = $document;
         if(isset($document->dcFiles->dc_file_path)) {
             Storage::delete($document->dcFiles->dc_file_path);
             $document->dcFiles()->delete();
@@ -1359,6 +1395,14 @@ class DocumentsController extends Controller
         }
 
         $res = $document->delete();
+
+        $logInfo = new LogInfo();
+        $logInfo->crDestroyLog([
+            'sayı' => $oldDocument->dc_number,
+            'konu' => $oldDocument->dc_subject,
+            'kime' => $oldDocument->dc_who_receiver,
+            'gönderen' => $oldDocument->dc_who_send,
+        ]);
 
         $msg = [];
 

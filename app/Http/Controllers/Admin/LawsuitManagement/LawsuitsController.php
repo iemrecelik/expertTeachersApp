@@ -18,6 +18,7 @@ use PhpOffice\PhpSpreadsheet\Cell\Coordinate;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\LawsuitsManagement\StoreLawsuitsRequest;
 use App\Http\Requests\Admin\LawsuitsManagement\UpdateLawsuitsRequest;
+use App\Library\LogInfo;
 
 class LawsuitsController extends Controller
 {
@@ -437,6 +438,14 @@ class LawsuitsController extends Controller
         }
         /* add subjects end */
 
+        $logInfo = new LogInfo();
+        $logInfo->crCreateLog([
+            'benzersiz nmarası' => $lawsuit->id,
+            'dava kısa açıklaması' => $lawsuit->law_brief,
+            'dava konusunun maddeleri' => collect($subjectArr)->pluck('sub_description'),
+            'dava ile ilişkilendirilen yazılar' => $downDcDocuments->pluck('dc_number')
+        ]);
+
         return ['succeed' => __('messages.add_success')];
     }
 
@@ -515,6 +524,7 @@ class LawsuitsController extends Controller
      */
     public function update(UpdateLawsuitsRequest $request, Lawsuits $lawsuit)
     {
+        $oldlaw = $lawsuit;
         $params = $request->all();
 
         $dcDownIds = $params['dc_down_id'] ?? [];
@@ -573,6 +583,24 @@ class LawsuitsController extends Controller
 
         $lawsuit->fill($params)->save();
 
+        $logInfo = new LogInfo();
+        // $logInfo->crUpdateLog($oldlaw, $lawsuit);
+        // dd(collect($subjectArr));
+        $logInfo->crUpdateLog(
+            [
+                'benzersiz nmarası' => $oldlaw->id,
+                'dava kısa açıklaması' => $oldlaw->law_brief,
+                'dava konusunun maddeleri' => $oldlaw->subjects->pluck('sub_description'),
+                'dava ile ilişkilendirilen yazılar' => $oldlaw->dc_documents->pluck('dc_number'),
+            ],
+            [
+                'benzersiz nmarası' => $lawsuit->id,
+                'dava kısa açıklaması' => $lawsuit->law_brief,
+                'dava konusunun maddeleri' => collect($subjectArr)->pluck('sub_description'),
+                'dava ile ilişkilendirilen yazılar' => $downDcDocuments->pluck('dc_number')
+            ]
+        );
+
         return [
             'updatedItem' => $lawsuit,
             'succeed' => __('messages.edit_success')
@@ -587,8 +615,20 @@ class LawsuitsController extends Controller
      */
     public function destroy(Lawsuits $lawsuit)
     {
+        $lawsuit->subjects;
+        $lawsuit->dc_documents;
+        $oldlaw = $lawsuit;
+        
         $res = $lawsuit->delete();
         $msg = [];
+
+        $logInfo = new LogInfo();
+        $logInfo->crDestroyLog([
+            'benzersiz nmarası' => $oldlaw->id,
+            'dava kısa açıklaması' => $oldlaw->law_brief,
+            'dava konusunun maddeleri' => $oldlaw->subjects->pluck('sub_description'),
+            'dava ile ilişkilendirilen yazılar' => $oldlaw->dc_documents->pluck('dc_number'),
+        ]);
 
         if ($res)
             $msg['succeed'] = __('delete_success');

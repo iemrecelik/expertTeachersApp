@@ -18,6 +18,7 @@ use App\Http\Requests\Admin\UpdateTeachersRequest;
 use App\Models\Admin\LawsuitFiles;
 use App\Rules\ValidateTCNo;
 use Illuminate\Support\Facades\DB;
+use App\Library\LogInfo;
 
 
 class TeachersController extends Controller
@@ -65,6 +66,11 @@ class TeachersController extends Controller
             $result = $document;
         }
 
+        $logInfo = new LogInfo();
+        $logInfo->crShowLog(
+            "info::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmene {$document->dc_number} sayılı yazı eklendi."
+        );
+
         return $result;
     }
     public function delDocumentToTeacher(Teachers $teacher, DcDocuments $document)
@@ -73,6 +79,11 @@ class TeachersController extends Controller
             ['dc_id', $document->id],
             ['thr_id', $teacher->id]
         ])->delete();
+
+        $logInfo = new LogInfo();
+        $logInfo->crShowLog(
+            "info::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmenden {$document->dc_number} sayılı yazı silindi."
+        );
 
         $msg = [];
 
@@ -485,6 +496,11 @@ class TeachersController extends Controller
 
         $request->flashOnly(['thr_tc_no']);
 
+        $logInfo = new LogInfo();
+        $logInfo->crShowLog(
+            "info::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmenin bilgileri gösterildi"
+        );
+
         return view(
             'admin.teachers.teacher_infos.teacher_infos',
             [
@@ -873,6 +889,9 @@ class TeachersController extends Controller
 
         $teacher = Teachers::create($params);
 
+        $logInfo = new LogInfo();
+        $logInfo->crCreateLog($teacher);
+
         return ['succeed' => __('messages.add_success')];
     }
 
@@ -958,6 +977,7 @@ class TeachersController extends Controller
      */
     public function update(Request $request, Teachers $teacher)
     {
+        $oldTeach = $teacher;
         $date = explode('/', $request->input('thr_birth_day'));
         $date = empty($date[2]) ? 1000: $date[2];
 
@@ -1007,6 +1027,9 @@ class TeachersController extends Controller
 
         $teacher->fill($params)->save();
 
+        $logInfo = new LogInfo();
+        $logInfo->crUpdateLog($oldTeach, $teacher);
+
         return [
             'updatedItem' => $teacher,
             'succeed' => __('messages.edit_success')
@@ -1021,11 +1044,16 @@ class TeachersController extends Controller
      */
     public function destroy(Teachers $teacher)
     {
+        $oldTeach = $teacher;
+
         if($teacher->thr_photo) {
             Storage::delete('/public/upload/images/raw'.$teacher->thr_photo);
         }
 
         $res = $teacher->delete();
+
+        $logInfo = new LogInfo();
+        $logInfo->crDestroyLog($oldTeach);
 
         $msg = [];
 

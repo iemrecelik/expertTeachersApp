@@ -9,6 +9,7 @@ use App\Http\Requests\Admin\DocumentManagement\UpdateDcCategoryRequest;
 use App\Http\Responsable\isAjaxResponse;
 use App\Models\Admin\DcCategory;
 use Illuminate\Validation\ValidationException;
+use App\Library\LogInfo;
 
 class CategoryController extends Controller
 {
@@ -178,6 +179,9 @@ class CategoryController extends Controller
             
             $dcCategory->childCategory()->save($childCategory);
         }
+
+        $logInfo = new LogInfo();
+        $logInfo->crCreateLog($childCategory);
     
         return ['succeed' => __('messages.add_success')];
     }
@@ -218,6 +222,7 @@ class CategoryController extends Controller
     public function update(UpdateDcCategoryRequest $request, DcCategory $category)
     {
         $params = $request->all();
+        $oldCat = $category;
 
         $category->fill($params)->save();
 
@@ -227,12 +232,9 @@ class CategoryController extends Controller
             
             $dcCategory->childCategory()->save($category);
         }
-        
-        /* $book->updateMany([
-            'childDatas' => $params['langs'],
-            'childName' => 'booksLang',
-            'childInstance' => new BooksLang(),
-        ]); */
+
+        $logInfo = new LogInfo();
+        $logInfo->crUpdateLog($oldCat, $category);
     
         return [
             'updatedItem' => $category,
@@ -248,7 +250,12 @@ class CategoryController extends Controller
      */
     public function destroy(DcCategory $category)
     {
+        $oldCat = $category;
         $res = $category->delete();
+        
+        $logInfo = new LogInfo();
+        $logInfo->crDestroyLog($oldCat);
+
         $msg = [];
 
         if ($res)
