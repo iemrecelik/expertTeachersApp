@@ -29,6 +29,9 @@ import teachMngInstitutionsComponent from './components/admin/institutions/Index
 /* Unions */
 import unionsMngComponent from './components/admin/unions/IndexComponent';
 
+/* Logs */
+import logsComponent from './components/admin/logs/IndexComponent';
+
 export default {
 	'main-component': mainComponent,
 	'search-component': searchComponent,
@@ -54,4 +57,6 @@ export default {
 
 	'lawsuit-mng-lawsuits-component': lawsuitMngLawsuitsComponent,
 	'lawsuit-mng-statistical-component': lawsuitMngStatisticalComponent,
+
+	'logs-component': logsComponent,
 }

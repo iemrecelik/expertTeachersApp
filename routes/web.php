@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 
+use App\Http\Controllers\Admin\LogsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UnionsController;
 use App\Http\Controllers\Admin\TeachersController;
@@ -506,7 +507,7 @@ Route::prefix('admin/lawsuit-management')
     });
 
 Route::prefix('admin')
-    ->middleware(['auth', 'role:super_admin'])
+    ->middleware(['auth', 'role:admin|auth_admin|super_admin'])
     ->controller(UserController::class)
     ->name('admin.')
     ->group(function () {
@@ -539,4 +540,17 @@ Route::prefix('admin')
 		->name('user.dataList');
 
         Route::resource('user', UserController::class);
+    });
+
+	Route::prefix('admin/logs')
+    ->middleware(['auth', 'role:auth_admin|super_admin'])
+    ->controller(LogsController::class)
+    ->name('admin.logs.')
+    ->group(function () {
+        /* Logs */
+		Route::get(
+			'/', 
+			'index'
+		)
+		->name('index');
     });
