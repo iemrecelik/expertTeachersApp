@@ -143,6 +143,9 @@ return [
 	'role' => 'Rol',
 	'select_role' => 'Rol Seçiniz',
 
+	/* Logs */
+	'log_records' => 'Log Kayıtları',
+
 	/* Other */
 	'expertTeachersApp' => 'Uzman Öğretmen Uygulaması',
 	"A fresh verification link has been sent to your email address." => "Yeni bir doğrulama bağlantısı e-posta adresinize gönderildi.",

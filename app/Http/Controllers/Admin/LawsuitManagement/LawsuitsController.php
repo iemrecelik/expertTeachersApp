@@ -438,7 +438,7 @@ class LawsuitsController extends Controller
         }
         /* add subjects end */
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Dava Modülü');
         $logInfo->crCreateLog([
             'benzersiz nmarası' => $lawsuit->id,
             'dava kısa açıklaması' => $lawsuit->law_brief,
@@ -583,7 +583,7 @@ class LawsuitsController extends Controller
 
         $lawsuit->fill($params)->save();
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Dava Modülü');
         // $logInfo->crUpdateLog($oldlaw, $lawsuit);
         // dd(collect($subjectArr));
         $logInfo->crUpdateLog(
@@ -622,7 +622,7 @@ class LawsuitsController extends Controller
         $res = $lawsuit->delete();
         $msg = [];
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Dava Modülü');
         $logInfo->crDestroyLog([
             'benzersiz nmarası' => $oldlaw->id,
             'dava kısa açıklaması' => $oldlaw->law_brief,

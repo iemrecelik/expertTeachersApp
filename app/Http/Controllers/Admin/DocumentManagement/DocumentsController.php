@@ -264,7 +264,7 @@ class DocumentsController extends Controller
                 $dcRel = DcDocuments::find($val);
                 $dcDocuments->dc_ralatives()->save($dcRel);
 
-                $logInfo = new LogInfo();
+                $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crShowLog(
                     "create::{$dcDocuments->dc_number} sayısına {$dcRel->dc_number} sayılı yazı ilişkilendirildi."
                 );
@@ -526,7 +526,7 @@ class DocumentsController extends Controller
 
                 $dcDocuments->dc_teachers()->saveMany($teachers);
 
-                $logInfo = new LogInfo();
+                $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crShowLog(
                     "create::".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)." ilgili(lere) {$dcDocuments->dc_number} sayılı yazı ilişkilendirildi."
                 );
@@ -570,7 +570,7 @@ class DocumentsController extends Controller
 
             $dcDocuments->dc_ralatives()->save($dcRelative);
 
-            $logInfo = new LogInfo();
+            $logInfo = new LogInfo('Evrak Ekleme');
             $logInfo->crShowLog(
                 "create::{$dcDocuments->dc_number} sayısına {$dcRelative->dc_number} sayılı yazı ilişkilendirildi."
             );
@@ -589,7 +589,7 @@ class DocumentsController extends Controller
             ]);
         }
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Evrak Ekleme');
         $logInfo->crCreateLog([
             'sayı' => $dcDocuments->dc_number,
             'konu' => $dcDocuments->dc_subject,
@@ -1082,7 +1082,7 @@ class DocumentsController extends Controller
 
             $dcDocuments->save();
 
-            $logInfo = new LogInfo();
+            $logInfo = new LogInfo('Evrak Ekleme');
             $logInfo->crUpdateLog(
                 [
                     'sayı' => $oldDcDocuments->dc_number,
@@ -1115,7 +1115,7 @@ class DocumentsController extends Controller
                 $teachers = Teachers::whereIn('id', $teacherIds)->get();
                 $dcDocuments->dc_teachers()->saveMany($teachers);
 
-                $logInfo = new LogInfo();
+                $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crShowLog(
                     "create::".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)." ilgili(lere) {$dcDocuments->dc_number} sayılı yazı ilişkilendirildi."
                 );
@@ -1165,7 +1165,7 @@ class DocumentsController extends Controller
                     $params
                 );
 
-                $logInfo = new LogInfo();
+                $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crCreateLog([
                     'sayı' => $dcRelative->dc_number,
                     'konu' => $dcRelative->dc_subject,
@@ -1396,7 +1396,7 @@ class DocumentsController extends Controller
 
         $res = $document->delete();
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Evrak Ekleme');
         $logInfo->crDestroyLog([
             'sayı' => $oldDocument->dc_number,
             'konu' => $oldDocument->dc_subject,
