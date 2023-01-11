@@ -68,7 +68,7 @@ class TeachersController extends Controller
 
         $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crShowLog(
-            "info::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmene {$document->dc_number} sayılı yazı eklendi."
+            "Ekleme::Öğretmene İlişkilendirilen Yazı::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmene {$document->dc_number} sayılı yazı eklendi."
         );
 
         return $result;
@@ -82,7 +82,7 @@ class TeachersController extends Controller
 
         $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crShowLog(
-            "info::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmenden {$document->dc_number} sayılı yazı silindi."
+            "Silme::Öğretmene İlişkilendirilen Yazı::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmenden {$document->dc_number} sayılı yazı silindi."
         );
 
         $msg = [];
@@ -498,7 +498,7 @@ class TeachersController extends Controller
 
         $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crShowLog(
-            "info::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmenin bilgileri gösterildi"
+            "Gösterme::Öğretmenin Detay Bilgileri::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmenin bilgileri gösterildi"
         );
 
         return view(

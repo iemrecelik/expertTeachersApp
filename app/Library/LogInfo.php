@@ -35,8 +35,8 @@ class LogInfo
         ])->info(
             'Ekleme::'
             .$this->moduleName.'::'
-            .json_encode($model, JSON_UNESCAPED_UNICODE)
-            .' <b>verileri eklendi.</b>'
+            .json_encode($model, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+            .' <br/><b>verileri eklendi.</b>'
         );
     }
     
@@ -48,10 +48,10 @@ class LogInfo
         ])->info(
             'Düzenleme::'
             .$this->moduleName.'::'
-            .json_encode($model, JSON_UNESCAPED_UNICODE)
-            .' <b>verileri</b> '
-            .json_encode($oldModel, JSON_UNESCAPED_UNICODE)
-            .' <b>verileri ile değiştirildi.</b>'
+            .json_encode($model, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+            .' <br/><b>verileri</b><br/> '
+            .json_encode($oldModel, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+            .' <br/><b>verileri ile değiştirildi.</b>'
         );
     }
 
@@ -63,8 +63,8 @@ class LogInfo
         ])->info(
             'Silme::'
             .$this->moduleName.'::'
-            .json_encode($model, JSON_UNESCAPED_UNICODE)
-            .' <b>verileri silindi.</b>'
+            .json_encode($model, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+            .' <br/><b>verileri silindi.</b>'
         );
     }
 }

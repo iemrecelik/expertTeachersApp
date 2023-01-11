@@ -86,7 +86,7 @@
               </tr>
               <tr v-else class="expandable-body d-none">
                 <td colspan="3">
-                  <p style="display: none;" v-html="logVal['content']"></p>
+                  <pre style="display: none;" v-html="logVal['content']"></pre>
                 </td>
               </tr>
             </tbody>
