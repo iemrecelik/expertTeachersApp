@@ -11,17 +11,19 @@ use Illuminate\Support\Facades\Auth;
 class LogInfo
 {
     private $user;
+    private $moduleName;
 
-    public function __construct()
+    public function __construct($moduleName)
     {
         $this->user = Auth::user();
+        $this->moduleName = $moduleName;
     }
 
     public function crShowLog($message)
     {
         Log::build([
             'driver' => 'single',
-            'path' => storage_path('logs/'.date('d_m_Y').'/'.$this->user->email.'.log'),
+            'path' => storage_path('logs/users/'.strtotime(date('d.m.Y')).'/'.$this->user->email.'.log'),
         ])->info($message);
     }
 
@@ -29,11 +31,12 @@ class LogInfo
     {
         Log::build([
             'driver' => 'single',
-            'path' => storage_path('logs/'.date('d_m_Y').'/'.$this->user->email.'.log'),
+            'path' => storage_path('logs/users/'.strtotime(date('d.m.Y')).'/'.$this->user->email.'.log'),
         ])->info(
-            'create::'
+            'Ekleme::'
+            .$this->moduleName.'::'
             .json_encode($model, JSON_UNESCAPED_UNICODE)
-            .' verileri eklendi.'
+            .' <b>verileri eklendi.</b>'
         );
     }
     
@@ -41,13 +44,14 @@ class LogInfo
     {
         Log::build([
             'driver' => 'single',
-            'path' => storage_path('logs/'.date('d_m_Y').'/'.$this->user->email.'.log'),
+            'path' => storage_path('logs/users/'.strtotime(date('d.m.Y')).'/'.$this->user->email.'.log'),
         ])->info(
-            'update::'
+            'Düzenleme::'
+            .$this->moduleName.'::'
             .json_encode($model, JSON_UNESCAPED_UNICODE)
-            .' verileri '
+            .' <b>verileri</b> '
             .json_encode($oldModel, JSON_UNESCAPED_UNICODE)
-            .' verileri ile değiştirildi.'
+            .' <b>verileri ile değiştirildi.</b>'
         );
     }
 
@@ -55,11 +59,12 @@ class LogInfo
     {
         Log::build([
             'driver' => 'single',
-            'path' => storage_path('logs/'.date('d_m_Y').'/'.$this->user->email.'.log'),
+            'path' => storage_path('logs/users/'.strtotime(date('d.m.Y')).'/'.$this->user->email.'.log'),
         ])->info(
-            'destroy::'
+            'Silme::'
+            .$this->moduleName.'::'
             .json_encode($model, JSON_UNESCAPED_UNICODE)
-            .' verileri silindi.'
+            .' <b>verileri silindi.</b>'
         );
     }
 }

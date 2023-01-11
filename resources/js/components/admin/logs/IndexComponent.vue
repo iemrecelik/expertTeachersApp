@@ -1,7 +1,67 @@
 <template>
-<template-component
-	:ppTitleName="$t('messages.categoryManage')"
+<multi-section-template-component
+	:ppTitleName="$t('messages.log_records')"
 >
+  <div class="row mt-3">
+    <div class="col-md-12">
+      <div class="card">
+        <div class="card-body">
+          <form
+            @submit.prevent
+            :id="formIDName"
+          >
+            <div class="row">
+              <div class="col-3">
+                <label>Tarih aralığı:</label>
+                
+                <div class="input-group">
+                  <div class="input-group-prepend">
+                    <span class="input-group-text">
+                      <i class="far fa-calendar-alt"></i>
+                    </span>
+                  </div>
+                  <input type="text" 
+                    class="form-control float-right" 
+                    id="single-reservation"
+                    name="log_date"
+                    autocomplete="off"
+                  >
+                </div>
+              </div>
+
+              <div class="col-3">
+                <label>Kullanıcı:</label>
+                <div class="input-group">
+                  <select id="validationCustom04" 
+                    class="custom-select"
+                    required 
+                    name="email"
+                  >
+                    <option :value="userVal.email" :key="userKey" v-for="(userVal, userKey) in datas.users">
+                      {{ userVal.name + ' ' + userVal.email }}
+                    </option>
+                  </select>
+                </div>
+              </div>
+
+              <div class="col-2">
+                <label> - </label>
+                <div class="form-group text-right">
+                  <button type="submit" class="btn btn-primary bg-gradient-primary w-100"
+                    @click="loadLogsData"
+                  >
+                    Ara
+                  </button>
+                </div>
+              </div>
+            </div><!-- /.row -->
+          </form>
+
+        </div><!-- /.card-body -->
+      </div><!-- /.card -->
+    </div><!-- /.col-md-12 -->
+  </div><!-- /.row mt-3 -->
+
   <div class="row">
     <div class="col-12">
       <div class="card">
@@ -19,28 +79,14 @@
               </tr>
             </thead>
             <tbody>
-              <tr data-widget="expandable-table" aria-expanded="false">
-                <td>2022-07-12 15:30:19</td>
-                <td>Evrak Modülü</td>
-                <td>Düzenleme</td>
+              <tr v-if="logVal['time']" data-widget="expandable-table" aria-expanded="false" :key="logKey" v-for="(logVal, logKey) in logs">
+                <td>{{logVal['time']}}</td>
+                <td>{{logVal['moduleName']}}</td>
+                <td>{{logVal['process']}}</td>
               </tr>
-              <tr class="expandable-body">
-                <td colspan="5">
-                  <p>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                  </p>
-                </td>
-              </tr>
-              <tr data-widget="expandable-table" aria-expanded="true">
-                <td>2022-07-12 15:30:19</td>
-                <td>Dava Modülü</td>
-                <td>Ekleme</td>
-              </tr>
-              <tr class="expandable-body">
-                <td colspan="5">
-                  <p>
-                    Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.
-                  </p>
+              <tr v-else class="expandable-body d-none">
+                <td colspan="3">
+                  <p style="display: none;" v-html="logVal['content']"></p>
                 </td>
               </tr>
             </tbody>
@@ -51,14 +97,80 @@
       <!-- /.card -->
     </div>
   </div>
-</template-component>
+</multi-section-template-component>
 </template>
 
 <script>
+import { mapState, mapMutations } from 'vuex';
+
 export default {
   name: 'IndexComponent',
   data () {
-    return {};
+    return {
+      datas: this.ppdatas,
+      logs: [],
+      formIDName: 'logs-form'
+    };
+  },
+  props: {
+    pproutes: {
+      type: Object,
+      required: true,
+    },
+    pperrors: {
+      type: Object,
+      required: true,
+    },
+    ppdatas: {
+      type: Object,
+      required: true,
+    },
+  },
+  computed: {
+    ...mapState([
+      'routes',
+    ])
+  },
+  methods: {
+    ...mapMutations([
+      'setRoutes',
+      'setErrors',
+    ]),
+    loadLogsData: function() {
+      let form = $('#' + this.formIDName);
+
+      $.ajax({
+        url: this.routes.getLogsList,
+        type: 'POST',
+        dataType: 'JSON',
+        data: form.serialize(),
+      })
+      .done((res) => {
+        this.logs = res;
+        // this.setErrors('');
+        // this.setSucceed(res.succeed);
+        // document.getElementById(this.formIDName).reset();
+      })
+      .fail((error) => {
+        this.setSucceed('');
+        // this.setErrors(error.responseJSON.errors);
+        if(error.responseJSON) {
+          if(error.responseJSON.errors) {
+            this.setErrors(error.responseJSON.errors);
+          }else if(error.responseJSON.message) {
+            this.setErrors(
+              {'permissionMessage': [error.responseJSON.message]}
+            );
+          }
+        }
+      })
+      .then((res) => {})
+      .always(() => {});
+    }
+  },
+  created(){
+    this.setRoutes(this.pproutes);
+    this.setErrors(this.pperrors);
   },
 }
 </script>

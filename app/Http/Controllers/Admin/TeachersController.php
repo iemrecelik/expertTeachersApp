@@ -66,7 +66,7 @@ class TeachersController extends Controller
             $result = $document;
         }
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crShowLog(
             "info::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmene {$document->dc_number} sayılı yazı eklendi."
         );
@@ -80,7 +80,7 @@ class TeachersController extends Controller
             ['thr_id', $teacher->id]
         ])->delete();
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crShowLog(
             "info::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmenden {$document->dc_number} sayılı yazı silindi."
         );
@@ -496,7 +496,7 @@ class TeachersController extends Controller
 
         $request->flashOnly(['thr_tc_no']);
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crShowLog(
             "info::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmenin bilgileri gösterildi"
         );
@@ -889,7 +889,7 @@ class TeachersController extends Controller
 
         $teacher = Teachers::create($params);
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crCreateLog($teacher);
 
         return ['succeed' => __('messages.add_success')];
@@ -1027,7 +1027,7 @@ class TeachersController extends Controller
 
         $teacher->fill($params)->save();
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crUpdateLog($oldTeach, $teacher);
 
         return [
@@ -1052,7 +1052,7 @@ class TeachersController extends Controller
 
         $res = $teacher->delete();
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crDestroyLog($oldTeach);
 
         $msg = [];

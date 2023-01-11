@@ -180,7 +180,7 @@ class CategoryController extends Controller
             $dcCategory->childCategory()->save($childCategory);
         }
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Kategori Modülü');
         $logInfo->crCreateLog($childCategory);
     
         return ['succeed' => __('messages.add_success')];
@@ -233,7 +233,7 @@ class CategoryController extends Controller
             $dcCategory->childCategory()->save($category);
         }
 
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Kategori Modülü');
         $logInfo->crUpdateLog($oldCat, $category);
     
         return [
@@ -253,7 +253,7 @@ class CategoryController extends Controller
         $oldCat = $category;
         $res = $category->delete();
         
-        $logInfo = new LogInfo();
+        $logInfo = new LogInfo('Kategori Modülü');
         $logInfo->crDestroyLog($oldCat);
 
         $msg = [];

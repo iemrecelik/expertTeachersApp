@@ -553,4 +553,10 @@ Route::prefix('admin')
 			'index'
 		)
 		->name('index');
+
+		Route::post(
+			'list', 
+			'getLogsList'
+		)
+		->name('getLogsList');
     });
