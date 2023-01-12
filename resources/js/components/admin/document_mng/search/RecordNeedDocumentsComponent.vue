@@ -5,7 +5,7 @@
 
       <h4 class="text-center">UYARI!</h4>
       
-      <div :key="dataKey" v-for="(dateVal, dateKey) in datas">
+      <div :key="dateKey" v-for="(dateVal, dateKey) in datas">
         <label>
           {{ dateKey + ' :' }}
         </label>

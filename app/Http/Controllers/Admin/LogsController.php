@@ -37,6 +37,7 @@ class LogsController extends Controller
         $logCollection = [];
 
         $co = 0;
+        $datas = [];
         foreach ($logFile as $line_num => $line) {
             $pattern = '/(\[.*\]) (local\.INFO:) (.*)::(.*)::(.*)/si';
             preg_match($pattern, $line, $data);

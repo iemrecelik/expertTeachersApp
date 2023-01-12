@@ -145,6 +145,7 @@ return [
 
 	/* Logs */
 	'log_records' => 'Log Kayıtları',
+	'document_record_reports' => 'Evrak Kayıt Raporu Modülü',
 
 	/* Other */
 	'expertTeachersApp' => 'Uzman Öğretmen Uygulaması',

@@ -275,9 +275,12 @@ class CommentController extends Controller
             +++ 106- evrak rapor listesi ilk açıldığında sayılar gelmiyor
             +++ 107- giden evrak sayısı gelen evrak sayısı ile değiştirilecek
             108- evrak rapor listesinde girilmesi gereken evrak sayısı gösterilsin
-            109- evrak kayıt raporu yetkilendirme yapılacak.
-            110- öğretmen düzenleme yaparken mersis kontrolü yapılacak.
+            +++ 109- evrak kayıt raporu yetkilendirme yapılacak.
+            +++ 110- öğretmen düzenleme yaparken mersis kontrolü yapılacak.
             111- evrak modülünde hangi yazılara ilgi gösterilmiş yazılsın.
+            +++ 112- log kayıtlarında düzenleme yaparken eski veriler yerine yenileri gösteriyor.
+            xxx 113- evrak gösterme de pre kullanılacak
+            114- öğretmen dava listesinede dosya isimleri kısaltılıp title olarak gösterilsin
         */
 
         $request->validate(

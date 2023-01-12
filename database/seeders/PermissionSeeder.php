@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use Illuminate\Database\Seeder;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
-// use App\Models\User;
 
 class PermissionSeeder extends Seeder
 {
@@ -42,6 +41,8 @@ class PermissionSeeder extends Seeder
             'create images teachers',
             'edit teachers',
             'delete teachers',
+
+            'processes document_record_reports'
         ];
 
         foreach ($permissions as $key => $val) {
@@ -50,7 +51,10 @@ class PermissionSeeder extends Seeder
             }
         }
 
-        $role = Role::where('name', 'admin');
+        $role = Role::where('name', 'admin')->first();
+        $role->givePermissionTo(Permission::all());
+        
+        $role = Role::where('name', 'auth_admin')->first();
         $role->givePermissionTo(Permission::all());
 
         /* $user = User::find(2);

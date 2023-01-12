@@ -113,6 +113,13 @@
                 <p>Evrak Listeleme</p>
               </a>
             </li>
+
+            <li class="nav-item">
+              <a href="{{route('admin.document_mng.report.index')}}" class="nav-link">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Kayıt Raporu</p>
+              </a>
+            </li>
           </ul>
         </li>
 
@@ -189,6 +196,20 @@
           <a href="{{route('admin.unions.index')}}" class="nav-link">
             <i class="far fa-circle nav-icon"></i>
             <p>Sendika Yönetimi</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{{route('admin.user.index')}}" class="nav-link">
+            <i class="far fa-circle nav-icon"></i>
+            <p>Kullanıcı Yönetimi</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
+          <a href="{{route('admin.logs.index')}}" class="nav-link">
+            <i class="far fa-circle nav-icon"></i>
+            <p>Log Kayıtları</p>
           </a>
         </li>
 

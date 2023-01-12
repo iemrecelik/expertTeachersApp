@@ -222,7 +222,7 @@ class CategoryController extends Controller
     public function update(UpdateDcCategoryRequest $request, DcCategory $category)
     {
         $params = $request->all();
-        $oldCat = $category;
+        $oldCat = clone $category;
 
         $category->fill($params)->save();
 
