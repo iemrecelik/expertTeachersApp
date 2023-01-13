@@ -1,7 +1,7 @@
 <template>
 <div class="modal-content" v-if="documentShow">
   <div class="modal-header">
-    <h5 class="modal-title">Modal title</h5>
+    <h5 class="modal-title">Evrak Detayı</h5>
     <button class="btn btn-sm btn-danger ml-3"
       @click="removeMarked"
     >
@@ -60,7 +60,7 @@
           </div>
         </div>
         
-        <div class="row" v-if="items.dc_attach_files">
+        <div class="row" v-if="items.dc_attach_files.length > 0">
           <div class="col-12" v-for="dc_att_file in items.dc_attach_files">
             <a v-if="fileExtensionControl(dc_att_file.dc_att_file_path)" :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
               download
@@ -75,6 +75,31 @@
           </div>
         </div>
         <div v-else><b>DOSYA YOK</b></div>
+
+      </div>
+
+      <div class="pl-5 pt-3">
+        
+        <div class="row">
+          <div class="col-12">
+            <u>İLİŞKİLENDİRİLMİŞ YAZILAR:</u>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-12">
+            <div v-if="belongDocuments.length > 0">
+              <ul>
+                <li v-for="doc in belongDocuments">
+                  {{ doc.dc_number }}
+                </li>
+              </ul>
+            </div>
+            <div v-else>
+              <b>İLİŞKİLENDİRİLMİŞ YAZI YOK</b>
+            </div>
+          </div>
+        </div>
 
       </div>
 
@@ -194,6 +219,7 @@ export default {
     return {
       datas: this.ppdatas,
       items: {},
+      belongDocuments: [],
       dcContent: this.ppDcContent,
       markInstance: null,
       documentShow: true
@@ -267,7 +293,8 @@ export default {
   },
   created() {
     $.get(this.showUrl, (data) => {
-      this.items = data;
+      this.items = data.document;
+      this.belongDocuments = data.belongDocuments;
       this.documentShow = true;
     })
     .fail((error) => {

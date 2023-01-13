@@ -1,7 +1,7 @@
 <template>
 <div class="modal-content">
   <div class="modal-header">
-    <h5 class="modal-title">Modal title</h5>
+    <h5 class="modal-title">Evrak Detayı</h5>
     <button class="btn btn-sm btn-danger ml-3"
       @click="removeMarked"
     >

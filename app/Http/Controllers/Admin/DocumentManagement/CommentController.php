@@ -277,10 +277,11 @@ class CommentController extends Controller
             108- evrak rapor listesinde girilmesi gereken evrak sayısı gösterilsin
             +++ 109- evrak kayıt raporu yetkilendirme yapılacak.
             +++ 110- öğretmen düzenleme yaparken mersis kontrolü yapılacak.
-            111- evrak modülünde hangi yazılara ilgi gösterilmiş yazılsın.
+            +++ 111- evrak modülünde hangi yazılara ilgi gösterilmiş yazılsın.
             +++ 112- log kayıtlarında düzenleme yaparken eski veriler yerine yenileri gösteriyor.
             xxx 113- evrak gösterme de pre kullanılacak
-            114- öğretmen dava listesinede dosya isimleri kısaltılıp title olarak gösterilsin
+            +++ 114- öğretmen dava listesinede dosya isimleri kısaltılıp title olarak gösterilsin
+            115- evrak kayıt raporunda evrak sayısından ilişiği kaldırılan öğretmenlerin bilgileri de gelsin.
         */
 
         $request->validate(
