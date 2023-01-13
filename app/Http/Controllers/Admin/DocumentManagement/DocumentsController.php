@@ -266,7 +266,7 @@ class DocumentsController extends Controller
 
                 $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crShowLog(
-                    "create::{$dcDocuments->dc_number} sayısına {$dcRel->dc_number} sayılı yazı ilişkilendirildi."
+                    "Ekleme::Evrak Ekleme::{$dcDocuments->dc_number} sayısına {$dcRel->dc_number} sayılı yazı ilişkilendirildi."
                 );
             }
         }
@@ -528,7 +528,7 @@ class DocumentsController extends Controller
 
                 $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crShowLog(
-                    "create::".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)." ilgili(lere) {$dcDocuments->dc_number} sayılı yazı ilişkilendirildi."
+                    "Ekleme::Evrak Ekleme::".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)." ilgili(lere) {$dcDocuments->dc_number} sayılı yazı ilişkilendirildi."
                 );
             }
 
@@ -572,7 +572,7 @@ class DocumentsController extends Controller
 
             $logInfo = new LogInfo('Evrak Ekleme');
             $logInfo->crShowLog(
-                "create::{$dcDocuments->dc_number} sayısına {$dcRelative->dc_number} sayılı yazı ilişkilendirildi."
+                "Ekleme::Evrak Ekleme::{$dcDocuments->dc_number} sayısına {$dcRelative->dc_number} sayılı yazı ilişkilendirildi."
             );
 
             /* Kategorileri ekleme başla*/
@@ -695,12 +695,23 @@ class DocumentsController extends Controller
             file_get_contents("zip://{$file->getPathName()}#content.xml")
         );
 
+        // dd($datas);
+
         extract($datas);
 
-        $pattern = '/Öğretmen Yetiştirme ve Geliştirme Genel Müdürlüğü/si';
-        preg_match($pattern, $sender[1], $existOygm);
+        if(!empty($number[1])) {
+            $pattern = '/20299769/si';
+            preg_match($pattern, trim($number[1]), $existOygm);
+        }else {
+            throw ValidationException::withMessages(
+                ['signature' => 'Lütfen dys tarafından onaylanmış dosya yükleyiniz.']
+            );
+        }
 
-        if(count($existOygm) > 0) {
+        /* $pattern = '/Öğretmen Yetiştirme ve Geliştirme Genel Müdürlüğü/si';
+        preg_match($pattern, $sender[1], $existOygm); */
+
+        if(count($existOygm) > 0 || empty(trim($number[1]))) {
             $pattern = '/mahmut özer|MAHMUT ÖZER|Mahmut Özer|PETEK AŞKAR|Petek Aşkar|petek aşkar|CEVDET VURAL|Cevdet Vural|cevdet vural|NEJAT İŞLER|Nejat İşler|nejat işler|AYŞE OĞUZ|Ayşe Oğuz|ayşe oğuz|UFUK DİLEKÇİ|Ufuk Dilekçi|ufuk dilekçi/si';
 
             preg_match($pattern, $sign, $existSignature);
@@ -834,7 +845,7 @@ class DocumentsController extends Controller
 
     private function getFileContent($result)
     {
-        $pattern = '/<!\[CDATA\[\¸(.*)\n{2,10}sayı/si';
+        $pattern = '/<!\[CDATA\[\¸(.*)\n{1,10}sayı/si';
         preg_match($pattern, $result, $sender);
 
         // $pattern = '/konu\s*:.*([A-ZİĞÜŞÖÇ ]{10,1000}\n{2,10})/si';
@@ -890,7 +901,7 @@ class DocumentsController extends Controller
 
         try {
             $datas = $this->getFileContent($result);
-// dd($datas);
+            // dd($datas);
             extract($datas);
 
             /* dd([
@@ -1059,7 +1070,7 @@ class DocumentsController extends Controller
                 );
             }
 
-            $oldDcDocuments = $dcDocuments;
+            $oldDcDocuments = clone $dcDocuments;
 
             $dcDocumentExist = DcDocuments::where([
                 ['id', '!=', $id],
@@ -1117,7 +1128,7 @@ class DocumentsController extends Controller
 
                 $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crShowLog(
-                    "create::".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)." ilgili(lere) {$dcDocuments->dc_number} sayılı yazı ilişkilendirildi."
+                    "Ekleme::Evrak Ekleme::".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)." ilgili(lere) {$dcDocuments->dc_number} sayılı yazı ilişkilendirildi."
                 );
             }
 
@@ -1142,6 +1153,13 @@ class DocumentsController extends Controller
             /* Kategorileri ekleme bitiş*/
 
             /* İlgi evrakları sil */
+            // if(isset($dcDocuments->dc_ralatives->dc_number)) {
+            $logInfo = new LogInfo('Evrak Ekleme');
+            $logInfo->crShowLog(
+                "Ekleme::Evrak Ekleme::{$dcDocuments->dc_number} sayısından {$dcDocuments->dc_ralatives->pluck('dc_number')} sayılı yazı ilişikten kaldırıldı."
+            );
+            // }
+
             $dcDocuments->dc_ralatives()->detach();
 
             $this->uploadFile([
@@ -1314,6 +1332,11 @@ class DocumentsController extends Controller
             foreach ($params['add_dc_number_id'] as $key => $val) {
                 $dcRel = DcDocuments::find($val);
                 $dcDocuments->dc_ralatives()->save($dcRel);
+
+                $logInfo = new LogInfo('Evrak Ekleme');
+                $logInfo->crShowLog(
+                    "Ekleme::Evrak Ekleme::{$dcDocuments->dc_number} sayısına {$dcRel->dc_number} sayılı yazı ilişkilendirildi."
+                );
             }
         }
         

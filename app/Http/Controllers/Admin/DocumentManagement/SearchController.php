@@ -368,7 +368,16 @@ class SearchController extends Controller
 
 			$dcDocuments = $mainDcDocuments;
 		}
+
+		$belongDocuments = DB::table('dc_documents as t0')
+		->select('t0.dc_number')
+		->join('dc_relative as t1', 't1.dc_id', '=', 't0.id')
+		->where('t1.rel_id', $dcDocuments->id)
+		->get();
 		
-		return $dcDocuments;
+		return [
+			'document' => $dcDocuments,
+			'belongDocuments' => $belongDocuments
+		];
 	}
 }

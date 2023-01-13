@@ -215,12 +215,14 @@ Route::prefix('admin/document-management')
 			'report', 
 			'index'
 		)
+		->middleware(['permission:processes document_record_reports'])
 		->name('report.index');
 
         Route::post(
 			'report/record-count', 
 			'saveDocumentRecordCount'
 		)
+		->middleware(['permission:processes document_record_reports'])
 		->name('report.saveDocumentRecordCount');
 
 		Route::get(

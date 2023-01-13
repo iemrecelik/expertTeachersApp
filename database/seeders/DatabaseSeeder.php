@@ -20,6 +20,7 @@ class DatabaseSeeder extends Seeder
             ProvincesAndTownsSeeder::class,
             RoleSeeder::class,
             PermissionSeeder::class,
+            UserAssignRoleSeeder::class,
         ]);
     }
 }

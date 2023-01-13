@@ -87,7 +87,8 @@ class UserController extends Controller
             'edit teachers' => 'Öğretmen Düzenleme',
             'delete teachers' => 'Öğretmen Silme',
 
-            
+            'document_record_reports' => "document_record_reports",
+            'processes document_record_reports' => "Evrak Kayıt Raporu İşlemleri"
         ];
 
         return $permissions[$name];

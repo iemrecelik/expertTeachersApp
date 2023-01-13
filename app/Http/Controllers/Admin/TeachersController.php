@@ -977,7 +977,7 @@ class TeachersController extends Controller
      */
     public function update(Request $request, Teachers $teacher)
     {
-        $oldTeach = $teacher;
+        $oldTeach = clone $teacher;
         $date = explode('/', $request->input('thr_birth_day'));
         $date = empty($date[2]) ? 1000: $date[2];
 

@@ -524,7 +524,7 @@ class LawsuitsController extends Controller
      */
     public function update(UpdateLawsuitsRequest $request, Lawsuits $lawsuit)
     {
-        $oldlaw = $lawsuit;
+        $oldlaw = clone $lawsuit;
         $params = $request->all();
 
         $dcDownIds = $params['dc_down_id'] ?? [];

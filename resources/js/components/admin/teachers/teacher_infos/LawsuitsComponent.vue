@@ -53,8 +53,12 @@
                 <ul class="attach-files-list">
                   <li :key="key" v-for="(attcFiles, key) in lawsuit.dc_document.dc_attach_files">
                     
-                    <a target="_blank" :href="'/storage/upload/images/raw'+attcFiles.dc_att_file_path">
-                      {{attcFiles.dc_att_file_path | getFileNameInPath}}
+                    <a target="_blank" :href="'/storage/upload/images/raw'+attcFiles.dc_att_file_path"
+                      data-toggle="tooltip" 
+                      data-placement="top" 
+                      :title="attcFiles.dc_att_file_path | getFileNameInPath"
+                    >
+                      {{attcFiles.dc_att_file_path | getFileNameInPath | longTextSlice}}...
                     </a>
                     
                     <!-- <a class="float-right" href="#">Dava Dosyasına Ekle</a> -->
@@ -106,8 +110,12 @@
                   <div class="col-12">
                     <ul class="attach-files-list">
                       <li :key="key" v-for="(downAttcFiles, key) in dc_doc.dc_attach_files">
-                        <a target="_blank" :href="'/storage/upload/images/raw'+downAttcFiles.dc_att_file_path">
-                          {{downAttcFiles.dc_att_file_path | getFileNameInPath}}
+                        <a target="_blank" :href="'/storage/upload/images/raw'+downAttcFiles.dc_att_file_path"
+                          data-toggle="tooltip" 
+                          data-placement="top" 
+                          :title="downAttcFiles.dc_att_file_path | getFileNameInPath"
+                        >
+                          {{downAttcFiles.dc_att_file_path | getFileNameInPath | longTextSlice}}...
                         </a>
                         
                         <!-- <a v-if="fileInLawFiles(downAttcFiles.dc_att_file_path, lawsuit.lawsuit_files)" class="float-right" href="#" 
@@ -148,8 +156,12 @@
                 <label>Dava Dosyaları: </label>
                 <ul class="attach-files-list">
                   <li :key="fileKey" v-for="(file, fileKey) in lawsuit.lawsuit_files">
-                    <a target="_blank" :href="'/storage/upload/images/raw'+file.lawf_file_path">
-                      {{file.lawf_file_name}} ( {{file.lawf_file_path | getFileNameInPath}} )
+                    <a target="_blank" :href="'/storage/upload/images/raw'+file.lawf_file_path"
+                      data-toggle="tooltip" 
+                      data-placement="top" 
+                      :title="file.lawf_file_path | getFileNameInPath"
+                    >
+                      {{file.lawf_file_name}} ( {{file.lawf_file_path | getFileNameInPath | longTextSlice}}... )
                     </a>
 
                     <!-- <a class="float-right" href="#" 
@@ -379,6 +391,10 @@ export default {
               `${result.value} (${this.getFileNameInPathFunc(addLawFileInfo.filePathName)}) Adlı dosya eklendi.`,
               'success'
             )
+
+            setTimeout(() => {
+              this.runTooltip();
+            }, 400);
           })
           .fail((error) => {
             let html = '<ol>';
@@ -413,7 +429,17 @@ export default {
           )
         }
       });
+    },
+    runTooltip: function() {
+      $('[data-toggle="tooltip"]').tooltip({
+        trigger: "hover",
+      });
     }
+  },
+  filters: {
+    longTextSlice: function (value) {
+      return value.slice(0, 45);
+    },
   },
   mounted() {
     $(this.modalSelector).on('show.bs.modal', (event) => {
