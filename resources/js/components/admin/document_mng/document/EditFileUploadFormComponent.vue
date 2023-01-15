@@ -8,14 +8,16 @@
 				<select id="validationCustom04" 
 					class="custom-select"
 					required 
-					:name="fieldNames.itemStatus"
 					@change="showingForm"
 				>
 					<option disabled value="2">Evrak Durumunu Seçiniz.</option>
-					<option :selected="this.data.dc_item_status == 1" value="1">Giden Evrak</option>
-					<option :selected="this.data.dc_item_status == 0" value="0">Gelen Evrak</option>
+					<option disabled :selected="this.data.dc_item_status == 1" value="1">Giden Evrak</option>
+					<option disabled :selected="this.data.dc_item_status == 0" value="0">Gelen Evrak</option>
 					<!-- <option :selected=itemStatus value="0">Gelen Evrak</option> -->
 				</select>
+				
+				<input type="hidden" :name="fieldNames.itemStatus" :value="this.data.dc_item_status">
+
 				<div class="invalid-feedback">
 					Lütfen evrağın durumunu seçiniz.
 				</div>

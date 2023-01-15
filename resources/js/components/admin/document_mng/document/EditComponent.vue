@@ -530,7 +530,11 @@ export default {
       if (action === ASYNC_SEARCH) {
         simulateAsyncOperation(() => {
 
-					this.getTeachersSearchList(searchQuery, callback);
+					if(searchQuery.length > 2) {
+            this.getTeachersSearchList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
         })
       }
     },

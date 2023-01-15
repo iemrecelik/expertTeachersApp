@@ -271,7 +271,7 @@ class CommentController extends Controller
             +++ 102- evrak kayıt raporunda girilen evrak sayısı sıfırlanmasın
             +++ 103- imza kontrolü yaparken başkan ve vekil kontrolleride yapılacak
             104- ayarlara imza yetkisi olanlar eklenip çıkartılabilecek.
-            +++ 105- imza uyuşmadığında evrilen hata mesajı değiştirilecek.
+            +++ 105- imza uyuşmadığında verilen hata mesajı değiştirilecek.
             +++ 106- evrak rapor listesi ilk açıldığında sayılar gelmiyor
             +++ 107- giden evrak sayısı gelen evrak sayısı ile değiştirilecek
             108- evrak rapor listesinde girilmesi gereken evrak sayısı gösterilsin
@@ -281,7 +281,8 @@ class CommentController extends Controller
             +++ 112- log kayıtlarında düzenleme yaparken eski veriler yerine yenileri gösteriyor.
             xxx 113- evrak gösterme de pre kullanılacak
             +++ 114- öğretmen dava listesinede dosya isimleri kısaltılıp title olarak gösterilsin
-            115- evrak kayıt raporunda evrak sayısından ilişiği kaldırılan öğretmenlerin bilgileri de gelsin.
+            +++ 115- evrak kayıt raporunda evrak sayısından ilişiği kaldırılan öğretmenlerin bilgileri de gelsin.
+            +++ 116- evrak düzenlerken gelen giden evrak kontrolü yapmıyor.
         */
 
         $request->validate(

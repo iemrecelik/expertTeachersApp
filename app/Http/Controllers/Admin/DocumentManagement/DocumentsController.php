@@ -266,7 +266,7 @@ class DocumentsController extends Controller
 
                 $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crShowLog(
-                    "Ekleme::Evrak Ekleme::{$dcDocuments->dc_number} sayısına {$dcRel->dc_number} sayılı yazı ilişkilendirildi."
+                    "Ekleme::Evrak Ekleme::<b>{$dcDocuments->dc_number}</b> sayısına <b>{$dcRel->dc_number}</b> sayılı yazı ilişkilendirildi."
                 );
             }
         }
@@ -528,7 +528,7 @@ class DocumentsController extends Controller
 
                 $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crShowLog(
-                    "Ekleme::Evrak Ekleme::".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)." ilgili(lere) {$dcDocuments->dc_number} sayılı yazı ilişkilendirildi."
+                    "Ekleme::Evrak Ekleme::"."<b>".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)."</b> ilgili(lere) <b>{$dcDocuments->dc_number}</b> sayılı yazı ilişkilendirildi."
                 );
             }
 
@@ -572,7 +572,7 @@ class DocumentsController extends Controller
 
             $logInfo = new LogInfo('Evrak Ekleme');
             $logInfo->crShowLog(
-                "Ekleme::Evrak Ekleme::{$dcDocuments->dc_number} sayısına {$dcRelative->dc_number} sayılı yazı ilişkilendirildi."
+                "Ekleme::Evrak Ekleme::<b>{$dcDocuments->dc_number}</b> sayısına <b>{$dcRelative->dc_number}</b> sayılı yazı ilişkilendirildi."
             );
 
             /* Kategorileri ekleme başla*/
@@ -1049,7 +1049,7 @@ class DocumentsController extends Controller
         unset($params['thr_id']);
         unset($params['dc_com_text']);
         unset($params['id']);
-        unset($params['dc_cat_id']);  
+        unset($params['dc_cat_id']);
         
         if(empty($dcDocuments)) {
             
@@ -1121,14 +1121,19 @@ class DocumentsController extends Controller
 
             /* Öğretmenleri ekleme */
             if(count($teacherIds) > 0) {
+                $logInfo = new LogInfo('Evrak Ekleme');
+                $logInfo->crShowLog(
+                    "Silme::Evrak Ekleme::"."<b>".json_encode($dcDocuments->dc_teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)."</b> ilgili(ler) den <b>{$dcDocuments->dc_number}</b> sayılı yazı ilişikten kaldırıldı."
+                );
+
                 $dcDocuments->dc_teachers()->detach();
 
                 $teachers = Teachers::whereIn('id', $teacherIds)->get();
                 $dcDocuments->dc_teachers()->saveMany($teachers);
 
-                $logInfo = new LogInfo('Evrak Ekleme');
+                // $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crShowLog(
-                    "Ekleme::Evrak Ekleme::".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)." ilgili(lere) {$dcDocuments->dc_number} sayılı yazı ilişkilendirildi."
+                    "Ekleme::Evrak Ekleme::"."<b>".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)."</b> ilgili(lere) <b>{$dcDocuments->dc_number}</b> sayılı yazı ilişkilendirildi."
                 );
             }
 
@@ -1156,7 +1161,7 @@ class DocumentsController extends Controller
             // if(isset($dcDocuments->dc_ralatives->dc_number)) {
             $logInfo = new LogInfo('Evrak Ekleme');
             $logInfo->crShowLog(
-                "Ekleme::Evrak Ekleme::{$dcDocuments->dc_number} sayısından {$dcDocuments->dc_ralatives->pluck('dc_number')} sayılı yazı ilişikten kaldırıldı."
+                "Silme::Evrak Ekleme::<b>{$dcDocuments->dc_number}</b> sayısından <b>{$dcDocuments->dc_ralatives->pluck('dc_number')}</b> sayılı yazı ilişikten kaldırıldı."
             );
             // }
 
@@ -1335,7 +1340,7 @@ class DocumentsController extends Controller
 
                 $logInfo = new LogInfo('Evrak Ekleme');
                 $logInfo->crShowLog(
-                    "Ekleme::Evrak Ekleme::{$dcDocuments->dc_number} sayısına {$dcRel->dc_number} sayılı yazı ilişkilendirildi."
+                    "Ekleme::Evrak Ekleme::<b>{$dcDocuments->dc_number}</b> sayısına <b>{$dcRel->dc_number}</b> sayılı yazı ilişkilendirildi."
                 );
             }
         }
