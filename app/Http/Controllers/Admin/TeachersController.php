@@ -637,7 +637,7 @@ class TeachersController extends Controller
             $dataList->where('t0.thr_place_of_task', $tblInfo['thr_place_of_task']);
         }
 
-        if(!empty($tblInfo['thr_career_ladder'])) {
+        if(isset($tblInfo['thr_career_ladder'])) {
             $dataList->where('t0.thr_career_ladder', $tblInfo['thr_career_ladder']);
         }
 
