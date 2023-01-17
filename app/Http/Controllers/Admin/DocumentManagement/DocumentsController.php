@@ -860,9 +860,11 @@ class DocumentsController extends Controller
         $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
         preg_match($pattern, $result, $number);
         
-        $receiver[3] = preg_replace('/\n/', '<br/>', $receiver[3]);
-        $receiver[3] = preg_replace('/\t{3,100}/', '<span class="mr-5"></span>', $receiver[3]);
-        $receiver[3] = preg_replace('/\t/', '<span class="mr-5"></span>', $receiver[3]);
+        if(isset($receiver[3])) {
+            $receiver[3] = preg_replace('/\n/', '<br/>', $receiver[3]);
+            $receiver[3] = preg_replace('/\t{3,100}/', '<span class="mr-5"></span>', $receiver[3]);
+            $receiver[3] = preg_replace('/\t/', '<span class="mr-5"></span>', $receiver[3]);
+        }
 
         return [
             'sender' => $sender,

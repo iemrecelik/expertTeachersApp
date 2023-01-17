@@ -80,6 +80,7 @@
 										:ppitemStatus="0"
 										ref="fileUploadFormComponent"
 										:ppdata="typeof val == 'object' ? val : {}"
+										:pprelform="true"
 									>
 									</edit-file-upload-form>
 								</div>
