@@ -18,15 +18,28 @@ class ProvincesAndTownsSeeder extends Seeder
         $datas = config('constants.provincesAndTowns');
 
         foreach ($datas as $key => $val) {
-            $id = DB::table('provinces')->insertGetId([
-                'prv_name' => $key,
-            ]);
+            $id = DB::table('provinces')->where('prv_name', $key)->first();
+
+            if(!$id) {
+                $id = DB::table('provinces')->insertGetId([
+                    'prv_name' => $key,
+                ]);
+            }else {
+                $id = $id->id; 
+            }
 
             foreach ($val['districts'] as $k => $v) {
-                DB::table('towns')->insert([
-                    'twn_name' => $v,
-                    'prv_id' => $id
-                ]);
+                $tid = DB::table('towns')->where([
+                    ['twn_name', '=', $v],
+                    ['prv_id', '=', $id],
+                ])->first();
+
+                if(!$tid) {
+                    DB::table('towns')->insert([
+                        'twn_name' => $v,
+                        'prv_id' => $id
+                    ]);
+                }
             }
         }
     }

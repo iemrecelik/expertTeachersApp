@@ -8,27 +8,27 @@ return [
         ],
         "Adıyaman" => [
         "name" => "Adıyaman",
-        "districts" => ["Adıyaman", "Besni", "Çelikhan", "Gerger", "Gölbaşı", "Kahta", "Samsat", "Sincik", "Tut"]
+        "districts" => ["Adıyaman", "Besni", "Çelikhan", "Gerger", "Gölbaşı", "Kahta", "Samsat", "Sincik", "Tut", "Merkez"]
         ],
         "Afyonkarahisar" => [
         "name" => "Afyonkarahisar",
-        "districts" => ["Afyonkarahisar", "Başmakçı", "Bayat", "Bolvadin", "Çay", "Çobanlar", "Dazkırı", "Dinar", "Emirdağ", "Evciler", "Hocalar", "İhsaniye", "İscehisar", "Kızılören", "Sandıklı", "Sinanpaşa", "Sultandağı", "Şuhut"]
+        "districts" => ["Afyonkarahisar", "Başmakçı", "Bayat", "Bolvadin", "Çay", "Çobanlar", "Dazkırı", "Dinar", "Emirdağ", "Evciler", "Hocalar", "İhsaniye", "İscehisar", "Kızılören", "Sandıklı", "Sinanpaşa", "Sultandağı", "Şuhut", "Merkez"]
         ],
         "Ağrı" => [
         "name" => "Ağrı",
-        "districts" => ["Ağrı", "Diyadin", "Doğubayazıt", "Eleşkirt", "Hamur", "Patnos", "Taşlıçay", "Tutak"]
+        "districts" => ["Ağrı", "Diyadin", "Doğubayazıt", "Eleşkirt", "Hamur", "Patnos", "Taşlıçay", "Tutak", "Merkez"]
         ],
         "Aksaray" => [
         "name" => "Aksaray",
-        "districts" => ["Ağaçören", "Aksaray", "Eskil", "Gülağaç", "Güzelyurt", "Ortaköy", "Sarıyahşi"]
+        "districts" => ["Ağaçören", "Aksaray", "Eskil", "Gülağaç", "Güzelyurt", "Ortaköy", "Sarıyahşi", "Merkez"]
         ],
         "Amasya" => [
         "name" => "Amasya",
-        "districts" => ["Amasya", "Göynücek", "Gümüşhacıköy", "Hamamözü", "Merzifon", "Suluova", "Taşova"]
+        "districts" => ["Amasya", "Göynücek", "Gümüşhacıköy", "Hamamözü", "Merzifon", "Suluova", "Taşova", "Merkez"]
         ],
         "Ankara" => [
         "name" => "Ankara",
-        "districts" => ["Akyurt", "Altındağ", "Ayaş", "Bala", "Beypazarı", "Çamlıdere", "Çankaya", "Çubuk", "Elmadağ", "Etimesgut", "Evren", "Gölbaşı", "Güdül", "Haymana", "Kalecik", "Kahramankazan", "Keçiören", "Kızılcahamam", "Mamak", "Nallıhan", "Polatlı", "Pursaklar", "Sincan", "Şereflikoçhisar", "Yenimahalle", "Kızılay"]
+        "districts" => ["Akyurt", "Altındağ", "Ayaş", "Bala", "Beypazarı", "Çamlıdere", "Çankaya", "Çubuk", "Elmadağ", "Etimesgut", "Evren", "Gölbaşı", "Güdül", "Haymana", "Kalecik", "Kahramankazan", "Keçiören", "Kızılcahamam", "Mamak", "Nallıhan", "Polatlı", "Pursaklar", "Sincan", "Şereflikoçhisar", "Yenimahalle", "Kızılay", "Ulus"]
         ],
         "Antalya" => [
         "name" => "Antalya",
@@ -36,11 +36,11 @@ return [
         ],
         "Ardahan" => [
         "name" => "Ardahan",
-        "districts" => ["Ardahan", "Çıldır", "Damal", "Göle", "Hanak", "Posof"]
+        "districts" => ["Ardahan", "Çıldır", "Damal", "Göle", "Hanak", "Posof", "Merkez"]
         ],
         "Artvin" => [
         "name" => "Artvin",
-        "districts" => ["Ardanuç", "Arhavi", "Artvin", "Borçka", "Hopa", "Murgul", "Şavşat", "Yusufeli"]
+        "districts" => ["Ardanuç", "Arhavi", "Artvin", "Borçka", "Hopa", "Murgul", "Şavşat", "Yusufeli", "Merkez"]
         ],
         "Aydın" => [
         "name" => "Aydın",
@@ -52,35 +52,35 @@ return [
         ],
         "Bartın" => [
         "name" => "Bartın",
-        "districts" => ["Amasra", "Bartın", "Kurucaşile", "Ulus"]
+        "districts" => ["Amasra", "Bartın", "Kurucaşile", "Ulus", "Merkez"]
         ],
         "Batman" => [
         "name" => "Batman",
-        "districts" => ["Batman", "Beşiri", "Gercüş", "Hasankeyf", "Kozluk", "Sason"]
+        "districts" => ["Batman", "Beşiri", "Gercüş", "Hasankeyf", "Kozluk", "Sason", "Merkez"]
         ],
         "Bayburt" => [
         "name" => "Bayburt",
-        "districts" => ["Aydıntepe", "Bayburt (İl merkezi)", "Demirözü"]
+        "districts" => ["Aydıntepe", "Bayburt (İl merkezi)", "Demirözü", "Merkez"]
         ],
         "Bilecik" => [
         "name" => "Bilecik",
-        "districts" => ["Bilecik", "Bozüyük", "Gölpazarı", "İnhisar", "Osmaneli", "Pazaryeri", "Söğüt", "Yenipazar"]
+        "districts" => ["Bilecik", "Bozüyük", "Gölpazarı", "İnhisar", "Osmaneli", "Pazaryeri", "Söğüt", "Yenipazar", "Merkez"]
         ],
         "Bingöl" => [
         "name" => "Bingöl",
-        "districts" => ["Adaklı", "Bingöl", "Genç", "Karlıova", "Kiğı", "Solhan", "Yayladere", "Yedisu"]
+        "districts" => ["Adaklı", "Bingöl", "Genç", "Karlıova", "Kiğı", "Solhan", "Yayladere", "Yedisu", "Merkez"]
         ],
         "Bitlis" => [
         "name" => "Bitlis",
-        "districts" => ["Adilcevaz", "Ahlat", "Bitlis", "Güroymak", "Hizan", "Mutki", "Tatvan"]
+        "districts" => ["Adilcevaz", "Ahlat", "Bitlis", "Güroymak", "Hizan", "Mutki", "Tatvan", "Merkez"]
         ],
         "Bolu" => [
         "name" => "Bolu",
-        "districts" => ["Bolu", "Dörtdivan", "Gerede", "Göynük", "Kıbrıscık", "Mengen", "Mudurnu", "Seben", "Yeniçağa"]
+        "districts" => ["Bolu", "Dörtdivan", "Gerede", "Göynük", "Kıbrıscık", "Mengen", "Mudurnu", "Seben", "Yeniçağa", "Merkez"]
         ],
         "Burdur" => [
         "name" => "Burdur",
-        "districts" => ["Ağlasun", "Altınyayla", "Bucak", "Burdur", "Çavdır", "Çeltikçi", "Gölhisar", "Karamanlı", "Kemer", "Tefenni", "Yeşilova"]
+        "districts" => ["Ağlasun", "Altınyayla", "Bucak", "Burdur", "Çavdır", "Çeltikçi", "Gölhisar", "Karamanlı", "Kemer", "Tefenni", "Yeşilova", "Merkez"]
         ],
         "Bursa" => [
         "name" => "Bursa",
@@ -88,15 +88,15 @@ return [
         ],
         "Çanakkale" => [
         "name" => "Çanakkale",
-        "districts" => ["Ayvacık", "Bayramiç", "Biga", "Bozcaada", "Çan", "Çanakkale", "Eceabat", "Ezine", "Gelibolu", "Gökçeada", "Lapseki", "Yenice"]
+        "districts" => ["Ayvacık", "Bayramiç", "Biga", "Bozcaada", "Çan", "Çanakkale", "Eceabat", "Ezine", "Gelibolu", "Gökçeada", "Lapseki", "Yenice", "Merkez"]
         ],
         "Çankırı" => [
         "name" => "Çankırı",
-        "districts" => ["Atkaracalar", "Bayramören", "Çankırı", "Çerkeş", "Eldivan", "Ilgaz", "Kızılırmak", "Korgun", "Kurşunlu", "Orta", "Şabanözü", "Yapraklı"]
+        "districts" => ["Atkaracalar", "Bayramören", "Çankırı", "Çerkeş", "Eldivan", "Ilgaz", "Kızılırmak", "Korgun", "Kurşunlu", "Orta", "Şabanözü", "Yapraklı", "Merkez"]
         ],
         "Çorum" => [
         "name" => "Çorum",
-        "districts" => ["Alaca", "Bayat", "Boğazkale", "Çorum", "Dodurga", "İskilip", "Kargı", "Laçin", "Mecitözü", "Oğuzlar", "Ortaköy", "Osmancık", "Sungurlu", "Uğurludağ"]
+        "districts" => ["Alaca", "Bayat", "Boğazkale", "Çorum", "Dodurga", "İskilip", "Kargı", "Laçin", "Mecitözü", "Oğuzlar", "Ortaköy", "Osmancık", "Sungurlu", "Uğurludağ", "Merkez"]
         ],
         "Denizli" => [
         "name" => "Denizli",
@@ -108,7 +108,7 @@ return [
         ],
         "Düzce" => [
         "name" => "Düzce",
-        "districts" => ["Akçakoca", "Cumayeri", "Çilimli", "Düzce", "Gölyaka", "Gümüşova", "Kaynaşlı", "Yığılca"]
+        "districts" => ["Akçakoca", "Cumayeri", "Çilimli", "Düzce", "Gölyaka", "Gümüşova", "Kaynaşlı", "Yığılca", "Merkez"]
         ],
         "Edirne" => [
         "name" => "Edirne",
@@ -120,7 +120,7 @@ return [
         ],
         "Erzincan" => [
         "name" => "Erzincan",
-        "districts" => ["Çayırlı", "Erzincan", "İliç", "Kemah", "Kemaliye", "Otlukbeli", "Refahiye", "Tercan", "Üzümlü"]
+        "districts" => ["Çayırlı", "Erzincan", "İliç", "Kemah", "Kemaliye", "Otlukbeli", "Refahiye", "Tercan", "Üzümlü", "Merkez"]
         ],
         "Erzurum" => [
         "name" => "Erzurum",
@@ -136,27 +136,27 @@ return [
         ],
         "Giresun" => [
         "name" => "Giresun",
-        "districts" => ["Alucra", "Bulancak", "Çamoluk", "Çanakçı", "Dereli", "Doğankent", "Espiye", "Eynesil", "Giresun", "Görele", "Güce", "Keşap", "Piraziz", "Şebinkarahisar", "Tirebolu", "Yağlıdere"]
+        "districts" => ["Alucra", "Bulancak", "Çamoluk", "Çanakçı", "Dereli", "Doğankent", "Espiye", "Eynesil", "Giresun", "Görele", "Güce", "Keşap", "Piraziz", "Şebinkarahisar", "Tirebolu", "Yağlıdere", "Merkez"]
         ],
         "Gümüşhane" => [
         "name" => "Gümüşhane",
-        "districts" => ["Gümüşhane", "Kelkit", "Köse", "Kürtün", "Şiran", "Torul"]
+        "districts" => ["Gümüşhane", "Kelkit", "Köse", "Kürtün", "Şiran", "Torul", "Merkez"]
         ],
         "Hakkari" => [
         "name" => "Hakkari",
-        "districts" => ["Çukurca", "Hakkari", "Şemdinli", "Yüksekova"]
+        "districts" => ["Çukurca", "Hakkari", "Şemdinli", "Yüksekova", "Merkez"]
         ],
         "Hatay" => [
         "name" => "Hatay",
-        "districts" => ["Altınözü", "Antakya", "Arsuz", "Belen", "Defne", "Dörtyol", "Erzin", "Hassa", "İskenderun", "Kırıkhan", "Kumlu", "Payas", "Reyhanlı", "Samandağ", "Yayladağı"]
+        "districts" => ["Altınözü", "Antakya", "Arsuz", "Belen", "Defne", "Dörtyol", "Erzin", "Hassa", "İskenderun", "Kırıkhan", "Kumlu", "Payas", "Reyhanlı", "Samandağ", "Yayladağı", "Merkez"]
         ],
         "Iğdır" => [
         "name" => "Iğdır",
-        "districts" => ["Aralık", "Iğdır", "Karakoyunlu", "Tuzluca"]
+        "districts" => ["Aralık", "Iğdır", "Karakoyunlu", "Tuzluca", "Merkez"]
         ],
         "Isparta" => [
         "name" => "Isparta",
-        "districts" => ["Aksu", "Atabey", "Eğirdir", "Gelendost", "Gönen", "Isparta", "Keçiborlu", "Senirkent", "Sütçüler", "Şarkikaraağaç", "Uluborlu", "Yalvaç", "Yenişarbademli"]
+        "districts" => ["Aksu", "Atabey", "Eğirdir", "Gelendost", "Gönen", "Isparta", "Keçiborlu", "Senirkent", "Sütçüler", "Şarkikaraağaç", "Uluborlu", "Yalvaç", "Yenişarbademli", "Merkez"]
         ],
         "İstanbul" => [
         "name" => "İstanbul",
@@ -168,23 +168,23 @@ return [
         ],
         "Kahramanmaraş" => [
         "name" => "Kahramanmaraş",
-        "districts" => ["Afşin", "Andırın", "Çağlayancerit", "Dulkadiroğlu", "Ekinözü", "Elbistan", "Göksun", "Nurhak", "Onikişubat", "Pazarcık", "Türkoğlu"]
+        "districts" => ["Afşin", "Andırın", "Çağlayancerit", "Dulkadiroğlu", "Ekinözü", "Elbistan", "Göksun", "Nurhak", "Onikişubat", "Pazarcık", "Türkoğlu", "Merkez"]
         ],
         "Karabük" => [
         "name" => "Karabük",
-        "districts" => ["Eflani", "Eskipazar", "Karabük", "Ovacık", "Safranbolu", "Yenice"]
+        "districts" => ["Eflani", "Eskipazar", "Karabük", "Ovacık", "Safranbolu", "Yenice", "Merkez"]
         ],
         "Karaman" => [
         "name" => "Karaman",
-        "districts" => ["Ayrancı", "Başyayla", "Ermenek", "Karaman", "Kazımkarabekir", "Sarıveliler"]
+        "districts" => ["Ayrancı", "Başyayla", "Ermenek", "Karaman", "Kazımkarabekir", "Sarıveliler", "Merkez"]
         ],
         "Kars" => [
         "name" => "Kars",
-        "districts" => ["Akyaka", "Arpaçay", "Digor", "Kağızman", "Kars", "Sarıkamış", "Selim", "Susuz"]
+        "districts" => ["Akyaka", "Arpaçay", "Digor", "Kağızman", "Kars", "Sarıkamış", "Selim", "Susuz", "Merkez"]
         ],
         "Kastamonu" => [
         "name" => "Kastamonu",
-        "districts" => ["Abana", "Ağlı", "Araç", "Azdavay", "Bozkurt", "Cide", "Çatalzeytin", "Daday", "Devrekani", "Doğanyurt", "Hanönü", "İhsangazi", "İnebolu", "Kastamonu", "Küre", "Pınarbaşı", "Seydiler", "Şenpazar", "Taşköprü", "Tosya"]
+        "districts" => ["Abana", "Ağlı", "Araç", "Azdavay", "Bozkurt", "Cide", "Çatalzeytin", "Daday", "Devrekani", "Doğanyurt", "Hanönü", "İhsangazi", "İnebolu", "Kastamonu", "Küre", "Pınarbaşı", "Seydiler", "Şenpazar", "Taşköprü", "Tosya", "Merkez"]
         ],
         "Kayseri" => [
         "name" => "Kayseri",
@@ -192,19 +192,19 @@ return [
         ],
         "Kırıkkale" => [
         "name" => "Kırıkkale",
-        "districts" => ["Bahşılı", "Balışeyh", "Çelebi", "Delice", "Karakeçili", "Keskin", "Kırıkkale", "Sulakyurt", "Yahşihan"]
+        "districts" => ["Bahşılı", "Balışeyh", "Çelebi", "Delice", "Karakeçili", "Keskin", "Kırıkkale", "Sulakyurt", "Yahşihan", "Merkez"]
         ],
         "Kırklareli" => [
         "name" => "Kırklareli",
-        "districts" => ["Babaeski", "Demirköy", "Kırklareli", "Kofçaz", "Lüleburgaz", "Pehlivanköy", "Pınarhisar", "Vize"]
+        "districts" => ["Babaeski", "Demirköy", "Kırklareli", "Kofçaz", "Lüleburgaz", "Pehlivanköy", "Pınarhisar", "Vize", "Merkez"]
         ],
         "Kırşehir" => [
         "name" => "Kırşehir",
-        "districts" => ["Akçakent", "Akpınar", "Boztepe", "Çiçekdağı", "Kaman", "Kırşehir", "Mucur"]
+        "districts" => ["Akçakent", "Akpınar", "Boztepe", "Çiçekdağı", "Kaman", "Kırşehir", "Mucur", "Merkez"]
         ],
         "Kilis" => [
         "name" => "Kilis",
-        "districts" => ["Elbeyli", "Kilis", "Musabeyli", "Polateli"]
+        "districts" => ["Elbeyli", "Kilis", "Musabeyli", "Polateli", "Merkez"]
         ],
         "Kocaeli" => [
         "name" => "Kocaeli",
@@ -216,11 +216,11 @@ return [
         ],
         "Kütahya" => [
         "name" => "Kütahya",
-        "districts" => ["Altıntaş", "Aslanapa", "Çavdarhisar", "Domaniç", "Dumlupınar", "Emet", "Gediz", "Hisarcık", "Kütahya", "Pazarlar", "Şaphane", "Simav", "Tavşanlı"]
+        "districts" => ["Altıntaş", "Aslanapa", "Çavdarhisar", "Domaniç", "Dumlupınar", "Emet", "Gediz", "Hisarcık", "Kütahya", "Pazarlar", "Şaphane", "Simav", "Tavşanlı", "Merkez"]
         ],
         "Malatya" => [
         "name" => "Malatya",
-        "districts" => ["Akçadağ", "Arapgir", "Arguvan", "Battalgazi", "Darende", "Doğanşehir", "Doğanyol", "Hekimhan", "Kale", "Kuluncak", "Pütürge", "Yazıhan", "Yeşilyurt"]
+        "districts" => ["Akçadağ", "Arapgir", "Arguvan", "Battalgazi", "Darende", "Doğanşehir", "Doğanyol", "Hekimhan", "Kale", "Kuluncak", "Pütürge", "Yazıhan", "Yeşilyurt", "Merkez"]
         ],
         "Manisa" => [
         "name" => "Manisa",
@@ -236,19 +236,19 @@ return [
         ],
         "Muğla" => [
         "name" => "Muğla",
-        "districts" => ["Bodrum", "Dalaman", "Datça", "Fethiye", "Kavaklıdere", "Köyceğiz", "Marmaris", "Menteşe", "Milas", "Ortaca", "Seydikemer", "Ula", "Yatağan"]
+        "districts" => ["Bodrum", "Dalaman", "Datça", "Fethiye", "Kavaklıdere", "Köyceğiz", "Marmaris", "Menteşe", "Milas", "Ortaca", "Seydikemer", "Ula", "Yatağan", "Merkez"]
         ],
         "Muş" => [
         "name" => "Muş",
-        "districts" => ["Bulanık", "Hasköy", "Korkut", "Malazgirt", "Muş", "Varto"]
+        "districts" => ["Bulanık", "Hasköy", "Korkut", "Malazgirt", "Muş", "Varto", "Merkez"]
         ],
         "Nevşehir" => [
         "name" => "Nevşehir",
-        "districts" => ["Acıgöl", "Avanos", "Derinkuyu", "Gülşehir", "Hacıbektaş", "Kozaklı", "Nevşehir", "Ürgüp"]
+        "districts" => ["Acıgöl", "Avanos", "Derinkuyu", "Gülşehir", "Hacıbektaş", "Kozaklı", "Nevşehir", "Ürgüp", "Merkez"]
         ],
         "Niğde" => [
         "name" => "Niğde",
-        "districts" => ["Altunhisar", "Bor", "Çamardı", "Çiftlik", "Niğde", "Ulukışla"]
+        "districts" => ["Altunhisar", "Bor", "Çamardı", "Çiftlik", "Niğde", "Ulukışla", "Merkez"]
         ],
         "Ordu" => [
         "name" => "Ordu",
@@ -256,11 +256,11 @@ return [
         ],
         "Osmaniye" => [
         "name" => "Osmaniye",
-        "districts" => ["Bahçe", "Düziçi", "Hasanbeyli", "Kadirli", "Osmaniye", "Sumbas", "Toprakkale"]
+        "districts" => ["Bahçe", "Düziçi", "Hasanbeyli", "Kadirli", "Osmaniye", "Sumbas", "Toprakkale", "Merkez"]
         ],
         "Rize" => [
         "name" => "Rize",
-        "districts" => ["Ardeşen", "Çamlıhemşin", "Çayeli", "Derepazarı", "Fındıklı", "Güneysu", "Hemşin", "İkizdere", "İyidere", "Kalkandere", "Pazar", "Rize"]
+        "districts" => ["Ardeşen", "Çamlıhemşin", "Çayeli", "Derepazarı", "Fındıklı", "Güneysu", "Hemşin", "İkizdere", "İyidere", "Kalkandere", "Pazar", "Rize", "Merkez"]
         ],
         "Sakarya" => [
         "name" => "Sakarya",
@@ -272,31 +272,31 @@ return [
         ],
         "Siirt" => [
         "name" => "Siirt",
-        "districts" => ["Siirt", "Tillo", "Baykan", "Eruh", "Kurtalan", "Pervari", "Şirvan"]
+        "districts" => ["Siirt", "Tillo", "Baykan", "Eruh", "Kurtalan", "Pervari", "Şirvan", "Merkez"]
         ],
         "Sinop" => [
         "name" => "Sinop",
-        "districts" => ["Ayancık", "Boyabat", "Dikmen", "Durağan", "Erfelek", "Gerze", "Saraydüzü", "Sinop", "Türkeli"]
+        "districts" => ["Ayancık", "Boyabat", "Dikmen", "Durağan", "Erfelek", "Gerze", "Saraydüzü", "Sinop", "Türkeli", "Merkez"]
         ],
         "Sivas" => [
         "name" => "Sivas",
-        "districts" => ["Akıncılar", "Altınyayla", "Divriği", "Doğanşar", "Gemerek", "Gölova", "Hafik", "İmranlı", "Kangal", "Koyulhisar", "Sivas", "Suşehri", "Şarkışla", "Ulaş", "Yıldızeli", "Zara", "Gürün"]
+        "districts" => ["Akıncılar", "Altınyayla", "Divriği", "Doğanşar", "Gemerek", "Gölova", "Hafik", "İmranlı", "Kangal", "Koyulhisar", "Sivas", "Suşehri", "Şarkışla", "Ulaş", "Yıldızeli", "Zara", "Gürün", "Merkez"]
         ],
         "Şanlıurfa" => [
         "name" => "Şanlıurfa",
-        "districts" => ["Akçakale", "Birecik", "Bozova", "Ceylanpınar", "Eyyübiye", "Halfeti", "Haliliye", "Harran", "Hilvan", "Karaköprü", "Siverek", "Suruç", "Viranşehir"]
+        "districts" => ["Akçakale", "Birecik", "Bozova", "Ceylanpınar", "Eyyübiye", "Halfeti", "Haliliye", "Harran", "Hilvan", "Karaköprü", "Siverek", "Suruç", "Viranşehir", "Merkez"]
         ],
         "Şırnak" => [
         "name" => "Şırnak",
-        "districts" => ["Beytüşşebap", "Cizre", "Güçlükonak", "İdil", "Silopi", "Şırnak", "Uludere"]
+        "districts" => ["Beytüşşebap", "Cizre", "Güçlükonak", "İdil", "Silopi", "Şırnak", "Uludere", "Merkez"]
         ],
         "Tekirdağ" => [
         "name" => "Tekirdağ",
-        "districts" => ["Çerkezköy", "Çorlu", "Ergene", "Hayrabolu", "Kapaklı", "Malkara", "Marmara Ereğlisi", "Muratlı", "Saray", "Süleymanpaşa", "Şarköy"]
+        "districts" => ["Çerkezköy", "Çorlu", "Ergene", "Hayrabolu", "Kapaklı", "Malkara", "Marmara Ereğlisi", "Muratlı", "Saray", "Süleymanpaşa", "Şarköy", "Merkez"]
         ],
         "Tokat" => [
         "name" => "Tokat",
-        "districts" => ["Almus", "Artova", "Başçiftlik", "Erbaa", "Niksar", "Pazar", "Reşadiye", "Sulusaray", "Tokat", "Turhal", "Yeşilyurt", "Zile"]
+        "districts" => ["Almus", "Artova", "Başçiftlik", "Erbaa", "Niksar", "Pazar", "Reşadiye", "Sulusaray", "Tokat", "Turhal", "Yeşilyurt", "Zile", "Merkez"]
         ],
         "Trabzon" => [
         "name" => "Trabzon",
@@ -304,11 +304,11 @@ return [
         ],
         "Tunceli" => [
         "name" => "Tunceli",
-        "districts" => ["Çemişgezek", "Hozat", "Mazgirt", "Nazımiye", "Ovacık", "Pertek", "Pülümür", "Tunceli"]
+        "districts" => ["Çemişgezek", "Hozat", "Mazgirt", "Nazımiye", "Ovacık", "Pertek", "Pülümür", "Tunceli", "Merkez"]
         ],
         "Uşak" => [
         "name" => "Uşak",
-        "districts" => ["Banaz", "Eşme", "Karahallı", "Sivaslı", "Ulubey", "Uşak"]
+        "districts" => ["Banaz", "Eşme", "Karahallı", "Sivaslı", "Ulubey", "Uşak", "Merkez"]
         ],
         "Van" => [
         "name" => "Van",
@@ -316,15 +316,15 @@ return [
         ],
         "Yalova" => [
         "name" => "Yalova",
-        "districts" => ["Altınova", "Armutlu", "Çınarcık", "Çiftlikköy", "Termal", "Yalova"]
+        "districts" => ["Altınova", "Armutlu", "Çınarcık", "Çiftlikköy", "Termal", "Yalova", "Merkez"]
         ],
         "Yozgat" => [
         "name" => "Yozgat",
-        "districts" => ["Akdağmadeni", "Aydıncık", "Boğazlıyan", "Çandır", "Çayıralan", "Çekerek", "Kadışehri", "Saraykent", "Sarıkaya", "Sorgun", "Şefaatli", "Yenifakılı", "Yerköy", "Yozgat"]
+        "districts" => ["Akdağmadeni", "Aydıncık", "Boğazlıyan", "Çandır", "Çayıralan", "Çekerek", "Kadışehri", "Saraykent", "Sarıkaya", "Sorgun", "Şefaatli", "Yenifakılı", "Yerköy", "Yozgat", "Merkez"]
         ],
         "Zonguldak" => [
         "name" => "Zonguldak",
-        "districts" => ["Alaplı", "Çaycuma", "Devrek", "Gökçebey", "Kilimli", "Kozlu", "Karadeniz Ereğli", "Zonguldak"]
+        "districts" => ["Alaplı", "Çaycuma", "Devrek", "Gökçebey", "Kilimli", "Kozlu", "Karadeniz Ereğli", "Zonguldak", "Merkez"]
         ]
     ]
 ];

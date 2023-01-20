@@ -80,6 +80,7 @@
 										:ppitemStatus="0"
 										ref="fileUploadFormComponent"
 										:ppdata="typeof val == 'object' ? val : {}"
+										:pprelform="true"
 									>
 									</edit-file-upload-form>
 								</div>
@@ -322,6 +323,7 @@ export default {
 				uploadedSenderAttachFiles: 'dc_uploaded_sender_attach_files[]',
 				sender: 'dc_who_send',
 				receiver: 'dc_who_receiver',
+				baseNumber: 'dc_base_number',
 				number: 'dc_number',
 				subject: 'dc_subject',
 				content: 'dc_content',
@@ -463,6 +465,7 @@ export default {
 				uploadedSenderAttachFiles: `rel_dc_uploaded_sender_attach_files[${key}][]`,
 				sender: `rel_dc_who_send[${key}]`,
 				receiver: `rel_dc_who_receiver[${key}]`,
+				baseNumber: `rel_dc_base_number[${key}]`,
 				number: `rel_dc_number[${key}]`,
 				subject: `rel_dc_subject[${key}]`,
 				content: `rel_dc_content[${key}]]`,

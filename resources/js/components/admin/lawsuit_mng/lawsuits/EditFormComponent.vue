@@ -8,7 +8,7 @@
         <div class="form-check form-check-inline">
           <input class="form-check-input" type="radio" name="law" id="law-teacher" value="1" v-model="selectedLaw" @change="resetTreeselect()">
           <label class="form-check-label" for="law-teacher">
-            Öğretmen
+            Bireysel
           </label>
         </div>
         <div class="form-check form-check-inline">
@@ -101,7 +101,7 @@
   </div>
 
   <div class="row">
-    <div class="col-4">
+    <div class="col-3">
       
       <div class="form-group">
         <label for="addMainDocumentList">Evrak Numarası </label>
@@ -137,7 +137,16 @@
       
     </div>
 
-    <div class="col-3">
+    <div class="col-2">
+      
+      <div class="form-group">
+        <label>Esas No </label>
+        <div :class="'item-base-number'+0"></div>
+      </div>
+      
+    </div>
+
+    <div class="col-2">
       
       <div class="form-group">
         <label>Tarih </label>
@@ -146,7 +155,7 @@
       
     </div>
 
-    <div class="col-2">
+    <div class="col-1">
       
       <div class="form-group">
         <label>İçeriği </label>
@@ -204,7 +213,7 @@
   </div>
 
   <div class="row" :key="item" v-for="(item, key) in dcNumber">
-    <div class="col-4">
+    <div class="col-3">
       
       <div class="form-group">
         <label for="addTeacherList">Evrak Numarası </label>
@@ -242,13 +251,22 @@
     <div class="col-2">
       
       <div class="form-group">
+        <label>Esas No </label>
+        <div :class="'item-base-number'+(key+1)"></div>
+      </div>
+      
+    </div>
+
+    <div class="col-2">
+      
+      <div class="form-group">
         <label>Tarih </label>
         <div :class="'item-date'+(key+1)"></div>
       </div>
       
     </div>
 
-    <div class="col-2">
+    <div class="col-1">
       
       <div class="form-group">
         <label>İçeriği </label>
@@ -553,6 +571,7 @@ export default {
       let prom = new Promise((resolve, reject) => {
         document.getElementsByClassName('item-date'+instanceId)[0].innerHTML = datas.date;
         document.getElementsByClassName('item-status'+instanceId)[0].innerHTML = datas.itemStatus;
+        document.getElementsByClassName('item-base-number'+instanceId)[0].innerHTML = datas.baseNumber;
         document.getElementsByClassName('item-info'+instanceId)[0].innerHTML = `
           <a tabindex="0" class="btn btn-sm btn-info" 
             id="show-document-${instanceId}"

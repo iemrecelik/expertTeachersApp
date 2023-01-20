@@ -172,7 +172,7 @@
 								/>
 							</div>
 						</div>
-						<div class="col-2">
+						<div class="col-4">
 							<button type="button" class="btn btn-primary" @click="addDcNumber">
 								Ekle
 							</button>
@@ -293,6 +293,7 @@ export default {
 				senderAttachFiles: 'dc_sender_attach_files[]',
 				sender: 'dc_who_send',
 				receiver: 'dc_who_receiver',
+				baseNumber: 'dc_base_number',
 				number: 'dc_number',
 				subject: 'dc_subject',
 				content: 'dc_content',
@@ -429,6 +430,7 @@ export default {
 				senderAttachFiles: `rel_dc_sender_attach_files[${key}][]`,
 				sender: `rel_dc_who_send[${key}]`,
 				receiver: `rel_dc_who_receiver[${key}]`,
+				baseNumber: `rel_dc_base_number[${key}]`,
 				number: `rel_dc_number[${key}]`,
 				subject: `rel_dc_subject[${key}]`,
 				content: `rel_dc_content[${key}]]`,

@@ -270,6 +270,7 @@ class LawsuitsController extends Controller
 
         $notSelectCol = [
             'thr_name',
+            'dc_base_number',
             'dc_date',
             'thr_ids',
             'uns_id',
@@ -300,7 +301,7 @@ class LawsuitsController extends Controller
             "t1.id"
         ];
 
-        $selectJoin = ", t1.dc_number, t1.dc_date";  
+        $selectJoin = ", t1.dc_number, t1.dc_date, t1.dc_base_number";  
 
 	    $dataList = Lawsuits::dataList([
 	        'table' => 'lawsuits',
@@ -333,6 +334,10 @@ class LawsuitsController extends Controller
 
         if(!empty($tblInfo['uns_id'])) {
             $dataList->where('t0.uns_id', $tblInfo['uns_id']);
+        }
+
+        if(!empty($tblInfo['dc_base_number'])) {
+            $dataList->where('t1.dc_base_number', $tblInfo['dc_base_number']);
         }
 
         if(!empty($tblInfo['dc_date'])) {
@@ -438,13 +443,21 @@ class LawsuitsController extends Controller
         }
         /* add subjects end */
 
+        /* log info start */
         $logInfo = new LogInfo('Dava Modülü');
-        $logInfo->crCreateLog([
+        $logData = [
             'benzersiz nmarası' => $lawsuit->id,
             'dava kısa açıklaması' => $lawsuit->law_brief,
-            'dava konusunun maddeleri' => collect($subjectArr)->pluck('sub_description'),
-            'dava ile ilişkilendirilen yazılar' => $downDcDocuments->pluck('dc_number')
-        ]);
+            'dava ile ilişkilendirilen yazılar' => count($dcDownIds) > 0 
+                                                    ? $downDcDocuments->pluck('dc_number')
+                                                    : '',
+            'dava konusunun maddeleri' => !empty($subjectArr) 
+                                            ? collect($subjectArr)->pluck('sub_description')
+                                            : ''
+        ];
+
+        $logInfo->crCreateLog($logData);
+        /* log info end */
 
         return ['succeed' => __('messages.add_success')];
     }
@@ -492,6 +505,7 @@ class LawsuitsController extends Controller
             ],
             'date' => date("d/m/Y", $lawsuit->dc_document->dc_date),
             'content' => $lawsuit->dc_document->dc_show_content,
+            'baseNumber' => $lawsuit->dc_document->dc_base_number,
             'itemStatus' => $lawsuit->dc_document->dc_item_status == 0 
                 ? 'Gelen Evrak'
                 : 'Giden Evrak'
@@ -505,6 +519,7 @@ class LawsuitsController extends Controller
                     ],
                     'date' => date("d/m/Y", $item['dc_date']),
                     'content' => $item['dc_show_content'],
+                    'baseNumber' => $item['dc_base_number'],
                     'itemStatus' => $item['dc_item_status'] == 0 
                         ? 'Gelen Evrak'
                         : 'Giden Evrak'
@@ -525,6 +540,8 @@ class LawsuitsController extends Controller
     public function update(UpdateLawsuitsRequest $request, Lawsuits $lawsuit)
     {
         $oldlaw = clone $lawsuit;
+        $oldlaw->subjects;
+        $oldlaw->dc_documents;
         $params = $request->all();
 
         $dcDownIds = $params['dc_down_id'] ?? [];
@@ -590,14 +607,22 @@ class LawsuitsController extends Controller
             [
                 'benzersiz nmarası' => $oldlaw->id,
                 'dava kısa açıklaması' => $oldlaw->law_brief,
-                'dava konusunun maddeleri' => $oldlaw->subjects->pluck('sub_description'),
-                'dava ile ilişkilendirilen yazılar' => $oldlaw->dc_documents->pluck('dc_number'),
+                'dava konusunun maddeleri' => count($oldlaw->subjects) > 0 
+                                                ? $oldlaw->subjects->pluck('sub_description')
+                                                : '',
+                'dava ile ilişkilendirilen yazılar' => count($oldlaw->dc_documents) > 0 
+                                                        ? $oldlaw->dc_documents->pluck('dc_number')
+                                                        : '',
             ],
             [
                 'benzersiz nmarası' => $lawsuit->id,
                 'dava kısa açıklaması' => $lawsuit->law_brief,
-                'dava konusunun maddeleri' => collect($subjectArr)->pluck('sub_description'),
-                'dava ile ilişkilendirilen yazılar' => $downDcDocuments->pluck('dc_number')
+                'dava konusunun maddeleri' => !empty($subjectArr) 
+                                                ? collect($subjectArr)->pluck('sub_description')
+                                                : '',
+                'dava ile ilişkilendirilen yazılar' => count($dcDownIds) > 0 
+                                                        ? $downDcDocuments->pluck('dc_number')
+                                                        : ''
             ]
         );
 
@@ -626,8 +651,12 @@ class LawsuitsController extends Controller
         $logInfo->crDestroyLog([
             'benzersiz nmarası' => $oldlaw->id,
             'dava kısa açıklaması' => $oldlaw->law_brief,
-            'dava konusunun maddeleri' => $oldlaw->subjects->pluck('sub_description'),
-            'dava ile ilişkilendirilen yazılar' => $oldlaw->dc_documents->pluck('dc_number'),
+            'dava konusunun maddeleri' => count($oldlaw->subjects) > 0 
+                                            ? $oldlaw->subjects->pluck('sub_description')
+                                            : '',
+            'dava ile ilişkilendirilen yazılar' => count($oldlaw->dc_documents) > 0 
+                                                    ? $oldlaw->dc_documents->pluck('dc_number')
+                                                    : '',
         ]);
 
         if ($res)

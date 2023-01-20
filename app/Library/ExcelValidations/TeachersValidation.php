@@ -14,6 +14,7 @@ class TeachersValidation
     private $institutionNames = Array();
     private $provinces = Array();
     private $towns = Array();
+    private $prvId = 0;
 
     public function __construct() {
         $this->institutions = Institutions::all()->toArray();
@@ -34,6 +35,7 @@ class TeachersValidation
         foreach ($townsTbl as $twnKey => $twnVal) {
             $this->towns[
                 \Transliterator::create('tr-lower')->transliterate($twnVal->twn_name)
+                .'_'.$twnVal->prv_id
             ] = \Transliterator::create('tr-lower')->transliterate($twnVal->id);
         }
     }
@@ -89,15 +91,21 @@ class TeachersValidation
             case 'prv_id':
                 $val = \Transliterator::create('tr-lower')->transliterate($value);
                 if(!empty($this->provinces[$val])) {
-                    $val = $this->provinces[$val]; 
+                    $val = $this->provinces[$val];
+                    $this->prvId = $val;
                 }else {
                     $val = null;
                 }
                 break;
             case 'twn_id':
                 $val = \Transliterator::create('tr-lower')->transliterate($value);
-                if(!empty($this->towns[$val])) {
-                    $val = $this->towns[$val]; 
+                /* echo '<hr/>';
+                echo '<pre>';
+                var_dump($this->prvId);
+                var_dump($val); */
+                if(!empty($this->towns[$val.'_'.$this->prvId])) {
+                    $val = $this->towns[$val.'_'.$this->prvId];
+                    // var_dump($val);
                 }else {
                     $val = null;
                 }

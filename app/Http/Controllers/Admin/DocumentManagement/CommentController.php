@@ -283,6 +283,11 @@ class CommentController extends Controller
             +++ 114- öğretmen dava listesinede dosya isimleri kısaltılıp title olarak gösterilsin
             +++ 115- evrak kayıt raporunda evrak sayısından ilişiği kaldırılan öğretmenlerin bilgileri de gelsin.
             +++ 116- evrak düzenlerken gelen giden evrak kontrolü yapmıyor.
+            117- şifremi unnuttum yapılacak
+            +++ 118- evrağa esas no eklenecek
+            +++ 119- dava eklerken boş undefined $dcdowndocument hatası düzeltilecek
+            +++ 120- dava eklerken öğretmen yerine bireysel yazılacak
+            121- summernote türkçeleştirilecek
         */
 
         $request->validate(

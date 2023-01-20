@@ -33,6 +33,7 @@ class StoreManualDcDocumentsRequest extends FormRequest
             'dc_subject'                => 'required|string',
             /* 'dc_content'                => 'required|string',
             'dc_raw_content'            => 'string', */
+            'dc_base_number'            => 'regex:/^20[0-9]{2}\/[0-9]{1,15}$/i|nullable',
             'dc_date'                   => 'required|date',
             'rel_sender_file.*'         => 'required|file',
             'rel_sender_attach_files.*.*'  => 'file',
@@ -60,6 +61,7 @@ class StoreManualDcDocumentsRequest extends FormRequest
             'dc_who_send.string'            => 'Gönderici bilgilerini sadece rakam yada harf haricinde karakter girmeyiniz.',
             'dc_who_receiver.required'      => 'Alıcı bilgilerini giriniz.',
             'dc_who_receiver.string'        => 'Alıcı bilgilerini sadece rakam yada harf haricinde karakter girmeyiniz.',
+            'dc_base_number.regex'          => 'Esas Numarayı (20**/****) formata uygun girmediniz.',
             'dc_number.required'            => 'Evrak sayını giriniz.',
             'dc_number.integer'             => 'Sadece rakam giriniz.',
             'dc_subject.required'           => 'Evrak konusunu giriniz.',

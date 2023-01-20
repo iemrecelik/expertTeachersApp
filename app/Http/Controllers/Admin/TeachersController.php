@@ -39,6 +39,7 @@ class TeachersController extends Controller
         foreach ($townsTbl as $twnKey => $twnVal) {
             $this->towns[
                 \Transliterator::create('tr-title')->transliterate($twnVal->twn_name)
+                .'_'.$twnVal->prv_id
             ] = \Transliterator::create('tr-title')->transliterate($twnVal->id);
         }    
     }
@@ -404,11 +405,13 @@ class TeachersController extends Controller
             $instIndex = array_search($updVal['inst_id'], array_column($institutions, 'id'));
             $careerLadderIndex = strval($updVal['thr_career_ladder']) + 1;
 
+            // var_dump(explode('_', $towns[$updVal['twn_id']])[0]);
+
             $tcNo       = $updVal['thr_tc_no'];
             $name       = $updVal['thr_name'];
             $surname    = $updVal['thr_surname'];
             $province   = empty($updVal['prv_id']) ? '': $provinces[$updVal['prv_id']];
-            $town       = empty($updVal['twn_id']) ? '': $towns[$updVal['twn_id']];
+            $town       = empty($updVal['twn_id']) ? '': explode('_', $towns[$updVal['twn_id']])[0];
             $email      = empty($updVal['thr_email']) ? '': $updVal['thr_email'];
             $mobileNo   = empty($updVal['thr_mobile_no']) ? '': $updVal['thr_mobile_no'];
             $gender     = $updVal['thr_gender'] == 0 ? 'Erkek' : 'Bayan';
@@ -438,7 +441,7 @@ class TeachersController extends Controller
                 </tr>
             ';
         }
-
+        
         return $tblContent;
     }
 
