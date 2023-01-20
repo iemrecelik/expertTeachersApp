@@ -138,6 +138,7 @@ return [
 	'enter_showing_years' => 'Gösterilecek Tarih Listesi',
 	'year_list' => 'Tarih Listesi',
 	'lawsuits_module' => 'Dava Modülü',
+	'dc_base_number' => 'Esas No',
 
 	/* Roles */
 	'role' => 'Rol',

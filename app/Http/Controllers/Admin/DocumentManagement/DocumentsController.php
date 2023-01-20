@@ -37,7 +37,7 @@ class DocumentsController extends Controller
 
         $params = $request->all();
 
-        $dcDocuments = DcDocuments::selectRaw('id, dc_number, dc_date, dc_item_status, dc_show_content')
+        $dcDocuments = DcDocuments::selectRaw('id, dc_number, dc_date, dc_item_status, dc_show_content, dc_base_number')
         ->whereRaw(
             'dc_number LIKE :dcNumber', 
             [
@@ -56,6 +56,7 @@ class DocumentsController extends Controller
                 'id' => $dcDocument['id'],
                 'label' => $dcDocument['dc_number'],
                 'date' => date("d/m/Y", $dcDocument['dc_date']),
+                'baseNumber' => $dcDocument['dc_base_number'],
                 'itemStatus' => $dcDocument['dc_item_status'] == 0?'Gelen Evrak':'Giden Evrak',
                 'content' => $dcDocument['dc_show_content'],
                 'path' => $dcFilePath[0]['dc_file_path']
@@ -137,6 +138,7 @@ class DocumentsController extends Controller
                 'dc_subject'        => $params['dc_subject'],
                 'dc_who_send'       => $params['dc_who_send'],
                 'dc_who_receiver'   => $params['dc_who_receiver'],
+                'dc_base_number'    => $params['dc_base_number'],
                 'dc_content'        => $params['dc_content'] ?? '',
                 'dc_show_content'   => $params['dc_show_content'] ?? '',
                 'dc_raw_content'    => $params['dc_raw_content'] ?? '',
@@ -155,6 +157,7 @@ class DocumentsController extends Controller
                 'dc_subject'        => $params['rel_dc_subject'][$key],
                 'dc_who_send'       => $params['rel_dc_who_send'][$key],
                 'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
+                'dc_base_number'    => $params['rel_dc_base_number'][$key],
                 'dc_content'        => $params['rel_dc_content'][$key] ?? '',
                 'dc_show_content'   => $params['rel_dc_show_content'][$key] ?? '',
                 'dc_raw_content'    => $params['rel_dc_raw_content'][$key] ?? '',
@@ -712,7 +715,7 @@ class DocumentsController extends Controller
         preg_match($pattern, $sender[1], $existOygm); */
 
         if(count($existOygm) > 0 || empty(trim($number[1]))) {
-            $pattern = '/mahmut özer|MAHMUT ÖZER|Mahmut Özer|PETEK AŞKAR|Petek Aşkar|petek aşkar|CEVDET VURAL|Cevdet Vural|cevdet vural|NEJAT İŞLER|Nejat İşler|nejat işler|AYŞE OĞUZ|Ayşe Oğuz|ayşe oğuz|UFUK DİLEKÇİ|Ufuk Dilekçi|ufuk dilekçi/si';
+            $pattern = '/mahmut özer|MAHMUT ÖZER|Mahmut Özer|PETEK AŞKAR|Petek Aşkar|petek aşkar|CEVDET VURAL|Cevdet Vural|cevdet vural|NECAT ALTIOK|Necat Altıok|necat altıok|AYŞE OĞUZ|Ayşe Oğuz|ayşe oğuz|UFUK DİLEKÇİ|Ufuk Dilekçi|ufuk dilekçi/si';
 
             preg_match($pattern, $sign, $existSignature);
 
@@ -1230,6 +1233,7 @@ class DocumentsController extends Controller
                 'dc_subject'        => $params['dc_subject'],
                 'dc_who_send'       => $params['dc_who_send'],
                 'dc_who_receiver'   => $params['dc_who_receiver'],
+                'dc_base_number'    => $params['dc_base_number'],
                 'dc_content'        => $params['dc_content'] ?? '',
                 'dc_show_content'   => $params['dc_show_content'] ?? '',
                 'dc_raw_content'    => $params['dc_raw_content'] ?? '',
@@ -1249,6 +1253,7 @@ class DocumentsController extends Controller
                 'dc_subject'        => $params['rel_dc_subject'][$key],
                 'dc_who_send'       => $params['rel_dc_who_send'][$key],
                 'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
+                'dc_base_number'    => $params['rel_dc_base_number'][$key],
                 'dc_content'        => $params['rel_dc_content'][$key] ?? '',
                 'dc_show_content'   => $params['rel_dc_show_content'][$key] ?? '',
                 'dc_raw_content'    => $params['rel_dc_raw_content'][$key] ?? '',
@@ -1367,6 +1372,7 @@ class DocumentsController extends Controller
                     'dc_subject'        => $params['rel_dc_subject'][$key],
                     'dc_who_send'       => $params['rel_dc_who_send'][$key],
                     'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
+                    'dc_base_number'    => $params['rel_dc_base_number'][$key],
                     'dc_content'        => $params['rel_dc_content'][$key] ?? '',
                     'dc_show_content'   => $params['rel_dc_show_content'][$key] ?? '',
                     'dc_raw_content'    => $params['rel_dc_raw_content'][$key] ?? '',

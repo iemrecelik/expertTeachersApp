@@ -48,9 +48,9 @@ class LogInfo
         ])->info(
             'Düzenleme::'
             .$this->moduleName.'::'
-            .json_encode($model, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
-            .' <br/><b>verileri</b><br/> '
             .json_encode($oldModel, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
+            .' <br/><b>verileri</b><br/> '
+            .json_encode($model, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT)
             .' <br/><b>verileri ile değiştirildi.</b>'
         );
     }

@@ -36,10 +36,10 @@
         <b>Doğum Tarihi :</b> <a class="float-right">{{ teacher.thr_birth_day }}</a>
       </li>
       <li class="list-group-item">
-        <b>İl :</b> <a class="float-right">{{ teacher.province.prv_name }}</a>
+        <b>İl :</b> <a class="float-right">{{ teacher.province ? teacher.province.prv_name : '' }}</a>
       </li>
       <li class="list-group-item">
-        <b>İlçe :</b> <a class="float-right">{{ teacher.town.twn_name }}</a>
+        <b>İlçe :</b> <a class="float-right">{{ teacher.town ? teacher.town.twn_name : '' }}</a>
       </li>
       <li class="list-group-item">
         <b>Ünvanı :</b> <a class="float-right">{{ teacher.thr_degree}}</a>

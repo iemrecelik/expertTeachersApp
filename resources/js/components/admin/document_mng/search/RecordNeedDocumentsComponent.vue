@@ -1,5 +1,5 @@
 <template>
-<div class="row">
+<div v-if="datas.length > 0" class="row">
   <div class="col-12">
     <div class="alert alert-info" role="alert">
 

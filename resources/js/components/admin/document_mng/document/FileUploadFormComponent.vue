@@ -115,53 +115,65 @@
 
 		<div class="col-4">
 
-			<div class="form-group mb-1">
-				<label for="exampleInputEmail1">Evrak Numarası</label>
-				<input type="text" class="form-control" id="exampleInputEmail1" 
-					:readonly="inputReadonly"
-					aria-describedby="emailHelp" 
-					:name="fieldNames.number"
-					v-model="fieldValues.number"
-				>
-				<!-- <small id="emailHelp" class="form-text text-muted">
-					Evrağın benzersiz numarası.
-				</small> -->
-			</div>
+			<div class="row">
+				<div class="col-12">
+					
+					<div class="form-group mb-1">
+						<label for="exampleInputEmail1">Evrak Numarası</label>
+						<input type="text" class="form-control" id="exampleInputEmail1" 
+							:readonly="inputReadonly"
+							aria-describedby="emailHelp" 
+							:name="fieldNames.number"
+							v-model="fieldValues.number"
+						>
+						<!-- <small id="emailHelp" class="form-text text-muted">
+							Evrağın benzersiz numarası.
+						</small> -->
+					</div>
 
-			<div class="form-group">
-				<label for="exampleInputEmail1">Evrak Tarihi</label>
-				<input type="text" class="form-control" id="exampleInputEmail1" 
-					:readonly="inputReadonly"
-					aria-describedby="emailHelp" 
-					:name="fieldNames.date"
-					v-model="fieldValues.date"
-				>
-				<small id="emailHelp" class="form-text text-muted">
-					Evrağın gönderildiği tarih.
-				</small>
+					<div class="form-group">
+						<label for="exampleInputEmail1">Evrak Tarihi</label>
+						<input type="text" class="form-control" id="exampleInputEmail1" 
+							:readonly="inputReadonly"
+							aria-describedby="emailHelp" 
+							:name="fieldNames.date"
+							v-model="fieldValues.date"
+						>
+						<small id="emailHelp" class="form-text text-muted">
+							Evrağın gönderildiği tarih.
+						</small>
+					</div>
+					
+					<div class="form-group">
+						<label for="exampleInputEmail1">Evrak Konusu</label>
+						<textarea id="exampleInputEmail1" class="form-control" 
+							:readonly="inputReadonly" 
+							rows="4"
+							aria-describedby="emailHelp"
+							:name="fieldNames.subject"
+							v-model="fieldValues.subject" 
+						>
+						</textarea>
+						<small id="emailHelp" class="form-text text-muted">
+							Evrağın konusunu içerir.
+						</small>
+					</div>
+
+				</div>
 			</div>
-			
-			<div class="form-group">
-				<label for="exampleInputEmail1">Evrak Konusu</label>
-				<!-- <textarea id="exampleInputEmail1" class="form-control" 
-					:readonly="inputReadonly" 
-					rows="4"
-					aria-describedby="emailHelp"
-					:name="fieldNames.subject"
-					:value="fieldValues.subject.trim()" 
-				>
-				</textarea> -->
-				<textarea id="exampleInputEmail1" class="form-control" 
-					:readonly="inputReadonly" 
-					rows="4"
-					aria-describedby="emailHelp"
-					:name="fieldNames.subject"
-					v-model="fieldValues.subject" 
-				>
-				</textarea>
-				<small id="emailHelp" class="form-text text-muted">
-					Evrağın konusunu içerir.
-				</small>
+			<div class="row">
+				<div class="col-12">
+					<div class="form-group mb-1">
+						<label>Dava Esas Numarası</label>
+						<input type="text" class="form-control input-base-number"
+							aria-describedby="baseNumberHelp" 
+							:name="fieldNames.baseNumber"
+							v-model="fieldValues.baseNumber"
+							data-inputmask-regex="^20[0-9]{2}/[0-9]*$" 
+							data-mask
+						>
+					</div>
+				</div>
 			</div>
 			
 		</div>
@@ -283,11 +295,23 @@ export default {
 					'content': '',
 					'rawContent': '',
 					'showContent': '',
+					'baseNumber': '',
 				};
 			}
 		},
 		setShowForm: async function(event) {
 			this.showForm = event.target.value < 2 ? true : false;
+			if(this.showForm) {
+				this.$nextTick(function () {
+					var inputBaseNumber = document.getElementsByClassName("input-base-number");
+					
+					for (let i = 0; i < inputBaseNumber.length; i++) {
+						const element = inputBaseNumber[i];
+						var im = new Inputmask();
+						im.mask(element);
+					}
+				})
+			}
 		},
 		showingForm: function(event) {
 			this.setShowForm(event).then(() => {
@@ -501,6 +525,13 @@ export default {
 			});
     },
 	},
+	mounted() {
+    /* var inputBaseNumber = document.getElementById("inputBaseNumber");
+		if(inputBaseNumber) {
+			var im = new Inputmask();
+    	im.mask(inputBaseNumber);
+		} */
+	}
 }
 </script>
 

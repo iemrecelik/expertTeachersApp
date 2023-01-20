@@ -441,7 +441,7 @@ class TeachersController extends Controller
                 </tr>
             ';
         }
-// die;
+        
         return $tblContent;
     }
 

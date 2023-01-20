@@ -20,6 +20,7 @@ class DcDocuments extends Model
         'dc_subject',
         'dc_who_send',
         'dc_who_receiver',
+        'dc_base_number',
         'dc_subject',
         'dc_content',
         'dc_raw_content',

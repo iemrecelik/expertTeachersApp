@@ -125,7 +125,18 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-10"></div>
+                  <div class="col-2">
+                    <div class="form-group mb-1">
+                      <label for="inputBaseNumber">Dava Esas Numarası</label>
+                      <input type="text" class="form-control" id="inputBaseNumber" 
+                        aria-describedby="baseNumberHelp" 
+                        name="dc_base_number"
+                        data-inputmask-regex="^20[0-9]{2}/[0-9]*$" 
+                        data-mask
+                      >
+                    </div>
+                  </div>
+                  <div class="col-8"></div>
                   <div class="col-2">
                     <div class="form-group text-right">
                       <button type="submit" class="btn btn-primary bg-gradient-primary w-100"
@@ -156,6 +167,7 @@
               <tr>
                 <th>{{ $t("messages.dc_id") }}</th>
                 <th>{{ $t("messages.thr_name") }}</th>
+                <th>{{ $t("messages.dc_base_number") }}</th>
                 <th>{{ $t("messages.law_brief") }}</th>
                 <th>{{ $t("messages.dc_date") }}</th>
                 <th>{{ $t("messages.processes") }}</th>
@@ -163,7 +175,7 @@
             </thead>
             <tfoot>
               <tr>
-                <th colspan="5">
+                <th colspan="6">
                   <button type="button" class="btn btn-primary"
                     data-toggle="modal" 
                     :data-target="modalSelector"
@@ -526,6 +538,10 @@ export default {
       if(form.elements['dc_date']) {
         datas['dc_date'] = form.elements['dc_date'].value;
       }
+
+      if(form.elements['dc_base_number']) {
+        datas['dc_base_number'] = form.elements['dc_base_number'].value;
+      }
       
       this.dataTable = this.dataTableRun({
         jQDomName: '.res-dt-table',
@@ -557,6 +573,7 @@ export default {
             },
             "defaultContent": ""
           },
+          { "data": "dc_base_number" },
           { "data": "law_brief" },
           { 
             "data": "dc_date",
@@ -592,6 +609,10 @@ export default {
     this.showModalBody(this.modalSelector);
 
     this.getUnions();
+
+    var inputBaseNumber = document.getElementById("inputBaseNumber");
+		var im = new Inputmask();
+		im.mask(inputBaseNumber);
   },
   components: {
     [formTitleName + '-create-component']: createComponent,
