@@ -148,6 +148,14 @@ return [
 	'log_records' => 'Log Kayıtları',
 	'document_record_reports' => 'Evrak Kayıt Raporu Modülü',
 
+	/* Mail */
+	"Regards" => "Saygılarımla",
+
+	/* Settings */
+	"auth_signature_name" => "Yetkili İmzaya Sahip İsimler",
+	"settings" => "Ayarlar",
+	"ip_names" => "İp Numaraları",
+
 	/* Other */
 	'expertTeachersApp' => 'Uzman Öğretmen Uygulaması',
 	"A fresh verification link has been sent to your email address." => "Yeni bir doğrulama bağlantısı e-posta adresinize gönderildi.",

@@ -25,7 +25,7 @@
                     <form method="POST" action="{{ route('login') }}" aria-label="{{ __('messages.Login') }}">
                         @csrf
 
-                        {{-- <div class="form-group row">
+                        <div class="form-group row">
                             <label for="email" class="col-sm-4 col-form-label text-md-right">{{ __('messages.E-Mail Address') }}</label>
 
                             <div class="col-md-6">
@@ -37,9 +37,9 @@
                                     </span>
                                 @endif
                             </div>
-                        </div> --}}
+                        </div>
                         
-                        <div class="form-group row">
+                        {{-- <div class="form-group row">
                             <label for="name" class="col-sm-4 col-form-label text-md-right">{{ __('messages.user_name') }}</label>
 
                             <div class="col-md-6">
@@ -51,7 +51,7 @@
                                     </span>
                                 @endif
                             </div>
-                        </div>
+                        </div> --}}
 
                         <div class="form-group row">
                             <label for="password" class="col-md-4 col-form-label text-md-right">{{ __('messages.Password') }}</label>
@@ -85,9 +85,9 @@
                                     {{ __('messages.Login') }}
                                 </button>
 
-                                {{-- <a class="btn btn-link" href="{{ route('password.request') }}">
+                                <a class="btn btn-link" href="{{ route('password.request') }}">
                                     {{ __('messages.Forgot Your Password?') }}
-                                </a> --}}
+                                </a>
                             </div>
                         </div>
                     </form>

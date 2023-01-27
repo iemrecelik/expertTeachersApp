@@ -395,7 +395,19 @@ export default {
       });
 
       addSubjectProm.then( resolve => {
-        $('.click2edit').summernote();
+        $('.click2edit').summernote({
+          lang: 'tr-TR',
+          toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            // ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']],
+          ],
+        });
       });
     },
     delSubject: function(index) {
@@ -406,7 +418,19 @@ export default {
       });
 
       delSubjectProm.then( resolve => {
-        $('.click2edit').summernote();
+        $('.click2edit').summernote({
+          lang: 'tr-TR',
+          toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            // ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']],
+          ],
+        });
       });
     },
     addDcNumber: function() {
@@ -760,7 +784,19 @@ export default {
     });
 
     // this.showModalBody(this.modalSelector);
-    $('.click2edit').summernote();
+    $('.click2edit').summernote({
+      lang: 'tr-TR',
+      toolbar: [
+        ['style', ['style']],
+        ['font', ['bold', 'underline', 'clear']],
+        ['fontname', ['fontname']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['table', ['table']],
+        // ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']],
+      ],
+    });
   },
   components: {
     Treeselect,

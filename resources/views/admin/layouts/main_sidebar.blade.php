@@ -213,6 +213,13 @@
           </a>
         </li>
 
+        <li class="nav-item">
+          <a href="{{route('admin.settings.index')}}" class="nav-link">
+            <i class="far fa-circle nav-icon"></i>
+            <p>Ayarlar</p>
+          </a>
+        </li>
+
         {{-- <li class="nav-item">
           <a href="#" class="nav-link">
             <i class="nav-icon fas fa-table"></i>

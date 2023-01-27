@@ -70,6 +70,20 @@ class UserController extends Controller
             'create categories' => 'Kategori Ekleme',
             'edit categories' => 'Kategori Düzenleme',
             'delete categories' => 'Kategori Silme',
+
+            'unions' => 'unions_module',
+            'show module unions' => 'Sendika Modülü Yetkisi',
+            'show unions' => 'Sendika Göster',
+            'create unions' => 'Sendika Ekleme',
+            'edit unions' => 'Sendika Düzenleme',
+            'delete unions' => 'Sendika Silme',
+            
+            'institutions' => 'institutions_module',
+            'show module institutions' => 'Kurum Modülü Yetkisi',
+            'show institutions' => 'Kurum Göster',
+            'create institutions' => 'Kurum Ekleme',
+            'edit institutions' => 'Kurum Düzenleme',
+            'delete institutions' => 'Kurum Silme',
             
             'lawsuits' => 'lawsuits_module',
             'show module lawsuits' => 'Dava Modülü Yetkisi',
@@ -247,7 +261,7 @@ class UserController extends Controller
         }
 
         if(!empty($params['role_name'])) {
-            $user->assignRole($params['role_name']);
+            $user->syncRoles($params['role_name']);
         }else {
             $user->syncRoles([]);
         }

@@ -37,7 +37,8 @@
           name="role_name"
         >
           <option selected value="">{{$t('messages.select_role')}}.</option>
-          <option :selected="hasRole(item)" value="admin">Admin</option>
+          <option :selected="item.roles[0].name == 'admin'" value="admin">Admin</option>
+          <option :selected="item.roles[0].name == 'auth_admin'" value="auth_admin">Yetkili Admin</option>
         </select>
       </div>
     </div>
@@ -83,15 +84,15 @@ export default {
     langFieldName: function(fieldName){
       return `langs[${this.$store.state.lang}][${fieldName}]`;
     },
-    hasRole: function(item) {
+    /* hasRole: function(item) {
       let bool = true;
       if(item.roles[0]) {
-        bool = item.roles[0].name == 'admin';
+        bool = ['admin', 'auth_admin'].includes(item.roles[0].name);
       }else {
         bool = false;
       }
       return bool;
-    }
+    } */
   },
   created() {
   },

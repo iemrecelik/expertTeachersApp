@@ -9,6 +9,7 @@ use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 use Spatie\Permission\Traits\HasRoles;
 use App\ModelsRepository\Admin\UserRepository;
+use App\Notifications\PasswordReset;
 
 class User extends Authenticatable
 {
@@ -59,5 +60,16 @@ class User extends Authenticatable
     public function dcReports()
     {
         return $this->hasMany(\App\Models\Admin\DcReport::class, 'user_id', 'id');
+    }
+
+    /**
+     * Send the password reset notification.
+     *
+     * @param  string  $token
+     * @return void
+     */
+    public function sendPasswordResetNotification($token)
+    {
+        $this->notify(new PasswordReset($token));
     }
 }

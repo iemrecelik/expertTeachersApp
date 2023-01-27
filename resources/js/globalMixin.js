@@ -141,6 +141,24 @@ export default {
       });
     },
 
+    dataTableManuelRun(config = null){
+      return $(config.jQDomName).DataTable({
+        responsive: config.responsive || true,
+        searching: config.searching || false,
+        columns: config.columns,
+        data: config.data,
+        "drawCallback": function( settings ) {
+          setTimeout(() => {
+            $('[data-toggle="tooltip"]').tooltip({
+              trigger: "hover",
+            });
+          }, 100);
+        },
+        "initComplete": config.initComplete || undefined,
+        language: datatablesTr
+      });
+    },
+
     datepicker(config){
       
       let altField = `${config.id}Alt`;

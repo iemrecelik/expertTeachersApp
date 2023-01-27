@@ -8,6 +8,7 @@
   }"
   @saveMethod="deleteData"
 >
+  <error-msg-list-component></error-msg-list-component>
   <span>{{ $t('messages.delete_info') }}</span>
 </form-modal-component>
 
@@ -52,7 +53,11 @@ export default {
         type: 'DELETE',
       })
       .fail((error) => {
-        console.log(error);
+        if(error.responseJSON.message) {
+          this.setErrors(
+            {'permissionMessage': [error.responseJSON.message]}
+          );
+        }
       })
       .then((res) => {
         this.$parent.$parent.dataTable.ajax.reload();

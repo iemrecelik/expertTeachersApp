@@ -12,6 +12,14 @@ use Illuminate\Validation\ValidationException;
 
 class InstitutionsController extends Controller
 {
+    public function __construct() {
+        $this->middleware(['permission:show module institutions'])->only('index');
+        $this->middleware(['permission:create institutions'])->only('store');
+        $this->middleware(['permission:edit institutions'])->only('edit');
+        $this->middleware(['permission:edit institutions'])->only('update');
+        $this->middleware(['permission:delete institutions'])->only('destroy');
+    }
+
     /**
      * Display a listing of the resource.
      *

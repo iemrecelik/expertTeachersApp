@@ -245,7 +245,7 @@ export default {
   },
   created() {
     $.get(this.showUrl, (data) => {
-      this.items = data;
+      this.items = data.document;
       this.formShow = true;
     })
     .fail(function(error) {

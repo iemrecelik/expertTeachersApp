@@ -32,6 +32,9 @@ import unionsMngComponent from './components/admin/unions/IndexComponent';
 /* Logs */
 import logsComponent from './components/admin/logs/IndexComponent';
 
+/* Settings */
+import settingsComponent from './components/admin/settings/IndexComponent';
+
 export default {
 	'main-component': mainComponent,
 	'search-component': searchComponent,
@@ -59,4 +62,6 @@ export default {
 	'lawsuit-mng-statistical-component': lawsuitMngStatisticalComponent,
 
 	'logs-component': logsComponent,
+
+	'settings-component': settingsComponent,
 }
