@@ -12,6 +12,7 @@ use App\Models\Admin\DcComment;
 use App\Models\Admin\DcCategory;
 use App\Models\Admin\DcDocuments;
 use App\Models\Admin\DcAttachFiles;
+use App\Models\Admin\Settings;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
@@ -441,8 +442,8 @@ class DocumentsController extends Controller
                     throw ValidationException::withMessages(
                         [
                             'relDcNumber' => '
-                                Yüklü olan evrağı yeniden yükleyemezsiniz. 
-                                Yüklü dosyalardan ilgiye ekleyiniz.
+                                İlgiye eklemek istediğiniz "'.$existDc[0]->dc_number.'" sayılı evrak zaten yüklü. 
+                                Lütfen yüklü dosyalardan ilgiye ekleyiniz.
                             '
                         ]
                     );
@@ -694,6 +695,8 @@ class DocumentsController extends Controller
             );
         }
 
+        // dd(file_get_contents("zip://{$file->getPathName()}#content.xml"));
+
         $datas = $this->getFileContent(
             file_get_contents("zip://{$file->getPathName()}#content.xml")
         );
@@ -714,8 +717,13 @@ class DocumentsController extends Controller
         /* $pattern = '/Öğretmen Yetiştirme ve Geliştirme Genel Müdürlüğü/si';
         preg_match($pattern, $sender[1], $existOygm); */
 
+        $setting = Settings::select('set_auth_signature_names')->find(1);
+
+        // dd($setting);
+
         if(count($existOygm) > 0 || empty(trim($number[1]))) {
-            $pattern = '/mahmut özer|MAHMUT ÖZER|Mahmut Özer|PETEK AŞKAR|Petek Aşkar|petek aşkar|CEVDET VURAL|Cevdet Vural|cevdet vural|NECAT ALTIOK|Necat Altıok|necat altıok|AYŞE OĞUZ|Ayşe Oğuz|ayşe oğuz|UFUK DİLEKÇİ|Ufuk Dilekçi|ufuk dilekçi/si';
+            // $pattern = '/mahmut özer|MAHMUT ÖZER|Mahmut Özer|PETEK AŞKAR|Petek Aşkar|petek aşkar|CEVDET VURAL|Cevdet Vural|cevdet vural|NECAT ALTIOK|Necat Altıok|necat altıok|AYŞE OĞUZ|Ayşe Oğuz|ayşe oğuz|UFUK DİLEKÇİ|Ufuk Dilekçi|ufuk dilekçi/si';
+            $pattern = '/'.$setting->set_auth_signature_names.'/si';
 
             preg_match($pattern, $sign, $existSignature);
 
@@ -851,17 +859,34 @@ class DocumentsController extends Controller
         $pattern = '/<!\[CDATA\[\¸(.*)\n{1,10}sayı/si';
         preg_match($pattern, $result, $sender);
 
-        // $pattern = '/konu\s*:.*([A-ZİĞÜŞÖÇ ]{10,1000}\n{2,10})/si';
-        // $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
-        $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
-        preg_match($pattern, $result, $receiver);
-        
-        $pattern = '/<!\[CDATA\[\¸(.*)]]>/si';
-        preg_match($pattern, $result, $content);
+        if(count($sender) > 0) {
+            // $pattern = '/konu\s*:.*([A-ZİĞÜŞÖÇ ]{10,1000}\n{2,10})/si';
+            // $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
+            $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
+            preg_match($pattern, $result, $receiver);
+            
+            $pattern = '/<!\[CDATA\[\¸(.*)]]>/si';
+            preg_match($pattern, $result, $content);
 
-        // $pattern = '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
-        $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
-        preg_match($pattern, $result, $number);
+            // $pattern = '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
+            $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
+            preg_match($pattern, $result, $number);
+        }else {
+            $pattern = '/\<content\>.*(T\.C\..*)\n{1,10}sayı/si';
+            preg_match($pattern, $result, $sender);
+
+            $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)\<\/content\>/si';
+            preg_match($pattern, $result, $receiver);
+            
+            $pattern = '/\<content\>.*(T\.C\..*)\<\/content\>/si';
+            preg_match($pattern, $result, $content);
+
+            // $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
+            $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
+            preg_match($pattern, $result, $number);
+        }
+
+        $number[3] = str_replace('/', '.', $number[3]);
         
         if(isset($receiver[3])) {
             $receiver[3] = preg_replace('/\n/', '<br/>', $receiver[3]);

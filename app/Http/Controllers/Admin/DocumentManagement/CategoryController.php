@@ -14,6 +14,7 @@ use App\Library\LogInfo;
 class CategoryController extends Controller
 {
     public function __construct() {
+        $this->middleware(['permission:show module categories'])->only('index');
         $this->middleware(['permission:create categories'])->only('store');
         $this->middleware(['permission:edit categories'])->only('edit');
         $this->middleware(['permission:edit categories'])->only('update');

@@ -1,4 +1,4 @@
-@extends('layouts.app')
+@extends('admin.layouts.app')
 
 @section('content')
 <div class="container">
@@ -8,10 +8,10 @@
                 <div class="card-header">{{ __('messages.Reset Password') }}</div>
 
                 <div class="card-body">
-                    <form method="POST" action="{{ route('password.request') }}" aria-label="{{ __('messages.Reset Password') }}">
+                    <form method="POST" action="{{ route('password.update') }}" aria-label="{{ __('messages.Reset Password') }}">
                         @csrf
 
-                        <input type="hidden" name="token" value="{{ $token }}">
+                        <input type="hidden" name="token" value="{{ request()->token }}">
 
                         <div class="form-group row">
                             <label for="email" class="col-md-4 col-form-label text-md-right">{{ __('messages.E-Mail Address') }}</label>

@@ -306,8 +306,13 @@ export default {
         this.dataTable.destroy();
       }
 
-      this.dataTable = $('.res-dt-table').DataTable({
+      this.dataTable = this.dataTableManuelRun({
+        jQDomName: '.res-dt-table',
+        // url: this.routes.dataList,
         data: this.teacher.dc_documents,
+        initComplete: () => {
+          // this.exportExcelDatas = this.dataTable.rows().data();
+        },
         columns: [
           { 
             'data': 'dc_item_status' ,
@@ -340,6 +345,41 @@ export default {
           },
         ],
       });
+
+      /* this.dataTable = $('.res-dt-table').DataTable({
+        data: this.teacher.dc_documents,
+        columns: [
+          { 
+            'data': 'dc_item_status' ,
+            'render': (data, type, row) => {
+              return data < 1 ? "Gelen" : "Giden";
+            }
+          },
+          { 'data': 'dc_number' },
+          { 'data': 'dc_subject' },
+          { 
+            "data": "dc_date",
+            "render": (data, type, row) => {
+              return this.unixTimestamp(data);
+            }
+          },
+          {
+            "orderable": false,
+            "searchable": false,
+            "sortable": false,
+            "data": "id",
+            "render": ( data, type, row ) => {
+                return this.processesRow({
+                  'id': data,
+                  'url': row.dc_files.dc_file_path,
+                  'userName': row.user_name,
+                  'document': row
+                });
+            },
+            "defaultContent": ""
+          },
+        ],
+      }); */
     }
   },
   mounted() {

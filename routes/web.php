@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\LogsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\UnionsController;
 use App\Http\Controllers\Admin\TeachersController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\Search\SearchController;
 use App\Http\Controllers\Admin\DocumentManagement\ListController;
 use App\Http\Controllers\Admin\DocumentManagement\CommentController;
@@ -561,4 +562,23 @@ Route::prefix('admin')
 			'getLogsList'
 		)
 		->name('getLogsList');
+    });
+
+	Route::prefix('admin/settings')
+    ->middleware(['auth', 'role:auth_admin|super_admin'])
+    ->controller(SettingsController::class)
+    ->name('admin.settings.')
+    ->group(function () {
+        /* Settings */
+		Route::get(
+			'/', 
+			'index'
+		)
+		->name('index');
+
+		Route::put(
+			'update', 
+			'update'
+		)
+		->name('update');
     });

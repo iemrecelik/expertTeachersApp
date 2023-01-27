@@ -24,7 +24,7 @@ class CreateDcDocumentsTable extends Migration
             $table->longText('dc_show_content');
             $table->string('dc_who_send');
             $table->string('dc_who_receiver');
-            $table->string('dc_base_number')->default(null);
+            $table->string('dc_base_number')->nullable()->default(null);
             $table->integer('dc_date');
             $table->enum('dc_manuel', [0, 1])->nullable()->default(0);
             

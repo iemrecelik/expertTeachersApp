@@ -12,6 +12,14 @@ use Illuminate\Validation\ValidationException;
 
 class UnionsController extends Controller
 {
+    public function __construct() {
+        $this->middleware(['permission:show module unions'])->only('index');
+        $this->middleware(['permission:create unions'])->only('store');
+        $this->middleware(['permission:edit unions'])->only('edit');
+        $this->middleware(['permission:edit unions'])->only('update');
+        $this->middleware(['permission:delete unions'])->only('destroy');
+    }
+
     /**
      * Display a listing of the resource.
      *

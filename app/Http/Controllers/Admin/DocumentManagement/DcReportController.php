@@ -365,6 +365,6 @@ class DcReportController extends Controller
             }
         }
 
-        return $dcReports;
+        return $dcReports ?? [];
     }
 }

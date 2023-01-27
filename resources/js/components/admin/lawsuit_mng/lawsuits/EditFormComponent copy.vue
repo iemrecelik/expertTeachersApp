@@ -374,6 +374,17 @@ export default {
 
       addSubjectProm.then( resolve => {
         $('.click2edit').summernote({
+          lang: 'tr-TR',
+          toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            // ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']],
+          ],
           callbacks: {
             onKeydown: function(e) {
               console.log('Key is downed:', e.keyCode);
@@ -391,6 +402,17 @@ export default {
 
       delSubjectProm.then( resolve => {
         $('.click2edit').summernote({
+          lang: 'tr-TR',
+          toolbar: [
+            ['style', ['style']],
+            ['font', ['bold', 'underline', 'clear']],
+            ['fontname', ['fontname']],
+            ['color', ['color']],
+            ['para', ['ul', 'ol', 'paragraph']],
+            ['table', ['table']],
+            // ['insert', ['link', 'picture', 'video']],
+            ['view', ['fullscreen', 'codeview', 'help']],
+          ],
           callbacks: {
             onKeydown: function(e) {
               console.log('Key is downed:', e.keyCode);
@@ -695,6 +717,17 @@ export default {
 
     // this.showModalBody(this.modalSelector);
     $('.click2edit').summernote({
+      lang: 'tr-TR',
+      toolbar: [
+        ['style', ['style']],
+        ['font', ['bold', 'underline', 'clear']],
+        ['fontname', ['fontname']],
+        ['color', ['color']],
+        ['para', ['ul', 'ol', 'paragraph']],
+        ['table', ['table']],
+        // ['insert', ['link', 'picture', 'video']],
+        ['view', ['fullscreen', 'codeview', 'help']],
+      ],
       callbacks: {
         onBlur: (e) => {
           let key = e.target.parentElement.parentElement.parentElement.querySelector('.click2edit').dataset.key;

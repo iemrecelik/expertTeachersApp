@@ -27,6 +27,18 @@ class PermissionSeeder extends Seeder
             'create categories',
             'edit categories',
             'delete categories',
+
+            'show module unions',
+            'show unions',
+            'create unions',
+            'edit unions',
+            'delete unions',
+
+            'show module institutions',
+            'show institutions',
+            'create institutions',
+            'edit institutions',
+            'delete institutions',
             
             'show module lawsuits',
             'show lawsuits',
