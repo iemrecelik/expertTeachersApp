@@ -290,7 +290,7 @@ class CommentController extends Controller
             +++ 121- summernote türkçeleştirilecek
             +++ 121- öğretmen detayında yazılar kısmındaki tablo türkçeleştirilecek
             +++ 122- öğretmen detayında evrak göster denilince hata veriyor
-            123- settings modülüne imza yetkili ekleme, ip adreslerini kontrol etme eklenecek
+            +++ 123- settings modülüne imza yetkili ekleme, ip adreslerini kontrol etme eklenecek
             +++ 124- unions ve instituons da hata mesajı göstermiyor.
             +++ 125- evrak eklerken var olan evrak için ilgi evrak formu açarak eklerken ilgi evrak vardır hatası verecek
         */
