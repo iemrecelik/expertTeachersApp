@@ -1,0 +1,40 @@
+<template>
+<!-- Content Wrapper. Contains page content -->
+<div class="content-wrapper">
+  <!-- Content Header (Page header) -->
+  <section class="content-header">
+    <div class="container-fluid">
+      <h2 class="text-center display-4">{{titleName}}</h2>
+    </div>
+    <!-- /.container-fluid -->
+  </section>
+
+  <!-- Main content -->
+  <section class="content">
+    <div class="container-fluid">
+      <slot></slot>
+    </div>
+  </section>
+</div>
+</template>
+
+<script>
+export default {
+  name: 'TemplateComponent',
+  data () {
+    return {
+			titleName: this.ppTitleName,
+		}
+  },
+	props: {
+    ppTitleName: {
+      type: String,
+      required: false,
+    },
+  },
+}
+</script>
+
+<style>
+
+</style>
