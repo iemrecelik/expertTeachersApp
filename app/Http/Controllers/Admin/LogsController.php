@@ -11,6 +11,10 @@ class LogsController extends Controller
 {
     public function index()
     {
+        $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
+
+        $result = $mebbisBot->localtest();
+
         $users = User::all();
         return view(
             'admin.logs.index', 

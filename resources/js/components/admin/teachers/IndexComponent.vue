@@ -266,6 +266,15 @@
                   >
                     {{ $t('messages.addImages') }}
                   </button>
+                  
+                  <button type="button" class="btn btn-primary"
+                    data-toggle="modal" 
+                    :data-target="modalSelector"
+                    :data-datas='`{"formTitleName": "\${formTitleName}"}`'
+                    :data-component="`${formTitleName}-create-teacher-mebbis-component`"
+                  >
+                    {{ $t('messages.addTeacherWithMebbis') }}
+                  </button>
                 </th>
               </tr>
             </tfoot>
@@ -317,6 +326,7 @@ import editComponent from './EditComponent';
 import showComponent from './ShowComponent';
 import deleteComponent from './DeleteComponent';
 import createImagesComponent from './CreateImagesComponent';
+import createTeacherWithMebbisComponent from './CreateTeacherWithMebbisComponent';
 
 import { mapState, mapMutations } from 'vuex';
 
@@ -713,6 +723,7 @@ export default {
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-delete-component']: deleteComponent,
     [formTitleName + '-create-images-component']: createImagesComponent,
+    [formTitleName + '-create-teacher-mebbis-component']: createTeacherWithMebbisComponent,
     Treeselect
   }
 }

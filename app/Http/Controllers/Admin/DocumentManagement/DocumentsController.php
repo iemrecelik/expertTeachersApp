@@ -165,6 +165,10 @@ class DocumentsController extends Controller
                 'dc_date'           => strtotime($params['rel_dc_date'][$key]),
                 'user_id'           => $request->user()->id,
                 'dc_manuel'         => $params['dc_manuel'],
+
+                'list_id'           => $params['rel_list_id'][$key],
+                'thr_id'            => $params['rel_thr_id'][$key] ?? null,
+                'dc_com_text'       => $params['rel_dc_com_text'][$key],
             ];   
         }
 
@@ -180,6 +184,8 @@ class DocumentsController extends Controller
     public function manualStore(StoreManualDcDocumentsRequest $request)
     {
         $params = $request->all();
+
+        // dd($params);
 
         $this->sameDocumentControl($params);
 
@@ -536,8 +542,6 @@ class DocumentsController extends Controller
                 );
             }
 
-            /* İzinli kullanıcıları ekleme */
-
             /* Dökümana not ekleme */
             if(!empty($dcComText)) {
 
@@ -583,6 +587,36 @@ class DocumentsController extends Controller
             $categories = DcCategory::whereIn('id', $catIds)->get();
             $dcRelative->dcCategories()->saveMany($categories);
             /* Kategorileri ekleme bitiş*/
+
+
+            /* Listeye ekleme */
+            if($listId > 0) {
+                $dcList = DcLists::find($listId);
+
+                $dcRelative->dc_lists()->save($dcList);
+            }
+
+            /* Öğretmenleri ekleme */
+            if(count($teacherIds) > 0) {
+                $teachers = Teachers::whereIn('id', $teacherIds)->get();
+
+                $dcRelative->dc_teachers()->saveMany($teachers);
+
+                $logInfo = new LogInfo('Evrak Ekleme');
+                $logInfo->crShowLog(
+                    "Ekleme::Evrak Ekleme::"."<b>".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)."</b> ilgili(lere) <b>{$dcRelative->dc_number}</b> sayılı yazı ilişkilendirildi."
+                );
+            }
+
+            /* Dökümana not ekleme */
+            if(!empty($dcComText)) {
+
+                $dcComment = DcComment::create([
+                    'dc_com_text'   => $dcComText,
+                    'dc_id'         => $dcRelative->id,
+                    'user_id'       => $params['user_id'],
+                ]);
+            }
 
             $this->uploadFile([
                 'dcDocuments'   => $dcRelative,

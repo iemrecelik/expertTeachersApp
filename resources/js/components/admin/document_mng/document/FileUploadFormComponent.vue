@@ -34,7 +34,7 @@
 				{{$t('messages.resetForm')}}
 			</button>
 		</div>
-		<div class="col-3 pl-4">
+		<div class="col-2 pl-4">
 			<div class="form-check form-check-inline">
 				<!-- <input class="form-check-input" type="checkbox" id="inlineCheckbox1" v-model="manuelEnter" @change="manuelEnterCheck"> -->
 				<!-- <input class="form-check-input" type="checkbox" :id="'inlineCheckbox1'+elUniqueID" @change="manuelEnterCheck"> -->
@@ -44,6 +44,24 @@
 				</label>
 			</div>
 		</div>
+
+		<!-- <div class="col-2 pl-4">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" :id="'sel_list'+elUniqueID">
+				<label class="form-check-label" :for="'sel_list'+elUniqueID">
+					Liste'ye Ekle
+				</label>
+			</div>
+		</div>
+
+		<div class="col-2 pl-4">
+			<div class="form-check form-check-inline">
+				<input class="form-check-input" type="checkbox" :id="'teach_list'+elUniqueID">
+				<label class="form-check-label" :for="'teach_list'+elUniqueID">
+					Öğretmeni Ekle
+				</label>
+			</div>
+		</div> -->
 	</div>
 
 	<div class="row" v-if="showForm">
@@ -212,10 +230,73 @@
 
 		</div>
 	</div>
+
+	<div class="row">
+		<div class="col-4">
+			
+			<div class="form-group">
+				<label for="exampleFormControlTextarea1">Notunuz</label>
+				<textarea class="form-control" 
+					id="exampleFormControlTextarea1" 
+					rows="3"
+					:name="fieldNames.commentText"
+				>
+				</textarea>
+			</div>
+			
+		</div>
+	</div>
+
+	<div class="row">
+		<div class="col-4">
+			<div class="form-group">
+				<label for="exampleFormControlSelect1">Listeler</label>
+				<select class="form-control" 
+					id="exampleFormControlSelect1"
+					:name="fieldNames.listId"
+				>
+					<option value="0">Liste Seçiniz.</option>
+					<option v-for="item in docList" :value="item.id">
+						{{item.dc_list_name}}
+					</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="col-4">
+			<div class="form-group">
+				<label for="addTeacherList">İlgili Öğretmen(ler)i Ekle: </label>
+				<treeselect
+					:id="'addTeacherList'"
+					:multiple="true"
+					:async="true"
+					:load-options="loadOptions"
+					loadingText="Yükleniyor..."
+					clearAllText="Hepsini sil."
+					clearValueText="Değeri sil."
+					noOptionsText="Hiçbir seçenek yok."
+					noResultsText="Mevcut seçenek yok."
+					searchPromptText="Aramak için yazınız."
+					placeholder="Seçiniz..."
+					:name="fieldNames.teacherId"
+				/>
+			</div>
+			
+		</div>
+	</div>
 </div>
 </template>
 
 <script>
+import Treeselect from '@riophae/vue-treeselect';
+import { ASYNC_SEARCH } from '@riophae/vue-treeselect';
+
+const simulateAsyncOperation = fn => {
+  setTimeout(fn, 2000)
+}
+// import the styles
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
+
 import { mapState, mapMutations } from 'vuex';
 
 export default {
@@ -233,6 +314,9 @@ export default {
 				'content': '',
 				'rawContent': '',
 				'showContent': '',
+				'commentText': '',
+				'listId': '',
+				'teacherId': '',
 			},
 			itemStatus: this.ppitemStatus == 0 ? "selected" : "",
 			showForm: false,
@@ -247,6 +331,7 @@ export default {
 			elUniqueID: this.uniqueID(),
 			// manuelEnter: 'manuelEnter'+elUniqueID;
 			manuelEnter: false,
+			docList: this.$parent.$parent.docList,
 		}
   },
 	props: {
@@ -524,6 +609,47 @@ export default {
 				console.log(err);
 			});
     },
+
+		loadOptions({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+					
+					if(searchQuery.length > 2) {
+            this.getTeachersSearchList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
+    },
+		getTeachersSearchList: function(searchTcNo, callback) {
+      $.ajax({
+        url: this.routes.getTeachersSearchList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {
+					'searchTcNo': searchTcNo,
+					'allData': true
+				}
+      })
+      .done((res) => {
+				callback(null, res);
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getTeachersSearchList(searchTcNo, callback);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		},
 	},
 	mounted() {
     /* var inputBaseNumber = document.getElementById("inputBaseNumber");
@@ -531,7 +657,10 @@ export default {
 			var im = new Inputmask();
     	im.mask(inputBaseNumber);
 		} */
-	}
+	},
+	components: {
+    Treeselect,
+  }
 }
 </script>
 

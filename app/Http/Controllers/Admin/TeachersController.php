@@ -343,6 +343,31 @@ class TeachersController extends Controller
         ];
     }
 
+    public function storeWithMebbis(Request $request)
+    {
+        $request->validate(
+            [
+                'tc_no' => 'required|digits:11'
+            ],
+            [
+                'tc_no.required' => 'Tc alanı zorunludur.',
+                'tc_no.digit' => 'Tc alanı sadece rakamlardan ve 11 tane olmalıdır.',
+            ],
+        );
+
+        $tcNo = $request->input('tc_no');
+
+        $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
+
+        $result = $mebbisBot->getTeacherWithTcNo($tcNo);
+
+        Teachers::create($result);
+
+        return [
+            'succeed' => $tcNo.' T.C. Numarası '.__('messages.add_success')
+        ];
+    }
+
     public function storeExcel(Request $request)
     {
         $previewDatas = $request->session()->get('previewDatas');

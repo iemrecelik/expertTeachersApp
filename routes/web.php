@@ -138,6 +138,12 @@ Route::prefix('admin')
 		)
 		->where(['lawsuitFile' => '[0-9]+']);
 
+		Route::put(
+			'teachers/store/with-mebbis',
+			'storeWithMebbis'
+		)
+		->name('teachers.store.withMebbis');
+
 		Route::resource('teachers', TeachersController::class);
     });
 

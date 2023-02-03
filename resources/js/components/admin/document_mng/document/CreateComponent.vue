@@ -182,7 +182,7 @@
 						</div>
 					</div>
 
-					<div class="row">
+					<!-- <div class="row">
 						<div class="col-4">
 							
 							<div class="form-group">
@@ -234,7 +234,7 @@
 							</div>
 							
 						</div>
-					</div>
+					</div> -->
 
 				</div>
 			</div>
@@ -300,6 +300,11 @@ export default {
 				showContent: 'dc_show_content',
 				rawContent: 'dc_raw_content',
 				date: 'dc_date',
+				commentText: 'dc_com_text',
+				listId: 'list_id',
+				teacherId: 'thr_id[]',
+				/* selectList: 'dc_sel_list',
+				selectTeacher: 'dc_sel_list', */
 			},
 			relFormCount: [],
 			docList: [],
@@ -437,6 +442,9 @@ export default {
 				showContent: `rel_dc_show_content[${key}]]`,
 				rawContent: `rel_dc_raw_content[${key}]]`,
 				date: `rel_dc_date[${key}]`,
+				commentText: `rel_dc_com_text[${key}]`,
+				listId: `rel_list_id[${key}]`,
+				teacherId: `rel_thr_id[${key}][]`,
 			}
 		},
 		getCategory: function() {
@@ -640,6 +648,16 @@ export default {
 }
 </script>
 
-<style>
-
+<style scoped>
+div.card-header {
+	background-color: tomato;
+	color: white;
+}
+div.card-header button i{
+	color: white;
+}
+div.card-footer {
+	background-color: tomato;
+	color: white;
+}
 </style>

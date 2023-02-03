@@ -120,6 +120,7 @@ return [
 	'thr_birth_day' => 'Doğum Tarihi',
 	'exportExcel' => 'Excel Olarak Çıkart',
 	'teachers_manage_module' => 'Öğretmen Yönetim Modülü',
+	'addTeacherWithMebbis' => 'Mebbis İle Yükleme',
 
 	/* Institution */
 	'inst_name' => 'Kurum İsmi',
