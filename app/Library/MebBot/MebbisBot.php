@@ -2,46 +2,11 @@
 
 namespace App\Library\MebBot;
 
-use Facebook\WebDriver\Chrome\ChromeOptions;
-use Facebook\WebDriver\Remote\DesiredCapabilities;
-use Facebook\WebDriver\Remote\RemoteWebDriver;
-use Laravel\Dusk\Browser;
-use Laravel\Dusk\Chrome\ChromeProcess;
-use Laravel\Dusk\ElementResolver;
-use Illuminate\Validation\ValidationException;
+use App\Library\MebBot\MebBot;
 
 
-class MebbisBot
+class MebbisBot extends MebBot
 {
-    private $browser;
-    private $userName;
-    private $password;
-
-    public function __construct($userName, $password) 
-    {
-        $this->userName = $userName;
-        $this->password = $password;
-
-        $process = (new ChromeProcess)->toProcess();
-        $process->start(null, [
-            'SystemRoot' => 'C:\\WINDOWS',
-            'TEMP' => 'C:\Users\MAHAVIR\AppData\Local\Temp',
-        ]);
-        // $options = (new ChromeOptions)->addArguments(['--disable-gpu', '--headless']);
-        $options = (new ChromeOptions)->addArguments(['--disable-gpu']);
-        $options->setBinary("C:\Program Files\Google\Chrome\Application\chrome.exe");
-
-        $capabilities = DesiredCapabilities::chrome()->setCapability(ChromeOptions::CAPABILITY, $options);
-        $driver = retry(5, function () use($capabilities) {
-            return RemoteWebDriver::create('http://localhost:9515', $capabilities);
-        }, 50);
-
-        $browser = new Browser($driver);
-        $browser->resize(1920, 1080);
-        
-        $this->browser = $browser;
-    }
-
     public function getTeacherWithTcNo($tcNo)
     {
         try {
@@ -113,7 +78,10 @@ class MebbisBot
 
     public function localtest()
     {
-        $url = $this->browser->driver->getCommandExecutor()->getAddressOfRemoteServer();
+        /* $contents = Storage::get($a);
+        dd($contents); */
+
+        /* $url = $this->browser->driver->getCommandExecutor()->getAddressOfRemoteServer();
         $uri = '/session/' . $this->browser->driver->getSessionID() . '/chromium/send_command';
         
         $body = [
@@ -121,7 +89,7 @@ class MebbisBot
             'params' => ['behavior' => 'allow', 'downloadPath' => storage_path('app/public/botdeneme')]
         ];
 
-        (new \GuzzleHttp\Client())->post($url . $uri, ['body' => json_encode($body)]);
+        (new \GuzzleHttp\Client())->post($url . $uri, ['body' => json_encode($body)]); */
         
         $val = $this->browser->visit('http://10.8.41.38/admin/login')
             ->type('email', 'ismailemre.celik@meb.gov.tr')
@@ -146,24 +114,39 @@ class MebbisBot
         ];
 
         // Storage::put('deneme_file.txt', implode(' ', $arr));
+        $el = $this->browser->element('#export-excel2');
 
-        $this->browser->press('Excel Olarak Çıkart')->pause(5000);
-
+        /* $this->browser->quit();
+        $this->process->stop(); */
+        dd($el);
+        $this->browser->press('Excel Olarak Çıkart')->pause(3000);
 
         $this->browser->type('thr_name', 'Emre')
                 ->assertInputValue('thr_name', 'Emre')
                 ->assertSeeIn('h2.display-4', 'Liste');
 
+        echo '<pre>';
+        $arr2 = $this->browser->elements('table.dataTable tbody tr');
 
-        $url = $this->browser->driver->getCommandExecutor()->getAddressOfRemoteServer();
-        $uri = '/session/' . $this->browser->driver->getSessionID() . '/chromium/send_command';
-        
-        $body = [
-            'cmd' => 'Page.setDownloadBehavior',
-            'params' => ['behavior' => 'allow', 'downloadPath' => storage_path('app/public/botdeneme')]
-        ];
+        $arr = $this->getTableRowDocument(count($arr2), '0');
+        $this->moveFile();
+        dd($arr);
+        die;
+    }
 
-        (new \GuzzleHttp\Client())->post($url . $uri, ['body' => json_encode($body)]);
-       
+    public function getTableRowDocument($rowCount, $itemStatus)
+    {
+        $arr = [];
+
+        for ($i=1; $i <= $rowCount; $i++) {
+            $arr[($i-1)]['name'] = $this->browser->element('table.dataTable tbody tr:nth-child('.$i.') td:nth-child(2)')->getText();
+        }
+
+        return $arr;
+    }
+
+    public function __destruct()
+    {
+        parent::__destruct();
     }
 }

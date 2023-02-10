@@ -936,6 +936,68 @@ class DocumentsController extends Controller
         ];
     }
 
+    public function getBotFileInfos()
+    {
+        $path = storage_path('app\public\upload\images\raw\2023\02\10\13\belge1676026100968.udf');
+
+        $result = file_get_contents("zip://{$path}#content.xml");
+
+        try {
+            $datas = $this->getFileContent($result);
+
+            extract($datas);
+
+            $showContent = $this->createShowContentHtml([
+                'sender'    => $sender,
+                'number'    => $number,
+                'receiver'  => $receiver,
+            ]);
+
+            if (
+                empty($sender[1]) || empty($number[1]) || 
+                empty($number[2]) || empty($number[3]) ||
+                empty($receiver[1]) || empty($receiver[2])
+            ) {
+                throw ValidationException::withMessages(
+                    ['senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.']
+                );
+            }
+
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+            throw ValidationException::withMessages(
+                ['senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.']
+            );
+        }
+
+        if(
+            (strlen($receiver[1]) > 255) || !is_numeric($number[2]) ||
+            (strlen($sender[1]) > 255) || (strlen($receiver[2]) > 255)
+        ) {
+            throw ValidationException::withMessages(
+                [
+                    'senderFile' => 'Yazım formatı hatalı lütfen manual giriş yapınız.',
+                    'manuel' => true,
+                    'content' => $content[1]
+                ],
+            );
+        }
+
+        $arr = [
+            'sender' => trim($sender[1]),
+            'subjectNumber' => trim($number[1]),
+            'number' => trim($number[2]),
+            'date' => trim($number[3]),
+            'subject' => trim($receiver[1]),
+            'content' => $content[1],
+            'rawContent' => $result,
+            'receiver' => trim($receiver[2]),
+            'showContent' => $showContent,
+        ];
+
+        return $arr;
+    }
+
     public function getFileInfos(Request $request)
     {
         if($request->hasFile('dc_sender_file')) {

@@ -235,7 +235,7 @@
                   
                   <!-- <form id="export-excel" :action="routes.exportExcelDatas" method="POST" @submit.prevent> -->
                     <!-- <input type="hidden" name="list"> -->
-                    <button type="button" class="btn btn-primary"
+                    <button type="button" class="btn btn-primary" id="export-excel"
                       @click="exportExcelDatas"
                     >
                       {{ $t('messages.exportExcel') }}

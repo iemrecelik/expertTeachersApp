@@ -9,11 +9,34 @@ use App\Models\User;
 
 class LogsController extends Controller
 {
+    private function saveDocuments()
+    {
+        /* $mebbisBot = new \App\Library\MebBot\DysWebBot('61765236578', '1079010790');
+        $result = $mebbisBot->getDocuments('11-01-2023', 'Büro Kayıt', "0"); */
+
+        /* $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
+        $result = $mebbisBot->localtest(); */
+        
+        // dd($result);
+        $deneme = [
+            [
+                'name' => 'emre',
+                'surname' => 'çelik'
+            ]
+        ];
+        foreach ($result as $key => $val) {
+            $documentsController = new \App\Http\Controllers\Admin\DocumentManagement\DocumentsController();
+            $res = $documentsController->getBotFileInfos();     
+        }
+
+        dd($res);
+
+        return $result;
+    }
+
     public function index()
     {
-        $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
-
-        $result = $mebbisBot->localtest();
+        $this->saveDocuments();
 
         $users = User::all();
         return view(
