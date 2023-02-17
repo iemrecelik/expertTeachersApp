@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\DocumentManagement;
 use App\Library\FileUpload;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
+use Illuminate\Support\Facades\DB;
 use App\Models\Admin\DcFiles;
 use App\Models\Admin\DcLists;
 use App\Models\Admin\Teachers;
@@ -936,12 +937,27 @@ class DocumentsController extends Controller
         ];
     }
 
-    public function getBotFileInfos()
+    public function getBotFileInfos($path)
     {
-        $path = storage_path('app\public\upload\images\raw\2023\02\10\13\belge1676026100968.udf');
+        $path = str_replace('/', '\\', $path);
+        
+        $path = storage_path('app\public\upload\images\raw'.$path);
 
+        $parser = new Parser();
+
+        $pdf = $parser->parseFile($path);
+
+        return $pdf->getText();
+    }
+
+    public function getBotFileInfos2($path)
+    {
+        $path = str_replace('/', '\\', $path);
+        
+        $path = storage_path('app\public\upload\images\raw'.$path);
+        
         $result = file_get_contents("zip://{$path}#content.xml");
-
+        
         try {
             $datas = $this->getFileContent($result);
 
@@ -1571,54 +1587,17 @@ class DocumentsController extends Controller
         return $msg;
     }
 
-    /* public function editUploadFile($arr)
+    public function getWaitingDocument()
     {
-        extract($arr);
+        $dt = DB::table('dc_documents as t0')
+            ->whereRaw('NOT EXISTS (
+                SELECT  1
+                FROM    dc_cat t1
+                WHERE   t1.dc_id = t0.id
+            )')
+            ->get()
+            ->toArray();
 
-        if($exist === false) {
-            if($dcFile) {
-                Storage::delete($dcDocuments->dcFiles->dc_file_path);
-                $dcDocuments->dcFiles()->detach();
-
-                $filesArr = $this->saveFileToStorage(
-                    $dcFile, 
-                    'DcFiles', 
-                    'dc_file_path',
-                    // 'udf'
-                );
-            }
-        }
         
-        if(isset($dcAttachFiles)) {
-
-            if(isset($dcUploadedAttachFiles)) {
-                $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
-
-                foreach ($dcAttachFilesCollection as $dcAttFileKey => $dcAttFileVal) {
-                    if(in_array($dcAttFileVal->id, $dcUploadedAttachFiles) ){
-                        unset($dcAttachFilesCollection[$dcAttFileKey]);
-                    }
-                }
-            }else {
-                $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
-            }
-            
-            $this->deleteImageFromStorage($dcAttachFilesCollection->get());
-            
-            $dcAttachFilesCollection->delete();
-
-            $attachFilesArr = $this->saveFileToStorage(
-                $dcAttachFiles,
-                'DcAttachFiles',
-                'dc_att_file_path'
-            );
-        }
-            
-        // New images will be saved to database
-        if(isset($filesArr))
-            $dcDocuments->dcFiles()->saveMany($filesArr);
-        
-        if(isset($attachFilesArr))
-            $dcDocuments->dcAttachFiles()->saveMany($attachFilesArr);
-    } */
+    }
 }

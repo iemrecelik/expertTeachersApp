@@ -35,6 +35,9 @@ import logsComponent from './components/admin/logs/IndexComponent';
 /* Settings */
 import settingsComponent from './components/admin/settings/IndexComponent';
 
+/* My Settings */
+import mySettingsComponent from './components/admin/my_settings/IndexComponent';
+
 export default {
 	'main-component': mainComponent,
 	'search-component': searchComponent,
@@ -64,4 +67,6 @@ export default {
 	'logs-component': logsComponent,
 
 	'settings-component': settingsComponent,
+
+	'my-settings-component': mySettingsComponent,
 }

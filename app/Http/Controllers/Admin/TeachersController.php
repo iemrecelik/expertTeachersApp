@@ -357,7 +357,15 @@ class TeachersController extends Controller
 
         $tcNo = $request->input('tc_no');
 
-        $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
+        $teacher = Teachers::where('thr_tc_no', $tcNo)->first();
+        
+        if($teacher) {
+            throw ValidationException::withMessages(
+                ['teacher' => 'Yüklü olan öğretmeni yükleyemezsiniz.']
+            );
+        }
+
+        $mebbisBot = new \App\Library\MebBot\MebbisBot();
 
         $result = $mebbisBot->getTeacherWithTcNo($tcNo);
 

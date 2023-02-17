@@ -10,10 +10,11 @@ class MebbisBot extends MebBot
     public function getTeacherWithTcNo($tcNo)
     {
         try {
-            $this->browser->visit('https://mebbis.meb.gov.tr/')
+            $this->browser/* ->visit('https://mebbis.meb.gov.tr/')
                 ->type('txtKullaniciAd', $this->userName)
                 ->type('txtSifre', $this->password)
-                ->press('Giriş')
+                ->press('Giriş') */
+                ->pause(1000)
                 ->waitFor('.image-flip:nth-child(1)')
                 ->mouseover('.image-flip:nth-child(1)')
                 ->pressAndWaitFor('a[title=MEBBİS-'.$this->userName.'K]')
