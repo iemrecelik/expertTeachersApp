@@ -62,13 +62,13 @@
     data-backdrop="static" :id="modalIDName"
   >
     <div class="modal-dialog modal-xl" role="document">
-        <component
-          v-if="formModalBody.show"
-          :is="formModalBody.component"
-          :ppdatas="formModalBody.datas"
-          :ppDcContent="dcContent"
-        >
-        </component>
+      <component
+        v-if="formModalBody.show"
+        :is="formModalBody.component"
+        :ppdatas="formModalBody.datas"
+        :ppDcContent="dcContent"
+      >
+      </component>
     </div>
   </div>
 </div>

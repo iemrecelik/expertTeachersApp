@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\DocumentManagement;
 use App\Library\FileUpload;
 use Illuminate\Http\Request;
 use Smalot\PdfParser\Parser;
+use Illuminate\Support\Facades\DB;
 use App\Models\Admin\DcFiles;
 use App\Models\Admin\DcLists;
 use App\Models\Admin\Teachers;
@@ -165,6 +166,10 @@ class DocumentsController extends Controller
                 'dc_date'           => strtotime($params['rel_dc_date'][$key]),
                 'user_id'           => $request->user()->id,
                 'dc_manuel'         => $params['dc_manuel'],
+
+                'list_id'           => $params['rel_list_id'][$key],
+                'thr_id'            => $params['rel_thr_id'][$key] ?? null,
+                'dc_com_text'       => $params['rel_dc_com_text'][$key],
             ];   
         }
 
@@ -180,6 +185,8 @@ class DocumentsController extends Controller
     public function manualStore(StoreManualDcDocumentsRequest $request)
     {
         $params = $request->all();
+
+        // dd($params);
 
         $this->sameDocumentControl($params);
 
@@ -536,8 +543,6 @@ class DocumentsController extends Controller
                 );
             }
 
-            /* İzinli kullanıcıları ekleme */
-
             /* Dökümana not ekleme */
             if(!empty($dcComText)) {
 
@@ -583,6 +588,36 @@ class DocumentsController extends Controller
             $categories = DcCategory::whereIn('id', $catIds)->get();
             $dcRelative->dcCategories()->saveMany($categories);
             /* Kategorileri ekleme bitiş*/
+
+
+            /* Listeye ekleme */
+            if($listId > 0) {
+                $dcList = DcLists::find($listId);
+
+                $dcRelative->dc_lists()->save($dcList);
+            }
+
+            /* Öğretmenleri ekleme */
+            if(count($teacherIds) > 0) {
+                $teachers = Teachers::whereIn('id', $teacherIds)->get();
+
+                $dcRelative->dc_teachers()->saveMany($teachers);
+
+                $logInfo = new LogInfo('Evrak Ekleme');
+                $logInfo->crShowLog(
+                    "Ekleme::Evrak Ekleme::"."<b>".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)."</b> ilgili(lere) <b>{$dcRelative->dc_number}</b> sayılı yazı ilişkilendirildi."
+                );
+            }
+
+            /* Dökümana not ekleme */
+            if(!empty($dcComText)) {
+
+                $dcComment = DcComment::create([
+                    'dc_com_text'   => $dcComText,
+                    'dc_id'         => $dcRelative->id,
+                    'user_id'       => $params['user_id'],
+                ]);
+            }
 
             $this->uploadFile([
                 'dcDocuments'   => $dcRelative,
@@ -900,6 +935,83 @@ class DocumentsController extends Controller
             'content' => $content,
             'number' => $number,
         ];
+    }
+
+    public function getBotFileInfos($path)
+    {
+        $path = str_replace('/', '\\', $path);
+        
+        $path = storage_path('app\public\upload\images\raw'.$path);
+
+        $parser = new Parser();
+
+        $pdf = $parser->parseFile($path);
+
+        return $pdf->getText();
+    }
+
+    public function getBotFileInfos2($path)
+    {
+        $path = str_replace('/', '\\', $path);
+        
+        $path = storage_path('app\public\upload\images\raw'.$path);
+        
+        $result = file_get_contents("zip://{$path}#content.xml");
+        
+        try {
+            $datas = $this->getFileContent($result);
+
+            extract($datas);
+
+            $showContent = $this->createShowContentHtml([
+                'sender'    => $sender,
+                'number'    => $number,
+                'receiver'  => $receiver,
+            ]);
+
+            if (
+                empty($sender[1]) || empty($number[1]) || 
+                empty($number[2]) || empty($number[3]) ||
+                empty($receiver[1]) || empty($receiver[2])
+            ) {
+                throw ValidationException::withMessages(
+                    ['senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.']
+                );
+            }
+
+        } catch (\Throwable $th) {
+            dd($th->getMessage());
+            throw ValidationException::withMessages(
+                ['senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.']
+            );
+        }
+
+        if(
+            (strlen($receiver[1]) > 255) || !is_numeric($number[2]) ||
+            (strlen($sender[1]) > 255) || (strlen($receiver[2]) > 255)
+        ) {
+            throw ValidationException::withMessages(
+                [
+                    'senderFile' => 'Yazım formatı hatalı lütfen manual giriş yapınız.',
+                    'manuel' => true,
+                    'content' => $content[1]
+                ],
+            );
+        }
+
+        $arr = [
+            'sender' => trim($sender[1]),
+            'subjectNumber' => trim($number[1]),
+            'number' => trim($number[2]),
+            'date' => trim($number[3]),
+            'subject' => trim($receiver[1]),
+            'content' => $content[1],
+            'rawContent' => $result,
+            'receiver' => trim($receiver[2]),
+            'showContent' => $showContent,
+        ];
+
+        return $arr;
     }
 
     public function getFileInfos(Request $request)
@@ -1475,54 +1587,17 @@ class DocumentsController extends Controller
         return $msg;
     }
 
-    /* public function editUploadFile($arr)
+    public function getWaitingDocument()
     {
-        extract($arr);
+        $dt = DB::table('dc_documents as t0')
+            ->whereRaw('NOT EXISTS (
+                SELECT  1
+                FROM    dc_cat t1
+                WHERE   t1.dc_id = t0.id
+            )')
+            ->get()
+            ->toArray();
 
-        if($exist === false) {
-            if($dcFile) {
-                Storage::delete($dcDocuments->dcFiles->dc_file_path);
-                $dcDocuments->dcFiles()->detach();
-
-                $filesArr = $this->saveFileToStorage(
-                    $dcFile, 
-                    'DcFiles', 
-                    'dc_file_path',
-                    // 'udf'
-                );
-            }
-        }
         
-        if(isset($dcAttachFiles)) {
-
-            if(isset($dcUploadedAttachFiles)) {
-                $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
-
-                foreach ($dcAttachFilesCollection as $dcAttFileKey => $dcAttFileVal) {
-                    if(in_array($dcAttFileVal->id, $dcUploadedAttachFiles) ){
-                        unset($dcAttachFilesCollection[$dcAttFileKey]);
-                    }
-                }
-            }else {
-                $dcAttachFilesCollection = $dcDocuments->dcAttachFiles();
-            }
-            
-            $this->deleteImageFromStorage($dcAttachFilesCollection->get());
-            
-            $dcAttachFilesCollection->delete();
-
-            $attachFilesArr = $this->saveFileToStorage(
-                $dcAttachFiles,
-                'DcAttachFiles',
-                'dc_att_file_path'
-            );
-        }
-            
-        // New images will be saved to database
-        if(isset($filesArr))
-            $dcDocuments->dcFiles()->saveMany($filesArr);
-        
-        if(isset($attachFilesArr))
-            $dcDocuments->dcAttachFiles()->saveMany($attachFilesArr);
-    } */
+    }
 }

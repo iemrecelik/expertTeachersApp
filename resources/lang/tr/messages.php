@@ -120,6 +120,7 @@ return [
 	'thr_birth_day' => 'Doğum Tarihi',
 	'exportExcel' => 'Excel Olarak Çıkart',
 	'teachers_manage_module' => 'Öğretmen Yönetim Modülü',
+	'addTeacherWithMebbis' => 'Mebbis İle Yükleme',
 
 	/* Institution */
 	'inst_name' => 'Kurum İsmi',
@@ -155,6 +156,13 @@ return [
 	"auth_signature_name" => "Yetkili İmzaya Sahip İsimler",
 	"settings" => "Ayarlar",
 	"ip_names" => "İp Numaraları",
+	
+	/* My Settings */
+	"my_settings" => "Kişisel Ayarlarım",
+	"new_password" => "Yeni Şifreniz",
+	"mebbis_name" => "Mebbis Kullanıcı Adınız",
+	"mebbis_password" => "Mebbis Şifreniz",
+	"current_password" => "Mevcut Şifreniz",
 
 	/* Other */
 	'expertTeachersApp' => 'Uzman Öğretmen Uygulaması',

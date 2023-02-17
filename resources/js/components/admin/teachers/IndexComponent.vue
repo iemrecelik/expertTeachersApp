@@ -235,7 +235,7 @@
                   
                   <!-- <form id="export-excel" :action="routes.exportExcelDatas" method="POST" @submit.prevent> -->
                     <!-- <input type="hidden" name="list"> -->
-                    <button type="button" class="btn btn-primary"
+                    <button type="button" class="btn btn-primary" id="export-excel"
                       @click="exportExcelDatas"
                     >
                       {{ $t('messages.exportExcel') }}
@@ -265,6 +265,15 @@
                     :data-component="`${formTitleName}-create-images-component`"
                   >
                     {{ $t('messages.addImages') }}
+                  </button>
+                  
+                  <button type="button" class="btn btn-primary"
+                    data-toggle="modal" 
+                    :data-target="modalSelector"
+                    :data-datas='`{"formTitleName": "\${formTitleName}"}`'
+                    :data-component="`${formTitleName}-create-teacher-mebbis-component`"
+                  >
+                    {{ $t('messages.addTeacherWithMebbis') }}
                   </button>
                 </th>
               </tr>
@@ -317,6 +326,7 @@ import editComponent from './EditComponent';
 import showComponent from './ShowComponent';
 import deleteComponent from './DeleteComponent';
 import createImagesComponent from './CreateImagesComponent';
+import createTeacherWithMebbisComponent from './CreateTeacherWithMebbisComponent';
 
 import { mapState, mapMutations } from 'vuex';
 
@@ -713,6 +723,7 @@ export default {
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-delete-component']: deleteComponent,
     [formTitleName + '-create-images-component']: createImagesComponent,
+    [formTitleName + '-create-teacher-mebbis-component']: createTeacherWithMebbisComponent,
     Treeselect
   }
 }

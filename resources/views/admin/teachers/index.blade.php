@@ -12,6 +12,7 @@
       getProvincesList: '{{ route('admin.teachers.getProvincesList') }}',
       getTownsList: '{{ route('admin.teachers.getTownsList') }}',
       exportExcelDatas: '{{ route('admin.teachers.exportExcelDatas') }}',
+      storeWithMebbis: '{{ route('admin.teachers.store.withMebbis') }}',
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
     :ppdatas="{{ empty(session('datas')) ? json_encode($datas) : json_encode(session('datas')) }}"
