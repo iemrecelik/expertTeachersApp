@@ -92,6 +92,66 @@ class LogsController extends Controller
     public function index()
     {
 
+        // 'ü-ö-ç-Ü-Ö-Ç-Â-â-î-Û-û'
+
+
+        $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
+        $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
+
+
+        $text = "Bu belge\t güvenli\tAdres\t : Adres:\t Emniyet\t Mah.\t Milas\t  Sok:\t No:\t 21 Teknikokullar/ANKARA\telektronik\t imza\t ile imzalanmýþtýr.\tBelge\t Doðrulama ▶
+        Bu evrak güvenli elektronik imza ile imzalanmýþtýr. https://evraksorgu.meb.gov.tr adresinden  \t7fc9-6328-35d0-abf5-a163\t  kodu ile teyit edilebilir.\t
+        T.C.\t
+        MÝLLÎ\t EÐÝTÝM\t BAKANLIÐI\t
+        Ölçme,\t Deðerlendirme\t ve\t Sýnav\t Hizmetleri\t \t
+        Genel\t Müdürlüðü\t
+         \t
+        Sayý\t: E-\t34878943\t-480.05\t-68046947\t10.01.2023\t
+        Konu\t: Öðretmenlik\t Kariyer\t Basamaklarý\t \t
+                      Yazýlý\t Sýnavý
+        ÖÐRETMEN\t YETÝÞTÝRME\t VE\t GELÝÞTÝRME\t GENEL\t MÜDÜRLÜÐÜNE\t
+        Ýlgi\t   : Ýzmir\t Valiliði\t Ýl Millî\t Eðitim\t Müdürlüðü\tnün\t  29\t.12.2022\t tarihli\t ve\t  E-\t18634136\t-480.05-67176495\t \t
+                   sayýlý\t yazýsý.\t \t
+              \t
+                  19\t Kasým\t 2022\t tarihinde\t gerekleþtirilen\t Öðretmenlik\t Kariyer\t Basamaklarý\t Yazýlý\t Sýnavýna\t ait\t yazý\t \t
+        ve\t ekleri\t ilgi\tsinden\t dolayý\t Ek'te\t gönderilmiþtir.\t
+                 Bilgilerini\t ve\t gereðini\t arz\t ederim.\t
+           
+                                                                                                                                             Murat\t ÝLÝKHAN\t \t
+                                                                                                                                    Genel\t Müdür\t \t
+         Ek:\t Ýlgi\t Yazý\t ve\t Ekleri\t (3 Sayfa)";
+
+        
+        $new_message = str_replace(
+            $old,
+            $new,
+            $text
+        );
+
+        dd($new_message);
+
+
+
+        /* $mpdf = New \Mpdf\Mpdf(['tempDir'=>storage_path('tempdir')]);
+
+        $mpdf->WriteHTML('ğ-ü-ş-ö-ç-ı-İ-Ğ-Ü-Ş-Ö-Ç-Â-â-Î-î-Û-û');
+        
+        $mpdf->Output(storage_path('deneme.pdf'), \Mpdf\Output\Destination::FILE); */
+
+        
+        // $path = storage_path('deneme.pdf');
+        $path = storage_path('document.pdf');
+
+        $parser = new \Smalot\PdfParser\Parser();
+
+        $pdf = $parser->parseFile($path);
+
+        dd($pdf->getText());
+
+
+
+        die('parse die');
+
         $dt = \Illuminate\Support\Facades\DB::table('dc_documents as t0')
                 ->whereRaw('NOT EXISTS (
                     SELECT  1

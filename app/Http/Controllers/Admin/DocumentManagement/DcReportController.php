@@ -89,8 +89,6 @@ class DcReportController extends Controller
             /* Gönderilen bitiş */
         }
 
-
-
         $uincomingSum = 0;
         $usenderSum = 0;
 
