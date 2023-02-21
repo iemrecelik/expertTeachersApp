@@ -44,10 +44,11 @@ class DysWebBot extends MebBot
                 ->pause(1000)
                 ->type('form\:globalSearch', $search)
                 ->pause(2000)
-                /* ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
+                ->waitFor('#form\:evrakListesi_dataTable_data')
+                ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
                 ->pause(1000)
                 ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
-                ->pause(1000) */
+                ->pause(1000)
                 ->waitFor('#form\:evrakListesi_dataTable_data')
                 ->pause(3000);
 
@@ -55,26 +56,25 @@ class DysWebBot extends MebBot
 
             $arr = $this->getTableRowDocument(count($trElements), $itemStatus, $date, $search, $existDoc);
 
-            $pageElements = $this->browser->elements('#form\:evrakListesi_dataTable_paginator_bottom span.ui-paginator-pages a');
-            if(count($pageElements) > 1) {
-                for ($i=2; $i <= count($pageElements); $i++) { 
-                    $this->browser->click('#form\:evrakListesi_dataTable_paginator_bottom span.ui-paginator-pages a:nth-child('.$i.')')
-                        ->pause(3000);
+            if(count($arr) < 6) {
+                $pageElements = $this->browser->elements('#form\:evrakListesi_dataTable_paginator_bottom span.ui-paginator-pages a');
+                if(count($pageElements) > 1) {
+                    for ($i=2; $i <= count($pageElements); $i++) { 
+                        $this->browser->click('#form\:evrakListesi_dataTable_paginator_bottom span.ui-paginator-pages a:nth-child('.$i.')')
+                            ->pause(3000);
 
-                    $trElements = $this->browser->elements('tbody#form\:evrakListesi_dataTable_data tr[role=row]');
+                        $trElements = $this->browser->elements('tbody#form\:evrakListesi_dataTable_data tr[role=row]');
 
-                    $arr = array_merge(
-                        $arr, 
-                        $this->getTableRowDocument(count($trElements), $itemStatus, $date, $search, $existDoc)
-                    );
+                        $arr = array_merge(
+                            $arr, 
+                            $this->getTableRowDocument(count($trElements), $itemStatus, $date, $search, $existDoc, count($arr))
+                        );
+                    }
                 }
             }
-
         } catch (\Throwable $th) {
             $error = $th->getMessage();
-
-            dd($error);
-
+            // dd($error);
             throw ValidationException::withMessages(
                 ['row' => $error]
             );
@@ -83,7 +83,7 @@ class DysWebBot extends MebBot
         return $arr;
     }
 
-    private function getTableRowDocument($rowCount, $itemStatus, $date, $search, $existDoc)
+    private function getTableRowDocument($rowCount, $itemStatus, $date, $search, $existDoc, $limit = 1)
     {
         $arr = [];
 
@@ -91,7 +91,7 @@ class DysWebBot extends MebBot
 
             $boolDate = $this->checkDateSelected($i, $date, $existDoc);
 
-            if(!$boolDate) {
+            if(!$boolDate || $limit > 6) {
                 continue;
             }
 
@@ -132,6 +132,8 @@ class DysWebBot extends MebBot
                     $arr[($i-1)][$key] = $val;
                 }
             }
+
+            $limit++;
         }
 
         return $arr;
@@ -151,6 +153,8 @@ class DysWebBot extends MebBot
             $anotherIframe->pressAndWaitFor('div#toolbarViewerRight button#download')
                 ->pause(2000);
         }); */
+
+        $this->browser->waitFor('iframe#gozdenGecirmeEkraniId');
         
         $this->browser->withinFrame('iframe#gozdenGecirmeEkraniId', function($iframe){
             /* Gönderilen Bilgisini çekme başla */

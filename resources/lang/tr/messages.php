@@ -71,6 +71,7 @@ return [
 	'enterCategoryName' => 'Kategori ismini giriniz.',
 	'document_record_list' => 'Evrak Kayıt Listesi',
 	'documents_module' => 'Evrak Modülü',
+	'waiting_documents' => 'Bekleyen Evraklar',
 
 
 	/* Document List */

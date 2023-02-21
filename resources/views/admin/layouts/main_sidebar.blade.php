@@ -127,6 +127,14 @@
                 <p>Kayıt Raporu</p>
               </a>
             </li>
+            
+            <li class="nav-item">
+              <a href="{{route('admin.document_mng.waiting.index')}}" class="nav-link">
+                <!-- <i class="far fa-circle nav-icon"></i> -->
+                <i class="nav-icon fas fa-pause-circle"></i>
+                <p>Bekleyen Evraklar</p>
+              </a>
+            </li>
           </ul>
         </li>
 

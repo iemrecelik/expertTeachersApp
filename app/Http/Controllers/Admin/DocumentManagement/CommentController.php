@@ -293,8 +293,8 @@ class CommentController extends Controller
             +++ 123- settings modülüne imza yetkili ekleme, ip adreslerini kontrol etme eklenecek
             +++ 124- unions ve instituons da hata mesajı göstermiyor.
             +++ 125- evrak eklerken var olan evrak için ilgi evrak formu açarak eklerken ilgi evrak vardır hatası verecek
-            127- dys den evrak numarasını almadan önce tarihe ait veritabanındaki veriler çekilp tarih ile birlik te kontrol edilecek
-            128- Pdf den çekilen içerikler türkçe karaktere dönüştürülecek
+            +++ 127- dys den evrak numarasını almadan önce tarihe ait veritabanındaki veriler çekilp tarih ile birlik te kontrol edilecek
+            +++ 128- Pdf den çekilen içerikler türkçe karaktere dönüştürülecek
         */
 
         $request->validate(

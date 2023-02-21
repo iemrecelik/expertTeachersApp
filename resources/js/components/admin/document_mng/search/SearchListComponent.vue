@@ -275,6 +275,10 @@ export default {
               row.dcCatNames.forEach(cat => {
                 catNames.push(cat.dc_cat_name);
               });
+
+              if(catNames.length < 1) {
+                catNames.push('Beklemede');
+              }
               
               return catNames.join(', ');
             }

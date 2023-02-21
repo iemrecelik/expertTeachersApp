@@ -937,17 +937,33 @@ class DocumentsController extends Controller
         ];
     }
 
+    private function changeTurkishCharecter($content)
+    {
+        // 'Â-â-î-Û-û'
+        $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
+        $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
+
+        $new_message = str_replace(
+            $old,
+            $new,
+            $content
+        );
+
+        return $content;
+    }
+
     public function getBotFileInfos($path)
     {
         $path = str_replace('/', '\\', $path);
-        
         $path = storage_path('app\public\upload\images\raw'.$path);
 
         $parser = new Parser();
-
         $pdf = $parser->parseFile($path);
+        $content = $pdf->getText();
 
-        return $pdf->getText();
+        $content = $this->changeTurkishCharecter($content);
+
+        return $content;
     }
 
     public function getBotFileInfos2($path)
@@ -1585,19 +1601,5 @@ class DocumentsController extends Controller
             $msg['error'] = __('delete_error');
 
         return $msg;
-    }
-
-    public function getWaitingDocument()
-    {
-        $dt = DB::table('dc_documents as t0')
-            ->whereRaw('NOT EXISTS (
-                SELECT  1
-                FROM    dc_cat t1
-                WHERE   t1.dc_id = t0.id
-            )')
-            ->get()
-            ->toArray();
-
-        
     }
 }
