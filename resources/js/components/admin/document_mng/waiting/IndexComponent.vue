@@ -46,7 +46,7 @@
 
             <div class="row">
               <div class="col-2">
-                <button type="button" class="btn btn-primary"
+                <button :disabled="addBotDocLoading" type="button" class="btn btn-primary"
                   @click="addBotDocuments"
                 >
                   {{ $t('messages.add') }}
@@ -55,7 +55,21 @@
                   {{ $t('messages.add') }}
                 </button> -->
               </div>
+
+              <!-- <div class="col-2" v-if="addBotDocLoading == true"> -->
+
             </div>
+
+            <div class="row mt-3" v-if="addBotDocLoading">
+              <div class="col-2">
+                <label for="excel-file">{{$t('messages.loading')}}...</label>
+                <br/>
+                <div class="spinner-border text-secondary ml-3" role="status">
+                  <span class="sr-only">{{$t('messages.loading')}}</span>
+                </div>
+              </div>
+            </div>
+
           </form>
         </div>
       </div>
@@ -77,20 +91,6 @@
                 <th>{{$t('messages.processes')}}</th>
               </tr>
             </thead>
-            <!-- <tfoot>
-              <tr>
-                <th colspan="3">
-                  <button type="button" class="btn btn-primary"
-                    data-toggle="modal" 
-                    :data-target="modalSelector"
-                    :data-datas='`{"formTitleName": "\${formTitleName}"}`'
-                    :data-component="`${formTitleName}-create-component`"
-                  >
-                    {{ $t('messages.add') }}
-                  </button>
-                </th>
-              </tr>
-            </tfoot> -->
           </table>
         </div><!-- /.card-body-->
       </div><!-- /.card-->
@@ -139,6 +139,7 @@ export default {
       datas: this.ppdatas,
       formIDName: 'waiting-documents',
       dates: [],
+      addBotDocLoading: false,
       // users: this.ppdatas.users
     };
   },
@@ -312,9 +313,7 @@ export default {
     addBotDocuments() {
       let form = $('#' + this.formIDName);
 
-      /* console.log(form.serialize());
-
-      return false; */
+      this.addBotDocLoading = true;
 
       $.ajax({
         url: this.routes.saveBotDocument,
@@ -325,7 +324,6 @@ export default {
       .done((res) => {
         this.setErrors('');
         this.setSucceed(res.succeed);
-        // document.getElementById(this.formIDName).reset();
       })
       .fail((error) => {
         if(error.responseJSON) {
@@ -338,15 +336,13 @@ export default {
           }
         }
         this.setSucceed('');
-        /* this.setSucceed('');
-        this.setErrors(error.responseJSON.errors); */
       })
       .then((res) => {
-        this.$parent.$parent.dataTable.ajax.reload();
+        this.dataTable.ajax.reload();
+        
       })
       .always(() => {
-        this.$refs.createFormComponent.getCategory();
-        this.formElement.scrollTo(0, 0);
+        this.addBotDocLoading = false;
       });
     }
   },

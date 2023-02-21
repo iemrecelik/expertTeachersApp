@@ -943,13 +943,20 @@ class DocumentsController extends Controller
         $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
         $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
 
-        $new_message = str_replace(
+        $content = str_replace(
             $old,
             $new,
             $content
         );
 
         return $content;
+    }
+
+    private function replaceSpace($string)
+    {
+        $string = preg_replace("/\s+/", " ", $string);
+        $string = trim($string);
+        return $string;
     }
 
     public function getBotFileInfos($path)
@@ -960,8 +967,9 @@ class DocumentsController extends Controller
         $parser = new Parser();
         $pdf = $parser->parseFile($path);
         $content = $pdf->getText();
-
+        
         $content = $this->changeTurkishCharecter($content);
+        $content = $this->replaceSpace($content);
 
         return $content;
     }

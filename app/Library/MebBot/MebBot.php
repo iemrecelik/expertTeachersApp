@@ -5,6 +5,7 @@ namespace App\Library\MebBot;
 use Facebook\WebDriver\Chrome\ChromeOptions;
 use Facebook\WebDriver\Remote\DesiredCapabilities;
 use Facebook\WebDriver\Remote\RemoteWebDriver;
+use Facebook\WebDriver\Remote\WebDriverCapabilityType;
 use Laravel\Dusk\Browser;
 use Laravel\Dusk\Chrome\ChromeProcess;
 use Laravel\Dusk\ElementResolver;
@@ -55,7 +56,12 @@ class MebBot
             'SystemRoot' => 'C:\\WINDOWS',
             'TEMP' => 'C:\Users\MAHAVIR\AppData\Local\Temp',
         ]);
-        // $options = (new ChromeOptions)->addArguments(['--disable-gpu', '--headless']);
+        /* $options = (new ChromeOptions)->addArguments([
+            '--disable-gpu', 
+            '--headless', 
+            // '--no-sandbox', 
+            // '--ignore-certificate-errors'
+        ]); */
         $options = (new ChromeOptions)->addArguments(['--disable-gpu']);
         $options->setBinary("C:\Program Files\Google\Chrome\Application\chrome.exe");
 
@@ -63,8 +69,10 @@ class MebBot
             // 'download.default_directory' => storage_path("bottemps")
             'download.default_directory' => Storage::path("public\bottemps")
         ]);
-
+        
         $capabilities = DesiredCapabilities::chrome()->setCapability(ChromeOptions::CAPABILITY, $options);
+        // $capabilities->setCapability('acceptInsecureCerts', true);
+        // $capabilities->setCapability(WebDriverCapabilityType::ACCEPT_SSL_CERTS, true);
         $driver = retry(5, function () use($capabilities) {
             return RemoteWebDriver::create('http://localhost:9515', $capabilities);
         }, 50);

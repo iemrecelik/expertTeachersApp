@@ -80,16 +80,19 @@ class DcWaitingController extends Controller
         // dd($params);
 
         $dysBot = new DysWebBot();
-        $result = $dysBot->getDocuments('27-01-2023', strval($params['item_status']));
+        // $result = $dysBot->getDocuments($params['date'], strval($params['item_status']));
+        $result = $dysBot->getDocuments('10-06-2022', strval($params['item_status']));
 
         if(count($result) > 0) {
             $this->saveDocumentsToDb($result);
         }
 
-        return view(
+        return ['succeed' => __('messages.add_success')];
+
+        /* return view(
             'admin.document_mng.waiting.index',
             ['succeed' => __('messages.add_success')]
-        );
+        ); */
     }
 
     public function getWaitingDocument(Request $request)

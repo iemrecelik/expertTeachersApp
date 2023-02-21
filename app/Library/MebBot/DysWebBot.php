@@ -45,13 +45,14 @@ class DysWebBot extends MebBot
                 ->type('form\:globalSearch', $search)
                 ->pause(2000)
                 ->waitFor('#form\:evrakListesi_dataTable_data')
-                ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
-                ->pause(1000)
-                ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
-                ->pause(1000)
+                /* ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
                 ->waitFor('#form\:evrakListesi_dataTable_data')
+                ->pause(1000)
+                ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
+                ->pause(1000)
+                ->waitFor('#form\:evrakListesi_dataTable_data') */
                 ->pause(3000);
-
+                
             $trElements = $this->browser->elements('tbody#form\:evrakListesi_dataTable_data tr[role=row]');
 
             $arr = $this->getTableRowDocument(count($trElements), $itemStatus, $date, $search, $existDoc);

@@ -91,11 +91,33 @@ class LogsController extends Controller
 
     public function index()
     {
+        $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
+        $result = $mebbisBot->localtest();
+
+        dd($result);
+        /* $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
+        $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
+
+        $path = storage_path('app\public\upload\images\raw\2023\02\21\11\63f48809c91e2document.pdf');
+
+        $parser = new \Smalot\PdfParser\Parser();
+
+        $pdf = $parser->parseFile($path);
+        $text = $pdf->getText();
+
+        $new_message = str_replace(
+            $old,
+            $new,
+            $text
+        );
+
+        dd($new_message); */
+
         // 'Â-â-î-Û-û'
         /* $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
         $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
 
-        $path = storage_path('new_doc.pdf');
+        $path = storage_path('/2023/02/21/11/63f48809c91e2document.pdf');
 
         $parser = new \Smalot\PdfParser\Parser();
 
