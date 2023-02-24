@@ -24,7 +24,6 @@ class DcWaitingController extends Controller
             'admin.document_mng.waiting.index'
         );
     }
-    
 
     private function saveDocumentsToDb($result)
     {
@@ -76,12 +75,11 @@ class DcWaitingController extends Controller
     public function saveBotDocument(Request $request)
     {
         $params = $request->all();
-
+        // dd($params['date']);
         // dd($params);
-
         $dysBot = new DysWebBot();
-        // $result = $dysBot->getDocuments($params['date'], strval($params['item_status']));
-        $result = $dysBot->getDocuments('10-06-2022', strval($params['item_status']));
+        $result = $dysBot->getDocuments($params['date'], strval($params['item_status']));
+        // $result = $dysBot->getDocuments('01-02-2023', strval($params['item_status']));
 
         if(count($result) > 0) {
             $this->saveDocumentsToDb($result);
@@ -148,6 +146,10 @@ class DcWaitingController extends Controller
             FROM    dc_cat t1
             WHERE   t1.dc_id = t0.id
         )');
+
+        $userId = $request->user()->id;
+
+        $dataList->where('t1.id', $userId);
 
 	    $recordsTotal = DcDocuments::count();
 	    $recordsFiltered = $dataList->count();

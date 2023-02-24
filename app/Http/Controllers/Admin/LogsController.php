@@ -91,10 +91,84 @@ class LogsController extends Controller
 
     public function index()
     {
-        $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
+        $documents = \Illuminate\Support\Facades\DB::table('dc_documents as t0')->selectRaw('
+            t0.id, t0.dc_number, t0.dc_subject, 
+            t0.dc_date,  t2.dc_cat_name,
+            t3.dc_file_path
+        ')
+        ->join('dc_cat as t1', 't1.dc_id', '=', 't0.id')
+        ->join('dc_category as t2', 't2.id', '=', 't1.cat_id')
+        ->join('dc_files as t3', 't3.dc_file_owner_id', '=', 't0.id')
+        ->orderByRaw('t0.dc_date ASC')
+        ->get()
+        ->toArray();
+
+        $archives = [];
+        foreach ($documents as $dcKey => $dcVal) {
+
+            if( array_key_exists($dcVal->id, $archives) ) {
+                $archives[$dcVal->id]['dc_cat_name'][] = $dcVal->dc_cat_name;
+            }else {
+                $attFiles = \Illuminate\Support\Facades\DB::table('dc_attach_files as t0')
+                    ->select('dc_att_file_path')
+                    ->where('t0.dc_att_file_owner_id', 1)
+                    ->get()
+                    ->toArray();
+                
+                $attFiles = array_column($attFiles, 'dc_att_file_path');
+                
+                $archives[$dcVal->id] = [
+                    'dc_number' => $dcVal->dc_number,
+                    'dc_subject' => $dcVal->dc_subject,
+                    'dc_date' => $dcVal->dc_date,
+                    'dc_cat_name' => [$dcVal->dc_cat_name],
+                    'dc_file_path' => $dcVal->dc_file_path,
+                    'dc_att_file_path' => $attFiles,
+                ];
+            }
+        }
+
+        dd($archives);
+
+
+        $exist = \App\Models\Admin\DcDocuments::where([
+            ['dc_date', '=', strtotime('23-02-2023')],
+            ['dc_number', '=', '69632299']
+        ])->count();
+
+        dd($exist);
+
+
+        $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
+        $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
+
+        $path = '2023/02/22/13/63f5ef7243f5bdocument.pdf';
+        $path = str_replace('/', '\\', $path);
+        $path = storage_path('app\public\upload\images\raw\\'.$path);
+
+        $parser = new \Smalot\PdfParser\Parser();
+
+        $pdf = $parser->parseFile($path);
+        $text = $pdf->getText();
+
+        $new_message = str_replace(
+            $old,
+            $new,
+            $text
+        );
+
+        $new_message = preg_replace('/\n/', '', $new_message);
+        $new_message = preg_replace('/\t/', '', $new_message);
+
+        $new_message = preg_replace("/\s+/", " ", $new_message);
+        $new_message = trim($new_message);
+
+        dd($new_message);
+
+        /* $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
         $result = $mebbisBot->localtest();
 
-        dd($result);
+        dd($result); */
         /* $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
         $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
 

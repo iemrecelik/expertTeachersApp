@@ -969,6 +969,13 @@ class DocumentsController extends Controller
         $content = $pdf->getText();
         
         $content = $this->changeTurkishCharecter($content);
+
+        $content = preg_replace('/\n/', '', $content);
+        $content = preg_replace('/\t/', '', $content);
+
+        /* $content = preg_replace("/\s+/", " ", $content);
+        $content = trim($content); */
+
         $content = $this->replaceSpace($content);
 
         return $content;

@@ -78,8 +78,8 @@ class MebBot
         }, 50);
 
         $browser = new Browser($driver);
-        $browser->resize(1920, 1080);
-        // $browser->maximize();
+        // $browser->resize(1920, 1080);
+        $browser->maximize();
         
         $this->browser = $browser;
 

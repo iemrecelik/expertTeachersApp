@@ -295,6 +295,7 @@ class CommentController extends Controller
             +++ 125- evrak eklerken var olan evrak için ilgi evrak formu açarak eklerken ilgi evrak vardır hatası verecek
             +++ 127- dys den evrak numarasını almadan önce tarihe ait veritabanındaki veriler çekilp tarih ile birlik te kontrol edilecek
             +++ 128- Pdf den çekilen içerikler türkçe karaktere dönüştürülecek
+            129- mebbis den öğretmen çekerken hata mesajı düzeltilecek.
         */
 
         $request->validate(

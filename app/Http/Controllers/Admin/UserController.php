@@ -275,12 +275,12 @@ class UserController extends Controller
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Admin\DcCategory  $category
+     * @param  \App\Models\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function destroy(DcCategory $category)
+    public function destroy(User $user)
     {
-        $res = $category->delete();
+        $res = $user->delete();
         $msg = [];
 
         if ($res)
