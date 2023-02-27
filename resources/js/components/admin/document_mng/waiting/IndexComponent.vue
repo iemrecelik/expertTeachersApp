@@ -1,98 +1,81 @@
 <template>
 <multi-section-template-component
-	:ppTitleName="$t('messages.document_record_list')"
+	:ppTitleName="$t('messages.waiting_documents')"
 >
+  <succeed-msg-component></succeed-msg-component>
   <error-msg-list-component></error-msg-list-component>
-
+  
   <div class="row mt-3">
     <div class="col-md-12">
       <div class="card">
         <div class="card-body">
           <form 
             @submit.prevent
-            id="save-document-record-count"
+            :id="formIDName"
           >
+          <!-- <form :action="routes.saveBotDocument" method="POST" > -->
+            <!-- <input type="hidden" name="_token" :value="token"> -->
             <div class="row">
               <div class="col-3">
                 <!-- Date -->
                 <div class="form-group">
                   <label>Tarih:</label>
                   <div class="input-group date">
-                    <input type="text" 
-                      id="reservationdate" 
-                      class="form-control datetimepicker-input"
-                      name="rp_date"
-                    />
+                    <select name="date"  class="form-control">
+                      <option v-for="date in dates" :value="date">{{ date }}</option>
+                    </select>
                     <div class="input-group-append">
                       <div class="input-group-text"><i class="fa fa-calendar"></i></div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div class="row">
-              <div class="col-2 border-right" :key="userKey" v-for="(userVal, userKey) in users">
-                <input type="hidden" name="user_id[]" :value="userVal.id">
-                <div>
-                  <label v-html="userVal.name"></label>
-                </div>
+              
+              <div class="col-3">
                 <div class="form-group">
-                  <label>Gelen Evrak: </label>
-                  <input type="text" class="form-control" 
-                    name="incoming_rp_count[]" 
-                    :placeholder="userVal.name"
-                    v-model="userVal.incomingRpCount"
-                  />
-                </div>
-
-                <div class="form-group">
-                  <label>Giden Evrak: </label>
-                  <input type="text" class="form-control" 
-                    name="sender_rp_count[]" 
-                    :placeholder="userVal.name"
-                    v-model="userVal.senderRpCount"
-                  />
+                  <label>Evrak Durumu:</label>
+                  <div>
+                    <select name="item_status" class="form-control">
+                      <option value="0">Gelen</option>
+                      <option value="1">Giden</option>
+                    </select>
+                  </div>
                 </div>
               </div>
-            </div><!-- /.row -->
+            </div>
 
             <div class="row">
               <div class="col-2">
-                <button type="button" class="btn btn-primary"
-                  @click="saveDocumentRecordCount"
+                <button :disabled="addBotDocLoading" type="button" class="btn btn-primary"
+                  @click="addBotDocuments"
                 >
                   {{ $t('messages.add') }}
                 </button>
+                <!-- <button type="submit" class="btn btn-primary">
+                  {{ $t('messages.add') }}
+                </button> -->
+              </div>
+
+              <!-- <div class="col-2" v-if="addBotDocLoading == true"> -->
+
+            </div>
+
+            <div class="row mt-3" v-if="addBotDocLoading">
+              <div class="col-2">
+                <label for="excel-file">{{$t('messages.loading')}}...</label>
+                <br/>
+                <div class="spinner-border text-secondary ml-3" role="status">
+                  <span class="sr-only">{{$t('messages.loading')}}</span>
+                </div>
               </div>
             </div>
+
           </form>
-          
-          <div class="row mt-2">
-            <div class="col-4">
-              <label>Girilmesi gereken toplam gelen evrak: </label>
-              <span>{{ inDcReportNeededCount }}</span>
-            </div>
-            <div class="col-4">
-              <label>Girilen toplam gelen evrak: </label>
-              <span>{{ inRecordedDocumentsCount }}</span>
-            </div>
-          </div>
-          <div class="row">
-            <div class="col-4">
-              <label>Girilmesi gereken toplam giden evrak: </label>
-              <span>{{ senDcReportNeededCount }}</span>
-            </div>
-            <div class="col-4">
-              <label>Girilen toplam giden evrak: </label>
-              <span>{{ senRecordedDocumentsCount }}</span>
-            </div>
-          </div>
         </div>
       </div>
     </div>
   </div>
-  
+
   <div class="row mt-3">
     <div class="col-md-12">
       <div class="card">
@@ -102,24 +85,12 @@
             <thead>
               <tr>
                 <th>{{ $t("messages.dc_id") }}</th>
+                <th>{{ $t("messages.dc_item_status") }}</th>
                 <th>{{ $t("messages.dc_date") }}</th>
                 <th>{{ $t("messages.thr_name") }}</th>
+                <th>{{$t('messages.processes')}}</th>
               </tr>
             </thead>
-            <!-- <tfoot>
-              <tr>
-                <th colspan="3">
-                  <button type="button" class="btn btn-primary"
-                    data-toggle="modal" 
-                    :data-target="modalSelector"
-                    :data-datas='`{"formTitleName": "\${formTitleName}"}`'
-                    :data-component="`${formTitleName}-create-component`"
-                  >
-                    {{ $t('messages.add') }}
-                  </button>
-                </th>
-              </tr>
-            </tfoot> -->
           </table>
         </div><!-- /.card-body-->
       </div><!-- /.card-->
@@ -148,9 +119,14 @@
 </template>
 
 <script>
+import showComponent from './ShowComponent';
+import addlistComponent from './AddListComponent';
+import addCommentComponent from './AddCommentComponent';
+import deleteComponent from './DeleteComponent';
+
 import { mapState, mapMutations } from 'vuex';
 
-let formTitleName = 'lawsuits'
+let formTitleName = 'waitingDocuments'
 
 export default {
   name: 'IndexComponent',
@@ -161,12 +137,10 @@ export default {
       dataTable: null,
       ajaxErrorCount: -1,
       datas: this.ppdatas,
-      formIDName: 'save-document-record-count',
-      inDcReportNeededCount: this.ppdatas.incomingSum,
-      senDcReportNeededCount: this.ppdatas.senderSum,
-      inRecordedDocumentsCount: this.ppdatas.uincomingSum,
-      senRecordedDocumentsCount: this.ppdatas.usenderSum,
-      users: this.ppdatas.users
+      formIDName: 'waiting-documents',
+      dates: [],
+      addBotDocLoading: false,
+      // users: this.ppdatas.users
     };
   },
   props: {
@@ -178,9 +152,14 @@ export default {
       type: Object,
       required: true,
     },
+    ppsuccess: {
+      type: String,
+      required: false,
+      default: '',
+    },
     ppdatas: {
-      type: Object,
-      required: true,
+      type: Array,
+      required: false,
     },
   },
   computed: {
@@ -189,7 +168,6 @@ export default {
       'routes',
       'errors',
       'token',
-      'imgFilters',
     ]),
     cformTitleName: function(){
       return _.capitalize(this.formTitleName);
@@ -206,9 +184,69 @@ export default {
       'setRoutes',
       'setErrors',
       'setSucceed',
-      'setEditItem',
-      'setImgFilters',
     ]),
+    processesRow: function(id){
+      let row = '';
+      row += this.editBtnHtml(id);
+      row += this.listBtnHtml(id);
+      row += this.commentBtnHtml(id);
+      return row;
+    },
+    
+    editBtnHtml: function(datas){
+      return  `
+      <span 
+        data-toggle="tooltip" data-placement="top" 
+        title="${this.$t('messages.edit')}"
+      >
+        <a tabindex="0" class="btn btn-sm btn-warning" 
+          role="button" 
+          href="/admin/document-management/document/edit/${datas.id}"
+          target="_blank"
+        >
+          <i class="bi bi-pencil"></i>
+        </a>
+      </span>`;
+    },
+
+    listBtnHtml: function(datas){
+      return  `
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.addList')}"
+        >
+          <button type="button" class="btn btn-sm btn-primary"
+            data-toggle="modal" data-target="${this.modalSelector}"
+            data-component="${this.formTitleName}-add-list-component" 
+            data-datas='{
+              "id": ${datas.id},
+              "formTitleName": "${this.formTitleName}"
+            }'
+          >
+            <i class="bi bi-card-list"></i>
+          </button>
+        </span>`;
+    },
+
+    commentBtnHtml: function(datas){
+      return  `
+        <span 
+          data-toggle="tooltip" data-placement="top" 
+          title="${this.$t('messages.addcomment')}"
+        >
+          <button type="button" class="btn btn-sm btn-primary"
+            data-toggle="modal" data-target="${this.modalSelector}"
+            data-component="${this.formTitleName}-add-comment-component" 
+            data-datas='{
+              "id": ${datas.id},
+              "formTitleName": "${this.formTitleName}"
+            }'
+          >
+            <i class="bi bi-card-text"></i>
+          </button>
+        </span>`;
+    },
+
     oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
     },
@@ -218,44 +256,7 @@ export default {
         // $("#"+this.form+" tbody").empty();
       }
     },
-    loadReportCountOnDate() {
-      
-      setTimeout(() => {
-        $.ajax({
-          url: this.routes.getReportCountOnDate,
-          type: 'GET',
-          dataType: 'JSON',
-          data: {
-            date: document.getElementById('reservationdate').value
-          },
-        })
-        .done((res) => {
-          this.inDcReportNeededCount = res.incomingSum;
-          this.senDcReportNeededCount = res.senderSum;
-          this.inRecordedDocumentsCount = res.uincomingSum;
-          this.senRecordedDocumentsCount = res.usenderSum;
-          
-          this.users = [];
 
-          res.users.forEach(user => {
-            this.users.push(user);
-          });          
-          
-          this.ajaxErrorCount = -1;
-        })
-        .fail((error) => {
-          setTimeout(() => {
-            this.ajaxErrorCount++
-            if(this.ajaxErrorCount < 3)
-              this.loadReportCountOnDate();
-            else
-              this.ajaxErrorCount = -1;
-          }, 100);
-        })
-        .then((res) => {})
-        .always(() => {});  
-      }, 100);
-    },
     loadDataTable() {
       if(this.dataTable) {
         this.destroyTable();
@@ -263,14 +264,19 @@ export default {
       
       this.dataTable = this.dataTableRun({
         jQDomName: '.res-dt-table',
-        url: this.routes.getDocumentOnDate,
+        url: this.routes.getWaitingDocument,
         method: 'GET',
         /* data: {
           'datas': form.serializeArray(),
         }, */
-        data: {rpDate},
         columns: [
           { "data": "dc_number" },
+          { 
+            "data": "dc_item_status",
+            "render": (data, type, row) => {
+              return data < 1 ? "Gelen" : "Giden";
+            }
+          },
           { 
             "data": "dc_date",
             "render": (data, type, row) => {
@@ -282,67 +288,92 @@ export default {
             "render": ( data, type, row ) => {
               return data;
             },
-          }
+          },
+          {
+            "orderable": false,
+            "searchable": false,
+            "sortable": false,
+            "data": "id",
+            "render": ( data, type, row ) => {
+                return this.processesRow({
+                  'id': data,
+                  'url': row.dc_file_path,
+                  'userName': row.user_name
+                });
+            },
+            "defaultContent": ""
+          },
         ],
-        initComplete: (settings, json) => {
+        /* initComplete: (settings, json) => {
           this.recordedDocumentsCount = json.recordsFiltered;
-        }
+        } */
       });
     },
-    saveDocumentRecordCount: function(){
-      let form = $('#'+this.formIDName);
+
+    addBotDocuments() {
+      let form = $('#' + this.formIDName);
+
+      this.addBotDocLoading = true;
 
       $.ajax({
-        url: this.routes.saveDocumentRecordCount,
+        url: this.routes.saveBotDocument,
         type: 'POST',
         dataType: 'JSON',
         data: form.serialize(),
       })
       .done((res) => {
-        this.inDcReportNeededCount = res.incomingSum;
-        this.senDcReportNeededCount = res.senderSum;
         this.setErrors('');
         this.setSucceed(res.succeed);
-        // document.getElementById(this.formIDName).reset();
       })
       .fail((error) => {
+        if(error.responseJSON) {
+          if(error.responseJSON.errors) {
+            this.setErrors(error.responseJSON.errors);
+          }else if(error.responseJSON.message) {
+            this.setErrors(
+              {'botMessage': [error.responseJSON.message]}
+            );
+          }
+        }
         this.setSucceed('');
-        this.setErrors(error.responseJSON.errors);
       })
       .then((res) => {
-        // this.$parent.$parent.dataTable.ajax.reload();
+        this.dataTable.ajax.reload();
+        
       })
-      .always(() => {});
-    },
+      .always(() => {
+        this.addBotDocLoading = false;
+      });
+    }
   },
   created(){
     this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
+    this.setSucceed(this.ppsuccess);
   },
   mounted(){
-    //Date picker
-    var today = new Date();
-    var dd = String(today.getDate()).padStart(2, '0');
-    var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-    var yyyy = today.getFullYear();
-
-    today = dd + '.' + mm + '.' + yyyy;
-    $('#reservationdate').datepicker();
-    $('#reservationdate').val(today);
+    this.showModalBody(this.modalSelector);
     
-    $('#reservationdate').change(() => {
-      this.loadDataTable();
-      this.loadReportCountOnDate();
-    });
+    this.loadDataTable();
 
-    const loadDataTableInterval = setInterval(() => {
-      if(document.getElementById('reservationdate').value) {
-        this.loadDataTable();
-        this.loadReportCountOnDate();
-        clearInterval(loadDataTableInterval);
-      }
-    }, 100);
+    let today = new Date();
+    let dd = String(today.getDate() - 1).padStart(2, '0');
+    let nowdd = String(today.getDate()).padStart(2, '0');
+    let mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+    let yyyy = today.getFullYear();
+
+    today = nowdd + '-' + mm + '-' + yyyy;
+    let yesterday = dd + '-' + mm + '-' + yyyy;
+
+    this.dates.push(today);
+    this.dates.push(yesterday);
   },
+  components: {
+    [formTitleName + '-show-component']: showComponent,
+    [formTitleName + '-add-list-component']: addlistComponent,
+    [formTitleName + '-add-comment-component']: addCommentComponent,
+    [formTitleName + '-delete-component']: deleteComponent
+  }
 }
 </script>
 

@@ -115,11 +115,12 @@ class MebbisBot extends MebBot
         ];
 
         // Storage::put('deneme_file.txt', implode(' ', $arr));
-        $el = $this->browser->element('#export-excel2');
+        // $el = $this->browser->element('#export-excel2');
+        $el = $this->browser->element('#DataTables_Table_0 tbody tr:nth-child(1) td:nth-child(1)');
 
         /* $this->browser->quit();
         $this->process->stop(); */
-        dd($el);
+        dd($el->getText());
         $this->browser->press('Excel Olarak Çıkart')->pause(3000);
 
         $this->browser->type('thr_name', 'Emre')

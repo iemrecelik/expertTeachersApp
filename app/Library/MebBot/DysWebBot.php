@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Storage;
 class DysWebBot extends MebBot
 {
     private $receiverArr = [];
+    private $itemStatus;
 
     private function replaceSpace($string)
     {
@@ -20,9 +21,10 @@ class DysWebBot extends MebBot
 
     public function getDocuments($date, $itemStatus)
     {
+        $existDoc = null;
         /* tarihe göre veritabanınından evrak listesine çekme başla */
-        $existDoc = \App\Models\Admin\DcDocuments::select('dc_number')->where('dc_date', strtotime($date))->get()->toArray();
-        $existDoc = array_column($existDoc, 'dc_number');
+        /* $existDoc = \App\Models\Admin\DcDocuments::select('dc_number')->where('dc_date', strtotime($date))->get()->toArray();
+        $existDoc = array_column($existDoc, 'dc_number'); */
         /* tarihe göre veritabanınından evrak listesine çekme bitiş*/
 
         $search = $itemStatus == 0 ? 'Büro Kayıt' : 'Onay Sonrası Gözden Geçirme';
@@ -44,56 +46,77 @@ class DysWebBot extends MebBot
                 ->pause(1000)
                 ->type('form\:globalSearch', $search)
                 ->pause(2000)
-                /* ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
+                /* ->waitFor('#form\:evrakListesi_dataTable_head')
+                ->pressAndWaitFor('#form\:evrakListesi_dataTable_head tr th:nth-child(8)')
+                ->pause(1000)
+                ->pressAndWaitFor('#form\:evrakListesi_dataTable_head tr th:nth-child(8)')
+                ->pause(1000)
+                ->waitFor('#form\:evrakListesi_dataTable_data')
+                ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
+                ->waitFor('#form\:evrakListesi_dataTable_data')
                 ->pause(1000)
                 ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
+                ->pause(1000)
+                ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
+                ->waitFor('#form\:evrakListesi_dataTable_data')
+                ->pause(1000)
+                ->pressAndWaitFor('#form\:oncekiKayitlariGetir_button')
+                ->waitFor('#form\:evrakListesi_dataTable_data')
                 ->pause(1000) */
                 ->waitFor('#form\:evrakListesi_dataTable_data')
                 ->pause(3000);
-
+                
             $trElements = $this->browser->elements('tbody#form\:evrakListesi_dataTable_data tr[role=row]');
 
             $arr = $this->getTableRowDocument(count($trElements), $itemStatus, $date, $search, $existDoc);
 
-            $pageElements = $this->browser->elements('#form\:evrakListesi_dataTable_paginator_bottom span.ui-paginator-pages a');
-            if(count($pageElements) > 1) {
-                for ($i=2; $i <= count($pageElements); $i++) { 
-                    $this->browser->click('#form\:evrakListesi_dataTable_paginator_bottom span.ui-paginator-pages a:nth-child('.$i.')')
-                        ->pause(3000);
+            if(count($arr) < 6) {
+                $pageElements = $this->browser->elements('#form\:evrakListesi_dataTable_paginator_bottom span.ui-paginator-pages a');
+                if(count($pageElements) > 1) {
+                    for ($i=2; $i <= count($pageElements); $i++) { 
+                        $this->browser->click('#form\:evrakListesi_dataTable_paginator_bottom span.ui-paginator-pages a:nth-child('.$i.')')
+                            ->pause(3000);
 
-                    $trElements = $this->browser->elements('tbody#form\:evrakListesi_dataTable_data tr[role=row]');
+                        $trElements = $this->browser->elements('tbody#form\:evrakListesi_dataTable_data tr[role=row]');
 
-                    $arr = array_merge(
-                        $arr, 
-                        $this->getTableRowDocument(count($trElements), $itemStatus, $date, $search, $existDoc)
-                    );
+                        $arr = array_merge(
+                            $arr, 
+                            $this->getTableRowDocument(count($trElements), $itemStatus, $date, $search, $existDoc, count($arr))
+                        );
+                    }
                 }
             }
-
         } catch (\Throwable $th) {
             $error = $th->getMessage();
-
-            dd($error);
-
+            // dd($error);
             throw ValidationException::withMessages(
-                ['row' => $error]
+                // ['row' => $error]
+                [
+                    'row' => 'Bir hata oluştu. DYS WEB\' in çalıştığından emin olun. 
+                            Çalışıyorsa lütfen daha sonra tekrar deneyiniz. Yine çalışmazsa yöneticinize danışınız.'
+                ]
             );
         }
 
         return $arr;
     }
 
-    private function getTableRowDocument($rowCount, $itemStatus, $date, $search, $existDoc)
+    private function getTableRowDocument($rowCount, $itemStatus, $date, $search, $existDoc, $limit = 1)
     {
         $arr = [];
+        // $ctrlCo = 0;
 
         for ($i=1; $i <= $rowCount; $i++) {
-
             $boolDate = $this->checkDateSelected($i, $date, $existDoc);
 
-            if(!$boolDate) {
+            if(!$boolDate || $limit > 6) {
+                /* if($ctrlCo > 0) {
+                    break;
+                } */
                 continue;
             }
+
+            // $ctrlCo++;
 
             if($itemStatus == '0') {
                 $arr[($i-1)]['dc_item_status'] = "0";
@@ -118,7 +141,7 @@ class DysWebBot extends MebBot
             $subject = $this->replaceSpace($subject);
             $arr[($i-1)]['dc_subject'] = $subject;
 
-            $receiver = $this->uploadFileAndAttachFiles($i);
+            $receiver = $this->uploadFileAndAttachFiles($i, $itemStatus);
             if($itemStatus == '1') {
                 $arr[($i-1)]['dc_who_receiver'] = $receiver;
             }
@@ -132,14 +155,17 @@ class DysWebBot extends MebBot
                     $arr[($i-1)][$key] = $val;
                 }
             }
+
+            $limit++;
         }
 
         return $arr;
     }
 
-    private function uploadFileAndAttachFiles($line)
+    private function uploadFileAndAttachFiles($line, $itemStatus)
     {
         $this->receiverArr = [];
+        $this->itemStatus = $itemStatus;
 
         Storage::deleteDirectory('public/bottemps');
         $this->changeUrl('public\bottemps');
@@ -151,21 +177,25 @@ class DysWebBot extends MebBot
             $anotherIframe->pressAndWaitFor('div#toolbarViewerRight button#download')
                 ->pause(2000);
         }); */
+
+        $this->browser->waitFor('iframe#gozdenGecirmeEkraniId');
         
         $this->browser->withinFrame('iframe#gozdenGecirmeEkraniId', function($iframe){
             /* Gönderilen Bilgisini çekme başla */
-            $iframe->pressAndWaitFor('button#formspanel\:dagitimBilgileriBtn')
-                ->pause(3000)
-                ->pressAndWaitFor('div#formspanel\:form3\:tabViewOge ul li:nth-child(2)')
-                ->pause(1000);
+            if($this->itemStatus == '1') {   
+                $iframe->pressAndWaitFor('button#formspanel\:dagitimBilgileriBtn')
+                    ->pause(3000)
+                    ->pressAndWaitFor('div#formspanel\:form3\:tabViewOge ul li:nth-child(2)')
+                    ->pause(1000);
 
-            $receiverEl = $iframe->elements('tbody#formspanel\:form3\:tabViewOge\:dagitimYapilmisBirimlerListesi_data tr');
+                $receiverEl = $iframe->elements('tbody#formspanel\:form3\:tabViewOge\:dagitimYapilmisBirimlerListesi_data tr');
 
-            for ($i=1; $i <= count($receiverEl); $i++) {
-                $this->receiverArr[] = $iframe->element('tbody#formspanel\:form3\:tabViewOge\:dagitimYapilmisBirimlerListesi_data tr:nth-child('.$i.') td:nth-child(2)')->getText();
+                for ($i=1; $i <= count($receiverEl); $i++) {
+                    $this->receiverArr[] = $iframe->element('tbody#formspanel\:form3\:tabViewOge\:dagitimYapilmisBirimlerListesi_data tr:nth-child('.$i.') td:nth-child(2)')->getText();
+                }
+
+                $iframe->pressAndWaitFor('div#formspanel\:dialogPenceresi a[aria-label=Kapat]')->pause(1000);
             }
-
-            $iframe->pressAndWaitFor('div#formspanel\:dialogPenceresi a[aria-label=Kapat]')->pause(1000);
             /* Gönderilen Bilgisini çekme bitiş */
 
             $this->changeUrl('public\bottemps\attachments');
@@ -206,8 +236,18 @@ class DysWebBot extends MebBot
         $numberAndDate = $this->replaceSpace($numberAndDate);
         $numberAndDate = explode(' ', $numberAndDate);
         $number = $numberAndDate[0];
+        $dcDate = $numberAndDate[1];
 
-        if (in_array($number, $existDoc)) {
+        /* evrak sayısı kontrolü başla */
+        // $exist = \App\Models\Admin\DcDocuments::where('dc_number', $number)->count();
+        $exist = \App\Models\Admin\DcDocuments::where([
+            ['dc_date', '=', strtotime($dcDate)],
+            ['dc_number', '=', $number]
+        ])->count();
+        /* evrak sayısı kontrolü bitiş*/
+
+        // if (in_array($number, $existDoc)) {
+        if ($exist > 0) {
             $bool = false;
         }else {
             $recordDt = $this->browser->element('tbody#form\:evrakListesi_dataTable_data tr:nth-child('.$line.') td:nth-child(8)')->getText();
@@ -216,7 +256,7 @@ class DysWebBot extends MebBot
 
             $bool = $date == $recordDt;
         }
-
+        
         return $bool;
     } 
     

@@ -15,6 +15,7 @@ use App\Http\Controllers\Admin\LawsuitManagement\LawsuitsController;
 use App\Http\Controllers\Admin\DocumentManagement\CategoryController;
 use App\Http\Controllers\Admin\DocumentManagement\DocumentsController;
 use App\Http\Controllers\Admin\DocumentManagement\DcReportController;
+use App\Http\Controllers\Admin\DocumentManagement\DcWaitingController;
 use App\Http\Controllers\Admin\LawsuitManagement\StatisticalController;
 use App\Http\Controllers\Admin\TeachersListManagement\InstitutionsController;
 use App\Http\Controllers\Admin\OldRegulation\SearchController as OldSearchController;
@@ -325,6 +326,30 @@ Route::prefix('admin/document-management')
 		->where(['document' => '[0-9]+'])
 		->middleware(['permission:delete documents']);
     });
+
+Route::prefix('admin/document-management')
+    ->middleware('auth')
+    ->controller(DcWaitingController::class)
+    ->name('admin.document_mng.')
+    ->group(function () {
+		Route::get(
+			'waiting/list', 
+			'index'
+		)
+		->name('waiting.index');
+
+		Route::get(
+			'waiting/get-docs', 
+			'getWaitingDocument'
+		)
+		->name('waiting.getWaitingDocument');
+
+		Route::post(
+			'waiting/save-bot-docs', 
+			'saveBotDocument'
+		)
+		->name('waiting.saveBotDocument');
+	});
     
 Route::prefix('admin/document-management')
     ->middleware('auth')
@@ -458,6 +483,20 @@ Route::prefix('admin/document-management')
 		->middleware(['permission:show documents']);
     });
 
+
+/* Route::prefix('admin/document-management')
+    ->middleware('auth')
+    ->controller(DocumentsController::class)
+    ->name('admin.document_mng.')
+    ->group(function () {
+
+        Route::get(
+			'waiting/list', 
+			'getWaitingDocument'
+		)
+		->name('waiting.getWaitingDocument');
+    }); */
+
 Route::prefix('admin/lawsuit-management')
     ->middleware('auth')
     ->controller(LawsuitsController::class)
@@ -590,7 +629,7 @@ Route::prefix('admin')
 		->name('update');
     });
 	
-	Route::prefix('admin/my-settings')
+Route::prefix('admin/my-settings')
     ->middleware(['auth'])
     ->controller(MySettingsController::class)
     ->name('admin.mySettings.')

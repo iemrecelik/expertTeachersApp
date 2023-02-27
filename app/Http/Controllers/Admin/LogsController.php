@@ -91,37 +91,113 @@ class LogsController extends Controller
 
     public function index()
     {
+        $documents = \Illuminate\Support\Facades\DB::table('dc_documents as t0')->selectRaw('
+            t0.id, t0.dc_number, t0.dc_subject, 
+            t0.dc_date,  t2.dc_cat_name,
+            t3.dc_file_path
+        ')
+        ->join('dc_cat as t1', 't1.dc_id', '=', 't0.id')
+        ->join('dc_category as t2', 't2.id', '=', 't1.cat_id')
+        ->join('dc_files as t3', 't3.dc_file_owner_id', '=', 't0.id')
+        ->orderByRaw('t0.dc_date ASC')
+        ->get()
+        ->toArray();
 
-        // 'ü-ö-ç-Ü-Ö-Ç-Â-â-î-Û-û'
+        $archives = [];
+        foreach ($documents as $dcKey => $dcVal) {
+
+            if( array_key_exists($dcVal->id, $archives) ) {
+                $archives[$dcVal->id]['dc_cat_name'][] = $dcVal->dc_cat_name;
+            }else {
+                $attFiles = \Illuminate\Support\Facades\DB::table('dc_attach_files as t0')
+                    ->select('dc_att_file_path')
+                    ->where('t0.dc_att_file_owner_id', 1)
+                    ->get()
+                    ->toArray();
+                
+                $attFiles = array_column($attFiles, 'dc_att_file_path');
+                
+                $archives[$dcVal->id] = [
+                    'dc_number' => $dcVal->dc_number,
+                    'dc_subject' => $dcVal->dc_subject,
+                    'dc_date' => $dcVal->dc_date,
+                    'dc_cat_name' => [$dcVal->dc_cat_name],
+                    'dc_file_path' => $dcVal->dc_file_path,
+                    'dc_att_file_path' => $attFiles,
+                ];
+            }
+        }
+
+        dd($archives);
+
+
+        $exist = \App\Models\Admin\DcDocuments::where([
+            ['dc_date', '=', strtotime('23-02-2023')],
+            ['dc_number', '=', '69632299']
+        ])->count();
+
+        dd($exist);
 
 
         $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
         $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
 
+        $path = '2023/02/22/13/63f5ef7243f5bdocument.pdf';
+        $path = str_replace('/', '\\', $path);
+        $path = storage_path('app\public\upload\images\raw\\'.$path);
 
-        $text = "Bu belge\t güvenli\tAdres\t : Adres:\t Emniyet\t Mah.\t Milas\t  Sok:\t No:\t 21 Teknikokullar/ANKARA\telektronik\t imza\t ile imzalanmýþtýr.\tBelge\t Doðrulama ▶
-        Bu evrak güvenli elektronik imza ile imzalanmýþtýr. https://evraksorgu.meb.gov.tr adresinden  \t7fc9-6328-35d0-abf5-a163\t  kodu ile teyit edilebilir.\t
-        T.C.\t
-        MÝLLÎ\t EÐÝTÝM\t BAKANLIÐI\t
-        Ölçme,\t Deðerlendirme\t ve\t Sýnav\t Hizmetleri\t \t
-        Genel\t Müdürlüðü\t
-         \t
-        Sayý\t: E-\t34878943\t-480.05\t-68046947\t10.01.2023\t
-        Konu\t: Öðretmenlik\t Kariyer\t Basamaklarý\t \t
-                      Yazýlý\t Sýnavý
-        ÖÐRETMEN\t YETÝÞTÝRME\t VE\t GELÝÞTÝRME\t GENEL\t MÜDÜRLÜÐÜNE\t
-        Ýlgi\t   : Ýzmir\t Valiliði\t Ýl Millî\t Eðitim\t Müdürlüðü\tnün\t  29\t.12.2022\t tarihli\t ve\t  E-\t18634136\t-480.05-67176495\t \t
-                   sayýlý\t yazýsý.\t \t
-              \t
-                  19\t Kasým\t 2022\t tarihinde\t gerekleþtirilen\t Öðretmenlik\t Kariyer\t Basamaklarý\t Yazýlý\t Sýnavýna\t ait\t yazý\t \t
-        ve\t ekleri\t ilgi\tsinden\t dolayý\t Ek'te\t gönderilmiþtir.\t
-                 Bilgilerini\t ve\t gereðini\t arz\t ederim.\t
-           
-                                                                                                                                             Murat\t ÝLÝKHAN\t \t
-                                                                                                                                    Genel\t Müdür\t \t
-         Ek:\t Ýlgi\t Yazý\t ve\t Ekleri\t (3 Sayfa)";
+        $parser = new \Smalot\PdfParser\Parser();
 
-        
+        $pdf = $parser->parseFile($path);
+        $text = $pdf->getText();
+
+        $new_message = str_replace(
+            $old,
+            $new,
+            $text
+        );
+
+        $new_message = preg_replace('/\n/', '', $new_message);
+        $new_message = preg_replace('/\t/', '', $new_message);
+
+        $new_message = preg_replace("/\s+/", " ", $new_message);
+        $new_message = trim($new_message);
+
+        dd($new_message);
+
+        /* $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
+        $result = $mebbisBot->localtest();
+
+        dd($result); */
+        /* $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
+        $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
+
+        $path = storage_path('app\public\upload\images\raw\2023\02\21\11\63f48809c91e2document.pdf');
+
+        $parser = new \Smalot\PdfParser\Parser();
+
+        $pdf = $parser->parseFile($path);
+        $text = $pdf->getText();
+
+        $new_message = str_replace(
+            $old,
+            $new,
+            $text
+        );
+
+        dd($new_message); */
+
+        // 'Â-â-î-Û-û'
+        /* $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
+        $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
+
+        $path = storage_path('/2023/02/21/11/63f48809c91e2document.pdf');
+
+        $parser = new \Smalot\PdfParser\Parser();
+
+        $pdf = $parser->parseFile($path);
+        $text = $pdf->getText();
+
         $new_message = str_replace(
             $old,
             $new,
@@ -129,39 +205,6 @@ class LogsController extends Controller
         );
 
         dd($new_message);
-
-
-
-        /* $mpdf = New \Mpdf\Mpdf(['tempDir'=>storage_path('tempdir')]);
-
-        $mpdf->WriteHTML('ğ-ü-ş-ö-ç-ı-İ-Ğ-Ü-Ş-Ö-Ç-Â-â-Î-î-Û-û');
-        
-        $mpdf->Output(storage_path('deneme.pdf'), \Mpdf\Output\Destination::FILE); */
-
-        
-        // $path = storage_path('deneme.pdf');
-        $path = storage_path('document.pdf');
-
-        $parser = new \Smalot\PdfParser\Parser();
-
-        $pdf = $parser->parseFile($path);
-
-        dd($pdf->getText());
-
-
-
-        die('parse die');
-
-        $dt = \Illuminate\Support\Facades\DB::table('dc_documents as t0')
-                ->whereRaw('NOT EXISTS (
-                    SELECT  1
-                    FROM    dc_cat t1
-                    WHERE   t1.dc_id = t0.id
-                )')
-                ->get()
-                ->toArray();
-
-        dd($dt);
         
         // $this->getDocumentCount();
         $arr = $this->saveDocuments();
@@ -169,8 +212,6 @@ class LogsController extends Controller
         // dd($arr);
 
         foreach ($arr as $key => $val) {
-            // $ex = \App\Models\Admin\DcDocuments::where('dc_number', $val['dc_number'])->first();
-
             $user = auth()->user();
 
             $val['user_id'] = $user->id;
@@ -182,30 +223,28 @@ class LogsController extends Controller
 
             $val['dc_show_content'] = '';
             $val['dc_raw_content'] = '';
-$ex = null;
-            if(!$ex) {
-                $dc = \App\Models\Admin\DcDocuments::create($val);
+            
+            $dc = \App\Models\Admin\DcDocuments::create($val);
 
-                $dcFiles = new \App\Models\Admin\DcFiles(
-                    [
-                        'dc_file_path' => $filePath
-                    ]
-                );
+            $dcFiles = new \App\Models\Admin\DcFiles(
+                [
+                    'dc_file_path' => $filePath
+                ]
+            );
 
-                $dc->dcFiles()->saveMany([$dcFiles]);
+            $dc->dcFiles()->saveMany([$dcFiles]);
 
-                if(count($attFilePaths) > 0 ) {
-                    $dcAttachFiles = array_map(function($path) {
-                        return new \App\Models\Admin\DcAttachFiles([
-                                'dc_att_file_path' => $path
-                            ])
-                        ;
-                    }, $attFilePaths);
+            if(count($attFilePaths) > 0 ) {
+                $dcAttachFiles = array_map(function($path) {
+                    return new \App\Models\Admin\DcAttachFiles([
+                            'dc_att_file_path' => $path
+                        ])
+                    ;
+                }, $attFilePaths);
 
-                    $dc->dcAttachFiles()->saveMany($dcAttachFiles);
-                }
-            }
-        }
+                $dc->dcAttachFiles()->saveMany($dcAttachFiles);
+            } 
+        } */
 
         $users = User::all();
         return view(

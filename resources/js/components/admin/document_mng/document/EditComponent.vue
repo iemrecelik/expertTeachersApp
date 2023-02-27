@@ -267,7 +267,8 @@
 
 				</div>
 			</div>
-			<button id="document-submit" disabled type="submit" class="btn btn-primary">Güncelle</button>
+			<!-- <button id="document-submit" disabled type="submit" class="btn btn-primary">Güncelle</button> -->
+			<button id="document-submit" type="submit" class="btn btn-primary">Güncelle</button>
 		</div>
 	</form>
 
@@ -405,7 +406,7 @@ export default {
 		checkForm: function(val) {
 
 			let element = document.getElementById('document-submit');
-			let disabled = false;
+			let disabled = true;
 
 			/* let files = document.getElementsByClassName(
 				this.getFileInputClassName(this.docFieldNames.senderFile)
@@ -435,6 +436,8 @@ export default {
 			} */
 
 			element.disabled = disabled ? true : false
+
+			// console.log(element.disabled);
 		},
 		oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
@@ -713,7 +716,7 @@ export default {
   },
 	mounted() {
 		this.modalErrorMsgShow();
-		this.checkForm();
+		// this.checkForm();
 	},
   components: {
     Treeselect,

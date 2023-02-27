@@ -43,13 +43,14 @@
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
       
       <div v-if="items.dc_show_content" class="modal-body" v-html="items.dc_show_content"></div>
-      <div v-else class="modal-body p-5">
-        <a type="button" 
+      <div v-else id="pdf-viewer" class="modal-body p-5">
+        <iframe :src="'/storage/upload/images/raw'+items.dc_files.dc_file_path" width="100%" height="100%"></iframe>
+        <!-- <a type="button" 
             :href="'/storage/upload/images/raw'+items.dc_files.dc_file_path"
             target="_blank"
           >
             {{ $t('messages.readDocumentLinkClick') }}
-          </a>
+          </a> -->
       </div>
 
       <div class="pl-5">
@@ -316,9 +317,13 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 mark{
     background: rgb(255, 251, 0);
     color: black;
+}
+
+#pdf-viewer {
+  height: 1000px;
 }
 </style>
