@@ -91,7 +91,7 @@ class LogsController extends Controller
 
     public function index()
     {
-        $documents = \Illuminate\Support\Facades\DB::table('dc_documents as t0')->selectRaw('
+        /* $documents = \Illuminate\Support\Facades\DB::table('dc_documents as t0')->selectRaw('
             t0.id, t0.dc_number, t0.dc_subject, 
             t0.dc_date,  t2.dc_cat_name,
             t3.dc_file_path
@@ -163,7 +163,7 @@ class LogsController extends Controller
         $new_message = preg_replace("/\s+/", " ", $new_message);
         $new_message = trim($new_message);
 
-        dd($new_message);
+        dd($new_message); */
 
         /* $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
         $result = $mebbisBot->localtest();

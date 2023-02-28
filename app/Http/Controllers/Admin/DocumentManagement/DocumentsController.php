@@ -122,8 +122,15 @@ class DocumentsController extends Controller
             $parser = new Parser();
 
             $pdf = $parser->parseFile($file->getPathName());
+            $content = $pdf->getText();
 
-            $arr['content'] = $pdf->getText();
+            // dd($content);
+        
+            $content = $this->changeTurkishCharecter($content);
+            $content = $this->replaceAllSpaceChar($content);
+
+            // $arr['content'] = $pdf->getText();
+            $arr['content'] = $content;
 		}
 
 		return $arr;
@@ -928,6 +935,8 @@ class DocumentsController extends Controller
             $receiver[3] = preg_replace('/\t{3,100}/', '<span class="mr-5"></span>', $receiver[3]);
             $receiver[3] = preg_replace('/\t/', '<span class="mr-5"></span>', $receiver[3]);
         }
+        // dd($content[1]);
+        $content[1] = $this->replaceAllSpaceChar($content[1]);
 
         return [
             'sender' => $sender,
@@ -959,6 +968,18 @@ class DocumentsController extends Controller
         return $string;
     }
 
+    private function replaceAllSpaceChar($text)
+    {
+        /* $text = preg_replace('/\n/', '', $text);
+        $text = preg_replace('/\t/', '', $text); */
+
+        $text = $this->replaceSpace($text);
+
+        // dd($text);
+
+        return $text;
+    }
+
     public function getBotFileInfos($path)
     {
         $path = str_replace('/', '\\', $path);
@@ -969,14 +990,7 @@ class DocumentsController extends Controller
         $content = $pdf->getText();
         
         $content = $this->changeTurkishCharecter($content);
-
-        $content = preg_replace('/\n/', '', $content);
-        $content = preg_replace('/\t/', '', $content);
-
-        /* $content = preg_replace("/\s+/", " ", $content);
-        $content = trim($content); */
-
-        $content = $this->replaceSpace($content);
+        $content = $this->replaceAllSpaceChar($content);
 
         return $content;
     }
