@@ -445,6 +445,7 @@ export default {
 				commentText: `rel_dc_com_text[${key}]`,
 				listId: `rel_list_id[${key}]`,
 				teacherId: `rel_thr_id[${key}][]`,
+				catId: `rel_dc_cat_id[${key}][]`,
 			}
 		},
 		getCategory: function() {

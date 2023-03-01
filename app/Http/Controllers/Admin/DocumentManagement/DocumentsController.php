@@ -162,7 +162,8 @@ class DocumentsController extends Controller
             $arr = [
                 'dc_number'         => trim($params['rel_dc_number'][$key]),
                 'dc_item_status'    => $params['rel_dc_item_status'][$key],
-                'dc_cat_id'         => $params['dc_cat_id'],
+                // 'dc_cat_id'         => $params['dc_cat_id'],
+                'dc_cat_id'         => $params['rel_dc_cat_id'][$key],
                 'dc_subject'        => $params['rel_dc_subject'][$key],
                 'dc_who_send'       => $params['rel_dc_who_send'][$key],
                 'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
@@ -486,12 +487,13 @@ class DocumentsController extends Controller
         $teacherIds = $params['thr_id'] ?? [];
         $dcComText = $params['dc_com_text'] ?? '';
         $year = date('Y', $params['dc_date']);
-        $catIds = $params['dc_cat_id'];
+        $catIds = $params['dc_cat_id'] ? $params['dc_cat_id'] : $params['rel_dc_cat_id'];
 
         unset($params['list_id']);
         unset($params['thr_id']);
         unset($params['dc_com_text']);
         unset($params['dc_cat_id']);   
+        unset($params['rel_dc_cat_id']);   
 
         if(empty($dcDocuments)) {
             
@@ -592,6 +594,7 @@ class DocumentsController extends Controller
             );
 
             /* Kategorileri ekleme başla*/
+            // dd($catIds);
             $categories = DcCategory::whereIn('id', $catIds)->get();
             $dcRelative->dcCategories()->saveMany($categories);
             /* Kategorileri ekleme bitiş*/
@@ -970,12 +973,10 @@ class DocumentsController extends Controller
 
     private function replaceAllSpaceChar($text)
     {
-        /* $text = preg_replace('/\n/', '', $text);
-        $text = preg_replace('/\t/', '', $text); */
-
+        // $text = preg_replace('/\n/', '', $text);
+        $text = preg_replace('/\t/', '', $text);
+        
         $text = $this->replaceSpace($text);
-
-        // dd($text);
 
         return $text;
     }
@@ -1230,13 +1231,15 @@ class DocumentsController extends Controller
         $dcComText = $params['dc_com_text'] ?? '';
         $id = $params['id'];
         $year = date('Y', $params['dc_date']);
-        $catIds = $params['dc_cat_id'];
+        // $catIds = $params['dc_cat_id'];
+        $catIds = $params['dc_cat_id'] ? $params['dc_cat_id'] : $params['rel_dc_cat_id'];
 
         unset($params['list_id']);
         unset($params['thr_id']);
         unset($params['dc_com_text']);
         unset($params['id']);
         unset($params['dc_cat_id']);
+        unset($params['rel_dc_cat_id']);
         
         if(empty($dcDocuments)) {
             
@@ -1431,7 +1434,8 @@ class DocumentsController extends Controller
                 'id'                => $params['rel_dc_id'][$key],
                 'dc_number'         => trim($params['rel_dc_number'][$key]),
                 'dc_item_status'    => $params['rel_dc_item_status'][$key],
-                'dc_cat_id'         => $params['dc_cat_id'],
+                // 'dc_cat_id'         => $params['dc_cat_id'],
+                'dc_cat_id'         => $params['rel_dc_cat_id'][$key],
                 'dc_subject'        => $params['rel_dc_subject'][$key],
                 'dc_who_send'       => $params['rel_dc_who_send'][$key],
                 'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
