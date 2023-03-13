@@ -7,6 +7,9 @@ use Illuminate\Http\Request;
 use App\Models\User;
 
 
+use Illuminate\Support\Facades\Storage;
+
+
 class LogsController extends Controller
 {
     private function saveDocuments()
@@ -89,8 +92,23 @@ class LogsController extends Controller
         return $result;
     }
 
+    private function generateArchiveNewPath($oldPath)
+    {
+        $uniqPath = uniqid();
+        $ext = pathinfo($oldPath, PATHINFO_EXTENSION);
+        $uniqPath .= '.'.$ext;
+
+        return $uniqPath;
+    }
+
     public function index()
     {
+        // dd(Storage::path('public/upload/images/2023/02/27/16/hatay_uzman.udf'));
+        /* $raw = 'public/upload/images/raw/2023/02/27/16/hatay_uzman.udf';
+        var_dump(Storage::path($raw));
+        $exists = Storage::exists($raw);
+
+        dd($exists); */
         $documents = \Illuminate\Support\Facades\DB::table('dc_documents as t0')->selectRaw('
             t0.id, t0.dc_number, t0.dc_subject, 
             t0.dc_date,  t2.dc_cat_name,
@@ -111,7 +129,7 @@ class LogsController extends Controller
             }else {
                 $attFiles = \Illuminate\Support\Facades\DB::table('dc_attach_files as t0')
                     ->select('dc_att_file_path')
-                    ->where('t0.dc_att_file_owner_id', 1)
+                    ->where('t0.dc_att_file_owner_id', $dcVal->id)
                     ->get()
                     ->toArray();
                 
@@ -127,11 +145,42 @@ class LogsController extends Controller
                 ];
             }
         }
+// echo '<pre>';
+        foreach ($archives as $arcVal) {
+            $oldPath = 'public/upload/images/raw/'.$arcVal['dc_file_path'];
+            /* $oldPath = str_replace('/', '\\', $arcVal['dc_file_path']);
+            $oldPath = storage_path('app\public\upload\images\raw\\'.$oldPath); */
 
+            $date = date('Y-m-d', $arcVal['dc_date']);
+            $number = $arcVal['dc_number'];
+
+            foreach ($arcVal['dc_cat_name'] as $catName) {
+                // var_dump($catName);
+                $uniqPath = $this->generateArchiveNewPath($oldPath);
+
+                $newPath = "archives/$catName/$date-$number/$uniqPath";
+                /* var_dump($oldPath);
+                var_dump($newPath); */
+                Storage::copy($oldPath, $newPath);
+
+                foreach ($arcVal['dc_att_file_path'] as $attFileVal) {
+                    $attOldPath = 'public/upload/images/raw/'.$attFileVal;
+                    /* $attOldPath = str_replace('/', '\\', $attFileVal);
+                    $attOldPath = storage_path('app\public\upload\images\raw\\'.$attOldPath); */
+
+                    $attUniqPath = $this->generateArchiveNewPath($attOldPath);
+                    $attNewPath = "archives/$catName/$date-$number/Ekler/$attUniqPath";
+                    /* var_dump($attOldPath);
+                    var_dump($attNewPath); */
+                    Storage::copy($attOldPath, $attNewPath);    
+                }
+            }
+        }
+// die;
         dd($archives);
 
 
-        $exist = \App\Models\Admin\DcDocuments::where([
+        /* $exist = \App\Models\Admin\DcDocuments::where([
             ['dc_date', '=', strtotime('23-02-2023')],
             ['dc_number', '=', '69632299']
         ])->count();
@@ -142,7 +191,7 @@ class LogsController extends Controller
         $old = ['ý', 'Ý', 'þ', 'Þ', 'ð', 'Ð'];
         $new = ['ı', 'İ', 'ş', 'Ş', 'ğ', 'Ğ'];
 
-        $path = '2023/02/22/13/63f5ef7243f5bdocument.pdf';
+        $path = '/2023/02/28/10/document.pdf';
         $path = str_replace('/', '\\', $path);
         $path = storage_path('app\public\upload\images\raw\\'.$path);
 
@@ -157,13 +206,13 @@ class LogsController extends Controller
             $text
         );
 
-        $new_message = preg_replace('/\n/', '', $new_message);
+        // $new_message = preg_replace('/\n/', '', $new_message);
         $new_message = preg_replace('/\t/', '', $new_message);
-
+        // dd($new_message);
         $new_message = preg_replace("/\s+/", " ", $new_message);
         $new_message = trim($new_message);
 
-        dd($new_message);
+        dd($new_message); */
 
         /* $mebbisBot = new \App\Library\MebBot\MebbisBot('61765236578', '1079010790');
         $result = $mebbisBot->localtest();

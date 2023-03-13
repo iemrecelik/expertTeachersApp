@@ -1,5 +1,28 @@
 <template>
 <div>
+	<div v-if="ppitemStatus == 0" class="row">
+
+		<div class="col-3">
+			<div class="form-group">
+				<label for="exampleInputEmail1">
+					{{ $t('messages.categoryName') }}
+				</label>
+				<treeselect
+					id="doc-category"
+					:name="fieldNames.catId"
+					:multiple="true"
+					:options="categoryList"
+					v-model=relCategoryArr
+					:disable-branch-nodes="true"
+					:show-count="true"
+					:placeholder="$t('messages.enterCategoryName')"
+				/>
+			</div>
+		</div>
+		<div class="col-9"></div>
+
+	</div>
+
 	<div class="row">
 		
 		<div class="col-3">
@@ -332,6 +355,8 @@ export default {
 			// manuelEnter: 'manuelEnter'+elUniqueID;
 			manuelEnter: false,
 			docList: this.$parent.$parent.docList,
+			relCategoryArr: [],
+			categoryList: this.$parent.$parent.categoryList,
 		}
   },
 	props: {

@@ -164,7 +164,5 @@ class DcWaitingController extends Controller
 	        'data' => $data,
 	        'draw' => $tblInfo['draw']
 	    ];
-
-        return $datas;
     }
 }

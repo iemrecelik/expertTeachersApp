@@ -122,8 +122,15 @@ class DocumentsController extends Controller
             $parser = new Parser();
 
             $pdf = $parser->parseFile($file->getPathName());
+            $content = $pdf->getText();
 
-            $arr['content'] = $pdf->getText();
+            // dd($content);
+        
+            $content = $this->changeTurkishCharecter($content);
+            $content = $this->replaceAllSpaceChar($content);
+
+            // $arr['content'] = $pdf->getText();
+            $arr['content'] = $content;
 		}
 
 		return $arr;
@@ -155,7 +162,8 @@ class DocumentsController extends Controller
             $arr = [
                 'dc_number'         => trim($params['rel_dc_number'][$key]),
                 'dc_item_status'    => $params['rel_dc_item_status'][$key],
-                'dc_cat_id'         => $params['dc_cat_id'],
+                // 'dc_cat_id'         => $params['dc_cat_id'],
+                'dc_cat_id'         => $params['rel_dc_cat_id'][$key],
                 'dc_subject'        => $params['rel_dc_subject'][$key],
                 'dc_who_send'       => $params['rel_dc_who_send'][$key],
                 'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
@@ -479,12 +487,13 @@ class DocumentsController extends Controller
         $teacherIds = $params['thr_id'] ?? [];
         $dcComText = $params['dc_com_text'] ?? '';
         $year = date('Y', $params['dc_date']);
-        $catIds = $params['dc_cat_id'];
+        $catIds = $params['dc_cat_id'] ? $params['dc_cat_id'] : $params['rel_dc_cat_id'];
 
         unset($params['list_id']);
         unset($params['thr_id']);
         unset($params['dc_com_text']);
         unset($params['dc_cat_id']);   
+        unset($params['rel_dc_cat_id']);   
 
         if(empty($dcDocuments)) {
             
@@ -585,6 +594,7 @@ class DocumentsController extends Controller
             );
 
             /* Kategorileri ekleme başla*/
+            // dd($catIds);
             $categories = DcCategory::whereIn('id', $catIds)->get();
             $dcRelative->dcCategories()->saveMany($categories);
             /* Kategorileri ekleme bitiş*/
@@ -928,6 +938,8 @@ class DocumentsController extends Controller
             $receiver[3] = preg_replace('/\t{3,100}/', '<span class="mr-5"></span>', $receiver[3]);
             $receiver[3] = preg_replace('/\t/', '<span class="mr-5"></span>', $receiver[3]);
         }
+        // dd($content[1]);
+        $content[1] = $this->replaceAllSpaceChar($content[1]);
 
         return [
             'sender' => $sender,
@@ -959,6 +971,16 @@ class DocumentsController extends Controller
         return $string;
     }
 
+    private function replaceAllSpaceChar($text)
+    {
+        // $text = preg_replace('/\n/', '', $text);
+        $text = preg_replace('/\t/', '', $text);
+        
+        $text = $this->replaceSpace($text);
+
+        return $text;
+    }
+
     public function getBotFileInfos($path)
     {
         $path = str_replace('/', '\\', $path);
@@ -969,14 +991,7 @@ class DocumentsController extends Controller
         $content = $pdf->getText();
         
         $content = $this->changeTurkishCharecter($content);
-
-        $content = preg_replace('/\n/', '', $content);
-        $content = preg_replace('/\t/', '', $content);
-
-        /* $content = preg_replace("/\s+/", " ", $content);
-        $content = trim($content); */
-
-        $content = $this->replaceSpace($content);
+        $content = $this->replaceAllSpaceChar($content);
 
         return $content;
     }
@@ -1216,13 +1231,15 @@ class DocumentsController extends Controller
         $dcComText = $params['dc_com_text'] ?? '';
         $id = $params['id'];
         $year = date('Y', $params['dc_date']);
-        $catIds = $params['dc_cat_id'];
+        // $catIds = $params['dc_cat_id'];
+        $catIds = $params['dc_cat_id'] ? $params['dc_cat_id'] : $params['rel_dc_cat_id'];
 
         unset($params['list_id']);
         unset($params['thr_id']);
         unset($params['dc_com_text']);
         unset($params['id']);
         unset($params['dc_cat_id']);
+        unset($params['rel_dc_cat_id']);
         
         if(empty($dcDocuments)) {
             
@@ -1417,7 +1434,8 @@ class DocumentsController extends Controller
                 'id'                => $params['rel_dc_id'][$key],
                 'dc_number'         => trim($params['rel_dc_number'][$key]),
                 'dc_item_status'    => $params['rel_dc_item_status'][$key],
-                'dc_cat_id'         => $params['dc_cat_id'],
+                // 'dc_cat_id'         => $params['dc_cat_id'],
+                'dc_cat_id'         => $params['rel_dc_cat_id'][$key],
                 'dc_subject'        => $params['rel_dc_subject'][$key],
                 'dc_who_send'       => $params['rel_dc_who_send'][$key],
                 'dc_who_receiver'   => $params['rel_dc_who_receiver'][$key],
