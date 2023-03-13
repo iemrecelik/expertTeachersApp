@@ -9,6 +9,10 @@ use Illuminate\Support\Facades\Storage;
 
 class StatisticalController extends Controller
 {
+    public function __construct() {
+        $this->middleware(['permission:show statistical lawsuits'])->only('index');
+    }
+
     public function index(Request $request)
     {
         $years = $request->input('years');

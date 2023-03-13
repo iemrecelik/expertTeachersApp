@@ -13,9 +13,36 @@
   */
 
 /*!
+ * 
+ * Super simple wysiwyg editor v0.8.18
+ * https://summernote.org
+ * 
+ * 
+ * Copyright 2013- Alan Hong. and other contributors
+ * summernote may be freely distributed under the MIT license.
+ * 
+ * Date: 2020-05-20T18:09Z
+ * 
+ */
+
+/*!
+ * @kurkle/color v0.2.1
+ * https://github.com/kurkle/color#readme
+ * (c) 2022 Jukka Kurkela
+ * Released under the MIT License
+ */
+
+/*!
  * AdminLTE v3.2.0 (https://adminlte.io)
  * Copyright 2014-2022 Colorlib <https://colorlib.com>
  * Licensed under MIT (https://github.com/ColorlibHQ/AdminLTE/blob/master/LICENSE)
+ */
+
+/*!
+ * Chart.js v3.9.1
+ * https://www.chartjs.org
+ * (c) 2022 Chart.js Contributors
+ * Released under the MIT License
  */
 
 /*!

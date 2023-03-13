@@ -15,6 +15,14 @@ use App\Models\User;
 
 class ListController extends Controller
 {
+    public function __construct() {
+        $this->middleware(['permission:show module list'])->only('index');
+        $this->middleware(['permission:create list'])->only('store');
+        $this->middleware(['permission:edit list'])->only('edit');
+        $this->middleware(['permission:edit list'])->only('update');
+        $this->middleware(['permission:delete list'])->only('destroy');
+    }
+
     /**
      * Display a listing of the resource.
      *

@@ -13,6 +13,14 @@ use App\Http\Requests\Admin\DocumentManagement\UpdateDcCommentRequest;
 
 class CommentController extends Controller
 {
+    public function __construct() {
+        $this->middleware(['permission:show module comment'])->only('index');
+        $this->middleware(['permission:create comment'])->only('store');
+        $this->middleware(['permission:edit comment'])->only('edit');
+        $this->middleware(['permission:edit comment'])->only('update');
+        $this->middleware(['permission:delete comment'])->only('destroy');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -295,7 +303,10 @@ class CommentController extends Controller
             +++ 125- evrak eklerken var olan evrak için ilgi evrak formu açarak eklerken ilgi evrak vardır hatası verecek
             +++ 127- dys den evrak numarasını almadan önce tarihe ait veritabanındaki veriler çekilp tarih ile birlik te kontrol edilecek
             +++ 128- Pdf den çekilen içerikler türkçe karaktere dönüştürülecek
-            129- mebbis den öğretmen çekerken hata mesajı düzeltilecek.
+            +++ 129- mebbis den öğretmen çekerken hata mesajı düzeltilecek.
+            129- öğretmen profilinde evrak eklerken hatalar ekrana yazılsın.
+            130- dava ekleme de eklenen yazının detayını göstermiyor. (pdf olduğu için detay göstermiyor.)
+            131- evrak güncelleme ve silme yaparken arşivdeki dosya silinsin.
         */
 
         $request->validate(

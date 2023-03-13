@@ -23,10 +23,11 @@ use App\Library\LogInfo;
 class LawsuitsController extends Controller
 {
     public function __construct() {
+        $this->middleware(['permission:show module lawsuits'])->only('index');
         $this->middleware(['permission:create lawsuits'])->only('store');
-        $this->middleware(['permission:edit categories'])->only('edit');
-        $this->middleware(['permission:edit categories'])->only('update');
-        $this->middleware(['permission:delete categories'])->only('destroy');
+        $this->middleware(['permission:edit lawsuits'])->only('edit');
+        $this->middleware(['permission:edit lawsuits'])->only('update');
+        $this->middleware(['permission:delete lawsuits'])->only('destroy');
     }
 
     /**

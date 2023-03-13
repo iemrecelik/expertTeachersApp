@@ -3,7 +3,7 @@
 	:ppTitleName="$t('messages.user_manage')"
 >
   <table class="res-dt-table table table-striped table-bordered" 
-  style="width:100%">
+    style="width:100%">
     <thead>
       <tr>
         <th>{{ $t("messages.name") }}</th>
@@ -12,7 +12,7 @@
       </tr>
     </thead>
     <tfoot>
-      <!-- <tr>
+      <tr>
         <th colspan="3">
           <button type="button" class="btn btn-primary"
             data-toggle="modal" 
@@ -23,7 +23,7 @@
             {{ $t('messages.add') }}
           </button>
         </th>
-      </tr> -->
+      </tr>
     </tfoot>
   </table>
 
@@ -211,7 +211,6 @@ export default {
     [formTitleName + '-show-component']: showComponent,
     [formTitleName + '-delete-component']: deleteComponent,
     [formTitleName + '-edit-permission-component']: editPermssionComponent,
-    // [formTitleName + '-images-component']: imagesComponent,
   }
 }
 </script>

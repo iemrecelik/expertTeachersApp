@@ -257,7 +257,6 @@
 
                   </form> -->
                   
-                  
                   <button type="button" class="btn btn-primary"
                     data-toggle="modal" 
                     :data-target="modalSelector"
@@ -267,7 +266,8 @@
                     {{ $t('messages.addImages') }}
                   </button>
                   
-                  <button type="button" class="btn btn-primary"
+                  <button v-if="ppauthuser.roles[0].name === 'super_admin'"
+                    type="button" class="btn btn-primary"
                     data-toggle="modal" 
                     :data-target="modalSelector"
                     :data-datas='`{"formTitleName": "\${formTitleName}"}`'
@@ -339,6 +339,7 @@ const simulateAsyncOperation = fn => {
 
 // import the styles
 import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import { tSParenthesizedType } from '@babel/types';
 
 let formTitleName = 'teachers'
 
@@ -372,6 +373,10 @@ export default {
       type: Object,
       required: true,
     },
+    ppauthuser: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
     ...mapState([
@@ -379,7 +384,6 @@ export default {
       'routes',
       'errors',
       'token',
-      'imgFilters',
     ]),
     cformTitleName: function(){
       return _.capitalize(this.formTitleName);
@@ -396,7 +400,7 @@ export default {
       'setRoutes',
       'setErrors',
       'setEditItem',
-      'setImgFilters',
+      'setAuthUser',
     ]),
     infoMsg: function() {
       let msg = '';
@@ -697,10 +701,10 @@ export default {
       }); */
     }
   },
-  created(){    
+  created(){
     this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
-    // this.setImgFilters(this.ppimgfilters);
+    this.setAuthUser(this.ppauthuser);
   },
   mounted(){
     this.showModalBody(this.modalSelector);

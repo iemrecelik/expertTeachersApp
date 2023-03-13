@@ -53,12 +53,14 @@ Route::prefix('admin')
 			'teachers/infos', 
 			'showTeacherInfos'
 		)
+		->middleware(['permission:show teachers'])
 		->name('teachers.infos');
 		
 		Route::post(
 			'teachers/infos/add-document-teacher', 
 			'addDocumentToTeacher'
 		)
+		->middleware(['permission:add document teachers'])
 		->name('teachers.infos.addDocumentToTeacher');
 
 		Route::delete(
@@ -69,6 +71,7 @@ Route::prefix('admin')
 			'teacher' => '[0-9]+',
 			'document' => '[0-9]+'
 		])
+		->middleware(['permission:delete document teachers'])
 		->name('teachers.infos.delDocumentToTeacher');
 
 		Route::post(
@@ -101,6 +104,7 @@ Route::prefix('admin')
 			'teachers/store/excel', 
 			'storeExcel'
 		)
+		->middleware(['permission:create excel teachers'])
 		->name('teachers.store.excel');
 		
 		Route::post(
@@ -120,6 +124,7 @@ Route::prefix('admin')
 			'teacherInfos/add-law-file-name', 
 			'addLawFile'
 		)
+		->middleware(['permission:create law_to_teachers'])
 		->name('teachers.teacherInfos.addLawFile');
 
 		Route::get(
@@ -138,12 +143,14 @@ Route::prefix('admin')
 			'teacherInfos/add-law-file-name/{lawsuitFile}', 
 			'deleteLawFile'
 		)
+		->middleware(['permission:delete law_to_teachers'])
 		->where(['lawsuitFile' => '[0-9]+']);
 
 		Route::put(
 			'teachers/store/with-mebbis',
 			'storeWithMebbis'
 		)
+		->middleware(['role:super_admin'])
 		->name('teachers.store.withMebbis');
 
 		Route::resource('teachers', TeachersController::class);
@@ -328,7 +335,7 @@ Route::prefix('admin/document-management')
     });
 
 Route::prefix('admin/document-management')
-    ->middleware('auth')
+    ->middleware('auth', 'role:super_admin')
     ->controller(DcWaitingController::class)
     ->name('admin.document_mng.')
     ->group(function () {
@@ -466,6 +473,7 @@ Route::prefix('admin/document-management')
 			'search/search-form', 
 			'searchForm'
 		)
+		->middleware(['permission:show module documents'])
 		->name('search.searchForm');
         
         Route::post(
@@ -482,7 +490,6 @@ Route::prefix('admin/document-management')
         ->name('search.show')
 		->middleware(['permission:show documents']);
     });
-
 
 /* Route::prefix('admin/document-management')
     ->middleware('auth')

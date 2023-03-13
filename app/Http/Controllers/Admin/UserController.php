@@ -57,49 +57,68 @@ class UserController extends Controller
     private function getTransPermName($name)
     {
         $permissions = [
-            'documents' => 'documents_module',
+            'documents'             => 'documents_module',
             'show module documents' => 'Evrak Modülü Yetkisi',
-            'show documents' => 'Evrak Göster',
-            'create documents' => 'Evrak Ekleme',
-            'edit documents' => 'Evrak Düzenleme',
-            'delete documents' => 'Evrak Silme',
+            'show documents'        => 'Evrak Göster',
+            'create documents'      => 'Evrak Ekleme',
+            'edit documents'        => 'Evrak Düzenleme',
+            'delete documents'      => 'Evrak Silme',
             
-            'categories' => 'categories_module',
+            'categories'             => 'categories_module',
             'show module categories' => 'Kategori Modülü Yetkisi',
-            'show categories' => 'Kategori Göster',
-            'create categories' => 'Kategori Ekleme',
-            'edit categories' => 'Kategori Düzenleme',
-            'delete categories' => 'Kategori Silme',
+            'show categories'        => 'Kategori Göster',
+            'create categories'      => 'Kategori Ekleme',
+            'edit categories'        => 'Kategori Düzenleme',
+            'delete categories'      => 'Kategori Silme',
 
-            'unions' => 'unions_module',
+            'unions'             => 'unions_module',
             'show module unions' => 'Sendika Modülü Yetkisi',
-            'show unions' => 'Sendika Göster',
-            'create unions' => 'Sendika Ekleme',
-            'edit unions' => 'Sendika Düzenleme',
-            'delete unions' => 'Sendika Silme',
+            'show unions'        => 'Sendika Göster',
+            'create unions'      => 'Sendika Ekleme',
+            'edit unions'        => 'Sendika Düzenleme',
+            'delete unions'      => 'Sendika Silme',
             
-            'institutions' => 'institutions_module',
-            'show module institutions' => 'Kurum Modülü Yetkisi',
-            'show institutions' => 'Kurum Göster',
-            'create institutions' => 'Kurum Ekleme',
-            'edit institutions' => 'Kurum Düzenleme',
-            'delete institutions' => 'Kurum Silme',
+            'institutions'              => 'institutions_module',
+            'show module institutions'  => 'Kurum Modülü Yetkisi',
+            'show institutions'         => 'Kurum Göster',
+            'create institutions'       => 'Kurum Ekleme',
+            'edit institutions'         => 'Kurum Düzenleme',
+            'delete institutions'       => 'Kurum Silme',
             
-            'lawsuits' => 'lawsuits_module',
-            'show module lawsuits' => 'Dava Modülü Yetkisi',
-            'show lawsuits' => 'Dava Gösterme',
-            'create lawsuits' => 'Dava Ekleme',
-            'edit lawsuits' => 'Dava Düzenleme',
-            'delete lawsuits' => 'Dava Silme',
+            'lawsuits'                  => 'lawsuits_module',
+            'show module lawsuits'      => 'Dava Modülü Yetkisi',
+            'show lawsuits'             => 'Dava Gösterme',
+            'create lawsuits'           => 'Dava Ekleme',
+            'edit lawsuits'             => 'Dava Düzenleme',
+            'delete lawsuits'           => 'Dava Silme',
+            'show statistical lawsuits' => 'Dava İstatistiklerini Göster',
+
+            'list'              => 'list_module',
+            'show module list'  => 'liste Modülü Yetkisi',
+            'show list'         => 'Liste Gösterme',
+            'create list'       => 'Liste Ekleme',
+            'edit list'         => 'Liste Düzenleme',
+            'delete list'       => 'Liste Silme',
+
+            'comment'                       => 'comment_module',
+            'show module document comment'  => 'Not Modülü Yetkisi',
+            'show document comment'         => 'Not Gösterme',
+            'create document comment'       => 'Not Ekleme',
+            'edit document comment'         => 'Not Düzenleme',
+            'delete document comment'       => 'Not Silme',
             
-            'teachers' => 'teachers_manage_module',
-            'show module teachers' => 'Öğretmen Yönetimi Yetkisi',
-            'show teachers' => 'Öğretmen Gösterme',
-            'create teachers' => 'Öğretmen Ekleme',
-            'create excel teachers' => 'Excel ile Öğretmenleri Ekleme',
-            'create images teachers' => 'Resim Dosyalarını Yükleme',
-            'edit teachers' => 'Öğretmen Düzenleme',
-            'delete teachers' => 'Öğretmen Silme',
+            'teachers'                  => 'teachers_manage_module',
+            'show module teachers'      => 'Öğretmen Yönetimi Yetkisi',
+            'show teachers'             => 'Öğretmen Gösterme',
+            'create teachers'           => 'Öğretmen Ekleme',
+            'create excel teachers'     => 'Excel ile Öğretmenleri Ekleme',
+            'create images teachers'    => 'Resim Dosyalarını Yükleme',
+            'edit teachers'             => 'Öğretmen Düzenleme',
+            'delete teachers'           => 'Öğretmen Silme',
+            'create law_to_teachers'    => 'Öğretmene Dava Ekleme',
+            'delete law_to_teachers'    => 'Öğretmenden Dava Silme',
+            'add document teachers'     => 'Öğretmene Evrak Ekleme',
+            'delete document teachers'  => 'Öğretmenden Evrak Silme',
 
             'document_record_reports' => "document_record_reports",
             'processes document_record_reports' => "Evrak Kayıt Raporu İşlemleri"
@@ -185,23 +204,9 @@ class UserController extends Controller
     public function store(StoreUserRequest $request)
     {
         $params = $request->all();
+        $params['password'] = \Illuminate\Support\Facades\Hash::make($params['password']);
 
-        $dcCat = DcCategory::where('dc_cat_name', $params['dc_cat_name']);
-
-        if(!empty($dcCat->first())) {
-            throw ValidationException::withMessages(
-                ['dc_cat_name' => 'Aynı isimde konu ekleyemezsiniz.']
-            );
-        }
-
-        $childCategory = DcCategory::create($params);
-
-        if($params['dc_cat_id'] > 0) {
-
-            $dcCategory = DcCategory::find($params['dc_cat_id']);
-            
-            $dcCategory->childCategory()->save($childCategory);
-        }
+        User::create($params);
     
         return ['succeed' => __('messages.add_success')];
     }
@@ -209,10 +214,10 @@ class UserController extends Controller
     /**
      * Display the specified resource.
      *
-     * @param  \App\Models\Admin\Category  $category
+     * @param  \App\Models\Admin\User  $user
      * @return \Illuminate\Http\Response
      */
-    public function show(DcCategory $category)
+    public function show(User $user)
     {
         //
     }

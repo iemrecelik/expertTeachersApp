@@ -26,6 +26,7 @@ class StoreUserRequest extends FormRequest
         return [
             'name'  => 'required|string',
             'email'  => 'required|email|unique:users,email',
+            'password'  => 'required',
         ];
     }
 
@@ -37,6 +38,7 @@ class StoreUserRequest extends FormRequest
     public function messages()
     {
         return [
+            'password.required' => 'Şifre girmek zorunludur.',
             'name.required' => 'Kullanıcı ismi zorunludur.',
             'name.string' => 'Kullanıcı ismi sadece rakamlardan oluşamaz.',
             'email.required' => 'Email adresi zorunludur.',

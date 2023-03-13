@@ -117,9 +117,22 @@ class LogsController extends Controller
         ->join('dc_cat as t1', 't1.dc_id', '=', 't0.id')
         ->join('dc_category as t2', 't2.id', '=', 't1.cat_id')
         ->join('dc_files as t3', 't3.dc_file_owner_id', '=', 't0.id')
+        ->where(\Illuminate\Support\Facades\DB::raw('
+                NOT EXISTS 
+                ( 
+                    SELECT 1
+                    FROM dc_archive AS t4
+                    WHERE t4.dc_arc_number = t0.dc_number
+                    AND t4.dc_arc_date = t0.dc_date
+                )
+            ')
+        )
         ->orderByRaw('t0.dc_date ASC')
+        // ->toSql();
         ->get()
         ->toArray();
+
+        // dd($documents);
 
         $archives = [];
         foreach ($documents as $dcKey => $dcVal) {
@@ -145,7 +158,7 @@ class LogsController extends Controller
                 ];
             }
         }
-// echo '<pre>';
+        // echo '<pre>';
         foreach ($archives as $arcVal) {
             $oldPath = 'public/upload/images/raw/'.$arcVal['dc_file_path'];
             /* $oldPath = str_replace('/', '\\', $arcVal['dc_file_path']);
@@ -161,7 +174,7 @@ class LogsController extends Controller
                 $newPath = "archives/$catName/$date-$number/$uniqPath";
                 /* var_dump($oldPath);
                 var_dump($newPath); */
-                Storage::copy($oldPath, $newPath);
+                // Storage::copy($oldPath, $newPath);
 
                 foreach ($arcVal['dc_att_file_path'] as $attFileVal) {
                     $attOldPath = 'public/upload/images/raw/'.$attFileVal;
@@ -172,11 +185,11 @@ class LogsController extends Controller
                     $attNewPath = "archives/$catName/$date-$number/Ekler/$attUniqPath";
                     /* var_dump($attOldPath);
                     var_dump($attNewPath); */
-                    Storage::copy($attOldPath, $attNewPath);    
+                    // Storage::copy($attOldPath, $attNewPath);    
                 }
             }
         }
-// die;
+        // die;
         dd($archives);
 
 

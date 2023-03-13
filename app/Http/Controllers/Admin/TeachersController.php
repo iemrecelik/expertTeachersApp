@@ -28,6 +28,14 @@ class TeachersController extends Controller
 
     public function __construct()
     {
+        /* İzinler başla */
+        $this->middleware(['permission:show module teachers'])->only('index');
+        $this->middleware(['permission:create teachers'])->only('store');
+        $this->middleware(['permission:edit teachers'])->only('edit');
+        $this->middleware(['permission:edit teachers'])->only('update');
+        $this->middleware(['permission:delete teachers'])->only('destroy');
+        /* İzinler bitiş */
+
         $provincesTbl = DB::table('provinces')->get();
         foreach ($provincesTbl as $prvKey => $prvVal) {
             $this->provinces[
@@ -41,7 +49,7 @@ class TeachersController extends Controller
                 \Transliterator::create('tr-title')->transliterate($twnVal->twn_name)
                 .'_'.$twnVal->prv_id
             ] = \Transliterator::create('tr-title')->transliterate($twnVal->id);
-        }    
+        }
     }
 
     public function addDocumentToTeacher(Request $request)
@@ -74,6 +82,7 @@ class TeachersController extends Controller
 
         return $result;
     }
+
     public function delDocumentToTeacher(Teachers $teacher, DcDocuments $document)
     {
         $res = DB::table('dc_thr')->where([
@@ -157,6 +166,7 @@ class TeachersController extends Controller
 
         return true;
     }
+
     public function addExcel(Request $request)
     {
         // Teachers::whereNotIn('id', ['1'])->delete();

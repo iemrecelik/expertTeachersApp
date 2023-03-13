@@ -86,6 +86,7 @@ return [
 	/* User */
 	'user_manage' => 'Kullanıcı Yönetimi',
 	'name' => 'İsim',
+	'password' => 'Şifre',
 	'email' => 'Email',
 	'user_permission' => 'Kullanıcı Yetkileri',
 

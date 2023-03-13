@@ -53,8 +53,26 @@ class PermissionSeeder extends Seeder
             'create images teachers',
             'edit teachers',
             'delete teachers',
+            'create law_to_teachers',
+            'delete law_to_teachers',
+            'add document teachers',
+            'delete document teachers',
 
-            'processes document_record_reports'
+            'processes document_record_reports',
+
+            'show statistical lawsuits',
+
+            'show module list',
+            'show list',
+            'create list',
+            'edit list',
+            'delete list',
+
+            'show module document comment',
+            'show document comment',
+            'create document comment',
+            'edit document comment',
+            'delete document comment'
         ];
 
         foreach ($permissions as $key => $val) {

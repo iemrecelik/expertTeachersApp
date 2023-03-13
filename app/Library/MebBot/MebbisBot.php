@@ -38,7 +38,8 @@ class MebbisBot extends MebBot
             $error = $this->browser->text('span#lblHata');
 
             throw ValidationException::withMessages(
-                ['row' => $error]
+                ['row' => 'Bir hata oluştu. MEBBİS\' in çalıştığından emin olun. 
+                Çalışıyorsa lütfen daha sonra tekrar deneyiniz. Yine çalışmazsa yöneticinize danışınız.']
             );
         }
 

@@ -1,36 +1,50 @@
 <template>
 <div>
-	<!-- <create-lang-form-component></create-lang-form-component> -->
-  <div class="row">
-    <div class="col-12">
+	<div class="row">
+    <div class="col-5">
       <div class="form-group">
-        <label for="exampleInputEmail1">
-          {{ $t('messages.categoryName') }}
-        </label>
-        <treeselect
-          name="dc_cat_id"
-          :options="categoryList"
-          :value=0
-          :disable-branch-nodes="false"
-          :show-count="true"
-          :placeholder="$t('messages.enterCategoryName')"
-        />
+        <label for="myset-name">{{$t('messages.name')}}: </label>
+        <input type="text" 
+          class="form-control" 
+          id="myset-name" 
+          :placeholder="$t('messages.name')"
+          name="name" 
+          value=""
+        >
+      </div>
+    </div>
+
+    <div class="col-5">
+      <div class="form-group">
+        <label for="user-email">{{$t('messages.email')}}: </label>
+        <input type="text" 
+          class="form-control" 
+          id="user-email" 
+          :placeholder="$t('messages.email')"
+          name="email" 
+          value=""
+          data-inputmask-regex="^([a-z0-9\+_\-]+)(\.[a-z0-9\+_\-]+)*@([a-z0-9\-]+\.)+[a-z]{2,6}$" 
+          data-mask
+        >
       </div>
     </div>
   </div>
+  
   <div class="row">
-    <div class="col-12">
-      <form-form-component
-        :ppsettings="{
-          type: 'text', 
-          fieldName: 'dc_cat_name', 
-          value: oldValue('dc_cat_name')
-        }"
-      >
-      </form-form-component>
+    <div class="col-5">
+      <div class="form-group">
+        <label for="password">{{$t('messages.password')}}: </label>
+        <input type="password" 
+          class="form-control" 
+          id="password" 
+          :placeholder="$t('messages.password')"
+          name="password" 
+          value=""
+        >
+      </div>
     </div>
   </div>
-  
+
 </div>
 </template>
 
@@ -47,8 +61,6 @@ export default {
   name: 'CreateFormComponent',
   data () {
     return {
-      categoryList: [],
-      ajaxErrorCount: -1,
     }
   },
   computed: {
@@ -60,35 +72,14 @@ export default {
     oldValue: function(fieldName){
       return this.$store.state.old[fieldName];
     },
-    getCategory: function() {
-      $.ajax({
-        url: this.routes.getCategory,
-        type: 'GET',
-        dataType: 'JSON',
-      })
-      .done((res) => {
-        this.categoryList = res;
-        this.ajaxErrorCount = -1;
-      })
-      .fail((error) => {
-
-        setTimeout(() => {
-          this.ajaxErrorCount++
-
-          if(this.ajaxErrorCount < 3)
-            this.getCategory();
-          else
-            this.ajaxErrorCount = -1;
-
-        }, 100);
-        
-      })
-      .then((res) => {})
-      .always(() => {});
-    }
   },
-  created() {
-    this.getCategory();
+  created() {},
+  mounted() {
+    /* mask oluşturma başla */
+    var email = document.getElementById("user-email");
+    var im = new Inputmask();
+    im.mask(email);
+    /* mask oluşturma bitiş */
   },
   components: {
     Treeselect
