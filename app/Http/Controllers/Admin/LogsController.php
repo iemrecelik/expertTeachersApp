@@ -101,7 +101,7 @@ class LogsController extends Controller
         return $uniqPath;
     }
 
-    public function index()
+    public function index2()
     {
         // dd(Storage::path('public/upload/images/2023/02/27/16/hatay_uzman.udf'));
         /* $raw = 'public/upload/images/raw/2023/02/27/16/hatay_uzman.udf';
@@ -172,8 +172,7 @@ class LogsController extends Controller
                 $uniqPath = $this->generateArchiveNewPath($oldPath);
 
                 $newPath = "archives/$catName/$date-$number/$uniqPath";
-                /* var_dump($oldPath);
-                var_dump($newPath); */
+
                 // Storage::copy($oldPath, $newPath);
 
                 foreach ($arcVal['dc_att_file_path'] as $attFileVal) {
@@ -308,6 +307,19 @@ class LogsController extends Controller
             } 
         } */
 
+        $users = User::all();
+        return view(
+            'admin.logs.index', 
+            [
+                'datas' => [
+                    'users' => $users
+                ]
+            ]
+        );
+    }
+
+    public function index()
+    {
         $users = User::all();
         return view(
             'admin.logs.index', 

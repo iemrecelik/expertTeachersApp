@@ -75,11 +75,13 @@ return [
 
 
 	/* Document List */
+	'list_module' => 'Liste Modülü',
 	'dc_list_name' => 'Liste Adı',
 	'user_name' => 'Kullanıcı Adı',
 	'listManage' => 'Liste Yönetimi',
 
 	/* Comment */
+	'comment_module' => 'Evrak Notları Modülü',
 	'dc_com_text' => 'Not',
 	'DocumentCommentManage' => 'Evrak Notları Yönetimi',
 
@@ -125,10 +127,12 @@ return [
 	'addTeacherWithMebbis' => 'Mebbis İle Yükleme',
 
 	/* Institution */
+	'institutions_module' => 'Kurum Modülü',
 	'inst_name' => 'Kurum İsmi',
 	'institutionList' => 'Kurum Listesi',
 	
 	/* Unions */
+	'unions_module' => 'Sendika Modülü',
 	'uns_name' => 'Sendika İsmi',
 	'unionsList' => 'Sendika Listesi',
 	

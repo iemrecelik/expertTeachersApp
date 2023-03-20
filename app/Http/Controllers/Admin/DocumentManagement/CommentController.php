@@ -14,11 +14,11 @@ use App\Http\Requests\Admin\DocumentManagement\UpdateDcCommentRequest;
 class CommentController extends Controller
 {
     public function __construct() {
-        $this->middleware(['permission:show module comment'])->only('index');
+        /*$this->middleware(['permission:show module comment'])->only('index');
         $this->middleware(['permission:create comment'])->only('store');
         $this->middleware(['permission:edit comment'])->only('edit');
         $this->middleware(['permission:edit comment'])->only('update');
-        $this->middleware(['permission:delete comment'])->only('destroy');
+        $this->middleware(['permission:delete comment'])->only('destroy');*/
     }
 
     /**
@@ -307,6 +307,7 @@ class CommentController extends Controller
             129- öğretmen profilinde evrak eklerken hatalar ekrana yazılsın.
             130- dava ekleme de eklenen yazının detayını göstermiyor. (pdf olduğu için detay göstermiyor.)
             131- evrak güncelleme ve silme yaparken arşivdeki dosya silinsin.
+            132- evrak notlarının izinleri iptal edildi. Düzeltilecek.
         */
 
         $request->validate(

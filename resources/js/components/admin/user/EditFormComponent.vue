@@ -39,6 +39,7 @@
           <option selected value="">{{$t('messages.select_role')}}.</option>
           <!-- <option :selected="item.roles[0].name == 'admin'" value="admin">Admin</option>
           <option :selected="item.roles[0].name == 'auth_admin'" value="auth_admin">Yetkili Admin</option> -->
+          <option :selected="hasRole(item, 'staff')" value="staff">Personel</option>
           <option :selected="hasRole(item, 'admin')" value="admin">Admin</option>
           <option :selected="hasRole(item, 'auth_admin')" value="auth_admin">Yetkili Admin</option>
         </select>

@@ -115,8 +115,8 @@ class UserController extends Controller
             'create images teachers'    => 'Resim Dosyalarını Yükleme',
             'edit teachers'             => 'Öğretmen Düzenleme',
             'delete teachers'           => 'Öğretmen Silme',
-            'create law_to_teachers'    => 'Öğretmene Dava Ekleme',
-            'delete law_to_teachers'    => 'Öğretmenden Dava Silme',
+            'create law to teachers'    => 'Öğretmene Dava Ekleme',
+            'delete law to teachers'    => 'Öğretmenden Dava Silme',
             'add document teachers'     => 'Öğretmene Evrak Ekleme',
             'delete document teachers'  => 'Öğretmenden Evrak Silme',
 
