@@ -13,17 +13,19 @@ class LogInfo
     private $user;
     private $moduleName;
 
-    public function __construct($moduleName)
+    public function __construct($moduleName = '')
     {
         $this->user = Auth::user();
         $this->moduleName = $moduleName;
     }
 
-    public function crShowLog($message)
+    public function crShowLog($message, $path = null)
     {
+        $path = $path ?? 'logs/users/'.strtotime(date('d.m.Y')).'/'.$this->user->email.'.log';
+
         Log::build([
             'driver' => 'single',
-            'path' => storage_path('logs/users/'.strtotime(date('d.m.Y')).'/'.$this->user->email.'.log'),
+            'path' => storage_path($path),
         ])->info($message);
     }
 

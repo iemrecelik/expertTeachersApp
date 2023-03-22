@@ -101,8 +101,134 @@ class LogsController extends Controller
         return $uniqPath;
     }
 
-    public function index2()
+    private function lawsuitList()
     {
+        $lawsuits = \Illuminate\Support\Facades\DB::table('lawsuits as t0')->selectRaw("
+            ROW_NUMBER() OVER (
+                ORDER BY t0.id ASC) line,
+            (
+                SELECT 
+                    GROUP_CONCAT(t5.dc_cat_name) 
+                FROM 
+                    dc_cat AS t4
+                INNER JOIN 
+                    dc_category AS t5 ON t5.id = t4.cat_id
+                WHERE t4.dc_id = t3.id
+            ) AS dc_cat_name,
+            t1.thr_tc_no, 
+            CONCAT(t1.thr_name, ' ', t1.thr_surname) AS thr_name_surname, 
+            t2.uns_name, t3.dc_base_number, t0.law_brief, 
+            t3.dc_number, t3.dc_subject, 
+            IF(t3.dc_item_status = '0', 'GELEN', 'GİDEN' ) AS dc_item_status,
+            CONCAT(
+                DATE_SUB(
+                    DATE_FORMAT(
+                        FROM_UNIXTIME(t3.dc_date), 
+                        '%Y-%m-%d'
+                    ),
+                    INTERVAL 1 DAY
+                ),
+                '-', t3.dc_number
+            ) AS 'archive_name'
+        ")
+        ->leftJoin('teachers as t1', 't1.id', '=', 't0.thr_id')
+        ->leftJoin('unions as t2', 't2.id', '=', 't0.uns_id')
+        ->join('dc_documents AS t3', 't3.id', '=', 't0.dc_id')
+        ->orderBy('t0.id', 'asc')
+        ->get();
+
+        // dd($lawsuits);
+        
+        $lawsuitsAtt = \Illuminate\Support\Facades\DB::table('lawsuits as t0')
+            ->selectRaw("
+                ROW_NUMBER() OVER (
+                    ORDER BY t0.id ASC) line,
+                (
+                    SELECT 
+                        GROUP_CONCAT(t5.dc_cat_name) 
+                    FROM 
+                        dc_cat AS t4
+                    INNER JOIN 
+                        dc_category AS t5 ON t5.id = t4.cat_id
+                    WHERE t4.dc_id = t3.id
+                ) AS dc_cat_name,
+                t1.thr_tc_no, 
+                CONCAT(t1.thr_name, ' ', t1.thr_surname) AS thr_name_surname, 
+                t2.uns_name, t3.dc_base_number, t0.law_brief, 
+                t3.dc_number, t3.dc_subject, 
+                IF(t3.dc_item_status = '0', 'GELEN', 'GİDEN' ) AS dc_item_status,
+                CONCAT(
+                    DATE_SUB(
+                        DATE_FORMAT(
+                            FROM_UNIXTIME(t3.dc_date), 
+                            '%Y-%m-%d'
+                        ),
+                        INTERVAL 1 DAY
+                    ),
+                    '-', t3.dc_number
+                ) AS 'archive_name'
+            ")
+            ->leftJoin('teachers as t1', 't1.id', '=', 't0.thr_id')
+            ->leftJoin('unions as t2', 't2.id', '=', 't0.uns_id')
+            ->join('law_dc AS t4', 't4.law_id', '=', 't0.id')
+            ->join('dc_documents AS t3', 't3.id', '=', 't4.dc_id')
+            ->orderBy('t0.id', 'asc')
+            ->get();
+
+        $documentBelongToTeacher = \Illuminate\Support\Facades\DB::table('dc_thr as t0')
+            ->selectRaw("
+                ROW_NUMBER() OVER (
+                    ORDER BY t1.thr_tc_no ASC) line,
+                t1.thr_tc_no, 
+                CONCAT(t1.thr_name, ' ', t1.thr_surname) AS thr_name_surname, 
+                t2.dc_number, t2.dc_subject, 
+                IF(t2.dc_item_status = '0', 'GELEN', 'GİDEN' ) AS dc_item_status,
+                CONCAT(
+                    DATE_SUB(
+                        DATE_FORMAT(
+                            FROM_UNIXTIME(t2.dc_date), 
+                            '%Y-%m-%d'
+                        ),
+                        INTERVAL 1 DAY
+                    ),
+                    '-', t2.dc_number
+                ) AS 'archive_name'
+            ")
+            ->join('teachers AS t1', 't1.id', '=', 't0.thr_id')
+            ->join('dc_documents AS t2', 't2.id', '=', 't0.dc_id')
+            ->orderBy('t1.thr_tc_no', 'asc')
+            ->get();
+        
+            $documents = \Illuminate\Support\Facades\DB::table('dc_documents as t0')
+                ->selectRaw("
+                    ROW_NUMBER() OVER (
+                        ORDER BY t0.dc_number ASC) line, 
+                    t0.dc_number, t0.dc_subject, 
+                    IF(t0.dc_item_status = '0', 'GELEN', 'GİDEN' ) AS dc_item_status,
+                    CONCAT(
+                        DATE_SUB(
+                            DATE_FORMAT(
+                                FROM_UNIXTIME(t0.dc_date), 
+                                '%Y-%m-%d'
+                            ),
+                            INTERVAL 1 DAY
+                        ),
+                        '-', t0.dc_number
+                    ) AS 'archive_name'
+                ")
+                ->orderBy('t0.dc_number', 'asc')
+                ->get();
+        dd([
+            $lawsuits->toArray(),
+            $lawsuitsAtt->toArray(),
+            $documentBelongToTeacher->toArray(),
+            $documents->toArray(),
+        ]);
+    }
+
+    public function index()
+    {
+        $this->lawsuitList();
         // dd(Storage::path('public/upload/images/2023/02/27/16/hatay_uzman.udf'));
         /* $raw = 'public/upload/images/raw/2023/02/27/16/hatay_uzman.udf';
         var_dump(Storage::path($raw));
@@ -318,7 +444,7 @@ class LogsController extends Controller
         );
     }
 
-    public function index()
+    public function index2()
     {
         $users = User::all();
         return view(

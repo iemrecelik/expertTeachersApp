@@ -280,6 +280,13 @@ Route::prefix('admin/document-management')
 		->name('document.manualStore')
 		->middleware(['permission:create documents']);
 
+		/* Route::post(
+			'document/validation-manual-store', 
+			'validateManuelStore'
+		)
+		->name('document.validateManuelStore')
+		->middleware(['permission:create documents']); */
+
 		Route::post(
 			'document/udf-control', 
 			'udfControl'

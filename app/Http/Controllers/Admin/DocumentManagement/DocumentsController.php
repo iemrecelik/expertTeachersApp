@@ -185,6 +185,17 @@ class DocumentsController extends Controller
     }
 
     /**
+     * Form request validation.
+     *
+     * @param  StoreManualDcDocumentsRequest  $request
+     * @return bool
+     */
+    /* public function validateManuelStore(StoreManualDcDocumentsRequest $request)
+    {
+        return true;
+    } */
+
+    /**
      * Store a newly manual created resource in storage.
      *
      * @param  StoreManualDcDocumentsRequest  $request
@@ -1134,9 +1145,15 @@ class DocumentsController extends Controller
             );
         }
 
+        /* Evrak Durumu başla */
+        $itemStatus = explode('-', trim($number[1]));
+        $itemStatus = $itemStatus[1] == '20299769' ? '1' : '0';
+        /* Evrak Durumu bitiş */
+
         $arr = [
             'sender' => trim($sender[1]),
             'subjectNumber' => trim($number[1]),
+            'itemStatus' => trim($itemStatus),
             'number' => trim($number[2]),
             'date' => trim($number[3]),
             'subject' => trim($receiver[1]),
