@@ -19,6 +19,7 @@ class SettingsController extends Controller
         $setting = Settings::find(1);
         $signatureNames = explode('|', $setting->set_raw_auth_signature_names);
         $ipNames = explode('|', $setting->set_ip_names);
+        $allowFileExt = explode('|', $setting->set_allow_file_ext);
 
         $ipNames = array_map(function($name) {
             return [
@@ -34,6 +35,13 @@ class SettingsController extends Controller
             ];
         }, $signatureNames);
 
+        $allowFileExt = array_map(function($name) {
+            return [
+                'label' => $name,
+                'id' => $name
+            ];
+        }, $allowFileExt);
+
         return view('admin.settings.index', [
             'ipNames' => [
                 'arr' => $ipNames,
@@ -43,6 +51,11 @@ class SettingsController extends Controller
             'signatureNames' => [
                 'arr' => $signatureNames,
                 'val' => array_column($signatureNames, 'id')
+            ],
+
+            'allowFileExt' => [
+                'arr' => $allowFileExt,
+                'val' => array_column($allowFileExt, 'id')
             ],
         ]);
     }

@@ -29,9 +29,9 @@ class AppServiceProvider extends ServiceProvider
         $logInfo = new \App\Library\LogInfo();
         $logInfo->crShowLog($ip.' ip numarasıyla sayfaya istekte bulunuldu.', 'logs/guest/requestIp.log');
 
-        /* if($ip !== "::1" && $ip !== "10.8.41.54") {
+        if($ip !== "::1" && $ip !== "10.8.41.54") {
             abort(403, "SİTE BAKIMDADIR. KISA SÜRE İÇİNDE AÇILACAK.");
-        } */
+        }
 
         if($ip !== "::1" && $ip !== "10.8.41.54" && $ip !== "127.0.0.1") {
             $settings = Settings::whereRaw('set_ip_names LIKE ?', ['%'.$ip.'%'])

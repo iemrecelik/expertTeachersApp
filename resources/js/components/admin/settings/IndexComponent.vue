@@ -56,6 +56,30 @@
       </div>
     </div>
 
+    <div class="row">
+      <div class="col-12">
+        <div class="form-group">
+          <label for="allow-file-ext">{{$t('messages.allow_file_extension')}}: </label>
+          <treeselect
+            :id="'allow-file-ext'"
+            :multiple="true"
+            :async="true"
+            :load-options="loadAllowFileExt"
+            :defaultOptions="allowFileExtOptArr"
+            v-model="allowFileExtArr"
+            loadingText="Yükleniyor..."
+            clearAllText="Hepsini sil."
+            clearValueText="Değeri sil."
+            noOptionsText="Hiçbir seçenek yok."
+            noResultsText="Mevcut seçenek yok."
+            searchPromptText="Aramak için yazınız."
+            placeholder="Seçiniz..."
+            name="allow_file_ext[]"
+          />
+        </div>
+      </div>
+    </div>
+
     <button type="submit" class="btn btn-primary">Kaydet</button>
   </form>
 </template-component>
@@ -84,6 +108,8 @@ export default {
       authSignatureArr: null,
       ipNamesOptArr: null,
       ipNamesArr: null,
+      allowFileExtOptArr: null,
+      allowFileExtArr: null,
     };
   },
   props: {
@@ -104,6 +130,10 @@ export default {
       required: true,
     },
     ppsignaturenames: {
+      type: Object,
+      required: true,
+    },
+    ppallowfileext: {
       type: Object,
       required: true,
     },
@@ -133,6 +163,13 @@ export default {
           callback(null, [{id: searchQuery, label: searchQuery }]);
         })
       }
+    },
+    loadAllowFileExt({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+          callback(null, [{id: searchQuery, label: searchQuery }]);
+        })
+      }
     }
   },
   created(){
@@ -141,6 +178,9 @@ export default {
     
     this.ipNamesOptArr = this.ppipnames.arr;
     this.ipNamesArr = this.ppipnames.val;
+
+    this.allowFileExtOptArr = this.ppallowfileext.arr;
+    this.allowFileExtArr = this.ppallowfileext.val;
 
     this.setRoutes(this.pproutes);
     this.setErrors(this.pperrors);
