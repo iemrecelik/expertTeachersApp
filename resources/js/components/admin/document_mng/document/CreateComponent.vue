@@ -5,6 +5,13 @@
 >
 	<error-msg-list-component></error-msg-list-component>
 	<succeed-msg-component></succeed-msg-component>
+	
+	<div class="alert alert-info" role="alert">
+		<ul>
+			<li>Sistemde yüklü olan evrağı yeniden yükelmeye çalışmayınız. Hata verecektir.</li>
+			<li>İlgi göstereceğiniz evrak sistemde yüklü ise ilgi formu açmadan evrak sayısı ile ekleyiniz.</li>
+		</ul>
+	</div>
 
   <!-- <form :id="formIDName" @submit.prevent> -->
   <form :id="formIDName" 

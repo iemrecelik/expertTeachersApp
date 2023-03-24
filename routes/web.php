@@ -124,7 +124,7 @@ Route::prefix('admin')
 			'teacherInfos/add-law-file-name', 
 			'addLawFile'
 		)
-		->middleware(['permission:create law_to_teachers'])
+		->middleware(['permission:create law to teachers'])
 		->name('teachers.teacherInfos.addLawFile');
 
 		Route::get(
@@ -143,7 +143,7 @@ Route::prefix('admin')
 			'teacherInfos/add-law-file-name/{lawsuitFile}', 
 			'deleteLawFile'
 		)
-		->middleware(['permission:delete law_to_teachers'])
+		->middleware(['permission:delete law to teachers'])
 		->where(['lawsuitFile' => '[0-9]+']);
 
 		Route::put(
