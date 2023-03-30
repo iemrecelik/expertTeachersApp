@@ -477,6 +477,8 @@ export default {
 			})
 			.fail((error) => {
 				if(error.responseJSON){
+					this.resetFieldValues();
+					
 					if(
 						typeof error.responseJSON.errors.manuel === 'object' &&
 						error.responseJSON.errors.manuel !== null
@@ -493,8 +495,6 @@ export default {
 						/* let files = event.target;
 						files.value = null; */
 					}
-
-					this.resetFieldValues();
 
 					this.setErrors(error.responseJSON.errors);
 					this.$parent.$parent.modalErrorMsgShow(true);

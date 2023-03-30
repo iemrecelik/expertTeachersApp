@@ -190,10 +190,62 @@ class DocumentsController extends Controller
      * @param  StoreManualDcDocumentsRequest  $request
      * @return bool
      */
-    /* public function validateManuelStore(StoreManualDcDocumentsRequest $request)
+    public function validateManuelStore(StoreManualDcDocumentsRequest $request)
     {
+        $params = $request->all();
+
+        $this->sameDocumentControl($params);
+
+        $arr = $this->setParamsIntoArr($params, $request, 1);
+
+        if ($request->hasFile('dc_sender_file')) {
+
+            $pattern = "/^.*\.(udf)$/i";
+            preg_match(
+                $pattern, 
+                $request->file('dc_sender_file')->getClientOriginalName(),
+                $orjExtension
+            );
+
+            if(!empty($orjExtension[1])) {
+                /* İmza kontrolü yapma başla */
+                $this->signatureControl($request->file('dc_sender_file'));
+                /* İmza kontrolü yapma bitiş */
+
+                $this->fileContentCtrl($request->file('dc_sender_file'), $arr);
+            }
+        }
+
+        if (isset($params['rel_dc_number'])) {
+            
+            foreach ($params['rel_dc_number'] as $key => $val) {
+                if($request->hasFile('rel_dc_sender_file')) {
+
+                    if (isset($request->file('rel_dc_sender_file')[$key])) {
+
+                        $pattern = "/^.*\.(udf)$/i";
+                        preg_match(
+                            $pattern, 
+                            $request->file('rel_dc_sender_file')[$key]->getClientOriginalName(),
+                            $orjExtension
+                        );
+
+                        if(!empty($orjExtension[1])) {
+                            $relArr = $this->setParamsIntoArr($params, $request, 0, $key);
+
+                            /* İmza kontrolü yapma başla */
+                            $this->signatureControl($request->file('rel_dc_sender_file')[$key]);
+                            /* İmza kontrolü yapma bitiş */
+
+                            $this->fileContentCtrl($request->file('rel_dc_sender_file')[$key], $relArr);
+                        }
+                    }
+                }
+            }
+        }
+
         return true;
-    } */
+    }
 
     /**
      * Store a newly manual created resource in storage.

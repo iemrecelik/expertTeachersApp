@@ -308,6 +308,8 @@ class CommentController extends Controller
             130- dava ekleme de eklenen yazının detayını göstermiyor. (pdf olduğu için detay göstermiyor.)
             131- evrak güncelleme ve silme yaparken arşivdeki dosya silinsin.
             132- evrak notlarının izinleri iptal edildi. Düzeltilecek.
+            +++ 133- evrak ekleme yaparken manuel de evrağın içeriğini kaydetmiyor.
+            +++ 134- evrak bilgisini gösterirken pdf ve manuel girilmiş evrak lar gösterilmesin.
         */
 
         $request->validate(

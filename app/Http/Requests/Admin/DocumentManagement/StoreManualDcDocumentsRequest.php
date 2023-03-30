@@ -25,8 +25,9 @@ class StoreManualDcDocumentsRequest extends FormRequest
     {
         return [
             'dc_cat_id.*'               => 'required|integer|notIn:0',
-            'dc_sender_file'            => 'required|file',
-            'dc_sender_attach_files.*'  => 'file',
+            // 'dc_sender_file'            => 'required|file',
+            'dc_sender_file'            => ['required', 'file', new \App\Rules\ValidateUploadFileExt()],
+            'dc_sender_attach_files.*'  => ['file', new \App\Rules\ValidateUploadFileExt()],
             'dc_who_send'               => 'required|string',
             'dc_who_receiver'           => 'required|string',
             'dc_number'                 => 'required|integer',

@@ -74,7 +74,7 @@
             noResultsText="Mevcut seçenek yok."
             searchPromptText="Aramak için yazınız."
             placeholder="Seçiniz..."
-            name="allow_file_ext[]"
+            name="set_allow_file_ext[]"
           />
         </div>
       </div>
