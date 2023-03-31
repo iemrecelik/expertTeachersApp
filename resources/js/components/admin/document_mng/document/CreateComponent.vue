@@ -15,6 +15,7 @@
 
   <!-- <form :id="formIDName" @submit.prevent> -->
   <form :id="formIDName" 
+		@submit.prevent
 		method="post" 
 		action="/admin/document-management/document/manual-store"
 		enctype="multipart/form-data"
@@ -249,7 +250,11 @@
 
 				</div>
 			</div>
-			<button id="document-submit" disabled type="submit" class="btn btn-primary">Kaydet</button>
+			<button id="document-submit" disabled type="submit" class="btn btn-primary"
+				@click="saveForm"
+			>
+				Kaydet
+			</button>
 		</div>
 	</form>
 
@@ -661,7 +666,97 @@ export default {
 			}
 
 			return bool;
-		}
+		},
+
+		saveForm: function() {
+			let data = new FormData();
+
+      let senderFileEl = document.getElementsByName('dc_sender_file');
+			data.append('dc_sender_file', senderFileEl[0].files[0]);
+
+      let relSenderFilesEl = document.getElementsByName('rel_dc_sender_file[]');
+
+			console.log(relSenderFilesEl);
+
+			for (let i = 0; i < relSenderFilesEl.length; i++) {
+				
+				console.log('element');
+				console.log(relSenderFilesEl[i]);
+
+				for (let j = 0; j < relSenderFilesEl[i].files.length; j++) {
+
+					console.log('file: ');	
+					console.log(relSenderFilesEl.files[j]);	
+
+					data.append('rel_dc_sender_file[]', relSenderFilesEl.files[j]);
+				}
+			}
+
+			console.log(data);
+
+			return false;
+
+      /* for (let i = 0; i < file.files.length; i++) {
+        data.append('images_file[]', file.files[i]);
+      } */
+			let form = $('#' + this.formIDName);
+
+			// data.append(file.name, file.files[0]);
+
+      let otherDatas = form.serializeArray();
+
+      otherDatas.forEach(item => {
+        data.append(item.name, item.value);
+      });
+
+      data.append('preview', true);
+
+			/* console.log(form);
+			console.log(form.serialize()); */
+
+      $.ajax({
+        url: '/admin/document-management/document/manual-store',
+        enctype: 'multipart/form-data',
+        type: 'POST',
+        dataType: 'JSON',
+        processData: false,
+        contentType: false,
+        cache: false,
+        data: data,
+        beforeSend: function () {
+          // $('.images-loading').show();
+        }
+      })
+      .done((res) => {
+        this.setErrors('');
+        this.setSucceed(res.succeed);
+        this.setInfoMsg(res.infoMsg);
+        document.getElementById(this.formIDName).reset();
+      })
+      .fail((error) => {
+        this.setSucceed('');
+        this.setInfoMsg('');
+        if(error.responseJSON) {
+          if(error.responseJSON.errors) {
+            this.setErrors(error.responseJSON.errors);
+          }else if(error.responseJSON.message) {
+            this.setErrors(
+              {'permissionMessage': [error.responseJSON.message]}
+            );
+          }
+        }
+        // this.setErrors(error.responseJSON.errors);
+      })
+      .then((res) => {
+        this.$parent.$parent.dataTable.ajax.reload();
+      })
+      .always(() => {
+        // this.$refs.createExcelFormComponent.getCategory();
+        this.formElement.scrollTo(0, 0);
+        $('.images-loading').hide();
+      });
+
+    },
   },
   created() {
 		this.setRoutes(this.pproutes);
