@@ -105,6 +105,7 @@
 									:multiple="false"
 									:async="true"
 									:load-options="loadDcNumbers"
+									:cacheOptions="false"
 									v-model="selectedDcNumber"
 									loadingText="Yükleniyor..."
 									clearAllText="Hepsini sil."
@@ -153,15 +154,16 @@
 								<span>{{ dcItemVal.date }}</span>	
 							</div>
 						</div>
+
 						<div class="col-3">
 							<div class="mt-4">
-								<span v-if="extUdfControl(dcItemVal.path)"
+								<span v-if="extUdfControl(dcItemVal.path) && dcItemVal.content"
 									data-toggle="tooltip" 
 									data-placement="top" 
 									:title="$t('messages.showDocument')"
 								>
 									<a tabindex="0" class="btn btn-sm btn-info" 
-										:id="'dc-show-document-'+dcItemKey"
+										:id="'dc-show-document-'+dcItemVal.id"
 										role="button" 
 										data-toggle="popover" 
 										data-trigger="focus" 
@@ -171,20 +173,22 @@
 									</a>
 								</span>
 
-								<span v-else
+								<input v-else type="hidden" :id="'dc-show-document-'+dcItemVal.id">
+
+								<!-- <span v-else
 									data-toggle="tooltip" 
 									data-placement="top" 
 									:title="$t('messages.showDocument')"
 								>
 									<a tabindex="0" class="btn btn-sm btn-info" 
-										:id="'dc-show-document-'+dcItemKey"
+										:id="'dc-show-document-'+dcItemVal.id"
 										role="button" 
 										:href="'/storage/upload/images/raw'+dcItemVal.path"
               			target="_blank"
 									>
 										<i class="bi bi-file-text"></i>
 									</a>
-								</span>
+								</span> -->
 
 								<span 
 									data-toggle="tooltip" 
@@ -646,18 +650,23 @@ export default {
 
 							if(Object.keys(this.addedDcNumbers).length == (j+1)) {
 								this.addedDcNumbers.push(item);
-								this.loadPoppever((this.addedDcNumbers.length-1), item.content, item.path);
+								// this.loadPoppever((this.addedDcNumbers.length-1), item.content, item.path);
+								this.loadPoppever(item.id, item.content, item.path);
 							}
 						}
 					}else {
 						this.addedDcNumbers.push(item);
-						this.loadPoppever((this.addedDcNumbers.length-1), item.content, item.path);
+						// this.loadPoppever((this.addedDcNumbers.length-1), item.content, item.path);
+						this.loadPoppever(item.id, item.content, item.path);
 					}
 				}//if (this.selectedDcNumber == item.id) end
 			}//for end
 		},
 		delDocument: function (key) {
 			this.addedDcNumbers.splice(key, 1);
+			this.addedDcNumbers.forEach(dcNumber => {
+				this.loadPoppever(dcNumber.id, dcNumber.content, dcNumber.path);
+			});
 		},
 		extUdfControl: function(path) {
 			let ext = path.match(/\.[0-9a-z]+$/i)[0];
@@ -690,7 +699,8 @@ export default {
 			});
 
 			this.loadPoppever(
-				(this.addedDcNumbers.length-1), 
+				// (this.addedDcNumbers.length-1), 
+				relVal.id, 
 				relVal.dc_show_content, 
 				relVal.dc_files.dc_file_path
 			);

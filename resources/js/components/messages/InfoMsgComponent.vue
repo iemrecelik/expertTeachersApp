@@ -9,13 +9,25 @@
 <script>
 export default {
   name: 'InfoMsgComponent',
+	data () {
+		return {
+			// infoMsg: this.ppinfomsg
+		}
+	},
+	props: {
+		ppinfomsg: {
+			type: String,
+			required: false,
+			default: null
+		},
+	},
   computed: {
   	infoMsg: function(){
-  		return 	this.$store.state.infoMsg;
+  		return 	 this.ppinfomsg ?? this.$store.state.infoMsg;
   	},
 		isInfoMsg: function(){
 			return !_.isEmpty(this.infoMsg);
 		},
-	},
+	}
 }
 </script>

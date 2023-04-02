@@ -432,7 +432,7 @@ export default {
         // this.$parent.dataTable.ajax.reload();				
       })
       .always(() => {
-				this.$parent.$parent.checkForm();
+				// this.$parent.$parent.checkForm(); // form kontrolü yapılmayacak
         // this.formElement.scrollTo(0, 0);
         // btn.classList.remove("running");
       });

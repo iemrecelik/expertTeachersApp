@@ -17,6 +17,7 @@ class CreateSettingsTable extends Migration
             $table->id();
             $table->text('set_auth_signature_names');
             $table->text('set_raw_auth_signature_names');
+            $table->text('set_allow_file_ext');
             $table->text('set_ip_names')->nullable()->default(null);
             $table->timestamps();
         });
