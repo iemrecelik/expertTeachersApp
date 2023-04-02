@@ -27,8 +27,8 @@
 		
 		<div class="col-3">
 			<div class="form-group">
-				<label for="validationCustom04">Evrağın Durumu</label>
-				<select id="validationCustom04" 
+				<label for="item-status-selectbox">Evrağın Durumu</label>
+				<select id="item-status-selectbox" 
 					class="custom-select"
 					required 
 					:name="fieldNames.itemStatus"
@@ -148,7 +148,9 @@
 					</div>
 				</div>
 					<!-- Manuel olarak eklemek için: -->
-				<input type="file" :id="fileInputId" multiple
+				<input type="file" :id="fileInputId" 
+					class="attachment-files"
+					multiple
 					:name="fieldNames.senderAttachFiles"
 				/>
 			</div>
@@ -166,6 +168,7 @@
 							aria-describedby="emailHelp" 
 							:name="fieldNames.number"
 							v-model="fieldValues.number"
+							required
 						>
 						<!-- <small id="emailHelp" class="form-text text-muted">
 							Evrağın benzersiz numarası.
@@ -179,6 +182,7 @@
 							aria-describedby="emailHelp" 
 							:name="fieldNames.date"
 							v-model="fieldValues.date"
+							required
 						>
 						<small id="emailHelp" class="form-text text-muted">
 							Evrağın gönderildiği tarih.
@@ -193,6 +197,7 @@
 							aria-describedby="emailHelp"
 							:name="fieldNames.subject"
 							v-model="fieldValues.subject" 
+							required
 						>
 						</textarea>
 						<small id="emailHelp" class="form-text text-muted">
@@ -229,6 +234,7 @@
 					aria-describedby="emailHelp" 
 					:name="fieldNames.sender"
 					v-model="fieldValues.sender"
+					required
 				>
 				</textarea>
 				<small id="emailHelp" class="form-text text-muted">Evrağı gönderen yer.</small>
@@ -243,6 +249,7 @@
 					aria-describedby="emailHelp" 
 					:name="fieldNames.receiver"
 					v-model="fieldValues.receiver" 
+					required
 				>
 				</textarea>
 				<small id="emailHelp" class="form-text text-muted">
@@ -440,33 +447,38 @@ export default {
 				data.append(event.target.name, files[i])
 			}
 			
-      /* let btn = event.target;
-      btn.classList.add("running"); */
+			/* let btn = event.target;
+			btn.classList.add("running"); */
 
-      $.ajax({
-        url: this.routes.udfControl,
-        enctype: 'multipart/form-data',
-        type: 'POST',
-        data: data,
-        processData: false,
-        contentType: false,
-        cache: false,
-      })
-      .done((res) => {
+			$.ajax({
+				url: this.routes.udfControl,
+				enctype: 'multipart/form-data',
+				type: 'POST',
+				data: data,
+				processData: false,
+				contentType: false,
+				cache: false,
+			})
+			.done((res) => {
 				if(res.showContent) {
 					this.inputReadonly = true;
 					this.fieldValues = res;
+
+					let elItemStatus = document.getElementById('item-status-selectbox');
+    			elItemStatus.value = res.itemStatus;
 				}else if(res.content) {
 					this.fieldValues.content = res.content;
 					this.inputReadonly = false;
 				}else {
 					event.target.value = "";
 				}
-        /* this.setErrors('');
-        this.setSucceed(res.succeed); */
-      })
-      .fail((error) => {
-        if(error.responseJSON){
+				/* this.setErrors('');
+				this.setSucceed(res.succeed); */
+			})
+			.fail((error) => {
+				if(error.responseJSON){
+					this.resetFieldValues();
+					
 					if(
 						typeof error.responseJSON.errors.manuel === 'object' &&
 						error.responseJSON.errors.manuel !== null
@@ -486,18 +498,17 @@ export default {
 
 					this.setErrors(error.responseJSON.errors);
 					this.$parent.$parent.modalErrorMsgShow(true);
-					
-        }
-      })
-      .then((res) => {
-        // this.$parent.dataTable.ajax.reload();				
-      })
-      .always(() => {
-				this.$parent.$parent.checkForm();
-        // this.formElement.scrollTo(0, 0);
-        // btn.classList.remove("running");
-      });
-    },
+				}
+			})
+			.then((res) => {
+				// this.$parent.dataTable.ajax.reload();				
+			})
+			.always(() => {
+						this.$parent.$parent.checkForm();
+				// this.formElement.scrollTo(0, 0);
+				// btn.classList.remove("running");
+			});
+		},
 		fileOnDrop: function(evt) {
 
 			let fileInput = this.getFileInputElement();
@@ -725,5 +736,8 @@ export default {
 	display: table;
 	border: 2px solid #123dd9;
 	padding: 3px 3px 0px 7px;
+}
+.attachment-files{
+	display: none;
 }
 </style>

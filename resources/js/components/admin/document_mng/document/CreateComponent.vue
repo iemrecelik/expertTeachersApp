@@ -5,9 +5,17 @@
 >
 	<error-msg-list-component></error-msg-list-component>
 	<succeed-msg-component></succeed-msg-component>
+	
+	<div class="alert alert-info" role="alert">
+		<ul>
+			<li>Sistemde yüklü olan evrağı yeniden yükelmeye çalışmayınız. Hata verecektir.</li>
+			<li>İlgi göstereceğiniz evrak sistemde yüklü ise ilgi formu açmadan evrak sayısı ile ekleyiniz.</li>
+		</ul>
+	</div>
 
   <!-- <form :id="formIDName" @submit.prevent> -->
   <form :id="formIDName" 
+		@submit.prevent
 		method="post" 
 		action="/admin/document-management/document/manual-store"
 		enctype="multipart/form-data"
@@ -114,15 +122,16 @@
 								<span>{{ dcItemVal.date }}</span>	
 							</div>
 						</div>
+
 						<div class="col-3">
 							<div class="mt-4">
-								<span 
+								<span v-if="extUdfControl(dcItemVal.path) && dcItemVal.content"
 									data-toggle="tooltip" 
 									data-placement="top" 
 									:title="$t('messages.showDocument')"
 								>
 									<a tabindex="0" class="btn btn-sm btn-info" 
-										:id="'dc-show-document-'+dcItemKey"
+										:id="'dc-show-document-'+dcItemVal.id"
 										role="button" 
 										data-toggle="popover" 
 										data-trigger="focus" 
@@ -131,6 +140,8 @@
 										<i class="bi bi-file-text"></i>
 									</a>
 								</span>
+
+								<input v-else type="hidden" :id="'dc-show-document-'+dcItemVal.id">
 
 								<span 
 									data-toggle="tooltip" 
@@ -160,6 +171,7 @@
 									:multiple="false"
 									:async="true"
 									:load-options="loadDcNumbers"
+									:cacheOptions="false"
 									v-model="selectedDcNumber"
 									loadingText="Yükleniyor..."
 									clearAllText="Hepsini sil."
@@ -238,14 +250,18 @@
 
 				</div>
 			</div>
-			<button id="document-submit" disabled type="submit" class="btn btn-primary">Kaydet</button>
+			<button id="document-submit" disabled type="submit" class="btn btn-primary"
+				@click="saveForm"
+			>
+				Kaydet
+			</button>
 		</div>
 	</form>
 
 	<div class="modal fade" tabindex="-1" role="dialog" 
-    aria-labelledby="formModalLongTitle" aria-hidden="true"
-    data-backdrop="static" id="error-modal"
-  >
+		aria-labelledby="formModalLongTitle" aria-hidden="true"
+		data-backdrop="static" id="error-modal"
+	>
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -353,6 +369,10 @@ export default {
 			'setSucceed',
 			'setOld',
     ]),
+		/* validationForm: function (){
+			let submit = document.getElementById('document-submit');
+
+		}, */
 		getFileInputClassName: function(rawFileName) {
 			let fileName = rawFileName;
 			let indexOf = fileName.indexOf('[');
@@ -381,22 +401,22 @@ export default {
 			let relFiles = document.getElementsByClassName(
 				this.getFileInputClassName('rel_dc_sender_file')
 			);
-// console.log("relFiles.length", relFiles.length);
+
 			for (let i = 0; i < relFiles.length; i++) {
 				disabled = relFiles[i].value ? false : true;
-// console.log(1, disabled);
+
 				if (disabled === true) {
 					element.disabled = disabled ? true : false
 					break;
 				}
 			}
-// console.log(2, disabled);
+
 			if(disabled === false) {
 				for (let i = 0; i < files.length; i++) {
 					disabled = files[i].value ? false : true;
 				}
 			}
-// console.log("files.length", files.length )
+
 			if(files.length < 1) {
 				disabled = true;
 			}
@@ -409,8 +429,8 @@ export default {
 			this.showForm =  node.id > 0;
 		}, */
 		oldValue: function(fieldName){
-      return this.$store.state.old[fieldName];
-    },
+			return this.$store.state.old[fieldName];
+		},
 		addRelFormAsync: async function() {
 			this.relFormCount.push(Date.now());
 		},
@@ -475,7 +495,7 @@ export default {
 				this.getList();
 			})
 			.always(() => {});
-    },
+		},
 		getList: function() {
 			$.get(this.routes.getReqList, (data) => {
 				this.docList = data;
@@ -504,104 +524,106 @@ export default {
 			}
 		},
 		loadOptions({ action, searchQuery, callback }) {
-      if (action === ASYNC_SEARCH) {
-        simulateAsyncOperation(() => {
+			if (action === ASYNC_SEARCH) {
+				simulateAsyncOperation(() => {
 					
 					if(searchQuery.length > 2) {
-            this.getTeachersSearchList(searchQuery, callback);
-          }else {
-            callback(null, [])    
-          }
-        })
-      }
-    },
+						this.getTeachersSearchList(searchQuery, callback);
+					}else {
+						callback(null, [])    
+					}
+				})
+			}
+		},
 		getTeachersSearchList: function(searchTcNo, callback) {
-      $.ajax({
-        url: this.routes.getTeachersSearchList,
-        type: 'GET',
-        dataType: 'JSON',
+			$.ajax({
+				url: this.routes.getTeachersSearchList,
+				type: 'GET',
+				dataType: 'JSON',
 				data: {
 					'searchTcNo': searchTcNo,
 					'allData': true
 				}
-      })
-      .done((res) => {
+			})
+			.done((res) => {
 				callback(null, res);
-        this.ajaxErrorCount = -1;
-      })
-      .fail((error) => {
-        setTimeout(() => {
-          this.ajaxErrorCount++
+				this.ajaxErrorCount = -1;
+			})
+			.fail((error) => {
+				setTimeout(() => {
+					this.ajaxErrorCount++
 
-          if(this.ajaxErrorCount < 3)
-            this.getTeachersSearchList(searchTcNo, callback);
-          else
-            this.ajaxErrorCount = -1;
+					if(this.ajaxErrorCount < 3)
+						this.getTeachersSearchList(searchTcNo, callback);
+					else
+						this.ajaxErrorCount = -1;
 
-        }, 100);
-        
-      })
-      .then((res) => {})
+				}, 100);
+				
+			})
+			.then((res) => {})
 		},
 		loadDcNumbers({ action, searchQuery, callback }) {
-      if (action === ASYNC_SEARCH) {
-        simulateAsyncOperation(() => {
+			if (action === ASYNC_SEARCH) {
+				simulateAsyncOperation(() => {
 
-          if(searchQuery.length > 2) {
-            this.getDocumentSearchList(searchQuery, callback);
-          }else {
-            callback(null, [])    
-          }
-        })
-      }
-    },
-    getDocumentSearchList: function(dcNumber, callback) {
-      $.ajax({
-        url: this.routes.getDocumentSearchList,
-        type: 'GET',
-        dataType: 'JSON',
+					if(searchQuery.length > 2) {
+						this.getDocumentSearchList(searchQuery, callback);
+					}else {
+						callback(null, [])    
+					}
+				})
+			}
+		},
+		getDocumentSearchList: function(dcNumber, callback) {
+			$.ajax({
+				url: this.routes.getDocumentSearchList,
+				type: 'GET',
+				dataType: 'JSON',
 				data: {'dcNumber': dcNumber}
-      })
-      .done((res) => {
+			})
+			.done((res) => {
 				callback(null, res);
 				this.searchedDcNumber = res;
-        this.ajaxErrorCount = -1;
-      })
-      .fail((error) => {
-        setTimeout(() => {
-          this.ajaxErrorCount++
+				this.ajaxErrorCount = -1;
+			})
+			.fail((error) => {
+				setTimeout(() => {
+					this.ajaxErrorCount++
 
-          if(this.ajaxErrorCount < 3)
-            this.getDocumentSearchList(dcNumber, callback, instanceId);
-          else
-            this.ajaxErrorCount = -1;
+					if(this.ajaxErrorCount < 3)
+						this.getDocumentSearchList(dcNumber, callback, instanceId);
+					else
+						this.ajaxErrorCount = -1;
 
-        }, 100);
-        
-      })
-      .then((res) => {})
+				}, 100);
+				
+			})
+			.then((res) => {})
 		},
-		loadPoppever: function (key, content) {
-			setTimeout(() => {
-				if($(`#dc-show-document-${key}`).length > 0) {
-					$(`#dc-show-document-${key}`).popover({
-						html: true,
-						content: content,
-						placement: 'left',
-						trigger: 'focus',
-						boundary: 'window',
-						template: `
-							<div class="popover" role="tooltip">
-								<div class="arrow"></div>
-								<h3 class="popover-header"></h3>
-								<div class="popover-body"></div>
-							</div>
-						`
-					});	
-				}else {
-					this.loadPoppever(key, content);
-				}
-			}, 100);
+		loadPoppever: function (key, content, path = '') {
+			if(this.extUdfControl(path)) {
+				setTimeout(() => {
+					if($(`#dc-show-document-${key}`).length > 0) {
+						$(`#dc-show-document-${key}`).popover({
+							html: true,
+							content: content,
+							placement: 'left',
+							trigger: 'focus',
+							boundary: 'window',
+							template: `
+								<div class="popover" role="tooltip">
+									<div class="arrow"></div>
+									<h3 class="popover-header"></h3>
+									<div class="popover-body"></div>
+								</div>
+							`
+						});	
+					}else {
+						this.loadPoppever(key, content, path);
+					}
+				}, 100);
+			}
 		},
 		addDcNumber: function() {
 			for (let i = 0; i < this.searchedDcNumber.length; i++) {
@@ -618,19 +640,123 @@ export default {
 
 							if(Object.keys(this.addedDcNumbers).length == (j+1)) {
 								this.addedDcNumbers.push(item);
-								this.loadPoppever((this.addedDcNumbers.length-1), item.content);
+								// this.loadPoppever((this.addedDcNumbers.length-1), item.content);
+								this.loadPoppever(item.id, item.content, item.path);
 							}
 						}
 					}else {
 						this.addedDcNumbers.push(item);
-						this.loadPoppever((this.addedDcNumbers.length-1), item.content);
+						// this.loadPoppever((this.addedDcNumbers.length-1), item.content);
+						this.loadPoppever(item.id, item.content, item.path);
 					}
 				}//if (this.selectedDcNumber == item.id) end
 			}//for end
 		},
 		delDocument: function (key) {
 			this.addedDcNumbers.splice(key, 1);
-		}
+			this.addedDcNumbers.forEach(dcNumber => {
+				this.loadPoppever(dcNumber.id, dcNumber.content, dcNumber.path);
+			});
+		},
+		extUdfControl: function(path) {
+			let ext = path.match(/\.[0-9a-z]+$/i)[0];
+			let bool = true;
+			if(ext != '.udf') {
+				bool = false
+			}
+
+			return bool;
+		},
+
+		saveForm: function() {
+			let data = new FormData();
+
+      let senderFileEl = document.getElementsByName('dc_sender_file');
+			data.append('dc_sender_file', senderFileEl[0].files[0]);
+
+      let relSenderFilesEl = document.getElementsByName('rel_dc_sender_file[]');
+
+			console.log(relSenderFilesEl);
+
+			for (let i = 0; i < relSenderFilesEl.length; i++) {
+				
+				console.log('element');
+				console.log(relSenderFilesEl[i]);
+
+				for (let j = 0; j < relSenderFilesEl[i].files.length; j++) {
+
+					console.log('file: ');	
+					console.log(relSenderFilesEl.files[j]);	
+
+					data.append('rel_dc_sender_file[]', relSenderFilesEl.files[j]);
+				}
+			}
+
+			console.log(data);
+
+			return false;
+
+      /* for (let i = 0; i < file.files.length; i++) {
+        data.append('images_file[]', file.files[i]);
+      } */
+			let form = $('#' + this.formIDName);
+
+			// data.append(file.name, file.files[0]);
+
+      let otherDatas = form.serializeArray();
+
+      otherDatas.forEach(item => {
+        data.append(item.name, item.value);
+      });
+
+      data.append('preview', true);
+
+			/* console.log(form);
+			console.log(form.serialize()); */
+
+      $.ajax({
+        url: '/admin/document-management/document/manual-store',
+        enctype: 'multipart/form-data',
+        type: 'POST',
+        dataType: 'JSON',
+        processData: false,
+        contentType: false,
+        cache: false,
+        data: data,
+        beforeSend: function () {
+          // $('.images-loading').show();
+        }
+      })
+      .done((res) => {
+        this.setErrors('');
+        this.setSucceed(res.succeed);
+        this.setInfoMsg(res.infoMsg);
+        document.getElementById(this.formIDName).reset();
+      })
+      .fail((error) => {
+        this.setSucceed('');
+        this.setInfoMsg('');
+        if(error.responseJSON) {
+          if(error.responseJSON.errors) {
+            this.setErrors(error.responseJSON.errors);
+          }else if(error.responseJSON.message) {
+            this.setErrors(
+              {'permissionMessage': [error.responseJSON.message]}
+            );
+          }
+        }
+        // this.setErrors(error.responseJSON.errors);
+      })
+      .then((res) => {
+        this.$parent.$parent.dataTable.ajax.reload();
+      })
+      .always(() => {
+        // this.$refs.createExcelFormComponent.getCategory();
+        this.formElement.scrollTo(0, 0);
+        $('.images-loading').hide();
+      });
+
+    },
   },
   created() {
 		this.setRoutes(this.pproutes);

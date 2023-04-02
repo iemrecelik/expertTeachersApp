@@ -65,6 +65,14 @@ class FortifyServiceProvider extends ServiceProvider
         });
 
         Fortify::loginView(function () {
+            $ip = \Request::ip();
+
+            $logInfo = new \App\Library\LogInfo();
+            $logInfo->crShowLog(
+                $ip.' ip numarasıyla sayfaya istekte bulunuldu.', 
+                'logs/guest/requestIp/'.str_replace('.', '_', $ip).'.log'
+            );
+            
             return view('admin.auth.login');
         });
 

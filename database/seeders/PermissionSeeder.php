@@ -8,6 +8,58 @@ use Spatie\Permission\Models\Role;
 
 class PermissionSeeder extends Seeder
 {
+    private Array $staffPermissions = [
+        'show module documents',
+        'show documents',
+        'create documents',
+        'edit documents',
+        
+        'show module categories',
+        'show categories',
+        'create categories',
+        'edit categories',
+
+        'show module unions',
+        'show unions',
+        'create unions',
+        'edit unions',
+
+        'show module institutions',
+        'show institutions',
+        'create institutions',
+        'edit institutions',
+        
+        'show module lawsuits',
+        'show lawsuits',
+        'create lawsuits',
+        'edit lawsuits',
+        
+        'show module teachers',
+        'show teachers',
+        'create teachers',
+        'create excel teachers',
+        'create images teachers',
+        'edit teachers',
+        'create law to teachers',
+        'delete law to teachers',
+        'add document teachers',
+        'delete document teachers',
+
+        'show statistical lawsuits',
+
+        'show module list',
+        'show list',
+        'create list',
+        'edit list',
+        'delete list',
+
+        'show module document comment',
+        'show document comment',
+        'create document comment',
+        'edit document comment',
+        'delete document comment'
+    ];
+
     /**
      * Run the database seeds.
      *
@@ -53,8 +105,8 @@ class PermissionSeeder extends Seeder
             'create images teachers',
             'edit teachers',
             'delete teachers',
-            'create law_to_teachers',
-            'delete law_to_teachers',
+            'create law to teachers',
+            'delete law to teachers',
             'add document teachers',
             'delete document teachers',
 
@@ -80,6 +132,9 @@ class PermissionSeeder extends Seeder
                 Permission::create(['name' => $val]);
             }
         }
+
+        $role = Role::where('name', 'staff')->first();
+        $role->givePermissionTo($this->staffPermissions);
 
         $role = Role::where('name', 'admin')->first();
         $role->givePermissionTo(Permission::all());

@@ -5,6 +5,13 @@
 >
 	<error-msg-list-component></error-msg-list-component>
 	<succeed-msg-component></succeed-msg-component>
+	
+	<div class="alert alert-info" role="alert">
+		<ul>
+			<li>Sistemde yüklü olan evrağı yeniden yükelmeye çalışmayınız. Hata verecektir.</li>
+			<li>İlgi göstereceğiniz evrak sistemde yüklü ise ilgi formu açmadan evrak sayısı ile ekleyiniz.</li>
+		</ul>
+	</div>
 
   <!-- <form :id="formIDName" @submit.prevent> -->
   <form :id="formIDName" 
@@ -243,9 +250,9 @@
 	</form>
 
 	<div class="modal fade" tabindex="-1" role="dialog" 
-    aria-labelledby="formModalLongTitle" aria-hidden="true"
-    data-backdrop="static" id="error-modal"
-  >
+		aria-labelledby="formModalLongTitle" aria-hidden="true"
+		data-backdrop="static" id="error-modal"
+	>
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
@@ -353,6 +360,10 @@ export default {
 			'setSucceed',
 			'setOld',
     ]),
+		/* validationForm: function (){
+			let submit = document.getElementById('document-submit');
+
+		}, */
 		getFileInputClassName: function(rawFileName) {
 			let fileName = rawFileName;
 			let indexOf = fileName.indexOf('[');
@@ -381,22 +392,22 @@ export default {
 			let relFiles = document.getElementsByClassName(
 				this.getFileInputClassName('rel_dc_sender_file')
 			);
-// console.log("relFiles.length", relFiles.length);
+
 			for (let i = 0; i < relFiles.length; i++) {
 				disabled = relFiles[i].value ? false : true;
-// console.log(1, disabled);
+
 				if (disabled === true) {
 					element.disabled = disabled ? true : false
 					break;
 				}
 			}
-// console.log(2, disabled);
+
 			if(disabled === false) {
 				for (let i = 0; i < files.length; i++) {
 					disabled = files[i].value ? false : true;
 				}
 			}
-// console.log("files.length", files.length )
+
 			if(files.length < 1) {
 				disabled = true;
 			}
@@ -409,8 +420,8 @@ export default {
 			this.showForm =  node.id > 0;
 		}, */
 		oldValue: function(fieldName){
-      return this.$store.state.old[fieldName];
-    },
+			return this.$store.state.old[fieldName];
+		},
 		addRelFormAsync: async function() {
 			this.relFormCount.push(Date.now());
 		},
@@ -445,6 +456,7 @@ export default {
 				commentText: `rel_dc_com_text[${key}]`,
 				listId: `rel_list_id[${key}]`,
 				teacherId: `rel_thr_id[${key}][]`,
+				catId: `rel_dc_cat_id[${key}][]`,
 			}
 		},
 		getCategory: function() {
@@ -474,7 +486,7 @@ export default {
 				this.getList();
 			})
 			.always(() => {});
-    },
+		},
 		getList: function() {
 			$.get(this.routes.getReqList, (data) => {
 				this.docList = data;
@@ -503,82 +515,82 @@ export default {
 			}
 		},
 		loadOptions({ action, searchQuery, callback }) {
-      if (action === ASYNC_SEARCH) {
-        simulateAsyncOperation(() => {
+			if (action === ASYNC_SEARCH) {
+				simulateAsyncOperation(() => {
 					
 					if(searchQuery.length > 2) {
-            this.getTeachersSearchList(searchQuery, callback);
-          }else {
-            callback(null, [])    
-          }
-        })
-      }
-    },
+						this.getTeachersSearchList(searchQuery, callback);
+					}else {
+						callback(null, [])    
+					}
+				})
+			}
+		},
 		getTeachersSearchList: function(searchTcNo, callback) {
-      $.ajax({
-        url: this.routes.getTeachersSearchList,
-        type: 'GET',
-        dataType: 'JSON',
+			$.ajax({
+				url: this.routes.getTeachersSearchList,
+				type: 'GET',
+				dataType: 'JSON',
 				data: {
 					'searchTcNo': searchTcNo,
 					'allData': true
 				}
-      })
-      .done((res) => {
+			})
+			.done((res) => {
 				callback(null, res);
-        this.ajaxErrorCount = -1;
-      })
-      .fail((error) => {
-        setTimeout(() => {
-          this.ajaxErrorCount++
+				this.ajaxErrorCount = -1;
+			})
+			.fail((error) => {
+				setTimeout(() => {
+					this.ajaxErrorCount++
 
-          if(this.ajaxErrorCount < 3)
-            this.getTeachersSearchList(searchTcNo, callback);
-          else
-            this.ajaxErrorCount = -1;
+					if(this.ajaxErrorCount < 3)
+						this.getTeachersSearchList(searchTcNo, callback);
+					else
+						this.ajaxErrorCount = -1;
 
-        }, 100);
-        
-      })
-      .then((res) => {})
+				}, 100);
+				
+			})
+			.then((res) => {})
 		},
 		loadDcNumbers({ action, searchQuery, callback }) {
-      if (action === ASYNC_SEARCH) {
-        simulateAsyncOperation(() => {
+			if (action === ASYNC_SEARCH) {
+				simulateAsyncOperation(() => {
 
-          if(searchQuery.length > 2) {
-            this.getDocumentSearchList(searchQuery, callback);
-          }else {
-            callback(null, [])    
-          }
-        })
-      }
-    },
-    getDocumentSearchList: function(dcNumber, callback) {
-      $.ajax({
-        url: this.routes.getDocumentSearchList,
-        type: 'GET',
-        dataType: 'JSON',
+					if(searchQuery.length > 2) {
+						this.getDocumentSearchList(searchQuery, callback);
+					}else {
+						callback(null, [])    
+					}
+				})
+			}
+		},
+		getDocumentSearchList: function(dcNumber, callback) {
+			$.ajax({
+				url: this.routes.getDocumentSearchList,
+				type: 'GET',
+				dataType: 'JSON',
 				data: {'dcNumber': dcNumber}
-      })
-      .done((res) => {
+			})
+			.done((res) => {
 				callback(null, res);
 				this.searchedDcNumber = res;
-        this.ajaxErrorCount = -1;
-      })
-      .fail((error) => {
-        setTimeout(() => {
-          this.ajaxErrorCount++
+				this.ajaxErrorCount = -1;
+			})
+			.fail((error) => {
+				setTimeout(() => {
+					this.ajaxErrorCount++
 
-          if(this.ajaxErrorCount < 3)
-            this.getDocumentSearchList(dcNumber, callback, instanceId);
-          else
-            this.ajaxErrorCount = -1;
+					if(this.ajaxErrorCount < 3)
+						this.getDocumentSearchList(dcNumber, callback, instanceId);
+					else
+						this.ajaxErrorCount = -1;
 
-        }, 100);
-        
-      })
-      .then((res) => {})
+				}, 100);
+				
+			})
+			.then((res) => {})
 		},
 		loadPoppever: function (key, content) {
 			setTimeout(() => {

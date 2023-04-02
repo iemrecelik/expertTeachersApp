@@ -12,6 +12,7 @@ class Settings extends Model
     protected $fillable = [
         'set_auth_signature_names',
         'set_ip_names',
+        'set_allow_file_ext',
     ];
 
     protected $table = 'settings';

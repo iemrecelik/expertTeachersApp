@@ -9,6 +9,7 @@
     :ppsuccess="'{{ session('succeed') ?? '' }}'"
     :ppipnames="{{ json_encode($ipNames) }}"
     :ppsignaturenames="{{ json_encode($signatureNames) }}"
+    :ppallowfileext="{{ json_encode($allowFileExt) }}"
   >
   </settings-component>
 @endsection
