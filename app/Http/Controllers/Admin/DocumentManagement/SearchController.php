@@ -204,6 +204,23 @@ class SearchController extends Controller
 						}
 						break;
 						
+					case 'created_at':
+						if (isset($data['value'])) {
+							
+							$vals = explode(" - ",$data['value']);
+
+							$vals = [
+								\Carbon\Carbon::parse(str_replace('/', '-', $vals[0]).' 00:00:00'),
+								\Carbon\Carbon::parse(str_replace('/', '-', $vals[1]).' 23:59:59')
+							];
+
+							$whereQuery .= "t0.{$data['name']} BETWEEN ? AND ? AND ";
+							$whereQueryParams = array_merge($whereQueryParams, $vals);
+
+							$necessity = true;
+						}
+						break;
+						
 					case 'dc_list_id':
 						if (!empty($data['value'])) {
 							$dcDocuments->join('dc_doc_list as t1', 't1.dc_id', '=', 't0.id');

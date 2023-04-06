@@ -448,6 +448,7 @@ class LawsuitsController extends Controller
         $logInfo = new LogInfo('Dava Modülü');
         $logData = [
             'benzersiz nmarası' => $lawsuit->id,
+            'davanın ilk yazısı' => $lawsuit->dc_document->dc_number,
             'dava kısa açıklaması' => $lawsuit->law_brief,
             'dava ile ilişkilendirilen yazılar' => count($dcDownIds) > 0 
                                                     ? $downDcDocuments->pluck('dc_number')
@@ -542,6 +543,7 @@ class LawsuitsController extends Controller
     {
         $oldlaw = clone $lawsuit;
         $oldlaw->subjects;
+        $oldlaw->dc_document;
         $oldlaw->dc_documents;
         $params = $request->all();
 
@@ -607,6 +609,7 @@ class LawsuitsController extends Controller
         $logInfo->crUpdateLog(
             [
                 'benzersiz nmarası' => $oldlaw->id,
+                'davanın ilk yazısı' => $oldlaw->dc_document->dc_number,
                 'dava kısa açıklaması' => $oldlaw->law_brief,
                 'dava konusunun maddeleri' => count($oldlaw->subjects) > 0 
                                                 ? $oldlaw->subjects->pluck('sub_description')
@@ -642,6 +645,7 @@ class LawsuitsController extends Controller
     public function destroy(Lawsuits $lawsuit)
     {
         $lawsuit->subjects;
+        $lawsuit->dc_document;
         $lawsuit->dc_documents;
         $oldlaw = $lawsuit;
         
@@ -652,6 +656,7 @@ class LawsuitsController extends Controller
         $logInfo->crDestroyLog([
             'benzersiz nmarası' => $oldlaw->id,
             'dava kısa açıklaması' => $oldlaw->law_brief,
+            'davanın ilk yazısı' => $oldlaw->dc_document->dc_number,
             'dava konusunun maddeleri' => count($oldlaw->subjects) > 0 
                                             ? $oldlaw->subjects->pluck('sub_description')
                                             : '',

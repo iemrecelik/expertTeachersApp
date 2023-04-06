@@ -133,6 +133,14 @@ class DocumentsController extends Controller
             $arr['content'] = $content;
 		}
 
+        $pattern = "/^.*\.(tif|TIF)$/i";
+		preg_match($pattern, $file->getClientOriginalName(), $externalAgencyExt);
+
+        if(!empty($externalAgencyExt[1])) {
+            $arr['manuelCreate'] = true;
+            $arr['content'] = '';
+		}
+        
 		return $arr;
     }
 
@@ -322,7 +330,7 @@ class DocumentsController extends Controller
                             $this->signatureControl($request->file('rel_dc_sender_file')[$key]);
                             /* İmza kontrolü yapma bitiş */
 
-                            $this->fileContentCtrl($request->file('rel_dc_sender_file')[$key], $relArr);
+                            $this->fileContentCtrl($request->file('rel_dc_sender_file')[$key], $relArr, true);
                         }
                     }
                 }
@@ -845,13 +853,17 @@ class DocumentsController extends Controller
         }
     }
 
-    private function fileContentCtrl($file, $params)
+    private function fileContentCtrl($file, $params, $dump = false)
     {
         $datas = $this->getFileContent(
             file_get_contents("zip://{$file->getPathName()}#content.xml")
         );
 
         extract($datas);
+        // dd($datas);
+        /* if ($dump) {
+            dd($datas);
+        } */
 
         /* dc_number kontrolü başla */
         /* $pattern = '/'.$params['dc_number'].'/si';
@@ -921,8 +933,16 @@ class DocumentsController extends Controller
         /* evrak gönderim durumu kontrolü başla */
         $pattern = '/20299769/si';
         preg_match($pattern, trim($number[1]), $exist);
+        
+        
 
         $none = (count($exist) > 0 && $params['dc_item_status'] == "1") || (count($exist) < 1 && $params['dc_item_status'] == "0");
+        /* if($dump) {
+            echo '<pre>';
+            var_dump($params['dc_item_status']);
+            var_dump($exist);
+            dd($none);
+        } */
         
         if(!$none) {
             throw ValidationException::withMessages(
@@ -972,6 +992,11 @@ class DocumentsController extends Controller
             // $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
             $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)]]>/si';
             preg_match($pattern, $result, $receiver);
+
+            if(count($receiver) < 1) {
+                $pattern = '/konu\s*?:(.*?)\n{1,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{1,10}(.+)]]>/si';
+                preg_match($pattern, $result, $receiver);
+            }
             
             $pattern = '/<!\[CDATA\[\¸(.*)]]>/si';
             preg_match($pattern, $result, $content);
@@ -979,12 +1004,22 @@ class DocumentsController extends Controller
             // $pattern = '/sayı\s*?:(.*-)(\d*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
             $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
             preg_match($pattern, $result, $number);
+
+            if($number[1] == '' || $number[2] == '' || $number[3] == '' ) {
+                $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
+                preg_match($pattern, $result, $number);
+            }
         }else {
             $pattern = '/\<content\>.*(T\.C\..*)\n{1,10}sayı/si';
             preg_match($pattern, $result, $sender);
 
             $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)\<\/content\>/si';
             preg_match($pattern, $result, $receiver);
+
+            if(count($receiver) < 1) {
+                $pattern = '/konu\s*?:(.*?)\n{1,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)\<\/content\>/si';
+                preg_match($pattern, $result, $receiver);
+            }
             
             $pattern = '/\<content\>.*(T\.C\..*)\<\/content\>/si';
             preg_match($pattern, $result, $content);
@@ -992,6 +1027,11 @@ class DocumentsController extends Controller
             // $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
             $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
             preg_match($pattern, $result, $number);
+
+            if($number[1] == '' || $number[2] == '' || $number[3] == '' ) {
+                $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
+                preg_match($pattern, $result, $number);
+            }
         }
 
         $number[3] = str_replace('/', '.', $number[3]);
@@ -1003,6 +1043,18 @@ class DocumentsController extends Controller
         }
         // dd($content[1]);
         $content[1] = $this->replaceAllSpaceChar($content[1]);
+
+        if(strpos($number[2], ')') !== false) {
+            $number[2] = explode(')', $number[2]);
+            $number[2] = end($number[2]);
+        }
+
+        /* dd([
+            'sender' => $sender,
+            'receiver' => $receiver,
+            'content' => $content,
+            'number' => $number,
+        ]); */
 
         return [
             'sender' => $sender,
@@ -1084,14 +1136,22 @@ class DocumentsController extends Controller
                 empty($receiver[1]) || empty($receiver[2])
             ) {
                 throw ValidationException::withMessages(
-                    ['senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.']
+                    [
+                        'senderFile' => 'Yazım formatı hatalı lütfen manual giriş yapınız.',
+                        'manuel' => true,
+                        'content' => $content[1]
+                    ],
                 );
             }
 
         } catch (\Throwable $th) {
             dd($th->getMessage());
             throw ValidationException::withMessages(
-                ['senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.']
+                [
+                    'senderFile' => 'Yazım formatı hatalı lütfen manual giriş yapınız.',
+                    'manuel' => true,
+                    'content' => $content[1]
+                ],
             );
         }
 
@@ -1173,14 +1233,22 @@ class DocumentsController extends Controller
                 empty($receiver[1]) || empty($receiver[2])
             ) {
                 throw ValidationException::withMessages(
-                    ['senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.']
+                    [
+                        'senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.',
+                        'manuel' => true,
+                        'content' => $content[1]
+                    ]
                 );
             }
 
         } catch (\Throwable $th) {
 
             throw ValidationException::withMessages(
-                ['senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.']
+                [
+                    'senderFile' => 'Dosya formatı hatalı manuel giriş yapınız.',
+                    'manuel' => true,
+                    'content' => $content[1]
+                ]
             );
         }
 
@@ -1190,7 +1258,7 @@ class DocumentsController extends Controller
         ) {
             throw ValidationException::withMessages(
                 [
-                    'senderFile' => 'Yazım formatı hatalı lütfen manual giriş yapınız.',
+                    'senderFile' => 'Yazım formatı hatalı lütfen manuel giriş yapınız.',
                     'manuel' => true,
                     'content' => $content[1]
                 ],

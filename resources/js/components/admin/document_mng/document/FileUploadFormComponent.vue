@@ -27,8 +27,8 @@
 		
 		<div class="col-3">
 			<div class="form-group">
-				<label for="item-status-selectbox">Evrağın Durumu</label>
-				<select id="item-status-selectbox" 
+				<label :for="'item-status-selectbox-'+elUniqueID">Evrağın Durumu</label>
+				<select :id="'item-status-selectbox-'+elUniqueID" 
 					class="custom-select"
 					required 
 					:name="fieldNames.itemStatus"
@@ -464,12 +464,12 @@ export default {
 					this.inputReadonly = true;
 					this.fieldValues = res;
 
-					let elItemStatus = document.getElementById('item-status-selectbox');
+					let elItemStatus = document.getElementById('item-status-selectbox-'+this.elUniqueID);
     			elItemStatus.value = res.itemStatus;
 				}else if(res.content) {
 					this.fieldValues.content = res.content;
 					this.inputReadonly = false;
-				}else {
+				}else if(res.manuelCreate !== true){
 					event.target.value = "";
 				}
 				/* this.setErrors('');

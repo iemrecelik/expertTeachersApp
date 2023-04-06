@@ -29,12 +29,12 @@ class AppServiceProvider extends ServiceProvider
         $logInfo = new \App\Library\LogInfo();
 
         if($ip !== "::1" && $ip !== "127.0.0.1" && $ip !== "10.8.41.54") {
-            abort(403, "SİTE BAKIMDADIR. KISA SÜRE İÇİNDE AÇILACAK.");
-
             $logInfo->crShowLog(
                 $ip.' ip numarasıyla sayfaya istekte bulunuldu.', 
                 'logs/guest/requestIp/'.str_replace('.', '_', $ip).'.log'
             );
+            
+            abort(403, "SİTE BAKIMDADIR. KISA SÜRE İÇİNDE AÇILACAK.");
         }
 
         if($ip !== "::1" && $ip !== "10.8.41.54" && $ip !== "127.0.0.1") {

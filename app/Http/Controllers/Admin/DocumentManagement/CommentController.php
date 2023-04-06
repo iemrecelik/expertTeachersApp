@@ -310,6 +310,7 @@ class CommentController extends Controller
             132- evrak notlarının izinleri iptal edildi. Düzeltilecek.
             +++ 133- evrak ekleme yaparken manuel de evrağın içeriğini kaydetmiyor.
             +++ 134- evrak bilgisini gösterirken pdf ve manuel girilmiş evrak lar gösterilmesin.
+            +++ 135- tif dosyalarını evrak gösterde göstersin
         */
 
         $request->validate(

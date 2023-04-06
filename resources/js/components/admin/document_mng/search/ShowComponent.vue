@@ -51,7 +51,7 @@
           height="100%">
         </iframe>
       </div>
-      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['udf', 'UDF'])"
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['udf', 'UDF', 'tif', 'TIF'])"
         class="modal-body p-5"
       >
         <a type="button" 
@@ -60,6 +60,14 @@
         >
           {{ $t('messages.readDocumentLinkClick') }}
         </a>
+      </div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['tif', 'TIF'])"
+        class="img-viewer modal-body p-5"
+      >
+        <!-- <img :src="'/storage/upload/images/raw'+items.dc_files.dc_file_path" 
+          width="100%"
+          height="100%"
+        > -->
       </div>
 
       <div class="pl-5">
@@ -148,7 +156,7 @@
           height="100%">
         </iframe>
       </div>
-      <div v-else-if="showFileExtCtrl(item.dc_files.dc_file_path, ['udf', 'UDF'])"
+      <div v-else-if="showFileExtCtrl(item.dc_files.dc_file_path, ['udf', 'UDF', 'tif', 'TIF'])"
         class="modal-body p-5"
       >
         <a type="button" 
@@ -157,6 +165,14 @@
         >
           {{ $t('messages.readDocumentLinkClick') }}
         </a>
+      </div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['tif', 'TIF'])"
+        class="img-viewer modal-body p-5"
+      >
+        <!-- <img :src="'/storage/upload/images/raw'+items.dc_files.dc_file_path" 
+          width="100%"
+          height="100%"
+        > -->
       </div>
 
       <div class="pl-5">
@@ -354,7 +370,7 @@ mark{
     color: black;
 }
 
-div.pdf-viewer {
+div.pdf-viewer, div.img-viewer {
   height: 1000px;
 }
 </style>

@@ -226,9 +226,10 @@ class LogsController extends Controller
         ]);
     }
 
-    public function index()
+    public function index2()
     {
         $this->lawsuitList();
+        
         // dd(Storage::path('public/upload/images/2023/02/27/16/hatay_uzman.udf'));
         /* $raw = 'public/upload/images/raw/2023/02/27/16/hatay_uzman.udf';
         var_dump(Storage::path($raw));
@@ -444,8 +445,26 @@ class LogsController extends Controller
         );
     }
 
-    public function index2()
+    // test function
+    private function betweenTimestamp()
     {
+        $arr = \Illuminate\Support\Facades\DB::table('dc_documents as t0')
+            ->whereBetween(
+                'created_at', 
+                [
+                    \Carbon\Carbon::parse('2023-04-04'), 
+                    \Carbon\Carbon::parse('2023-04-05')
+                ])
+            ->get()
+            ->toArray();
+
+        dd($arr);
+    }
+
+    public function index()
+    {
+        $this->betweenTimestamp();
+
         $users = User::all();
         return view(
             'admin.logs.index', 

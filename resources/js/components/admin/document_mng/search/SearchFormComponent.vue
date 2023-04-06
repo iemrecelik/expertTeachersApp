@@ -110,7 +110,7 @@
       </div>
 
       <div class="col-3">
-        <label>Tarih aralığı:</label>
+        <label>Evrak Tarih Aralığı:</label>
         
         <div class="input-group">
           <div class="input-group-prepend">
@@ -132,6 +132,37 @@
       </div>
 
     </div>
+
+    <!-- <div class="row">
+      <div class="col-6">
+        <label>Kayıt Edilmiş Tarih Aralığı:</label>
+        
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">
+              <i class="far fa-calendar-alt"></i>
+            </span>
+          </div>
+          <input type="text" 
+            class="form-control float-right reservation" 
+            name="created_at"
+            autocomplete="off"
+          >
+        </div>
+      </div>
+
+      <div class="col-6">
+        <label for="user-list">Kullanıcılar:</label>
+        <select class="form-control" 
+          id="user-list"
+          name="user_id"
+        >
+          <option value="">Kullanıcı Seçiniz.</option> 
+          <option value="1">Emre</option> 
+          <option value="2">Ömer</option> 
+        </select>
+      </div>
+    </div> -->
 
     <div class="row">
       <div class="col-12">

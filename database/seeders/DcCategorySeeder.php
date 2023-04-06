@@ -15,16 +15,18 @@ class DcCategorySeeder extends Seeder
     public function run()
     {
         $datas = [
-            'Aday Öğretmen',
-            'Uzman Öğretmen',
-            'Baş Öğretmen',
-            'Davalar',
-            'Soru Önergesi',
-            'Olur',
+            'ADAY ÖĞRETMEN',
+            'UZMAN ÖĞRETMEN',
+            'BAŞ ÖĞRETMEN',
+            'DAVALAR',
+            'HUKUK VE DİĞER GÖRÜŞLER',
+            'KAMU KURUMU DENETÇİLİĞİ (OMBUDSMANLIK)',
+            'SORU ÖNERGESİ',
+            'OLUR',
         ];
 
         foreach ($datas as $key => $val) {
-            if($val !== 'Davalar') {
+            if($val !== 'DAVALAR') {
                 DcCategory::create([
                     'dc_cat_name' => $val,
                 ]);
@@ -34,11 +36,11 @@ class DcCategorySeeder extends Seeder
                 ]);
 
                 $catThr = DcCategory::create([
-                    'dc_cat_name' => 'Bireysel',
+                    'dc_cat_name' => 'BİREYSEL',
                 ]);
                 
                 $catUnion = DcCategory::create([
-                    'dc_cat_name' => 'Sendika',
+                    'dc_cat_name' => 'SENDİKA',
                 ]);
 
                 $mainCat->childCategory()->save($catThr);

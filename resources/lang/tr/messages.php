@@ -160,6 +160,7 @@ return [
 
 	/* Settings */
 	"auth_signature_name" => "Yetkili İmzaya Sahip İsimler",
+	"allow_file_extension" => "Yüklemeye İzin Verilen Dosya Uzantıları",
 	"settings" => "Ayarlar",
 	"ip_names" => "İp Numaraları",
 	
