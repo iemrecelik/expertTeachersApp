@@ -133,7 +133,7 @@
 
     </div>
 
-    <!-- <div class="row">
+    <div class="row">
       <div class="col-6">
         <label>Kayıt Edilmiş Tarih Aralığı:</label>
         
@@ -152,17 +152,20 @@
       </div>
 
       <div class="col-6">
-        <label for="user-list">Kullanıcılar:</label>
-        <select class="form-control" 
-          id="user-list"
-          name="user_id"
-        >
-          <option value="">Kullanıcı Seçiniz.</option> 
-          <option value="1">Emre</option> 
-          <option value="2">Ömer</option> 
-        </select>
+        <div class="form-group">
+          <label for="user-list">Kullanıcılar</label>
+          <select class="form-control" 
+            id="user-list"
+            name="user_id"
+          >
+            <option value="">Kullanıcı Seçiniz.</option> 
+            <option v-for="item in users" :value="item.id">
+              {{item.name+' ('+item.email+')'}}
+            </option>
+          </select>
+        </div>
       </div>
-    </div> -->
+    </div>
 
     <div class="row">
       <div class="col-12">
@@ -219,6 +222,7 @@ export default {
     return {
       categoryList: [],
       list: [],
+      users: [],
       ajaxErrorCount: -1,
       mainStatus: 0,
       categoryArr: []
@@ -252,6 +256,7 @@ export default {
       .done((res) => {
         this.categoryList = res.category;
         this.list = res.list;
+        this.users = res.users;
         this.ajaxErrorCount = -1;
       })
       .fail((error) => {

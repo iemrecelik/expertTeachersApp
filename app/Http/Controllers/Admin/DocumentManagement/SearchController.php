@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\DocumentManagement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin\DcDocuments;
+use App\Models\User;
 use App\Models\Admin\DcLists;
 use App\Models\Admin\DcCategory;
 use App\Http\Controllers\Controller;
@@ -16,11 +17,20 @@ class SearchController extends Controller
 	{
 		$list = $this->getList();
 		$category = $this->getCategory($request);
+		$users = $this->getUsers();
 
         return [
 			'category' => $category,
 			'list' => $list,
+			'users' => $users,
 		];
+	}
+
+	public function getUsers()
+	{
+		$users = User::select('id', 'name', 'email')->get();
+
+		return $users;
 	}
 
 	public function getList($ids = null)
@@ -112,6 +122,7 @@ class SearchController extends Controller
 
 		$notSelectCol = [
             'dc_cat_id',
+            'user_name',
         ];
 
 		foreach ($tblInfo['columns'] as $column) {
@@ -220,6 +231,13 @@ class SearchController extends Controller
 							$necessity = true;
 						}
 						break;
+
+					case 'user_id':
+						if (isset($data['value'])) {
+							$dcDocuments->where('t0.user_id', $data['value']);
+							$necessity = true;
+						}
+						break;
 						
 					case 'dc_list_id':
 						if (!empty($data['value'])) {
@@ -274,15 +292,17 @@ class SearchController extends Controller
 		$dcDocuments->selectRaw('t3.dc_file_path');
 
 		$dcDocuments->join('users as t4', 't4.id', '=', 't0.user_id');
-		$dcDocuments->selectRaw('t4.name as user_name');
+		$dcDocuments->selectRaw('UPPER(t4.name) as user_name');
 		$dcDocuments->distinct();
 
 		/* $dcDocuments->join('dc_category as t5', 't5.id', '=', 't0.dc_cat_id');
 		$dcDocuments->selectRaw('t5.dc_cat_name as dc_cat_name'); */
 		
 		$dcDocuments = $dcDocuments->orderBy($colOrder, $order);
-// dd($dcDocuments->toSql());
-        $recordsTotal = DcDocuments::count();
+		
+		// dd($dcDocuments->toSql());
+        
+		$recordsTotal = DcDocuments::count();
 	    $recordsFiltered = $dcDocuments->count();
 
 	    $data = $dcDocuments->offset($tblInfo['start'])

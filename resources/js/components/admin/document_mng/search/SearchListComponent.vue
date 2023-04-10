@@ -20,7 +20,7 @@
             style="width:100%">
             <thead>
               <tr>
-                <th>{{$t('messages.dc_main_status')}}</th>
+                <th>{{$t('messages.record_personel')}}</th>
                 <th>{{$t('messages.dc_cat_name')}}</th>
                 <th>{{$t('messages.dc_number')}}</th>
                 <th>{{$t('messages.dc_item_status')}}</th>
@@ -261,12 +261,13 @@ export default {
           'datas': form.serializeArray(),
         },
         columns: [
-          { 
+          /* { 
             "data": "dc_main_status",
             "render": (data, type, row) => {
               return data < 1 ? "İlgi" : "Asıl";
             }
-          },
+          }, */
+          { "data": "user_name" },
           { 
             "data": "dc_cat_id",
             "render": (data, type, row) => {

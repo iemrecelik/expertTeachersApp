@@ -72,6 +72,7 @@ return [
 	'document_record_list' => 'Evrak Kayıt Listesi',
 	'documents_module' => 'Evrak Modülü',
 	'waiting_documents' => 'Bekleyen Evraklar',
+	'record_personel' => 'Kaydeden',
 
 
 	/* Document List */
