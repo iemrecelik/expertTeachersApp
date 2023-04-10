@@ -1043,7 +1043,7 @@ class DocumentsController extends Controller
                 'number' => $number,
             ]); */
 
-            if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
+            /* if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
                 $pattern = '/sayı\s*?:(.*-|\.)([\d\/\(\)]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
                 preg_match($pattern, $result, $number);
 
@@ -1054,7 +1054,7 @@ class DocumentsController extends Controller
             }else if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
                 $pattern = '/sayı\s*?:(.*-)([\d\/\(\)\.E]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
                 preg_match($pattern, $result, $number);
-            }
+            } */
         }
 
         dd([
