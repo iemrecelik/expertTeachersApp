@@ -1013,56 +1013,26 @@ class DocumentsController extends Controller
             $pattern = '/\<content\>.*(T\.C\..*)\n{1,10}sayı/si';
             preg_match($pattern, $result, $sender);
 
-            /* if(strlen($sender[1] > 100)) {
-
-            } */
-
             $pattern = '/konu\s*?:(.*?)\n{2,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)\<\/content\>/si';
             preg_match($pattern, $result, $receiver);
 
             if(count($receiver) < 1) {
                 $pattern = '/konu\s*?:(.*?)\n{1,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{2,10}(.+)\<\/content\>/si';
                 preg_match($pattern, $result, $receiver);
-            }else if(strlen($receiver[1]) > 100) {
-                $pattern = '/konu\s*?:(.*?)\n{1,10}([A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}|[A-ZİĞÜŞÖÇ \t\.\-\/]{3,1000}\n*\D*)\n{1,10}(.+)\<\/content\>/si';
-                preg_match($pattern, $result, $receiver);
-            } 
+            }
             
             $pattern = '/\<content\>.*(T\.C\..*)\<\/content\>/si';
             preg_match($pattern, $result, $content);
 
             // $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}\.[0-9]{1,2}\.[0-9]{4})\n/si';
-            // $pattern = '/sayı\s*?:(.*-|\.)([\d\/\(\)]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
-            $pattern = '/sayı\s*?:(.*-)([\d\/\(\)\.e]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
+            $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
             preg_match($pattern, $result, $number);
 
-            /* dd([
-                'sender' => $sender,
-                'receiver' => $receiver,
-                'content' => $content,
-                'number' => $number,
-            ]); */
-
-            /* if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
-                $pattern = '/sayı\s*?:(.*-|\.)([\d\/\(\)]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
+            if($number[1] == '' || $number[2] == '' || $number[3] == '' ) {
+                $pattern = '/sayı\s*?:(.*-)([\d\/\(\)]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
                 preg_match($pattern, $result, $number);
-
-            }else if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
-                $pattern = '/sayı\t*?:(.*-|\.)([\d\/\(\)]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
-                preg_match($pattern, $result, $number);
-
-            }else if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
-                $pattern = '/sayı\s*?:(.*-)([\d\/\(\)\.E]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
-                preg_match($pattern, $result, $number);
-            } */
+            }
         }
-
-        dd([
-            'sender' => $sender,
-            'receiver' => $receiver,
-            'content' => $content,
-            'number' => $number,
-        ]);
 
         $number[3] = str_replace('/', '.', $number[3]);
         
@@ -1079,12 +1049,12 @@ class DocumentsController extends Controller
             $number[2] = end($number[2]);
         }
 
-        dd([
+        /* dd([
             'sender' => $sender,
             'receiver' => $receiver,
             'content' => $content,
             'number' => $number,
-        ]);
+        ]); */
 
         return [
             'sender' => $sender,

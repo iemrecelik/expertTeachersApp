@@ -41,6 +41,11 @@ class CreateLawsuitsTable extends Migration
             $table->foreign('sub_id')
                   ->references('id')->on('subjects'); */
 
+            $table->integer('created_by')->nullable();
+            $table->string('created_by_name')->nullable();
+            $table->integer('updated_by')->nullable();
+            $table->string('updated_by_name')->nullable();
+
             $table->timestamps();
         });
     }

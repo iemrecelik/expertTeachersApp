@@ -601,6 +601,14 @@ class LawsuitsController extends Controller
         $params['thr_id'] = $params['thr_id'] ?? null;
         $params['uns_id'] = $params['uns_id'] ?? null;
 
+        /* Günceleme süresini ve kişiyi ekleme başla */
+        $user = auth()->user();
+        $date = date("d-m-Y H:i:s");
+
+        $lawsuit->updated_by = $user->id;
+        $lawsuit->updated_by_name = "$date | $user->name ($user->email)";
+        /* Günceleme süresini ve kişiyi ekleme bitiş */
+
         $lawsuit->fill($params)->save();
 
         $logInfo = new LogInfo('Dava Modülü');

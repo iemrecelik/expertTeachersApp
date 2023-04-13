@@ -466,7 +466,17 @@ export default {
 
 					let elItemStatus = document.getElementById('item-status-selectbox-'+this.elUniqueID);
     			elItemStatus.value = res.itemStatus;
+
+					for (const key in res) {
+						if (Object.hasOwnProperty.call(res, key)) {
+							const item = res[key];
+							if(item == '') {
+								this.inputReadonly = false;
+							}
+						}
+					}
 				}else if(res.content) {
+					this.resetFieldValues();
 					this.fieldValues.content = res.content;
 					this.inputReadonly = false;
 				}else if(res.manuelCreate !== true){
@@ -477,13 +487,12 @@ export default {
 			})
 			.fail((error) => {
 				if(error.responseJSON){
-					this.resetFieldValues();
-					
 					if(
 						typeof error.responseJSON.errors.manuel === 'object' &&
 						error.responseJSON.errors.manuel !== null
 					) {
 						this.inputReadonly = false;
+						this.resetFieldValues();
 						this.manuel = 1;
 						this.fieldValues.content = error.responseJSON.errors.content;
 
@@ -492,6 +501,7 @@ export default {
 
 					}else {
 						this.inputReadonly = false;
+						this.resetFieldValues();
 						/* let files = event.target;
 						files.value = null; */
 					}
