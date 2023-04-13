@@ -1018,6 +1018,10 @@ class DocumentsController extends Controller
                 $pattern = '/sayı\s*?:(.*[-|\/])([\d\/\(\)\.e]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
                 preg_match($pattern, $result, $number);
             }
+            if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
+                $pattern = '/sayı\s*?:(.*[-|\/])([\d\/\(\)\.e\[\]]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
+                preg_match($pattern, $result, $number);
+            }
         }else {
             $pattern = '/\<content\>.*(T\.C\..*)\n{1,10}sayı/si';
             preg_match($pattern, $result, $sender);
@@ -1048,15 +1052,10 @@ class DocumentsController extends Controller
             if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
                 $pattern = '/sayı\s*?:(.*[-|\/])([\d\/\(\)\.e]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
                 preg_match($pattern, $result, $number);
-
-            }/* else if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
-                $pattern = '/sayı\t*?:(.*-|\.)([\d\/\(\)]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
-                preg_match($pattern, $result, $number);
-
             }else if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
-                $pattern = '/sayı\s*?:(.*-)([\d\/\(\)\.E]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
+                $pattern = '/sayı\s*?:(.*[-|\/])([\d\/\(\)\.e]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
                 preg_match($pattern, $result, $number);
-            } */
+            }
         }
 
         /* dd([
@@ -1081,6 +1080,11 @@ class DocumentsController extends Controller
 
         if(strpos($number[2], ')') !== false) {
             $number[2] = explode(')', $number[2]);
+            $number[2] = end($number[2]);
+        }
+
+        if(strpos($number[2], ']') !== false) {
+            $number[2] = explode(']', $number[2]);
             $number[2] = end($number[2]);
         }
 
