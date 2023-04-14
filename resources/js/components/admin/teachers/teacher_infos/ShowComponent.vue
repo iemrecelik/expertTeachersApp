@@ -42,7 +42,7 @@
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
       
-      <div v-if="items.dc_show_content" class="modal-body" v-html="items.dc_show_content"></div>
+      <!-- <div v-if="items.dc_show_content" class="modal-body" v-html="items.dc_show_content"></div>
       <div v-else class="modal-body p-5">
         <a type="button" 
             :href="'/storage/upload/images/raw'+items.dc_files.dc_file_path"
@@ -50,6 +50,30 @@
           >
             {{ $t('messages.readDocumentLinkClick') }}
           </a>
+      </div> -->
+
+      <div v-if="items.dc_show_content" class="modal-body" v-html="items.dc_show_content"></div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['pdf', 'PDF'])" 
+        class="pdf-viewer modal-body p-5"
+      >
+        <iframe :src="'/storage/upload/images/raw'+items.dc_files.dc_file_path" 
+          width="100%" 
+          height="100%">
+        </iframe>
+      </div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['udf', 'UDF', 'tif', 'TIF'])"
+        class="modal-body p-5"
+      >
+        <a type="button" 
+          :href="'/storage/upload/images/raw'+items.dc_files.dc_file_path"
+          target="_blank"
+        >
+          {{ $t('messages.readDocumentLinkClick') }}
+        </a>
+      </div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['tif', 'TIF'])"
+        class="img-viewer modal-body p-5"
+      >
       </div>
 
       <div class="pl-5">
@@ -75,6 +99,31 @@
           </div>
         </div>
         <div v-else><b>DOSYA YOK</b></div>
+
+      </div>
+
+      <div class="pl-5 pt-3">
+        
+        <div class="row">
+          <div class="col-12">
+            <u>İLİŞKİLENDİRİLMİŞ YAZILAR:</u>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-12">
+            <div v-if="belongDocuments.length > 0">
+              <ul>
+                <li v-for="doc in belongDocuments">
+                  {{ doc.dc_number }}
+                </li>
+              </ul>
+            </div>
+            <div v-else>
+              <b>İLİŞKİLENDİRİLMİŞ YAZI YOK</b>
+            </div>
+          </div>
+        </div>
 
       </div>
 
@@ -104,7 +153,7 @@
       :aria-labelledby="'relative'+key+'-tab'"
       v-for="(item, key) in items.dc_ralatives"
     >
-      <div v-if="item.dc_show_content" class="modal-body" v-html="item.dc_show_content"></div>
+      <!-- <div v-if="item.dc_show_content" class="modal-body" v-html="item.dc_show_content"></div>
       <div v-else class="modal-body p-5">
         <a type="button" 
             :href="'/storage/upload/images/raw'+item.dc_files.dc_file_path"
@@ -112,6 +161,30 @@
           >
             {{ $t('messages.readDocumentLinkClick') }}
           </a>
+      </div> -->
+
+      <div v-if="item.dc_show_content" class="modal-body" v-html="item.dc_show_content"></div>
+      <div v-else-if="showFileExtCtrl(item.dc_files.dc_file_path, ['pdf', 'PDF'])" 
+        class="pdf-viewer modal-body p-5"
+      >
+        <iframe :src="'/storage/upload/images/raw'+item.dc_files.dc_file_path" 
+          width="100%" 
+          height="100%">
+        </iframe>
+      </div>
+      <div v-else-if="showFileExtCtrl(item.dc_files.dc_file_path, ['udf', 'UDF', 'tif', 'TIF'])"
+        class="modal-body p-5"
+      >
+        <a type="button" 
+          :href="'/storage/upload/images/raw'+item.dc_files.dc_file_path"
+          target="_blank"
+        >
+          {{ $t('messages.readDocumentLinkClick') }}
+        </a>
+      </div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['tif', 'TIF'])"
+        class="img-viewer modal-body p-5"
+      >
       </div>
 
       <div class="pl-5">
@@ -176,6 +249,7 @@ export default {
   data () {
     return {
       datas: this.ppdatas,
+      belongDocuments: [],
       items: this.ppdatas.document,
       dcContent: this.ppDcContent,
       markInstance: null,
@@ -214,6 +288,18 @@ export default {
         return blank;
       }
     },
+    showFileExtCtrl(path, ctrlExt) {
+      let ext = path.split('.').pop();
+      let bool = false;
+
+      if(ctrlExt.indexOf(ext) > -1) {
+        bool = true;
+      }else {
+        bool = false;
+      }
+
+      return bool;
+    },
     splitFileName(val) {
       if(val) {
         let arr = val.split('/');
@@ -246,10 +332,15 @@ export default {
   created() {
     $.get(this.showUrl, (data) => {
       this.items = data.document;
+      this.belongDocuments = data.belongDocuments;
       this.formShow = true;
     })
     .fail(function(error) {
-      console.log(error);
+      this.setErrors([
+        [error.responseJSON.message]
+      ]);
+
+      this.documentShow = false;
     })
     .then((res) => {
       this.markSearch();
@@ -264,5 +355,9 @@ export default {
 mark{
     background: rgb(255, 251, 0);
     color: black;
+}
+
+div.pdf-viewer, div.img-viewer {
+  height: 1000px;
 }
 </style>

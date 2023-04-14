@@ -123,6 +123,7 @@ class SearchController extends Controller
 		$notSelectCol = [
             'dc_cat_id',
             'user_name',
+            'thr_id',
         ];
 
 		foreach ($tblInfo['columns'] as $column) {
@@ -249,6 +250,21 @@ class SearchController extends Controller
 						}
 						/* $innerJoin .= "INNER JOIN dc_doc_list t1 ON t1.dc_id = dc_documents.id ";
 						$innerJoin .= "INNER JOIN dc_list t2 ON t2.list_id = t1.list_id "; */
+						
+						$necessity = true;
+						
+						break;
+						
+					case 'thr_id':
+						if (!empty($data['value'])) {
+							$dcDocuments->leftJoin('dc_thr as t10', 't10.dc_id', '=', 't0.id');
+            				$dcDocuments->leftJoin('teachers as t11', 't11.id', '=', 't10.thr_id');
+							
+							// $dcDocuments->selectRaw('CONCAT(t11.thr_name, " " ,t11.thr_surname)');
+
+							$whereQuery .= "t11.id = ? AND ";
+							$whereQueryParams[] = $data['value'];
+						}
 						
 						$necessity = true;
 						
