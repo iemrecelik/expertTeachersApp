@@ -5,6 +5,7 @@
       getSearchDocuments: '{{ route('admin.document_mng.search.getSearchDocuments') }}', 
       show: '/admin/document-management/search', 
       getCategoryAndList: '{{ route('admin.document_mng.search.getCategoryAndList') }}', 
+      getTeachersSearchList: '{{ route('admin.teachers.searchList') }}',
       getCategory: '{{ route('admin.document_mng.category.getCategory') }}', 
       getList: '{{ route('admin.document_mng.list.getList') }}', 
       getListAndSelected: '{{ route('admin.document_mng.list.getListAndSelected') }}', 

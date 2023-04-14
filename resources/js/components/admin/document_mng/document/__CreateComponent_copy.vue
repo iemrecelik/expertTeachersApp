@@ -121,16 +121,15 @@
 								<span>{{ dcItemVal.date }}</span>	
 							</div>
 						</div>
-
 						<div class="col-3">
 							<div class="mt-4">
-								<span v-if="extUdfControl(dcItemVal.path) && dcItemVal.content"
+								<span 
 									data-toggle="tooltip" 
 									data-placement="top" 
 									:title="$t('messages.showDocument')"
 								>
 									<a tabindex="0" class="btn btn-sm btn-info" 
-										:id="'dc-show-document-'+dcItemVal.id"
+										:id="'dc-show-document-'+dcItemKey"
 										role="button" 
 										data-toggle="popover" 
 										data-trigger="focus" 
@@ -139,8 +138,6 @@
 										<i class="bi bi-file-text"></i>
 									</a>
 								</span>
-
-								<input v-else type="hidden" :id="'dc-show-document-'+dcItemVal.id">
 
 								<span 
 									data-toggle="tooltip" 
@@ -170,7 +167,6 @@
 									:multiple="false"
 									:async="true"
 									:load-options="loadDcNumbers"
-									:cacheOptions="false"
 									v-model="selectedDcNumber"
 									loadingText="Yükleniyor..."
 									clearAllText="Hepsini sil."
@@ -596,29 +592,27 @@ export default {
 			})
 			.then((res) => {})
 		},
-		loadPoppever: function (key, content, path = '') {
-			if(this.extUdfControl(path)) {
-				setTimeout(() => {
-					if($(`#dc-show-document-${key}`).length > 0) {
-						$(`#dc-show-document-${key}`).popover({
-							html: true,
-							content: content,
-							placement: 'left',
-							trigger: 'focus',
-							boundary: 'window',
-							template: `
-								<div class="popover" role="tooltip">
-									<div class="arrow"></div>
-									<h3 class="popover-header"></h3>
-									<div class="popover-body"></div>
-								</div>
-							`
-						});	
-					}else {
-						this.loadPoppever(key, content, path);
-					}
-				}, 100);
-			}
+		loadPoppever: function (key, content) {
+			setTimeout(() => {
+				if($(`#dc-show-document-${key}`).length > 0) {
+					$(`#dc-show-document-${key}`).popover({
+						html: true,
+						content: content,
+						placement: 'left',
+						trigger: 'focus',
+						boundary: 'window',
+						template: `
+							<div class="popover" role="tooltip">
+								<div class="arrow"></div>
+								<h3 class="popover-header"></h3>
+								<div class="popover-body"></div>
+							</div>
+						`
+					});	
+				}else {
+					this.loadPoppever(key, content);
+				}
+			}, 100);
 		},
 		addDcNumber: function() {
 			for (let i = 0; i < this.searchedDcNumber.length; i++) {
@@ -635,32 +629,18 @@ export default {
 
 							if(Object.keys(this.addedDcNumbers).length == (j+1)) {
 								this.addedDcNumbers.push(item);
-								// this.loadPoppever((this.addedDcNumbers.length-1), item.content);
-								this.loadPoppever(item.id, item.content, item.path);
+								this.loadPoppever((this.addedDcNumbers.length-1), item.content);
 							}
 						}
 					}else {
 						this.addedDcNumbers.push(item);
-						// this.loadPoppever((this.addedDcNumbers.length-1), item.content);
-						this.loadPoppever(item.id, item.content, item.path);
+						this.loadPoppever((this.addedDcNumbers.length-1), item.content);
 					}
 				}//if (this.selectedDcNumber == item.id) end
 			}//for end
 		},
 		delDocument: function (key) {
 			this.addedDcNumbers.splice(key, 1);
-			this.addedDcNumbers.forEach(dcNumber => {
-				this.loadPoppever(dcNumber.id, dcNumber.content, dcNumber.path);
-			});
-		},
-		extUdfControl: function(path) {
-			let ext = path.match(/\.[0-9a-z]+$/i)[0];
-			let bool = true;
-			if(ext != '.udf') {
-				bool = false
-			}
-
-			return bool;
 		}
   },
   created() {

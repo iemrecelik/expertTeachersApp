@@ -20,8 +20,10 @@ window._ = require('lodash');
     
 
     /*Datatables*/
-    require( 'datatables.net-bs5' )();
-    require( 'datatables.net-responsive-bs5' )();
+    /* require( 'datatables.net-bs5' )();
+    require( 'datatables.net-responsive-bs5' )(); */
+    require( 'datatables.net-bs4' );
+    require( 'datatables.net-responsive-bs4' );
     
 } catch (e) {}
 

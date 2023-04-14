@@ -310,6 +310,14 @@ class CommentController extends Controller
             132- evrak notlarının izinleri iptal edildi. Düzeltilecek.
             +++ 133- evrak ekleme yaparken manuel de evrağın içeriğini kaydetmiyor.
             +++ 134- evrak bilgisini gösterirken pdf ve manuel girilmiş evrak lar gösterilmesin.
+            +++ 135- tif dosyalarını evrak gösterde göstersin
+            +++ 136- evrak listelemede öğretmen girme olsun.
+            +++ 137- pdf ler öğretmen profilinde gözükmüyor.
+            +++ 138- notlar öğretmen profilinde gözüksün.
+            139- kategori sıralaması olsun. 
+            140- öğretmen evraklarında kişiye ait not tabloda gözüksün
+            141- öğretmen listesinde kurum filtresi eklensin.
+            142- dava listesinde kaydeden ve kayıt tarihi filtresi eklenecek
         */
 
         $request->validate(

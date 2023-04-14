@@ -72,6 +72,7 @@ return [
 	'document_record_list' => 'Evrak Kayıt Listesi',
 	'documents_module' => 'Evrak Modülü',
 	'waiting_documents' => 'Bekleyen Evraklar',
+	'record_personel' => 'Kaydeden',
 
 
 	/* Document List */
@@ -160,6 +161,7 @@ return [
 
 	/* Settings */
 	"auth_signature_name" => "Yetkili İmzaya Sahip İsimler",
+	"allow_file_extension" => "Yüklemeye İzin Verilen Dosya Uzantıları",
 	"settings" => "Ayarlar",
 	"ip_names" => "İp Numaraları",
 	

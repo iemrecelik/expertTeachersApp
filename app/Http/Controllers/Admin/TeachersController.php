@@ -621,7 +621,7 @@ class TeachersController extends Controller
 
     public function getSearchTeacherList(Request $request)
     {
-        $request->validate(
+        /* $request->validate(
             [
                 'searchTcNo' => 'required|integer'
             ],
@@ -629,18 +629,31 @@ class TeachersController extends Controller
                 'searchTcNo.required' => 'Tc no giriniz.',
                 'searchTcNo.integer' => 'Sadece rakam giriniz.'
             ],
-        );
+        ); */
 
         $params = $request->all();
 
-        $teachers = Teachers::selectRaw('id, thr_tc_no, thr_name, thr_surname')
-        ->whereRaw(
-            'thr_tc_no LIKE :searchTcNo', 
-            [
-                'searchTcNo' => $params['searchTcNo'].'%'
-            ]
-        )
-        ->get();
+        $teachers = Teachers::selectRaw('id, thr_tc_no, thr_name, thr_surname');
+
+        if(!is_numeric($params['searchTcNo'])) {
+            $teachers = $teachers->whereRaw(
+                'concat(thr_name, " ", thr_surname) LIKE :searchTcNo', 
+                [
+                    'searchTcNo' => $params['searchTcNo'].'%'
+                ]
+            )
+            ->get();
+        }else {
+            $teachers = $teachers->whereRaw(
+                'thr_tc_no LIKE :searchTcNo', 
+                [
+                    'searchTcNo' => $params['searchTcNo'].'%'
+                ]
+            )
+            ->get();
+        }
+
+        
 
         $datas = array_map(function($teacher) {
             return [

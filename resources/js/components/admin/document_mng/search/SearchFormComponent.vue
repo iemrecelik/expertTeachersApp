@@ -110,7 +110,7 @@
       </div>
 
       <div class="col-3">
-        <label>Tarih aralığı:</label>
+        <label>Evrak Tarih Aralığı:</label>
         
         <div class="input-group">
           <div class="input-group-prepend">
@@ -134,7 +134,41 @@
     </div>
 
     <div class="row">
-      <div class="col-12">
+      <div class="col-6">
+        <label>Kayıt Edilmiş Tarih Aralığı:</label>
+        
+        <div class="input-group">
+          <div class="input-group-prepend">
+            <span class="input-group-text">
+              <i class="far fa-calendar-alt"></i>
+            </span>
+          </div>
+          <input type="text" 
+            class="form-control float-right reservation" 
+            name="created_at"
+            autocomplete="off"
+          >
+        </div>
+      </div>
+
+      <div class="col-6">
+        <div class="form-group">
+          <label for="user-list">Kullanıcılar</label>
+          <select class="form-control" 
+            id="user-list"
+            name="user_id"
+          >
+            <option value="">Kullanıcı Seçiniz.</option> 
+            <option v-for="item in users" :value="item.id">
+              {{item.name+' ('+item.email+')'}}
+            </option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="row">
+      <div class="col-6">
         <div class="form-group">
           <label for="exampleFormControlSelect1">Listeler</label>
           <select class="form-control" 
@@ -148,9 +182,31 @@
           </select>
         </div>
       </div>
-    </div>
 
-    <div class="row mb-3">
+      <div class="col-6">
+        <div class="form-group">
+          <label for="addTeacherList">Öğretmeni Ekle: </label>
+          <treeselect
+            :id="'addTeacherList'"
+            :multiple="false"
+            :async="true"
+            :load-options="loadTeachers"
+            v-model="teacherArr"
+            loadingText="Yükleniyor..."
+            clearAllText="Hepsini sil."
+            clearValueText="Değeri sil."
+            noOptionsText="Hiçbir seçenek yok."
+            noResultsText="Mevcut seçenek yok."
+            searchPromptText="Aramak için yazınız."
+            placeholder="Seçiniz..."
+            name="thr_id"
+          />
+        </div>
+      </div>
+    </div>
+      
+
+    <!-- <div class="row mb-3">
       <div class="col-2">
         <input type="hidden" name="dc_main_status" :value="mainStatus">
         <div class="icheck-primary d-inline">
@@ -163,7 +219,7 @@
           </label>
         </div>
       </div>
-    </div>
+    </div> -->
 
     <div class="row">
       <div class="col-1">
@@ -177,8 +233,13 @@
 
 <script>
 import Treeselect from '@riophae/vue-treeselect'
+import { ASYNC_SEARCH } from '@riophae/vue-treeselect';
+
+const simulateAsyncOperation = fn => {
+  setTimeout(fn, 2000)
+}
 // import the styles
-import '@riophae/vue-treeselect/dist/vue-treeselect.css'
+import '@riophae/vue-treeselect/dist/vue-treeselect.css';
 
 import { mapState } from 'vuex';
 
@@ -188,9 +249,11 @@ export default {
     return {
       categoryList: [],
       list: [],
+      users: [],
       ajaxErrorCount: -1,
       mainStatus: 0,
-      categoryArr: []
+      categoryArr: [],
+      teacherArr: null,
     }
   },
   computed: {
@@ -221,6 +284,7 @@ export default {
       .done((res) => {
         this.categoryList = res.category;
         this.list = res.list;
+        this.users = res.users;
         this.ajaxErrorCount = -1;
       })
       .fail((error) => {
@@ -238,7 +302,44 @@ export default {
       })
       .then((res) => {})
       .always(() => {});
-    }
+    },
+    loadTeachers({ action, searchQuery, callback }) {
+      if (action === ASYNC_SEARCH) {
+        simulateAsyncOperation(() => {
+
+          if(searchQuery.length > 2) {
+            this.getTeachersSearchList(searchQuery, callback);
+          }else {
+            callback(null, [])    
+          }
+        })
+      }
+    },
+    getTeachersSearchList: function(searchTcNo, callback) {
+      $.ajax({
+        url: this.routes.getTeachersSearchList,
+        type: 'GET',
+        dataType: 'JSON',
+				data: {'searchTcNo': searchTcNo}
+      })
+      .done((res) => {
+				callback(null, res)
+        this.ajaxErrorCount = -1;
+      })
+      .fail((error) => {
+        setTimeout(() => {
+          this.ajaxErrorCount++
+
+          if(this.ajaxErrorCount < 3)
+            this.getTeachersSearchList(searchTcNo, callback);
+          else
+            this.ajaxErrorCount = -1;
+
+        }, 100);
+        
+      })
+      .then((res) => {})
+		},
   },
   created() {
     this.getCategoryAndList();

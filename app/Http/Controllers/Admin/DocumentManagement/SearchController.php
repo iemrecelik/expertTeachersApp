@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin\DocumentManagement;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Models\Admin\DcDocuments;
+use App\Models\User;
 use App\Models\Admin\DcLists;
 use App\Models\Admin\DcCategory;
 use App\Http\Controllers\Controller;
@@ -16,11 +17,20 @@ class SearchController extends Controller
 	{
 		$list = $this->getList();
 		$category = $this->getCategory($request);
+		$users = $this->getUsers();
 
         return [
 			'category' => $category,
 			'list' => $list,
+			'users' => $users,
 		];
+	}
+
+	public function getUsers()
+	{
+		$users = User::select('id', 'name', 'email')->get();
+
+		return $users;
 	}
 
 	public function getList($ids = null)
@@ -112,6 +122,8 @@ class SearchController extends Controller
 
 		$notSelectCol = [
             'dc_cat_id',
+            'user_name',
+            'thr_id',
         ];
 
 		foreach ($tblInfo['columns'] as $column) {
@@ -204,6 +216,30 @@ class SearchController extends Controller
 						}
 						break;
 						
+					case 'created_at':
+						if (isset($data['value'])) {
+							
+							$vals = explode(" - ",$data['value']);
+
+							$vals = [
+								\Carbon\Carbon::parse(str_replace('/', '-', $vals[0]).' 00:00:00'),
+								\Carbon\Carbon::parse(str_replace('/', '-', $vals[1]).' 23:59:59')
+							];
+
+							$whereQuery .= "t0.{$data['name']} BETWEEN ? AND ? AND ";
+							$whereQueryParams = array_merge($whereQueryParams, $vals);
+
+							$necessity = true;
+						}
+						break;
+
+					case 'user_id':
+						if (isset($data['value'])) {
+							$dcDocuments->where('t0.user_id', $data['value']);
+							$necessity = true;
+						}
+						break;
+						
 					case 'dc_list_id':
 						if (!empty($data['value'])) {
 							$dcDocuments->join('dc_doc_list as t1', 't1.dc_id', '=', 't0.id');
@@ -214,6 +250,21 @@ class SearchController extends Controller
 						}
 						/* $innerJoin .= "INNER JOIN dc_doc_list t1 ON t1.dc_id = dc_documents.id ";
 						$innerJoin .= "INNER JOIN dc_list t2 ON t2.list_id = t1.list_id "; */
+						
+						$necessity = true;
+						
+						break;
+						
+					case 'thr_id':
+						if (!empty($data['value'])) {
+							$dcDocuments->leftJoin('dc_thr as t10', 't10.dc_id', '=', 't0.id');
+            				$dcDocuments->leftJoin('teachers as t11', 't11.id', '=', 't10.thr_id');
+							
+							// $dcDocuments->selectRaw('CONCAT(t11.thr_name, " " ,t11.thr_surname)');
+
+							$whereQuery .= "t11.id = ? AND ";
+							$whereQueryParams[] = $data['value'];
+						}
 						
 						$necessity = true;
 						
@@ -257,15 +308,17 @@ class SearchController extends Controller
 		$dcDocuments->selectRaw('t3.dc_file_path');
 
 		$dcDocuments->join('users as t4', 't4.id', '=', 't0.user_id');
-		$dcDocuments->selectRaw('t4.name as user_name');
+		$dcDocuments->selectRaw('UPPER(t4.name) as user_name');
 		$dcDocuments->distinct();
 
 		/* $dcDocuments->join('dc_category as t5', 't5.id', '=', 't0.dc_cat_id');
 		$dcDocuments->selectRaw('t5.dc_cat_name as dc_cat_name'); */
 		
 		$dcDocuments = $dcDocuments->orderBy($colOrder, $order);
-// dd($dcDocuments->toSql());
-        $recordsTotal = DcDocuments::count();
+		
+		// dd($dcDocuments->toSql());
+        
+		$recordsTotal = DcDocuments::count();
 	    $recordsFiltered = $dcDocuments->count();
 
 	    $data = $dcDocuments->offset($tblInfo['start'])

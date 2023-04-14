@@ -17,7 +17,7 @@ class PermissionSeeder extends Seeder
         'show module categories',
         'show categories',
         'create categories',
-        'edit categories',
+        // 'edit categories',
 
         'show module unions',
         'show unions',

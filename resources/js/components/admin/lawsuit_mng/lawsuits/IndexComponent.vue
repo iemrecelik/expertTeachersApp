@@ -161,7 +161,7 @@
     <div class="col-md-12">
       <div class="card">
         <div class="card-body">
-          <table class="res-dt-table table table-striped table-bordered" 
+          <table class="res-dt-table table table-striped table-bordered dt-responsive nowrap" 
             style="width:100%">
             <thead>
               <tr>
@@ -170,7 +170,7 @@
                 <th>{{ $t("messages.dc_base_number") }}</th>
                 <th>{{ $t("messages.law_brief") }}</th>
                 <th>{{ $t("messages.dc_date") }}</th>
-                <th>{{ $t("messages.processes") }}</th>
+                <th data-priority="2">{{ $t("messages.processes") }}</th>
               </tr>
             </thead>
             <tfoot>

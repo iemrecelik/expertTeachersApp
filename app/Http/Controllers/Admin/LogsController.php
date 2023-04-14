@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Admin\DcArchives;
 use Illuminate\Http\Request;
 use App\Models\User;
 
@@ -228,7 +229,8 @@ class LogsController extends Controller
 
     public function index()
     {
-        $this->lawsuitList();
+        // $this->lawsuitList();
+        
         // dd(Storage::path('public/upload/images/2023/02/27/16/hatay_uzman.udf'));
         /* $raw = 'public/upload/images/raw/2023/02/27/16/hatay_uzman.udf';
         var_dump(Storage::path($raw));
@@ -286,9 +288,17 @@ class LogsController extends Controller
         }
         // echo '<pre>';
         foreach ($archives as $arcVal) {
-            $oldPath = 'public/upload/images/raw/'.$arcVal['dc_file_path'];
-            /* $oldPath = str_replace('/', '\\', $arcVal['dc_file_path']);
-            $oldPath = storage_path('app\public\upload\images\raw\\'.$oldPath); */
+            // $oldPath = 'public/upload/images/raw/'.$arcVal['dc_file_path'];
+            $oldPath = str_replace('/', '\\', $arcVal['dc_file_path']);
+            $oldPath = storage_path('app\public\upload\images\raw'.$oldPath);
+
+            /* echo '<pre>';
+            var_dump($oldPath);
+            var_dump(Storage::path('public\upload\images\raw\2023\04\04\12\Giden Evrak (2022_06_02__12_10_45--50931304)--801685271.udf'));
+            dd(Storage::exists(
+                'public\upload\images\raw\2023\04\04\12\Giden Evrak (2022_03_02__14_09_40--44791582)--758931940.udf'
+            )); */
+
 
             $date = date('Y-m-d', $arcVal['dc_date']);
             $number = $arcVal['dc_number'];
@@ -299,24 +309,28 @@ class LogsController extends Controller
 
                 $newPath = "archives/$catName/$date-$number/$uniqPath";
 
-                // Storage::copy($oldPath, $newPath);
+                Storage::copy($oldPath, $newPath);
 
                 foreach ($arcVal['dc_att_file_path'] as $attFileVal) {
-                    $attOldPath = 'public/upload/images/raw/'.$attFileVal;
-                    /* $attOldPath = str_replace('/', '\\', $attFileVal);
-                    $attOldPath = storage_path('app\public\upload\images\raw\\'.$attOldPath); */
+                    // $attOldPath = 'public/upload/images/raw/'.$attFileVal;
+                    $attOldPath = str_replace('/', '\\', $attFileVal);
+                    $attOldPath = storage_path('app\public\upload\images\raw\\'.$attOldPath);
 
                     $attUniqPath = $this->generateArchiveNewPath($attOldPath);
                     $attNewPath = "archives/$catName/$date-$number/Ekler/$attUniqPath";
                     /* var_dump($attOldPath);
                     var_dump($attNewPath); */
-                    // Storage::copy($attOldPath, $attNewPath);    
+                    Storage::copy($attOldPath, $attNewPath);    
                 }
             }
+
+            \App\Models\Admin\DcArchives::create([
+                'dc_arc_number' => $arcVal['dc_number'],
+                'dc_arc_date' => $arcVal['dc_date'],
+            ]);
         }
         // die;
         dd($archives);
-
 
         /* $exist = \App\Models\Admin\DcDocuments::where([
             ['dc_date', '=', strtotime('23-02-2023')],
@@ -442,6 +456,22 @@ class LogsController extends Controller
                 ]
             ]
         );
+    }
+
+    // test function
+    private function betweenTimestamp()
+    {
+        $arr = \Illuminate\Support\Facades\DB::table('dc_documents as t0')
+            ->whereBetween(
+                'created_at', 
+                [
+                    \Carbon\Carbon::parse('2023-04-04'), 
+                    \Carbon\Carbon::parse('2023-04-05')
+                ])
+            ->get()
+            ->toArray();
+
+        dd($arr);
     }
 
     public function index2()
