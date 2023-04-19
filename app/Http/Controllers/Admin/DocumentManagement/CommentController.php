@@ -314,10 +314,13 @@ class CommentController extends Controller
             +++ 136- evrak listelemede öğretmen girme olsun.
             +++ 137- pdf ler öğretmen profilinde gözükmüyor.
             +++ 138- notlar öğretmen profilinde gözüksün.
-            139- kategori sıralaması olsun. 
-            140- öğretmen evraklarında kişiye ait not tabloda gözüksün
-            141- öğretmen listesinde kurum filtresi eklensin.
-            142- dava listesinde kaydeden ve kayıt tarihi filtresi eklenecek
+            139- kategori sıralaması olsun.
+            +++ 140- öğretmen evraklarında kişiye ait not tabloda gözüksün
+            +++ 141- öğretmen listesinde kurum filtresi eklensin.
+            +++ 142- dava listesinde kaydeden ve kayıt tarihi filtresi eklenecek
+            143- roller eklenecek
+            144- evrak eklerken evrak durumunu yanlış yapıyor.
+            145- tablolarda satır sayısı olacak tarayıcıda kısa yol linki oluşturdum.
         */
 
         $request->validate(

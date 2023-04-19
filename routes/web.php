@@ -383,6 +383,12 @@ Route::prefix('admin/document-management')
 		)
 		->name('category.dataList');
 
+		Route::put(
+			'category/update/order', 
+			'updateOrder'
+		)
+		->name('category.updateOrder');
+
         Route::resource('category', CategoryController::class);
     });
 

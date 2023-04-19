@@ -227,7 +227,7 @@ class LogsController extends Controller
         ]);
     }
 
-    public function index()
+    public function index2()
     {
         // $this->lawsuitList();
         
@@ -474,7 +474,7 @@ class LogsController extends Controller
         dd($arr);
     }
 
-    public function index2()
+    public function index()
     {
         $users = User::all();
         return view(

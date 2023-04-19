@@ -516,6 +516,15 @@ class TeachersController extends Controller
             foreach ($teacher->dc_documents as $key => $dc_documents) {
                 $dc_documents->dcFiles;
                 $dc_documents->dcAttachFiles;
+
+                /* Dökümanın kullanıcıya ait notu getir başla */
+                $dc_documents->dc_myself_comment = \App\Models\Admin\DcComment::select('dc_com_text')
+                    ->where([
+                        [ 'dc_id', $dc_documents->id ],
+                        [ 'user_id', auth()->user()->id ],
+                    ])
+                    ->first();
+                /* Dökümanın kullanıcıya ait notu getir bitiş */
     
                 $user = User::select('name as user_name')->find($dc_documents->user_id);
                 $dc_documents->user_name = $user->user_name;
@@ -615,6 +624,7 @@ class TeachersController extends Controller
             ['datas' => [
                 'succeed' => [],
                 'insertErrorArr' => [],
+                'institutions' => Institutions::all()
             ]]
         );
     }
@@ -713,6 +723,10 @@ class TeachersController extends Controller
             $date = strtotime($date);
 
             $dataList->where('t0.thr_birth_day', $date);
+        }
+        
+        if(!empty($tblInfo['inst_id'])) {
+            $dataList->where('t0.inst_id', $tblInfo['inst_id']);
         }
         /* Arama Bitiş */
 

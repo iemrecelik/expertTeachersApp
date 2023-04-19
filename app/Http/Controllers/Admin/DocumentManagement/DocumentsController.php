@@ -1049,6 +1049,8 @@ class DocumentsController extends Controller
             $pattern = '/sayı\s*?:(.*-)([\d\/\(\)\.e]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
             preg_match($pattern, $result, $number);
 
+            // dd($number);
+
             if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
                 $pattern = '/sayı\s*?:(.*[-|\/])([\d\/\(\)\.e]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
                 preg_match($pattern, $result, $number);
@@ -1089,7 +1091,9 @@ class DocumentsController extends Controller
         }
 
         preg_match_all('!\d+!', $number[2], $matches);
-        $number[2] = $matches[0][0];
+        $number[2] = end($matches[0]);
+
+        // dd($matches);
 
         /* dd([
             'sender' => $sender,

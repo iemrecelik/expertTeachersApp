@@ -8,12 +8,13 @@
       <tr>
         <th>{{ $t("messages.dc_cat_name") }}</th>
         <th>{{ $t("messages.dc_up_cat_name") }}</th>
+        <th>{{ $t("messages.order") }}</th>
         <th>{{ $t("messages.processes") }}</th>
       </tr>
     </thead>
     <tfoot>
       <tr>
-        <th colspan="3">
+        <th colspan="4">
           <button type="button" class="btn btn-primary"
             data-toggle="modal" 
             :data-target="modalSelector"
@@ -65,6 +66,17 @@ export default {
       modalIDName: 'formModalLong',
       formTitleName,
       dataTable: null,
+      Toast: Swal.mixin({
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000,
+        timerProgressBar: true,
+        didOpen: (toast) => {
+          toast.addEventListener('mouseenter', Swal.stopTimer)
+          toast.addEventListener('mouseleave', Swal.resumeTimer)
+        }
+      })
     };
   },
   props: {
@@ -106,6 +118,89 @@ export default {
       'setEditItem',
       'setImgFilters',
     ]),
+    triggerUpdateOrder: function(){
+      let updateOrderElements = document.querySelectorAll("button.update-order-submit");
+
+      if(updateOrderElements.length < 1) {
+        setTimeout(() => {
+          this.triggerUpdateOrder();
+        }, 300);
+      }
+
+      for (var i = 0; i < updateOrderElements.length; i++) {
+        updateOrderElements[i].addEventListener(
+          'click', 
+          (event) => {
+            let element = event.target;
+            element = element.closest('div.row').querySelector('form.update-order-form');
+
+            let formData = new FormData(element);
+            let datas = Object.fromEntries(formData.entries());
+
+            this.updateOrder(datas);
+          },
+          false
+        );
+      }
+    },
+    updateOrder: function(datas) {
+      $.ajax({
+        url: this.routes.updateOrder,
+        type: 'PUT',
+        dataType: 'JSON',
+        data: datas
+      })
+      .done((res) => {
+        this.Toast.fire({
+          icon: 'success',
+          title: 'Kategorinin sırası kaydedildi.'
+        });
+      })
+      .fail((error) => {
+        let htmlItems = '';
+        for (const key in error.responseJSON.errors) {
+          if (Object.hasOwnProperty.call(error.responseJSON.errors, key)) {
+            htmlItems += '<li>'+error.responseJSON.errors[key]+'</li>';
+          }
+        }
+
+        let titleHtml = `
+          <ol>
+            ${htmlItems}
+          </ol>
+        `
+        this.Toast.fire({
+          icon: 'error',
+          html: titleHtml
+        })
+      })
+      .then((res) => {})
+      .always(() => {});
+    },
+    orderProcess: function(orderNumber, id) {
+      orderNumber = orderNumber ?? '';
+
+      return `
+        <div class="row">
+          <div class="col-4">
+            <form class="update-order-form">
+              <input class="form-control" type="text" name="dc_order" value="${orderNumber}"/>
+              <input class="form-control" type="hidden" name="id" value="${id}"/>
+            </form>
+          </div>
+          <div class="col-4">
+            <span 
+              data-toggle="tooltip" data-placement="top" 
+              title="${this.$t('messages.edit_order')}"
+            >
+              <button type="button" class="btn btn-sm btn-primary update-order-submit">
+                <i class="bi bi-pencil-square"></i>
+              </button>
+            </span>
+          </div>
+        </div>
+      `;
+    },
     processesRow: function(id){
       let row = '';
       row += this.editBtnHtml(id);
@@ -169,8 +264,7 @@ export default {
             <i class="bi bi-image"></i>
           </button>
         </span>`;
-    },
-
+    }
   },
   created(){
     this.setRoutes(this.pproutes);
@@ -191,6 +285,12 @@ export default {
               return row.dc_up_cat_name;
           },
         },
+        { 
+          "data": "dc_order",
+          "render": ( data, type, row ) => {
+              return this.orderProcess(data, row.id);
+          },
+        },
         /* { 
           "data": "bks_start_date",
           "render": (data, type, row) => {
@@ -208,7 +308,13 @@ export default {
           "defaultContent": ""
         },
       ],
+      order: [[2, 'asc']],
+      drawCallback: () => {
+        this.triggerUpdateOrder();
+      }
     });
+
+    
   },
   components: {
     [formTitleName + '-create-component']: createComponent,

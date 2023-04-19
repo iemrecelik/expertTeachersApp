@@ -10,6 +10,7 @@ use App\Http\Responsable\isAjaxResponse;
 use App\Models\Admin\DcCategory;
 use Illuminate\Validation\ValidationException;
 use App\Library\LogInfo;
+use PhpOffice\PhpSpreadsheet\Calculation\Category;
 
 class CategoryController extends Controller
 {
@@ -113,7 +114,6 @@ class CategoryController extends Controller
         ];
 
         $selectJoin = ", t1.dc_cat_name as dc_up_cat_name";
-        
 
 	    $dataList = DcCategory::dataList([
 	        'table' => 'dc_category',
@@ -265,5 +265,31 @@ class CategoryController extends Controller
             $msg['error'] = __('delete_error');
 
         return $msg;
+    }
+
+    public function updateOrder(Request $request)
+    {
+        $request->all();
+        $request->validate(
+            [
+                'id' => 'required|integer',
+                'dc_order' => 'required|integer',
+            ],
+            [
+                'dc_order.required' => 'Sıra numarası boş olamaz.',
+                'dc_order.integer' => 'Sıra numarası rakam olmalıdır.',
+            ]
+        );
+
+        $orderNumber = $request->input('dc_order');
+        $id = $request->input('id');
+
+        $category = DcCategory::where('id', $id)
+            ->update(['dc_order' => $orderNumber]);
+
+        return [
+            'updatedItem' => $category,
+            'succeed' => __('messages.edit_success')
+        ];
     }
 }
