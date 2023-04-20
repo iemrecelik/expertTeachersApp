@@ -126,12 +126,17 @@ export default {
         },
         searching: config.searching || false,
         columns: config.columns,
-        "drawCallback": function( settings ) {
+        order: config.order || [],
+        "drawCallback": (settings) => {
           setTimeout(() => {
             $('[data-toggle="tooltip"]').tooltip({
               trigger: "hover",
             });
           }, 100);
+
+          if (config.drawCallback) {
+            config.drawCallback();
+          }
         },
         "initComplete": config.initComplete || undefined,
         /* language: {

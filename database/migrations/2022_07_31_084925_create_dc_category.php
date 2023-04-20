@@ -17,6 +17,7 @@ class CreateDcCategory extends Migration
             $table->id();
             $table->string('dc_cat_name')->unique();
             $table->unsignedBigInteger('dc_cat_id')->nullable(); 
+            $table->tinyInteger('dc_order');
             $table->foreign('dc_cat_id')
                   ->references('id')->on('dc_category')
                   ->onDelete('cascade');

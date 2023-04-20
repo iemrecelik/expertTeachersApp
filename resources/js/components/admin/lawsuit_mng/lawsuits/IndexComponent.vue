@@ -125,7 +125,7 @@
                   </div>
                 </div>
                 <div class="row">
-                  <div class="col-2">
+                  <div class="col-3">
                     <div class="form-group mb-1">
                       <label for="inputBaseNumber">Dava Esas Numarası</label>
                       <input type="text" class="form-control" id="inputBaseNumber" 
@@ -136,17 +136,51 @@
                       >
                     </div>
                   </div>
-                  <div class="col-8"></div>
-                  <div class="col-2">
-                    <div class="form-group text-right">
-                      <button type="submit" class="btn btn-primary bg-gradient-primary w-100"
-                        @click="loadDataTable"
+
+                  <div class="col-3">
+                    <label>Kayıt Edilmiş Tarih Aralığı:</label>
+                    
+                    <div class="input-group">
+                      <div class="input-group-prepend">
+                        <span class="input-group-text">
+                          <i class="far fa-calendar-alt"></i>
+                        </span>
+                      </div>
+                      <input type="text" 
+                        class="form-control float-right reservation" 
+                        name="created_at"
+                        autocomplete="off"
                       >
-                        Ara
-                      </button>
                     </div>
                   </div>
+
+                  <div class="col-3">
+                    <div class="form-group">
+                      <label for="user-list">Kullanıcılar</label>
+                      <select class="form-control" 
+                        id="user-list"
+                        name="user_id"
+                      >
+                        <option value="">Kullanıcı Seçiniz.</option> 
+                        <option v-for="user in datas.users" :value="user.id">
+                          {{user.name+' ('+user.email+')'}}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                  
+                </div><!-- /.row -->
+
+                <div class="col-2">
+                  <div class="form-group text-right">
+                    <button type="submit" class="btn btn-primary bg-gradient-primary w-100"
+                      @click="loadDataTable"
+                    >
+                      Ara
+                    </button>
+                  </div>
                 </div>
+
               </form>
             </div>
 
@@ -170,12 +204,14 @@
                 <th>{{ $t("messages.dc_base_number") }}</th>
                 <th>{{ $t("messages.law_brief") }}</th>
                 <th>{{ $t("messages.dc_date") }}</th>
+                <th>{{ $t('messages.record_personel') }}</th>
+                <th>{{ $t('messages.updated_personel') }}</th>
                 <th data-priority="2">{{ $t("messages.processes") }}</th>
               </tr>
             </thead>
             <tfoot>
               <tr>
-                <th colspan="6">
+                <th colspan="8">
                   <button type="button" class="btn btn-primary"
                     data-toggle="modal" 
                     :data-target="modalSelector"
@@ -244,10 +280,15 @@ export default {
       addLawInfoListArr: [],
       teacherArr: null,
       unions: [],
-      ajaxErrorCount: -1
+      ajaxErrorCount: -1,
+      datas: this.ppdatas
     };
   },
   props: {
+    ppdatas: {
+      type: Object,
+      required: true,
+    },
     pproutes: {
       type: Object,
       required: true,
@@ -542,6 +583,14 @@ export default {
       if(form.elements['dc_base_number']) {
         datas['dc_base_number'] = form.elements['dc_base_number'].value;
       }
+
+      if(form.elements['created_at']) {
+        datas['created_at'] = form.elements['created_at'].value;
+      }
+
+      if(form.elements['user_id']) {
+        datas['user_id'] = form.elements['user_id'].value;
+      }
       
       this.dataTable = this.dataTableRun({
         jQDomName: '.res-dt-table',
@@ -581,6 +630,8 @@ export default {
               return this.unixTimestamp(data);
             }
           },
+          { "data": "created_by_name" },
+          { "data": "updated_by_name" },
           {
             "orderable": false,
             "searchable": false,

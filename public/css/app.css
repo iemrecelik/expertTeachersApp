@@ -64051,3 +64051,7 @@ a.ui-button:active,
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
 }
 
+tbody tr:last-child {
+  white-space: nowrap;
+}
+

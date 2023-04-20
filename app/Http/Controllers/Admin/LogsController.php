@@ -9,7 +9,7 @@ use App\Models\User;
 
 
 use Illuminate\Support\Facades\Storage;
-
+use League\CommonMark\Node\Block\Paragraph;
 
 class LogsController extends Controller
 {
@@ -227,7 +227,7 @@ class LogsController extends Controller
         ]);
     }
 
-    public function index()
+    public function index2()
     {
         // $this->lawsuitList();
         
@@ -474,8 +474,80 @@ class LogsController extends Controller
         dd($arr);
     }
 
-    public function index2()
+    private function udfXmlReader()
     {
+        $path = storage_path('app\public\upload\otherImages\content.xml');
+// dd($path);
+        $xml = new \DOMDocument();
+        $xml->load($path);
+
+        echo '<pre>';
+        $contentEl = $xml->getElementsByTagName("content");
+        foreach ($contentEl as $contVal) {
+            foreach($contVal->childNodes as $child) {
+                if ($child->nodeType == XML_CDATA_SECTION_NODE) {
+                    $cdata = $child->textContent;
+                }
+            }
+        }
+
+        $paragraph = $xml->getElementsByTagName('paragraph');
+
+        $html = "";
+        // $startOffset = -1;
+
+        /* if(isset($paragraph[10])) {
+            die('PPPPP');
+        }else {
+            die('sadasdas');
+        } */
+
+        for ($i=0; $i < $paragraph->count(); $i++) {
+            $html .= "<p>";
+            $contentEl = $paragraph[$i]->getElementsByTagName('content');
+
+            for ($j=0; $j < $contentEl->count(); $j++) {
+                $startOffset = $contentEl->item($j)->getAttribute('startOffset');
+
+                if($contentEl->item($j+1) !== null) {
+                    $endOffset = $contentEl->item($j+1)->getAttribute('startOffset');
+                }else if(isset($paragraph[$i+1])) {
+                    $contentEl = $paragraph[$i+1]->getElementsByTagName('content');
+                    $endOffset = $contentEl->item(0)->getAttribute('startOffset');
+                }
+            }
+
+            var_dump('startOffset');
+            var_dump($startOffset);
+            var_dump($endOffset);
+
+            $html .= substr($cdata, $startOffset, $endOffset);
+            $html .= "</p>";
+        }
+
+        /* foreach ($paragraph as $pargEl) {
+            $contentEl = $pargEl->getElementsByTagName('content');
+
+            if($startOffset > -1) {
+                $endOffset = $startOffset;
+            }
+
+            for ($i=0; $i < $contentEl->count(); $i++) {
+                $startOffset = $contentEl->item($i)->getAttribute('startOffset');
+
+                if($contentEl->item($i+1) !== null) {
+                    $endOffset = $contentEl->item($i+1)->getAttribute('startOffset');
+                }
+            }
+        } */
+
+        dd($html);
+    }
+
+    public function index()
+    {
+        $this->udfXmlReader();
+
         $users = User::all();
         return view(
             'admin.logs.index', 

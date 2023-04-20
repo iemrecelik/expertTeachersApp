@@ -174,6 +174,23 @@
                     </div>
                   </div>
                 </div>
+                
+                <div class="row">
+                  <div class="col-6">
+                    <div class="form-group">
+                      <label for="institutions">{{$t('messages.inst_name')}} :</label>
+                      <select class="form-control" id="institutions"
+                        name="inst_id"
+                      >
+                        <option selected value="">{{$t('messages.inst_name')}}</option>
+                        <option :value="inst.id" v-for="inst in datas.institutions">
+                          {{ inst.inst_name }}
+                        </option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="row">
                   <div class="col-10"></div>
                   <div class="col-2">
@@ -464,7 +481,11 @@ export default {
 
     showTeacherBtnHtml: function(tcNo){
       return  `
-        <form class="d-inline-block" action="${this.routes.showTeacherInfos}" method="post">
+        <form class="d-inline-block" 
+          action="${this.routes.showTeacherInfos}" 
+          method="post"
+          target="_blank"
+        >
           <div class="input-group">
             <input type="hidden" name="thr_tc_no" value="${tcNo}">
             <input type="hidden" name="_token" value="${this.token}">
@@ -599,6 +620,10 @@ export default {
 
       if(form.elements['thr_birth_day']) {
         datas['thr_birth_day'] = form.elements['thr_birth_day'].value;
+      }
+      
+      if(form.elements['inst_id']) {
+        datas['inst_id'] = form.elements['inst_id'].value;
       }
 
       return datas;

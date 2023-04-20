@@ -16,7 +16,7 @@
         <!-- /.card-header -->
         <div class="card-body">
           
-          <table class="res-dt-table table table-striped table-bordered dt-responsive nowrap" 
+          <table class="res-dt-table table table-striped table-bordered dt-responsive" 
             style="width:100%">
             <thead>
               <tr>

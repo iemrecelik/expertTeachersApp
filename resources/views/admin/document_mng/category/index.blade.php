@@ -5,6 +5,7 @@
       index: '{{ route('admin.document_mng.category.index') }}', 
       dataList: '{{ route('admin.document_mng.category.dataList') }}', 
       getCategory: '{{ route('admin.document_mng.category.getCategory') }}', 
+      updateOrder: '{{ route('admin.document_mng.category.updateOrder') }}', 
     }"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
   >

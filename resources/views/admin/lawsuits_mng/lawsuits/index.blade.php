@@ -11,6 +11,7 @@
       lawInfos: '{{ route('admin.lawsuit_mng.lawsuits.lawInfos') }}',
       getUnions: '{{ route('admin.unions.getUnions') }}',
     }"
+    :ppdatas="{{ empty(session('datas')) ? json_encode($datas) : json_encode(session('datas')) }}"
     :pperrors="{{ count($errors) > 0?$errors:'{}' }}"
   >
   </lawsuit-mng-lawsuits-component>

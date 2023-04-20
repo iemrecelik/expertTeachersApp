@@ -72,7 +72,6 @@ return [
 	'document_record_list' => 'Evrak Kayıt Listesi',
 	'documents_module' => 'Evrak Modülü',
 	'waiting_documents' => 'Bekleyen Evraklar',
-	'record_personel' => 'Kaydeden',
 
 
 	/* Document List */
@@ -84,6 +83,7 @@ return [
 	/* Comment */
 	'comment_module' => 'Evrak Notları Modülü',
 	'dc_com_text' => 'Not',
+	'dc_myself_comment' => 'Notunuz',
 	'DocumentCommentManage' => 'Evrak Notları Yönetimi',
 
 	/* User */
@@ -232,4 +232,8 @@ return [
 	'addExcel' => 'Excel Ekle',
 	'addImages' => 'Resimleri Ekle',
 	'loading' => 'Yükleniyor',
+	'record_personel' => 'Kaydeden',
+	'updated_personel' => 'Güncelleyen',
+	'order' => 'Sıra',
+	'edit_order' => 'Sırasını Düzenle',
 ];

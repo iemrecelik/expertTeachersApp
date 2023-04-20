@@ -19,6 +19,7 @@ use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\LawsuitsManagement\StoreLawsuitsRequest;
 use App\Http\Requests\Admin\LawsuitsManagement\UpdateLawsuitsRequest;
 use App\Library\LogInfo;
+use App\Models\User;
 
 class LawsuitsController extends Controller
 {
@@ -111,7 +112,14 @@ class LawsuitsController extends Controller
         echo '</pre>';
         die; */
         
-        return view('admin.lawsuits_mng.lawsuits.index');
+        return view(
+            'admin.lawsuits_mng.lawsuits.index',
+            [
+                'datas' => [
+                    'users' => User::all()
+                ]
+            ]
+        );
     }
 
     public function lawInfos(Request $request)
@@ -275,6 +283,7 @@ class LawsuitsController extends Controller
             'dc_date',
             'thr_ids',
             'uns_id',
+            'user_id',
             'dc_ids',
             'dc_date',
         ];
@@ -332,9 +341,30 @@ class LawsuitsController extends Controller
         if(!empty($tblInfo['dc_ids'])) {
             $dataList->whereIn('t0.dc_id', $tblInfo['dc_ids']);
         }
+        
+        if(!empty($tblInfo['dc_ids'])) {
+            $dataList->whereIn('t0.dc_id', $tblInfo['dc_ids']);
+        }
 
         if(!empty($tblInfo['uns_id'])) {
             $dataList->where('t0.uns_id', $tblInfo['uns_id']);
+        }
+
+        if(!empty($tblInfo['user_id'])) {
+            $dataList->selectRaw('t0.created_by_name');
+            $dataList->where('t0.created_by', $tblInfo['user_id']);
+        }
+
+        if(!empty($tblInfo['created_at'])) {
+            $vals = explode(" - ",$tblInfo['created_at']);
+            
+            $whereQuery = "t0.created_at BETWEEN ? AND ?";
+            $whereQueryParams = [
+                \Carbon\Carbon::parse(str_replace('/', '-', $vals[0]).' 00:00:00'),
+                \Carbon\Carbon::parse(str_replace('/', '-', $vals[1]).' 23:59:59')
+            ];
+
+            $dataList->whereRaw($whereQuery, $whereQueryParams);
         }
 
         if(!empty($tblInfo['dc_base_number'])) {
