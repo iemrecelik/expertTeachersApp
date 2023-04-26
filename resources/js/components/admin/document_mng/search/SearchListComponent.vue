@@ -26,12 +26,14 @@
                 <th>{{$t('messages.dc_item_status')}}</th>
                 <th>{{$t('messages.dc_subject')}}</th>
                 <th>{{$t('messages.dc_date')}}</th>
+                <th>{{ $t('messages.record_personel') }}</th>
+                <th>{{ $t('messages.updated_personel') }}</th>
                 <th data-priority="2">{{$t('messages.processes')}}</th>
               </tr>
             </thead>
             <tfoot>
               <tr>
-                <th colspan="7">
+                <th colspan="9">
                   <!-- <button type="button" class="btn btn-primary" >
                     asdasdasd
                   </button> -->
@@ -298,6 +300,8 @@ export default {
               return this.unixTimestamp(data);
             }
           },
+          { "data": "created_by_name" },
+          { "data": "updated_by_name" },
           {
             "orderable": false,
             "searchable": false,

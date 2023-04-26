@@ -126,7 +126,7 @@ export default {
         },
         searching: config.searching || false,
         columns: config.columns,
-        order: config.order || [],
+        order: config.order || [0, 'asc'],
         "drawCallback": (settings) => {
           setTimeout(() => {
             $('[data-toggle="tooltip"]').tooltip({

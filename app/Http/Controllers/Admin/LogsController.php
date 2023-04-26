@@ -474,14 +474,38 @@ class LogsController extends Controller
         dd($arr);
     }
 
-    private function udfXmlReader()
+    private function replaceSpace($string)
     {
-        $path = storage_path('app\public\upload\otherImages\content.xml');
+        $spCount = substr_count($string, ' ');
+
+        /* if($spCount > 100) {
+            // $string = str_replace(' ', '', $string);
+            $string = preg_replace("/\t/", "&nbsp&nbsp", $string);
+            $string = str_repeat('&nbsp;', 100).trim($string);
+        } */
+        // $string = "Learn PHP at HowToCodeSchool.com";
+        // $string = str_replace(' ', '&nbsp;', $string);
+        // echo $string;
+        // $string = preg_replace("/\s+/", " ", $string);
+        // $string = preg_replace("/\n/", "", $string);
+        // $string = preg_replace("/\t/", " ", $string);
+        // $string = preg_replace("/\t/", "&nbsp&nbsp", $string);
+        // $string = trim($string);
+        return $string;
+    }
+
+    private function udfXmlReader($file)
+    {
+        $path = storage_path('app\public\upload\otherImages\\'.$file.'.xml');
 // dd($path);
         $xml = new \DOMDocument();
         $xml->load($path);
 
-        echo '<pre>';
+        echo '<pre style="white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;">';
         $contentEl = $xml->getElementsByTagName("content");
         foreach ($contentEl as $contVal) {
             foreach($contVal->childNodes as $child) {
@@ -493,7 +517,8 @@ class LogsController extends Controller
 
         $paragraph = $xml->getElementsByTagName('paragraph');
 
-        $html = "";
+        $html = "<div style='width:1150px'>";
+        $arrayItems = [];
         // $startOffset = -1;
 
         /* if(isset($paragraph[10])) {
@@ -503,50 +528,171 @@ class LogsController extends Controller
         } */
 
         for ($i=0; $i < $paragraph->count(); $i++) {
-            $html .= "<p>";
+            // echo '+++++++++++++++++++++++++++++++<br/>';
+
+            /* paragraph özelliklerini alma başla */
+            $alignment = $paragraph[$i]->getAttribute('Alignment');
+            switch ($alignment) {
+                case '1':
+                    $alignment = 'center';
+                    break;
+
+                case '2':
+                    $alignment = 'right';
+                    break;
+
+                case '3':
+                    $alignment = 'justify';
+                    break;
+                
+                default:
+                    $alignment = 'left';
+                    break;
+            }
+            $tabset = $paragraph[$i]->getAttribute('TabSet');
+            $tabset = explode(',', $tabset);
+            $line = -1;
+
+            /* var_dump('special');
+            var_dump($alignment);
+            var_dump($tabset);
+            var_dump('special end'); */
+            /* paragraph özelliklerini alma bitiş */
+
+            /* content element başla */
             $contentEl = $paragraph[$i]->getElementsByTagName('content');
+            /* var_dump($contentEl);
+            var_dump($contentEl->count()); */
 
             for ($j=0; $j < $contentEl->count(); $j++) {
-                $startOffset = $contentEl->item($j)->getAttribute('startOffset');
+                $start = $contentEl->item($j)->getAttribute('startOffset');
+                $end = $contentEl->item($j)->getAttribute('length');
+                $size = $contentEl->item($j)->getAttribute('size') ?? 12;
+                $content = $this->replaceSpace(mb_substr($cdata, $start, $end));
 
-                if($contentEl->item($j+1) !== null) {
-                    $endOffset = $contentEl->item($j+1)->getAttribute('startOffset');
-                }else if(isset($paragraph[$i+1])) {
-                    $contentEl = $paragraph[$i+1]->getElementsByTagName('content');
-                    $endOffset = $contentEl->item(0)->getAttribute('startOffset');
-                }
+                /* if($start == 126) {
+                    var_dump($content);
+                    dd(mb_substr($cdata, $start, $end));
+                } */
+
+                $arrayItems[$start] = [
+                    'start' => $start,
+                    'end' => $end,
+                    'content' => $content,
+                    'size' => $size,
+                    'total' => $start + $end,
+                ];
             }
+            /* content element bitiş */
 
-            var_dump('startOffset');
-            var_dump($startOffset);
-            var_dump($endOffset);
+            /* field element başla */
+            $fieldEl = $paragraph[$i]->getElementsByTagName('field');
+            for ($k=0; $k < $fieldEl->count(); $k++) {
+                $start = $fieldEl->item($k)->getAttribute('startOffset');
+                $end = $fieldEl->item($k)->getAttribute('length');
+                $size = $fieldEl->item($k)->getAttribute('size') ?? 12;
+                $content = $this->replaceSpace(mb_substr($cdata, $start, $end));
 
-            $html .= substr($cdata, $startOffset, $endOffset);
-            $html .= "</p>";
+                $arrayItems[$start] = [
+                    'start' => $start,
+                    'end' => $end,
+                    'content' => $content,
+                    'size' => $size,
+                    'total' => $start + $end,
+                ];
+            }
+            /* field element bitiş */
+
+            /* space element başla */
+            $spaceEl = $paragraph[$i]->getElementsByTagName('space');
+            for ($l=0; $l < $spaceEl->count(); $l++) {
+                $line++;
+                $start = $spaceEl->item($l)->getAttribute('startOffset');
+                $end = $spaceEl->item($l)->getAttribute('length');
+                $size = $spaceEl->item($l)->getAttribute('size') ?? 12;
+                $content = $this->replaceSpace(mb_substr($cdata, $start, $end));
+
+                $arrayItems[$start] = [
+                    'start' => $start,
+                    'end' => $end,
+                    'content' => $content,
+                    'size' => $size,
+                    'total' => $start + $end,
+                ];
+            }
+            /* space element bitiş */
+
+            /* tab element başla */
+            $tabEl = $paragraph[$i]->getElementsByTagName('tab');
+            for ($m=0; $m < $tabEl->count(); $m++) {
+                $line++;
+                $start = $tabEl->item($m)->getAttribute('startOffset');
+                $end = $tabEl->item($m)->getAttribute('length');
+                $size = $tabEl->item($m)->getAttribute('size') ?? 12;
+                $width = explode('.', $tabset[$line]);
+
+                $width[0] = 1.8 * $width[0];
+                $content = '<span style="width:'.$width[0].';text-align:right;display: inline-block">';
+                $content .= $this->replaceSpace(mb_substr($cdata, $start, $end));
+                $content .= '</span>';
+
+                // dd($content);
+
+                $arrayItems[$start] = [
+                    'start' => $start,
+                    'end' => $end,
+                    'content' => $content,
+                    'size' => $size,
+                    'total' => $start + $end,
+                ];
+            }
+            /* tab element bitiş */
+
+            ksort($arrayItems);
+
+            $size = intval($size) > 0 ? intval($size) + 1 : 13;
+
+            // dd($arrayItems);
+            $html .= "<div style='font-size:".$size.";margin:15px 0 15px 0; text-align:".$alignment."'>";
+            foreach ($arrayItems as $itemKey => $itemVal) {
+                /* var_dump($itemVal['start']);echo '<br>';
+                var_dump($itemVal['content']);echo '<br>';
+                var_dump('---------');echo '<br>'; */
+
+                /* if($itemVal['start'] == 126) {
+                    var_dump($itemVal['content']);
+                    dd($itemVal['content']);
+                } */
+                
+                $html .= $itemVal['content'];
+            }
+            $html .= "</div>";
+
+            $arrayItems = [];
         }
 
-        /* foreach ($paragraph as $pargEl) {
-            $contentEl = $pargEl->getElementsByTagName('content');
-
-            if($startOffset > -1) {
-                $endOffset = $startOffset;
-            }
-
-            for ($i=0; $i < $contentEl->count(); $i++) {
-                $startOffset = $contentEl->item($i)->getAttribute('startOffset');
-
-                if($contentEl->item($i+1) !== null) {
-                    $endOffset = $contentEl->item($i+1)->getAttribute('startOffset');
-                }
-            }
-        } */
-
-        dd($html);
+        $html .= "</div>";
+        
+        echo $html;
+        echo '<br></br><br></br><br></br><br></br><br></br>';
+        // dd($html);
     }
 
     public function index()
     {
-        $this->udfXmlReader();
+        $arr = [
+            'content',
+            'content2',
+            'content3',
+            'content4',
+            'content5',
+        ];
+
+        foreach ($arr as $val) {
+            $this->udfXmlReader($val);
+        }
+
+        die;
 
         $users = User::all();
         return view(

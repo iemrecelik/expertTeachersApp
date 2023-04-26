@@ -73,7 +73,6 @@ return [
 	'documents_module' => 'Evrak Modülü',
 	'waiting_documents' => 'Bekleyen Evraklar',
 
-
 	/* Document List */
 	'list_module' => 'Liste Modülü',
 	'dc_list_name' => 'Liste Adı',
@@ -92,6 +91,10 @@ return [
 	'password' => 'Şifre',
 	'email' => 'Email',
 	'user_permission' => 'Kullanıcı Yetkileri',
+
+	/* Roles */
+	'role_name' => 'Rol İsmi',
+	'role_manage' => 'Rol Yönetimi',
 
 	/* Processes */
 	'addcomment' => 'Not Ekle',

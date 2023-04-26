@@ -6,6 +6,9 @@ import teacherInfosComponent from './components/admin/teachers/teacher_infos/Tea
 /* User */
 import userComponent from './components/admin/user/IndexComponent.vue';
 
+/* Roles */
+import rolesComponent from './components/admin/roles/IndexComponent.vue';
+
 /* Document Management*/
 import docMngCategoryComponent from './components/admin/document_mng/category/IndexComponent.vue';
 import docMngListComponent from './components/admin/document_mng/list/IndexComponent.vue';
@@ -45,6 +48,8 @@ export default {
 	'teacher-infos-component': teacherInfosComponent,
 
 	'user-component': userComponent,
+
+	'roles-component': rolesComponent,
 
 	'doc-mng-category-component': docMngCategoryComponent,
 	'doc-mng-list-component': docMngListComponent,

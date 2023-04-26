@@ -72,13 +72,24 @@ class TeachersController extends Controller
             
             $document->dcFiles;
 
-            $result = $document;
-        }
+            DcDocuments::UpdateBy($document);
 
-        $logInfo = new LogInfo('Öğretmen Modülü');
-        $logInfo->crShowLog(
-            "Ekleme::Öğretmene İlişkilendirilen Yazı::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmene {$document->dc_number} sayılı yazı eklendi."
-        );
+            /* Dökümanın kullanıcıya ait notu getir başla */
+            $document->dc_myself_comment = \App\Models\Admin\DcComment::select('dc_com_text')
+                ->where([
+                    [ 'dc_id', $document->id ],
+                    [ 'user_id', auth()->user()->id ],
+                ])
+                ->first();
+            /* Dökümanın kullanıcıya ait notu getir bitiş */
+
+            $result = $document;
+
+            $logInfo = new LogInfo('Öğretmen Modülü');
+            $logInfo->crShowLog(
+                "Ekleme::Öğretmene İlişkilendirilen Yazı::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmene {$document->dc_number} sayılı yazı eklendi."
+            );
+        }
 
         return $result;
     }
@@ -89,6 +100,8 @@ class TeachersController extends Controller
             ['dc_id', $document->id],
             ['thr_id', $teacher->id]
         ])->delete();
+
+        DcDocuments::UpdateBy($document);
 
         $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crShowLog(

@@ -231,6 +231,16 @@
         </li>
 
         <li class="nav-item">
+          <a href="{{route('admin.roles.index')}}" class="nav-link">
+            <!-- <i class="far fa-circle nav-icon"></i> -->
+            {{-- <i class="nav-icon fas fa-user-cog"></i> --}}
+            {{-- <i class="nav-icon fas fa-user-unlock"></i> --}}
+            <i class="nav-icon fas fa fa-lock"></i>
+            <p>Rol Yönetimi</p>
+          </a>
+        </li>
+
+        <li class="nav-item">
           <a href="{{route('admin.logs.index')}}" class="nav-link">
             <!-- <i class="far fa-circle nav-icon"></i> -->
             <i class="nav-icon fas fa-list-ul"></i>

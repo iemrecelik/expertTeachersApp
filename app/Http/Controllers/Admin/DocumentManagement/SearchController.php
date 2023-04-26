@@ -83,7 +83,7 @@ class SearchController extends Controller
         
         $cats = DcCategory::where('dc_cat_id', $id)
                 ->where('id', '!=', $whereNotId)
-                ->orderBy('dc_cat_name')
+                ->orderBy('dc_order')
                 ->get();
 
         if (!$cats->isEmpty()) {

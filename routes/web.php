@@ -4,18 +4,19 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\LogsController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\UnionsController;
-use App\Http\Controllers\Admin\TeachersController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\TeachersController;
 use App\Http\Controllers\Admin\MySettingsController;
 use App\Http\Controllers\Admin\Search\SearchController;
 use App\Http\Controllers\Admin\DocumentManagement\ListController;
 use App\Http\Controllers\Admin\DocumentManagement\CommentController;
 use App\Http\Controllers\Admin\LawsuitManagement\LawsuitsController;
 use App\Http\Controllers\Admin\DocumentManagement\CategoryController;
-use App\Http\Controllers\Admin\DocumentManagement\DocumentsController;
 use App\Http\Controllers\Admin\DocumentManagement\DcReportController;
 use App\Http\Controllers\Admin\DocumentManagement\DcWaitingController;
+use App\Http\Controllers\Admin\DocumentManagement\DocumentsController;
 use App\Http\Controllers\Admin\LawsuitManagement\StatisticalController;
 use App\Http\Controllers\Admin\TeachersListManagement\InstitutionsController;
 use App\Http\Controllers\Admin\OldRegulation\SearchController as OldSearchController;
@@ -339,6 +340,12 @@ Route::prefix('admin/document-management')
 		)
 		->where(['document' => '[0-9]+'])
 		->middleware(['permission:delete documents']);
+
+		/* Route::get(
+			'document/preview/pdf',
+			'privewPdf'
+		)
+		->name('document.privewPdf'); */
     });
 
 Route::prefix('admin/document-management')
@@ -609,6 +616,42 @@ Route::prefix('admin')
 		->name('user.dataList');
 
         Route::resource('user', UserController::class);
+    });
+
+Route::prefix('admin')
+    ->middleware(['auth', 'role:admin|auth_admin|super_admin'])
+    ->controller(RolesController::class)
+    ->name('admin.')
+    ->group(function () {
+        /* Roles */
+		Route::get(
+			'permission/get-permission', 
+			'getPermission'
+		)
+		->name('permission.getPermission');
+		
+		Route::get(
+			'roles/{role}/edit-permissions',
+			'rolesHasPermissions'
+		)
+		->name('permission.editPermissions')
+		->where([
+			'role' => '[0-9]+',
+		]);
+
+		Route::put(
+			'roles/{role}/update-permissions', 
+			'updatePermissions'
+		)
+		->name('roles.updatePermissions');
+
+        Route::post(
+			'roles/data-list', 
+			'getDataList'
+		)
+		->name('roles.dataList');
+
+        Route::resource('roles', RolesController::class);
     });
 
 	Route::prefix('admin/logs')

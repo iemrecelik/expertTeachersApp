@@ -4,12 +4,14 @@
     style="width:100%">
     <thead>
       <tr>
-        <th data-priority="2">{{$t('messages.record_personel')}}</th>
-        <th>{{ $t("messages.dc_item_status") }}</th>
+        <!-- <th data-priority="2">{{$t('messages.record_personel')}}</th> -->
         <th data-priority="1">{{ $t("messages.dc_number") }}</th>
+        <th>{{ $t("messages.dc_item_status") }}</th>
         <th>{{ $t("messages.dc_subject") }}</th>
         <th>{{ $t("messages.dc_myself_comment") }}</th>
         <th>{{ $t("messages.dc_date") }}</th>
+        <th>{{ $t('messages.record_personel') }}</th>
+        <th>{{ $t('messages.updated_personel') }}</th>
         <th data-priority="3">{{ $t("messages.processes") }}</th>
       </tr>
     </thead>
@@ -317,14 +319,14 @@ export default {
           // this.exportExcelDatas = this.dataTable.rows().data();
         },
         columns: [
-          { 'data': 'user_name' },
+          // { 'data': 'user_name' },
+          { 'data': 'dc_number' },
           { 
             'data': 'dc_item_status' ,
             'render': (data, type, row) => {
               return data < 1 ? "Gelen" : "Giden";
             }
           },
-          { 'data': 'dc_number' },
           { 'data': 'dc_subject' },
           { 
             'data': 'dc_myself_comment',
@@ -338,6 +340,8 @@ export default {
               return this.unixTimestamp(data);
             }
           },
+          { "data": "created_by_name" },
+          { "data": "updated_by_name" },
           {
             "orderable": false,
             "searchable": false,

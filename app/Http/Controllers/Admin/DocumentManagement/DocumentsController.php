@@ -1509,6 +1509,8 @@ class DocumentsController extends Controller
                 $logInfo->crShowLog(
                     "Ekleme::Evrak Ekleme::"."<b>".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)."</b> ilgili(lere) <b>{$dcDocuments->dc_number}</b> sayılı yazı ilişkilendirildi."
                 );
+            }else {
+                $dcDocuments->dc_teachers()->detach();
             }
 
             /* İzinli kullanıcıları ekleme */
@@ -1587,6 +1589,15 @@ class DocumentsController extends Controller
             ]);
         }
 
+        /* Günceleme süresini ve kişiyi ekleme başla */
+        $user = auth()->user();
+        $date = date("d-m-Y H:i:s");
+
+        $dcDocuments->updated_by = $user->id;
+        $dcDocuments->updated_by_name = "$date | $user->name ($user->email)";
+        $dcDocuments->save();
+        /* Günceleme süresini ve kişiyi ekleme bitiş */
+
         return $dcDocuments;
     }
 
@@ -1607,7 +1618,7 @@ class DocumentsController extends Controller
                 'dc_show_content'   => $params['dc_show_content'] ?? '',
                 'dc_raw_content'    => $params['dc_raw_content'] ?? '',
                 'dc_date'           => strtotime($params['dc_date']),
-                'user_id'           => $request->user()->id,
+                // 'user_id'           => $request->user()->id,
                 'list_id'           => $params['list_id'] ?? null,
                 'thr_id'            => $params['thr_id'] ?? null,
                 'dc_com_text'       => $params['dc_com_text'] ?? null,
@@ -1628,7 +1639,7 @@ class DocumentsController extends Controller
                 'dc_show_content'   => $params['rel_dc_show_content'][$key] ?? '',
                 'dc_raw_content'    => $params['rel_dc_raw_content'][$key] ?? '',
                 'dc_date'           => strtotime($params['rel_dc_date'][$key]),
-                'user_id'           => $request->user()->id,
+                // 'user_id'           => $request->user()->id,
                 'dc_manuel'         => $params['dc_manuel'],
             ];
         }
