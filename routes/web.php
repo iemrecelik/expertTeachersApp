@@ -341,11 +341,12 @@ Route::prefix('admin/document-management')
 		->where(['document' => '[0-9]+'])
 		->middleware(['permission:delete documents']);
 
-		/* Route::get(
-			'document/preview/pdf',
-			'privewPdf'
+		Route::get(
+			'document/preview/{document}/pdf',
+			'privewUdfToPdf'
 		)
-		->name('document.privewPdf'); */
+		->where('document', '[0-9]+')
+		->name('document.privewUdfToPdf');
     });
 
 Route::prefix('admin/document-management')
@@ -510,19 +511,6 @@ Route::prefix('admin/document-management')
         ->name('search.show')
 		->middleware(['permission:show documents']);
     });
-
-/* Route::prefix('admin/document-management')
-    ->middleware('auth')
-    ->controller(DocumentsController::class)
-    ->name('admin.document_mng.')
-    ->group(function () {
-
-        Route::get(
-			'waiting/list', 
-			'getWaitingDocument'
-		)
-		->name('waiting.getWaitingDocument');
-    }); */
 
 Route::prefix('admin/lawsuit-management')
     ->middleware('auth')

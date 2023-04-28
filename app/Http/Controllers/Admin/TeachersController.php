@@ -553,14 +553,21 @@ class TeachersController extends Controller
                 foreach ($lawsuit->dc_documents as $dc_key => $dc_val) {
                     $dc_val->dcFiles;
                     $dc_val->dcAttachFiles;
-                    $dc_val->dc_date = date("d/m/Y",$dc_val->dc_date);
+                    // $dc_val->dc_date_timestamp = $dc_val->dc_date;
+                    $dc_val->dc_date = date("d/m/Y",$dc_val->dc_date).'|'.$dc_val->dc_date;
                 }
+
+                /* evrak ları tarihe göre sıralama başla */
+                // $lawsuit->dc_documents = $lawsuit->dc_documents->sortBy('dc_date')->values();
+                /* evrak ları tarihe göre sıralama bitiş */
                 $lawsuit->subjects;
                 $lawsuit->lawsuitFiles;
             }
 
             $teacher->thr_birth_day = date('d/m/Y', $teacher->thr_birth_day);
         }
+
+        // dd($teacher->lawsuits);
 
         $request->flashOnly(['thr_tc_no']);
 

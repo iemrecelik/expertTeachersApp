@@ -321,8 +321,10 @@ class CommentController extends Controller
             +++ 143- roller eklenecek
             144- evrak eklerken evrak durumunu yanlış yapıyor.
             145- tablolarda satır sayısı olacak tarayıcıda kısa yol linki oluşturdum.
-            146- evrağı dys de yazan kişiyi gösterme
+            xxx 146- evrağı dys de yazan kişiyi gösterme
             147- roller isimler türkçe yapılacak
+            148- evrak göstermede pdf lerin formatı düzeltilecek
+            149- bazı dosyaları pdf e çeviremiyor (Hamza, uzman, baş)
         */
 
         $request->validate(

@@ -20,7 +20,9 @@
       </div>
       
       <form id="search-document-form" action="#">
-        <search-form-component>
+        <search-form-component
+          :ppdatas="ppdatas"
+        >
           <button
             type="button" 
             class="btn btn-info"
@@ -71,10 +73,10 @@ export default {
     };
   },
   props: {
-    /* ppdatas: {
+    ppdatas: {
       type: Object,
-      required: false,
-    }, */
+      required: true,
+    },
     pproutes: {
       type: Object,
       required: true,

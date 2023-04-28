@@ -49,12 +49,12 @@ class SearchController extends Controller
 	{
         $req = $request->all();
 
-        if(empty($req['id']))
-            $id = null;
-        else
-            $id = $req['id'];
+        if(empty($req['id'])) {
+			$id = null;
+		}else {
+			$id = $req['id'];
+		}
             
-        
         $categoryList = $this->getTreeviewCat(null, $id);
 
 		if(empty($req['startData'])) {
@@ -107,7 +107,19 @@ class SearchController extends Controller
 
     public function searchForm()
     {
-        return view("admin.document_mng.search.index");
+		$request = new \Illuminate\Http\Request([
+			'startData' => [
+				'id' => 0,
+				'label' => 'Tüm Konular'
+			]
+		]);
+
+		$catAndList = $this->getCategoryAndList($request);
+
+        return view(
+			"admin.document_mng.search.index",
+			['datas' => $catAndList]
+		);
     }
 
     public function getSearchDocuments(Request $request)

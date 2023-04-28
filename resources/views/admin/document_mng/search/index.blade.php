@@ -16,6 +16,7 @@
       deleteComment: '{{ route('admin.document_mng.comment.deleteComment') }}',
       getRecordNeedDocuments: '{{ route('admin.document_mng.report.getRecordNeedDocuments') }}',
     }"
+    :ppdatas="{{ json_encode($datas) }}"
   >
   </doc-mng-search-component>
 @endsection
