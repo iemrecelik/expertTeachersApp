@@ -37,11 +37,12 @@
           name="role_name"
         >
           <option selected value="">{{$t('messages.select_role')}}.</option>
-          <!-- <option :selected="item.roles[0].name == 'admin'" value="admin">Admin</option>
-          <option :selected="item.roles[0].name == 'auth_admin'" value="auth_admin">Yetkili Admin</option> -->
-          <option :selected="hasRole(item, 'staff')" value="staff">Personel</option>
-          <option :selected="hasRole(item, 'admin')" value="admin">Admin</option>
-          <option :selected="hasRole(item, 'auth_admin')" value="auth_admin">Yetkili Admin</option>
+          <option v-for="role in roles" 
+            :selected="hasRole(item, role.name)" 
+            :value="role.name"
+          >
+            {{ role.nickname }}
+          </option>
         </select>
       </div>
     </div>
@@ -64,13 +65,18 @@ export default {
     return {
       categoryList: [],
       ajaxErrorCount: -1,
+      roles: this.pproles
     }
   },
   props: {
     ppitem: {
       type: Object,
       required: true,
-    }
+    },
+    pproles: {
+      type: Array,
+      required: true,
+    },
   },
   computed: {
     item: function(){
@@ -100,6 +106,7 @@ export default {
     }
   },
   created() {
+    console.log(JSON.parse(this.roles))
   },
   components: {
     Treeselect,

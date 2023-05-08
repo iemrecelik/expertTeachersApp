@@ -25,6 +25,7 @@ class StoreRolesRequest extends FormRequest
     {
         return [
             'name'  => 'required|string',
+            'nickname'  => 'required|string',
         ];
     }
 
@@ -36,8 +37,10 @@ class StoreRolesRequest extends FormRequest
     public function messages()
     {
         return [
-            'name.required' => 'Kullanıcı ismi zorunludur.',
-            'name.string' => 'Kullanıcı ismi sadece rakamlardan oluşamaz.',
+            'name.required' => 'Rol ismi zorunludur.',
+            'name.string' => 'Rol ismi sadece rakamlardan oluşamaz.',
+            'nickname.required' => 'Rol takma isim zorunludur.',
+            'nickname.string' => 'Rol takma ismi sadece rakamlardan oluşamaz.',
         ];
     }
 }

@@ -105,8 +105,8 @@ class LogsController extends Controller
     private function lawsuitList()
     {
         $lawsuits = \Illuminate\Support\Facades\DB::table('lawsuits as t0')->selectRaw("
-            ROW_NUMBER() OVER (
-                ORDER BY t0.id ASC) line,
+            /* ROW_NUMBER() OVER (
+                ORDER BY t0.id ASC) line, */
             (
                 SELECT 
                     GROUP_CONCAT(t5.dc_cat_name) 
@@ -116,6 +116,7 @@ class LogsController extends Controller
                     dc_category AS t5 ON t5.id = t4.cat_id
                 WHERE t4.dc_id = t3.id
             ) AS dc_cat_name,
+            t3.dc_number as law_dc_number,
             t1.thr_tc_no, 
             CONCAT(t1.thr_name, ' ', t1.thr_surname) AS thr_name_surname, 
             t2.uns_name, t3.dc_base_number, t0.law_brief, 
@@ -142,8 +143,8 @@ class LogsController extends Controller
         
         $lawsuitsAtt = \Illuminate\Support\Facades\DB::table('lawsuits as t0')
             ->selectRaw("
-                ROW_NUMBER() OVER (
-                    ORDER BY t0.id ASC) line,
+                /* ROW_NUMBER() OVER (
+                    ORDER BY t0.id ASC) line, */
                 (
                     SELECT 
                         GROUP_CONCAT(t5.dc_cat_name) 
@@ -153,6 +154,9 @@ class LogsController extends Controller
                         dc_category AS t5 ON t5.id = t4.cat_id
                     WHERE t4.dc_id = t3.id
                 ) AS dc_cat_name,
+                (
+                    SELECT dc_number FROM dc_documents WHERE id = t0.dc_id
+                ) as law_dc_number,
                 t1.thr_tc_no, 
                 CONCAT(t1.thr_name, ' ', t1.thr_surname) AS thr_name_surname, 
                 t2.uns_name, t3.dc_base_number, t0.law_brief, 
@@ -200,25 +204,45 @@ class LogsController extends Controller
             ->orderBy('t1.thr_tc_no', 'asc')
             ->get();
         
-            $documents = \Illuminate\Support\Facades\DB::table('dc_documents as t0')
-                ->selectRaw("
-                    ROW_NUMBER() OVER (
-                        ORDER BY t0.dc_number ASC) line, 
-                    t0.dc_number, t0.dc_subject, 
-                    IF(t0.dc_item_status = '0', 'GELEN', 'GİDEN' ) AS dc_item_status,
-                    CONCAT(
-                        DATE_SUB(
-                            DATE_FORMAT(
-                                FROM_UNIXTIME(t0.dc_date), 
-                                '%Y-%m-%d'
-                            ),
-                            INTERVAL 1 DAY
+        $documents = \Illuminate\Support\Facades\DB::table('dc_documents as t0')
+            ->selectRaw("
+                ROW_NUMBER() OVER (
+                    ORDER BY t0.dc_number ASC) line, 
+                t0.dc_number, t0.dc_subject, 
+                IF(t0.dc_item_status = '0', 'GELEN', 'GİDEN' ) AS dc_item_status,
+                CONCAT(
+                    DATE_SUB(
+                        DATE_FORMAT(
+                            FROM_UNIXTIME(t0.dc_date), 
+                            '%Y-%m-%d'
                         ),
-                        '-', t0.dc_number
-                    ) AS 'archive_name'
-                ")
-                ->orderBy('t0.dc_number', 'asc')
-                ->get();
+                        INTERVAL 1 DAY
+                    ),
+                    '-', t0.dc_number
+                ) AS 'archive_name'
+            ")
+            ->orderBy('t0.dc_number', 'asc')
+            ->get();
+        
+        
+
+        $lawsuits = array_map(function($lawsuit){
+            return json_decode(json_encode($lawsuit), true);
+        }, $lawsuits->toArray());
+        
+        $lawsuitsAtt = array_map(function($lawsuit){
+            return json_decode(json_encode($lawsuit), true);
+        }, $lawsuitsAtt->toArray());
+
+        $documents = array_map(function($lawsuit){
+            return json_decode(json_encode($lawsuit), true);
+        }, $documents->toArray());
+
+        $lawsuitAndAtt = $this->lawsuitAndAtt($lawsuits, $lawsuitsAtt);
+
+        // $this->excelExports($lawsuits);
+        $this->excelExports($lawsuitAndAtt);
+
         dd([
             $lawsuits->toArray(),
             $lawsuitsAtt->toArray(),
@@ -227,9 +251,48 @@ class LogsController extends Controller
         ]);
     }
 
+    private function lawsuitAndAtt($lawsuits, $lawsuitsAtt)
+    {
+        $lawsuits = array_merge($lawsuits, $lawsuitsAtt);
+        
+        $thr_tc_no = array_column($lawsuits, 'law_dc_number');
+        // $uns_name = array_column($lawsuits, 'uns_name');
+        array_multisort($thr_tc_no, SORT_ASC, $lawsuits);
+
+        return $lawsuits;
+
+        // dd($lawsuits);
+    }
+
+    private function excelExports($arrayData)
+    {
+        $spreadsheet = new \PhpOffice\PhpSpreadsheet\Spreadsheet();
+        $spreadsheet->getActiveSheet()
+            ->fromArray($arrayData, NULL,'A1');
+
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="01simple.xlsx"');
+        header('Cache-Control: max-age=0');
+        // If you're serving to IE 9, then the following may be needed
+        header('Cache-Control: max-age=1');
+        
+        // If you're serving to IE over SSL, then the following may be needed
+        header('Expires: Mon, 26 Jul 1997 05:00:00 GMT'); // Date in the past
+        header('Last-Modified: ' . gmdate('D, d M Y H:i:s') . ' GMT'); // always modified
+        header('Cache-Control: cache, must-revalidate'); // HTTP/1.1
+        header('Pragma: public'); // HTTP/1.0
+        
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+        exit;
+    }
+
     public function index2()
     {
-        // $this->lawsuitList();
+
+        /* $a = file_get_contents('C:/xampp/htdocs/oygm/expertTeachersApp/storage/app/public/upload/images/raw/2023/04/17/12/Gelen Evrak (2014_03_04__16_05_59--940884)--10874019.udf');
+        dd($a); */
+        $this->lawsuitList();
         
         // dd(Storage::path('public/upload/images/2023/02/27/16/hatay_uzman.udf'));
         /* $raw = 'public/upload/images/raw/2023/02/27/16/hatay_uzman.udf';
@@ -245,7 +308,7 @@ class LogsController extends Controller
         ->join('dc_cat as t1', 't1.dc_id', '=', 't0.id')
         ->join('dc_category as t2', 't2.id', '=', 't1.cat_id')
         ->join('dc_files as t3', 't3.dc_file_owner_id', '=', 't0.id')
-        ->where(\Illuminate\Support\Facades\DB::raw('
+        ->whereRaw('
                 NOT EXISTS 
                 ( 
                     SELECT 1
@@ -254,7 +317,7 @@ class LogsController extends Controller
                     AND t4.dc_arc_date = t0.dc_date
                 )
             ')
-        )
+        
         ->orderByRaw('t0.dc_date ASC')
         // ->toSql();
         ->get()
@@ -308,8 +371,26 @@ class LogsController extends Controller
                 $uniqPath = $this->generateArchiveNewPath($oldPath);
 
                 $newPath = "archives/$catName/$date-$number/$uniqPath";
+                $directory = pathinfo($newPath, PATHINFO_DIRNAME);
+                Storage::makeDirectory($directory);
 
-                Storage::copy($oldPath, $newPath);
+                $newPath = storage_path('app/'.$newPath);
+                // $newPath = str_replace('//', '/', $newPath);
+                $newPath = str_replace('/', '\\', $newPath);
+
+
+                if (file_exists($oldPath)) {
+                    copy($oldPath, $newPath);
+                } else {
+                    $logInfo = new \App\Library\LogInfo();
+
+                    $logInfo->crShowLog(
+                        $arcVal['dc_number'].' sayılı evrağın '.$oldPath.' yazısı eklenemedi.', 
+                        'logs/archive.log'
+                    );
+                }
+                
+                // Storage::copy($oldPath, $newPath);
 
                 foreach ($arcVal['dc_att_file_path'] as $attFileVal) {
                     // $attOldPath = 'public/upload/images/raw/'.$attFileVal;
@@ -318,9 +399,25 @@ class LogsController extends Controller
 
                     $attUniqPath = $this->generateArchiveNewPath($attOldPath);
                     $attNewPath = "archives/$catName/$date-$number/Ekler/$attUniqPath";
-                    /* var_dump($attOldPath);
-                    var_dump($attNewPath); */
-                    Storage::copy($attOldPath, $attNewPath);    
+                    
+                    $directory = pathinfo($attNewPath, PATHINFO_DIRNAME);
+                    Storage::makeDirectory($directory);
+                    
+                    $attNewPath = storage_path('app/'.$attNewPath);
+                    // $attNewPath = str_replace('//', '/', $attNewPath);
+                    $attNewPath = str_replace('/', '\\', $attNewPath);
+
+                    if (file_exists($attOldPath)) {
+                        copy($attOldPath, $attNewPath);
+                    } else {
+                        $logInfo = new \App\Library\LogInfo();
+
+                        $logInfo->crShowLog(
+                            $arcVal['dc_number'].' sayılı evrağın ekteki '.$attOldPath.' dosyası eklenemedi.', 
+                            'logs/archive.log'
+                        );
+                    }
+                    // Storage::copy($attOldPath, $attNewPath);
                 }
             }
 
@@ -476,6 +573,8 @@ class LogsController extends Controller
 
     public function index()
     {
+        // $this->index2();
+
         $users = User::all();
         return view(
             'admin.logs.index', 

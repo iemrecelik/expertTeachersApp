@@ -65,6 +65,7 @@ export default {
       modalIDName: 'formModalLong',
       formTitleName,
       dataTable: null,
+      datas: this.ppdatas,
     };
   },
   props: {
@@ -76,9 +77,9 @@ export default {
       type: Object,
       required: true,
     },
-    ppimgfilters: {
+    ppdatas: {
       type: Object,
-      required: false,
+      required: true,
     },
   },
   computed: {
@@ -125,7 +126,8 @@ export default {
             data-component="${this.formTitleName}-edit-component" 
             data-datas='{
               "id": ${id},
-              "formTitleName": "${this.formTitleName}"
+              "formTitleName": "${this.formTitleName}",
+              "roles": ${JSON.stringify(this.datas.roles)}
             }'
           >
             <i class="bi bi-pencil-square"></i>

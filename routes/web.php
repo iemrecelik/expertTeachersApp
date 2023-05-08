@@ -6,6 +6,7 @@ use App\Http\Controllers\Admin\LogsController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\UnionsController;
+use App\Http\Controllers\Admin\ArchiveController;
 use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\TeachersController;
 use App\Http\Controllers\Admin\MySettingsController;
@@ -642,7 +643,7 @@ Route::prefix('admin')
         Route::resource('roles', RolesController::class);
     });
 
-	Route::prefix('admin/logs')
+Route::prefix('admin/logs')
     ->middleware(['auth', 'role:auth_admin|super_admin'])
     ->controller(LogsController::class)
     ->name('admin.logs.')
@@ -661,7 +662,32 @@ Route::prefix('admin')
 		->name('getLogsList');
     });
 
-	Route::prefix('admin/settings')
+Route::prefix('admin/archive')
+    ->middleware(['auth'])
+    ->controller(ArchiveController::class)
+    ->name('admin.archive.')
+    ->group(function () {
+        /* Archive */
+		Route::get(
+			'/', 
+			'index'
+		)
+		->name('index');
+
+		Route::delete(
+			'{archive_name}',
+			'destroy'
+		)
+		->name('admin.archive.destroy');
+
+		Route::post(
+			'/record-archive',
+			'recordArchive'
+		)
+		->name('record');
+    });
+
+Route::prefix('admin/settings')
     ->middleware(['auth', 'role:auth_admin|super_admin'])
     ->controller(SettingsController::class)
     ->name('admin.settings.')
@@ -685,7 +711,7 @@ Route::prefix('admin/my-settings')
     ->controller(MySettingsController::class)
     ->name('admin.mySettings.')
     ->group(function () {
-        /* Settings */
+        /* My Settings */
 		Route::get(
 			'/', 
 			'index'

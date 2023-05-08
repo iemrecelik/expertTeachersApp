@@ -124,7 +124,12 @@ class RolesController extends Controller
             'delete document teachers'  => 'Öğretmenden Evrak Silme',
 
             'document_record_reports' => "document_record_reports",
-            'processes document_record_reports' => "Evrak Kayıt Raporu İşlemleri"
+            'processes document_record_reports' => "Evrak Kayıt Raporu İşlemleri",
+
+            'archive'               => 'archive_manage_module',
+            'show module archive'   => 'Arşiv Yönetimi Yetkisi',
+            'create archive'        => 'Arşiv Yönetimi Kaydetme',
+            'delete archive'        => 'Arşiv Yönetimi Silme',
         ];
 
         return $permissions[$name];
@@ -207,8 +212,14 @@ class RolesController extends Controller
     public function store(StoreRolesRequest $request)
     {
         $name = $request->input('name');
+        $nickname = $request->input('nickname');
 
-        Role::create(['name' => $name]);
+        // Role::create(['name' => $name]);
+        Roles::create([
+            'name' => $name,
+            'guard_name' => 'web',
+            'nickname' => $nickname,
+        ]);
 
         return ['succeed' => __('messages.add_success')];
     }
@@ -246,12 +257,14 @@ class RolesController extends Controller
     {
         $params = $request->all();
 
-        $existRole = Roles::where('name', $params['name'])->count();
+        if($params['name'] != $role->name) {
+            $existRole = Roles::where('name', $params['name'])->count();
 
-        if($existRole > 0) {
-            throw ValidationException::withMessages(
-                ['name' => 'Bu role ismi kayıtlı başka bir tane giriniz.']
-            );
+            if($existRole > 0) {
+                throw ValidationException::withMessages(
+                    ['name' => 'Bu role ismi kayıtlı başka bir tane giriniz.']
+                );
+            }
         }
 
         $role->fill($params)->save();

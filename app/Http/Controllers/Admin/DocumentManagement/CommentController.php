@@ -322,9 +322,12 @@ class CommentController extends Controller
             144- evrak eklerken evrak durumunu yanlış yapıyor.
             145- tablolarda satır sayısı olacak tarayıcıda kısa yol linki oluşturdum.
             xxx 146- evrağı dys de yazan kişiyi gösterme
-            147- roller isimler türkçe yapılacak
+            +++ 147- rol isimleri türkçe yapılacak
             148- evrak göstermede pdf lerin formatı düzeltilecek
-            149- bazı dosyaları pdf e çeviremiyor (Hamza, uzman, baş)
+            +++ 149- bazı dosyaları pdf e çeviremiyor (Hamza, uzman, baş)
+            150- kullanıcı yönetiminde json parse hatası veriyor. Düzeltilecek.
+            +++ 151- arşiv kaydetme butonu yapılacak
+            152- arşiv zaman ayarlı kaydetme eklenecek
         */
 
         $request->validate(

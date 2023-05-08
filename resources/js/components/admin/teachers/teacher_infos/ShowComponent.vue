@@ -53,11 +53,10 @@
       </div> -->
 
       <iframe v-if="items.dc_show_content" 
-        class="modal-body" 
+        class="modal-body pdf-viewer" 
         :src="'/admin/document-management/document/preview/'+items.id+'/pdf'" 
         frameborder="0"
-        width="100%" 
-        height="1000px"
+        width="100%"
       >
       </iframe>
       <!-- <div v-if="items.dc_show_content" class="modal-body" v-html="items.dc_show_content"></div> -->
@@ -74,11 +73,10 @@
         class="modal-body p-5"
       >
         <iframe
-          class="modal-body" 
+          class="modal-body pdf-viewer" 
           :src="'/admin/document-management/document/preview/'+items.id+'/pdf'" 
           frameborder="0"
           width="100%" 
-          height="1000px"
         >
         </iframe>
         <!-- <a type="button" 
@@ -403,8 +401,8 @@ mark{
     color: black;
 }
 
-div.pdf-viewer{
-  height: 1000px;
+div.pdf-viewer, iframe.pdf-viewer{
+  height: 800px;
 }
 div.img-viewer {}
 </style>

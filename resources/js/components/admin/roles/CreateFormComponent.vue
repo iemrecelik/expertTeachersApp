@@ -13,6 +13,21 @@
         >
       </div>
     </div>
+  </div>
+  
+  <div class="row">
+    <div class="col-5">
+      <div class="form-group">
+        <label for="role-name">{{$t('messages.nickname')}}: </label>
+        <input type="text" 
+          class="form-control" 
+          id="role-name" 
+          :placeholder="$t('messages.nickname')"
+          name="nickname" 
+          value=""
+        >
+      </div>
+    </div>
   </div><!-- /.row -->
 </div>
 </template>

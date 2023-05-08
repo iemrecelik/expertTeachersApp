@@ -21,6 +21,7 @@ use App\Http\Requests\Admin\DocumentManagement\StoreDcDocumentsRequest;
 use App\Http\Requests\Admin\DocumentManagement\StoreManualDcDocumentsRequest;
 use App\Http\Requests\Admin\DocumentManagement\UpdateDcDocumentsRequest;
 use App\Library\LogInfo;
+use App\Models\Admin\DcArchives;
 
 class DocumentsController extends Controller
 {
@@ -1598,6 +1599,9 @@ class DocumentsController extends Controller
         $dcDocuments->save();
         /* Günceleme süresini ve kişiyi ekleme bitiş */
 
+        $dcArchive = DcArchives::where('dc_arc_number', $dcDocuments->dc_number)->first();
+        $dcArchive->delete();
+
         return $dcDocuments;
     }
 
@@ -1811,6 +1815,9 @@ class DocumentsController extends Controller
             $document->dcAttachFiles()->delete();
         }
 
+        $dcArchive = DcArchives::where('dc_arc_number', $document->dc_number)->first();
+        $dcArchive->delete();
+
         $res = $document->delete();
 
         $logInfo = new LogInfo('Evrak Ekleme');
@@ -1889,11 +1896,19 @@ class DocumentsController extends Controller
         white-space: -o-pre-wrap;
         word-wrap: break-word;">'; */
         $contentEl = $xml->getElementsByTagName("content");
-        foreach ($contentEl as $contVal) {
+        /* foreach ($contentEl as $contVal) {
             foreach($contVal->childNodes as $child) {
                 if ($child->nodeType == XML_CDATA_SECTION_NODE) {
                     $cdata = $child->textContent;
                 }
+            }
+        } */
+
+        foreach($contentEl[0]->childNodes as $child) {
+            if ($child->nodeType == XML_CDATA_SECTION_NODE) {
+                $cdata = $child->textContent;
+            }else {
+                $cdata = $child->textContent;
             }
         }
 
@@ -2000,7 +2015,7 @@ class DocumentsController extends Controller
             /* space element başla */
             $spaceEl = $paragraph[$i]->getElementsByTagName('space');
             for ($l=0; $l < $spaceEl->count(); $l++) {
-                $line++;
+                // $line++;
                 $start = $spaceEl->item($l)->getAttribute('startOffset');
                 $end = $spaceEl->item($l)->getAttribute('length');
                 $size = $spaceEl->item($l)->getAttribute('size') ?? 12;
@@ -2034,6 +2049,11 @@ class DocumentsController extends Controller
                 
                 $width[0] = round($width[0] / 13);
                 // $content = '<span style="white-space: nowrap">';
+                /* manual aralık başla */
+                $width[0] = $line < 1 ? 3 : 38;
+                // dd($width[0]);
+                /* manual aralık bitiş */
+
                 $content = '<span>';
                 // $content .= $this->pdfReplaceSpace(mb_substr($cdata, $start, $end)).$width[0].str_repeat('_', $width[0]);
                 $content .= $this->pdfReplaceSpace(mb_substr($cdata, $start, $end)).str_repeat('_', $width[0]);

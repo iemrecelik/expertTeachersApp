@@ -9,6 +9,8 @@ class DcArchives extends Model
 {
     use HasFactory;
 
+    protected $table = 'dc_archive';
+
     protected $fillable = [
         'dc_arc_number',
         'dc_arc_date',

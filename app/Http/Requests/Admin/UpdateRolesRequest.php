@@ -25,6 +25,7 @@ class UpdateRolesRequest extends FormRequest
     {
         return [
             'name'  => 'required|string',
+            'nickname'  => 'required|string',
         ];
     }
 
@@ -38,6 +39,8 @@ class UpdateRolesRequest extends FormRequest
         return [
             'name.required' => 'Kullanıcı ismi zorunludur.',
             'name.string' => 'Kullanıcı ismi sadece rakamlardan oluşamaz.',
+            'nickname.required' => 'Rol takma isim zorunludur.',
+            'nickname.string' => 'Rol takma ismi sadece rakamlardan oluşamaz.',
         ];
     }
 }

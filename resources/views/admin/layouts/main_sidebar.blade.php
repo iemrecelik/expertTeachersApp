@@ -239,6 +239,13 @@
             <p>Rol Yönetimi</p>
           </a>
         </li>
+        
+        <li class="nav-item">
+          <a href="{{route('admin.archive.index')}}" class="nav-link">
+            <i class="nav-icon fas fa-file-archive"></i>
+            <p>Arşiv Yönetimi</p>
+          </a>
+        </li>
 
         <li class="nav-item">
           <a href="{{route('admin.logs.index')}}" class="nav-link">

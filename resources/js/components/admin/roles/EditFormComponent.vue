@@ -12,6 +12,19 @@
       </form-form-component>
     </div>
   </div>
+  
+  <div class="row">
+    <div class="col-12">
+      <form-form-component
+        :ppsettings="{
+          type: 'text', 
+          fieldName: 'nickname', 
+          value: value('nickname')
+        }"
+      >
+      </form-form-component>
+    </div>
+  </div>
 
 </div>
 </template>

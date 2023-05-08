@@ -7,12 +7,13 @@
     <thead>
       <tr>
         <th>{{ $t("messages.name") }}</th>
+        <th>{{ $t("messages.nickname") }}</th>
         <th>{{ $t("messages.processes") }}</th>
       </tr>
     </thead>
     <tfoot>
       <tr>
-        <th colspan="2">
+        <th colspan="3">
           <button type="button" class="btn btn-primary"
             data-toggle="modal" 
             :data-target="modalSelector"
@@ -64,6 +65,7 @@ export default {
       modalIDName: 'formModalLong',
       formTitleName,
       dataTable: null,
+      datas: this.ppdatas
     };
   },
   props: {
@@ -74,10 +76,6 @@ export default {
     pperrors: {
       type: Object,
       required: true,
-    },
-    ppimgfilters: {
-      type: Object,
-      required: false,
     },
   },
   computed: {
@@ -184,6 +182,7 @@ export default {
       url: this.routes.dataList,
       columns: [
         { "data": "name" },
+        { "data": "nickname" },
         {
           "orderable": false,
           "searchable": false,
