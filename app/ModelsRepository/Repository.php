@@ -117,4 +117,16 @@ trait Repository
         $bksl = $this->$childName()->saveMany($childModels);
         return $this->setRelations([$childName => $bksl]);
     }
+
+    public function scopeUpdateBy($query, $model)
+    {
+        /* Günceleme süresini ve kişiyi ekleme başla */
+        $user = auth()->user();
+        $date = date("d-m-Y H:i:s");
+
+        $model->updated_by = $user->id;
+        $model->updated_by_name = "$date | $user->name ($user->email)";
+        $model->save();
+        /* Günceleme süresini ve kişiyi ekleme bitiş */
+    }
 }

@@ -20,6 +20,7 @@
     
     <edit-form-component
       :ppitem="item"
+      :pproles="datas.roles"
     >
     </edit-form-component>
   </form>

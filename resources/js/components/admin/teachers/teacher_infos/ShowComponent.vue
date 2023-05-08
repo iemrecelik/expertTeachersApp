@@ -52,7 +52,14 @@
           </a>
       </div> -->
 
-      <div v-if="items.dc_show_content" class="modal-body" v-html="items.dc_show_content"></div>
+      <iframe v-if="items.dc_show_content" 
+        class="modal-body pdf-viewer" 
+        :src="'/admin/document-management/document/preview/'+items.id+'/pdf'" 
+        frameborder="0"
+        width="100%"
+      >
+      </iframe>
+      <!-- <div v-if="items.dc_show_content" class="modal-body" v-html="items.dc_show_content"></div> -->
       <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['pdf', 'PDF'])" 
         class="pdf-viewer modal-body p-5"
       >
@@ -61,8 +68,26 @@
           height="100%">
         </iframe>
       </div>
-      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['udf', 'UDF', 'tif', 'TIF'])"
+      <!-- <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['udf', 'UDF', 'tif', 'TIF'])" -->
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['udf', 'UDF'])"
         class="modal-body p-5"
+      >
+        <iframe
+          class="modal-body pdf-viewer" 
+          :src="'/admin/document-management/document/preview/'+items.id+'/pdf'" 
+          frameborder="0"
+          width="100%" 
+        >
+        </iframe>
+        <!-- <a type="button" 
+          :href="'/storage/upload/images/raw'+items.dc_files.dc_file_path"
+          target="_blank"
+        >
+          {{ $t('messages.readDocumentLinkClick') }}
+        </a> -->
+      </div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['tif', 'TIF'])"
+        class="img-viewer modal-body p-5"
       >
         <a type="button" 
           :href="'/storage/upload/images/raw'+items.dc_files.dc_file_path"
@@ -70,10 +95,6 @@
         >
           {{ $t('messages.readDocumentLinkClick') }}
         </a>
-      </div>
-      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['tif', 'TIF'])"
-        class="img-viewer modal-body p-5"
-      >
       </div>
 
       <div class="pl-5">
@@ -163,7 +184,15 @@
           </a>
       </div> -->
 
-      <div v-if="item.dc_show_content" class="modal-body" v-html="item.dc_show_content"></div>
+      <iframe v-if="item.dc_show_content" 
+        class="modal-body" 
+        :src="'/admin/document-management/document/preview/'+item.id+'/pdf'" 
+        frameborder="0"
+        width="100%" 
+        height="1000px"
+      >
+      </iframe>
+      <!-- <div v-if="item.dc_show_content" class="modal-body" v-html="item.dc_show_content"></div> -->
       <div v-else-if="showFileExtCtrl(item.dc_files.dc_file_path, ['pdf', 'PDF'])" 
         class="pdf-viewer modal-body p-5"
       >
@@ -172,8 +201,27 @@
           height="100%">
         </iframe>
       </div>
-      <div v-else-if="showFileExtCtrl(item.dc_files.dc_file_path, ['udf', 'UDF', 'tif', 'TIF'])"
+      <!-- <div v-else-if="showFileExtCtrl(item.dc_files.dc_file_path, ['udf', 'UDF', 'tif', 'TIF'])" -->
+      <div v-else-if="showFileExtCtrl(item.dc_files.dc_file_path, ['udf', 'UDF'])"
         class="modal-body p-5"
+      >
+        <iframe 
+          class="modal-body" 
+          :src="'/admin/document-management/document/preview/'+item.id+'/pdf'" 
+          frameborder="0"
+          width="100%" 
+          height="1000px"
+        >
+        </iframe>
+        <!-- <a type="button" 
+          :href="'/storage/upload/images/raw'+item.dc_files.dc_file_path"
+          target="_blank"
+        >
+          {{ $t('messages.readDocumentLinkClick') }}
+        </a> -->
+      </div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['tif', 'TIF'])"
+        class="img-viewer modal-body p-5"
       >
         <a type="button" 
           :href="'/storage/upload/images/raw'+item.dc_files.dc_file_path"
@@ -181,10 +229,6 @@
         >
           {{ $t('messages.readDocumentLinkClick') }}
         </a>
-      </div>
-      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['tif', 'TIF'])"
-        class="img-viewer modal-body p-5"
-      >
       </div>
 
       <div class="pl-5">
@@ -357,7 +401,8 @@ mark{
     color: black;
 }
 
-div.pdf-viewer, div.img-viewer {
-  height: 1000px;
+div.pdf-viewer, iframe.pdf-viewer{
+  height: 800px;
 }
+div.img-viewer {}
 </style>

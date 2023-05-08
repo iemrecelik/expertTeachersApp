@@ -36,6 +36,11 @@ class CreateDcDocumentsTable extends Migration
             $table->foreign('user_id')
                   ->references('id')->on('users');
                 //   ->onDelete('cascade');
+
+            $table->integer('created_by')->nullable();
+            $table->string('created_by_name')->nullable();
+            $table->integer('updated_by')->nullable();
+            $table->string('updated_by_name')->nullable();
             
             $table->timestamps();
         });

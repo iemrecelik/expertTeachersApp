@@ -72,13 +72,24 @@ class TeachersController extends Controller
             
             $document->dcFiles;
 
-            $result = $document;
-        }
+            DcDocuments::UpdateBy($document);
 
-        $logInfo = new LogInfo('Öğretmen Modülü');
-        $logInfo->crShowLog(
-            "Ekleme::Öğretmene İlişkilendirilen Yazı::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmene {$document->dc_number} sayılı yazı eklendi."
-        );
+            /* Dökümanın kullanıcıya ait notu getir başla */
+            $document->dc_myself_comment = \App\Models\Admin\DcComment::select('dc_com_text')
+                ->where([
+                    [ 'dc_id', $document->id ],
+                    [ 'user_id', auth()->user()->id ],
+                ])
+                ->first();
+            /* Dökümanın kullanıcıya ait notu getir bitiş */
+
+            $result = $document;
+
+            $logInfo = new LogInfo('Öğretmen Modülü');
+            $logInfo->crShowLog(
+                "Ekleme::Öğretmene İlişkilendirilen Yazı::{$teacher->thr_tc_no} {$teacher->thr_name} {$teacher->thr_surname} adlı öğretmene {$document->dc_number} sayılı yazı eklendi."
+            );
+        }
 
         return $result;
     }
@@ -89,6 +100,8 @@ class TeachersController extends Controller
             ['dc_id', $document->id],
             ['thr_id', $teacher->id]
         ])->delete();
+
+        DcDocuments::UpdateBy($document);
 
         $logInfo = new LogInfo('Öğretmen Modülü');
         $logInfo->crShowLog(
@@ -540,14 +553,21 @@ class TeachersController extends Controller
                 foreach ($lawsuit->dc_documents as $dc_key => $dc_val) {
                     $dc_val->dcFiles;
                     $dc_val->dcAttachFiles;
-                    $dc_val->dc_date = date("d/m/Y",$dc_val->dc_date);
+                    // $dc_val->dc_date_timestamp = $dc_val->dc_date;
+                    $dc_val->dc_date = date("d/m/Y",$dc_val->dc_date).'|'.$dc_val->dc_date;
                 }
+
+                /* evrak ları tarihe göre sıralama başla */
+                // $lawsuit->dc_documents = $lawsuit->dc_documents->sortBy('dc_date')->values();
+                /* evrak ları tarihe göre sıralama bitiş */
                 $lawsuit->subjects;
                 $lawsuit->lawsuitFiles;
             }
 
             $teacher->thr_birth_day = date('d/m/Y', $teacher->thr_birth_day);
         }
+
+        // dd($teacher->lawsuits);
 
         $request->flashOnly(['thr_tc_no']);
 

@@ -6,6 +6,9 @@ import teacherInfosComponent from './components/admin/teachers/teacher_infos/Tea
 /* User */
 import userComponent from './components/admin/user/IndexComponent.vue';
 
+/* Roles */
+import rolesComponent from './components/admin/roles/IndexComponent.vue';
+
 /* Document Management*/
 import docMngCategoryComponent from './components/admin/document_mng/category/IndexComponent.vue';
 import docMngListComponent from './components/admin/document_mng/list/IndexComponent.vue';
@@ -33,6 +36,9 @@ import unionsMngComponent from './components/admin/unions/IndexComponent';
 /* Logs */
 import logsComponent from './components/admin/logs/IndexComponent';
 
+/* Archive */
+import archiveComponent from './components/admin/archive/IndexComponent';
+
 /* Settings */
 import settingsComponent from './components/admin/settings/IndexComponent';
 
@@ -45,6 +51,8 @@ export default {
 	'teacher-infos-component': teacherInfosComponent,
 
 	'user-component': userComponent,
+
+	'roles-component': rolesComponent,
 
 	'doc-mng-category-component': docMngCategoryComponent,
 	'doc-mng-list-component': docMngListComponent,
@@ -67,6 +75,8 @@ export default {
 	'lawsuit-mng-statistical-component': lawsuitMngStatisticalComponent,
 
 	'logs-component': logsComponent,
+
+	'archvie-component': archiveComponent,
 
 	'settings-component': settingsComponent,
 

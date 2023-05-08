@@ -4,18 +4,20 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\Admin\LogsController;
 use App\Http\Controllers\Admin\UserController;
+use App\Http\Controllers\Admin\RolesController;
 use App\Http\Controllers\Admin\UnionsController;
-use App\Http\Controllers\Admin\TeachersController;
+use App\Http\Controllers\Admin\ArchiveController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\TeachersController;
 use App\Http\Controllers\Admin\MySettingsController;
 use App\Http\Controllers\Admin\Search\SearchController;
 use App\Http\Controllers\Admin\DocumentManagement\ListController;
 use App\Http\Controllers\Admin\DocumentManagement\CommentController;
 use App\Http\Controllers\Admin\LawsuitManagement\LawsuitsController;
 use App\Http\Controllers\Admin\DocumentManagement\CategoryController;
-use App\Http\Controllers\Admin\DocumentManagement\DocumentsController;
 use App\Http\Controllers\Admin\DocumentManagement\DcReportController;
 use App\Http\Controllers\Admin\DocumentManagement\DcWaitingController;
+use App\Http\Controllers\Admin\DocumentManagement\DocumentsController;
 use App\Http\Controllers\Admin\LawsuitManagement\StatisticalController;
 use App\Http\Controllers\Admin\TeachersListManagement\InstitutionsController;
 use App\Http\Controllers\Admin\OldRegulation\SearchController as OldSearchController;
@@ -339,6 +341,13 @@ Route::prefix('admin/document-management')
 		)
 		->where(['document' => '[0-9]+'])
 		->middleware(['permission:delete documents']);
+
+		Route::get(
+			'document/preview/{document}/pdf',
+			'privewUdfToPdf'
+		)
+		->where('document', '[0-9]+')
+		->name('document.privewUdfToPdf');
     });
 
 Route::prefix('admin/document-management')
@@ -504,19 +513,6 @@ Route::prefix('admin/document-management')
 		->middleware(['permission:show documents']);
     });
 
-/* Route::prefix('admin/document-management')
-    ->middleware('auth')
-    ->controller(DocumentsController::class)
-    ->name('admin.document_mng.')
-    ->group(function () {
-
-        Route::get(
-			'waiting/list', 
-			'getWaitingDocument'
-		)
-		->name('waiting.getWaitingDocument');
-    }); */
-
 Route::prefix('admin/lawsuit-management')
     ->middleware('auth')
     ->controller(LawsuitsController::class)
@@ -611,7 +607,43 @@ Route::prefix('admin')
         Route::resource('user', UserController::class);
     });
 
-	Route::prefix('admin/logs')
+Route::prefix('admin')
+    ->middleware(['auth', 'role:admin|auth_admin|super_admin'])
+    ->controller(RolesController::class)
+    ->name('admin.')
+    ->group(function () {
+        /* Roles */
+		Route::get(
+			'permission/get-permission', 
+			'getPermission'
+		)
+		->name('permission.getPermission');
+		
+		Route::get(
+			'roles/{role}/edit-permissions',
+			'rolesHasPermissions'
+		)
+		->name('permission.editPermissions')
+		->where([
+			'role' => '[0-9]+',
+		]);
+
+		Route::put(
+			'roles/{role}/update-permissions', 
+			'updatePermissions'
+		)
+		->name('roles.updatePermissions');
+
+        Route::post(
+			'roles/data-list', 
+			'getDataList'
+		)
+		->name('roles.dataList');
+
+        Route::resource('roles', RolesController::class);
+    });
+
+Route::prefix('admin/logs')
     ->middleware(['auth', 'role:auth_admin|super_admin'])
     ->controller(LogsController::class)
     ->name('admin.logs.')
@@ -630,7 +662,32 @@ Route::prefix('admin')
 		->name('getLogsList');
     });
 
-	Route::prefix('admin/settings')
+Route::prefix('admin/archive')
+    ->middleware(['auth'])
+    ->controller(ArchiveController::class)
+    ->name('admin.archive.')
+    ->group(function () {
+        /* Archive */
+		Route::get(
+			'/', 
+			'index'
+		)
+		->name('index');
+
+		Route::delete(
+			'{archive_name}',
+			'destroy'
+		)
+		->name('admin.archive.destroy');
+
+		Route::post(
+			'/record-archive',
+			'recordArchive'
+		)
+		->name('record');
+    });
+
+Route::prefix('admin/settings')
     ->middleware(['auth', 'role:auth_admin|super_admin'])
     ->controller(SettingsController::class)
     ->name('admin.settings.')
@@ -654,7 +711,7 @@ Route::prefix('admin/my-settings')
     ->controller(MySettingsController::class)
     ->name('admin.mySettings.')
     ->group(function () {
-        /* Settings */
+        /* My Settings */
 		Route::get(
 			'/', 
 			'index'

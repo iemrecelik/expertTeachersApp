@@ -73,7 +73,6 @@ return [
 	'documents_module' => 'Evrak Modülü',
 	'waiting_documents' => 'Bekleyen Evraklar',
 
-
 	/* Document List */
 	'list_module' => 'Liste Modülü',
 	'dc_list_name' => 'Liste Adı',
@@ -92,6 +91,10 @@ return [
 	'password' => 'Şifre',
 	'email' => 'Email',
 	'user_permission' => 'Kullanıcı Yetkileri',
+
+	/* Roles */
+	'role_name' => 'Rol İsmi',
+	'role_manage' => 'Rol Yönetimi',
 
 	/* Processes */
 	'addcomment' => 'Not Ekle',
@@ -155,6 +158,13 @@ return [
 	/* Logs */
 	'log_records' => 'Log Kayıtları',
 	'document_record_reports' => 'Evrak Kayıt Raporu Modülü',
+
+	/* Archive */
+	'archive_manage_module' => 'Arşiv Yönetimi Modülü',
+	'archive_manage' => 'Arşiv Yönetimi',
+	'archive_name' => 'Arşiv İsmi',
+	'archive_download' => 'Arşivi İndir',
+	'record_archive' => 'Arşivi Kaydet',
 
 	/* Mail */
 	"Regards" => "Saygılarımla",
@@ -236,4 +246,5 @@ return [
 	'updated_personel' => 'Güncelleyen',
 	'order' => 'Sıra',
 	'edit_order' => 'Sırasını Düzenle',
+	'nickname' => 'Takma İsim',
 ];

@@ -57,7 +57,11 @@ class PermissionSeeder extends Seeder
         'show document comment',
         'create document comment',
         'edit document comment',
-        'delete document comment'
+        'delete document comment',
+        
+        'show module archive',
+        'create archive',
+        'delete archive'
     ];
 
     /**
@@ -124,7 +128,11 @@ class PermissionSeeder extends Seeder
             'show document comment',
             'create document comment',
             'edit document comment',
-            'delete document comment'
+            'delete document comment',
+
+            'show module archive',
+            'create archive',
+            'delete archive'
         ];
 
         foreach ($permissions as $key => $val) {

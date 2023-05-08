@@ -27,7 +27,13 @@ class UserController extends Controller
      */
     public function index()
     {
-        return view('admin.user.index');
+        $roles = \App\Models\Admin\Roles::all();
+
+        return view('admin.user.index', [
+            'datas' => [
+                'roles' => $roles
+            ]
+        ]);
     }
 
     public function userHasPermissions(User $user)

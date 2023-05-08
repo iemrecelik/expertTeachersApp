@@ -21,6 +21,7 @@ use App\Http\Requests\Admin\DocumentManagement\StoreDcDocumentsRequest;
 use App\Http\Requests\Admin\DocumentManagement\StoreManualDcDocumentsRequest;
 use App\Http\Requests\Admin\DocumentManagement\UpdateDcDocumentsRequest;
 use App\Library\LogInfo;
+use App\Models\Admin\DcArchives;
 
 class DocumentsController extends Controller
 {
@@ -1509,6 +1510,8 @@ class DocumentsController extends Controller
                 $logInfo->crShowLog(
                     "Ekleme::Evrak Ekleme::"."<b>".json_encode($teachers->pluck('thr_tc_no'), JSON_UNESCAPED_UNICODE)."</b> ilgili(lere) <b>{$dcDocuments->dc_number}</b> sayılı yazı ilişkilendirildi."
                 );
+            }else {
+                $dcDocuments->dc_teachers()->detach();
             }
 
             /* İzinli kullanıcıları ekleme */
@@ -1587,6 +1590,18 @@ class DocumentsController extends Controller
             ]);
         }
 
+        /* Günceleme süresini ve kişiyi ekleme başla */
+        $user = auth()->user();
+        $date = date("d-m-Y H:i:s");
+
+        $dcDocuments->updated_by = $user->id;
+        $dcDocuments->updated_by_name = "$date | $user->name ($user->email)";
+        $dcDocuments->save();
+        /* Günceleme süresini ve kişiyi ekleme bitiş */
+
+        $dcArchive = DcArchives::where('dc_arc_number', $dcDocuments->dc_number)->first();
+        $dcArchive->delete();
+
         return $dcDocuments;
     }
 
@@ -1607,7 +1622,7 @@ class DocumentsController extends Controller
                 'dc_show_content'   => $params['dc_show_content'] ?? '',
                 'dc_raw_content'    => $params['dc_raw_content'] ?? '',
                 'dc_date'           => strtotime($params['dc_date']),
-                'user_id'           => $request->user()->id,
+                // 'user_id'           => $request->user()->id,
                 'list_id'           => $params['list_id'] ?? null,
                 'thr_id'            => $params['thr_id'] ?? null,
                 'dc_com_text'       => $params['dc_com_text'] ?? null,
@@ -1628,7 +1643,7 @@ class DocumentsController extends Controller
                 'dc_show_content'   => $params['rel_dc_show_content'][$key] ?? '',
                 'dc_raw_content'    => $params['rel_dc_raw_content'][$key] ?? '',
                 'dc_date'           => strtotime($params['rel_dc_date'][$key]),
-                'user_id'           => $request->user()->id,
+                // 'user_id'           => $request->user()->id,
                 'dc_manuel'         => $params['dc_manuel'],
             ];
         }
@@ -1800,6 +1815,9 @@ class DocumentsController extends Controller
             $document->dcAttachFiles()->delete();
         }
 
+        $dcArchive = DcArchives::where('dc_arc_number', $document->dc_number)->first();
+        $dcArchive->delete();
+
         $res = $document->delete();
 
         $logInfo = new LogInfo('Evrak Ekleme');
@@ -1818,5 +1836,272 @@ class DocumentsController extends Controller
             $msg['error'] = __('delete_error');
 
         return $msg;
+    }
+
+    private function pdfReplaceSpace($string)
+    {
+        $spCount = substr_count($string, ' ');
+
+        /* if($spCount > 100) {
+            // $string = str_replace(' ', '', $string);
+            $string = preg_replace("/\t/", "&nbsp&nbsp", $string);
+            $string = str_repeat('&nbsp;', 100).trim($string);
+        } */
+        // $string = "Learn PHP at HowToCodeSchool.com";
+        // $string = str_replace(' ', '&nbsp;', $string);
+        // echo $string;
+        // $string = preg_replace("/\s+/", " ", $string);
+        // $string = preg_replace("/\n/", "", $string);
+        // $string = preg_replace("/\t/", " ", $string);
+        // $string = preg_replace("/\t/", "&nbsp&nbsp", $string);
+        // $string = trim($string);
+        return $string;
+    }
+
+    public function privewUdfToPdf(DcDocuments $document)
+    {
+        $html = $this->udfXmlReader($document->dcFiles->dc_file_path);
+
+        // echo $html;die;
+
+        $mpdf = New \Mpdf\Mpdf(['tempDir'=>storage_path('tempdir'), 'format' => 'A4' ]);
+        // $mpdf = New \Mpdf\Mpdf(['tempDir'=>storage_path('tempdir'), 'format' => [300, 300] ]);
+        $mpdf->SetTitle($document->dc_number.' Sayılı Yazı');
+        
+        // $mpdf->AddPage('L');
+        $mpdf->WriteHTML($html);
+
+        $mpdf->Output();
+    }
+
+    private function udfXmlReader($path)
+    {
+        // dd($path);
+        // $path = storage_path('app\public\upload\\'.$path);
+
+        $path = str_replace('/', '\\', $path);
+        
+        $path = storage_path('app\public\upload\images\raw'.$path);
+        $path = "zip://{$path}#content.xml";
+        
+        /* $result = file_get_contents("zip://{$path}#content.xml");
+        dd($result); */
+
+        $xml = new \DOMDocument();
+        $xml->load($path);
+
+        /* echo '<pre style="white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;">'; */
+        $contentEl = $xml->getElementsByTagName("content");
+        /* foreach ($contentEl as $contVal) {
+            foreach($contVal->childNodes as $child) {
+                if ($child->nodeType == XML_CDATA_SECTION_NODE) {
+                    $cdata = $child->textContent;
+                }
+            }
+        } */
+
+        foreach($contentEl[0]->childNodes as $child) {
+            if ($child->nodeType == XML_CDATA_SECTION_NODE) {
+                $cdata = $child->textContent;
+            }else {
+                $cdata = $child->textContent;
+            }
+        }
+
+        $paragraph = $xml->getElementsByTagName('paragraph');
+
+        /* $html = '<pre style="
+        font-family: Times New Roman 
+        white-space: pre-wrap;
+        white-space: -moz-pre-wrap;
+        white-space: -pre-wrap;
+        white-space: -o-pre-wrap;
+        word-wrap: break-word;">'; */
+
+        // $html = '<pre>';
+
+        $html = "<div style='width:1000px'>";
+        $arrayItems = [];
+        // $startOffset = -1;
+
+        /* if(isset($paragraph[10])) {
+            die('PPPPP');
+        }else {
+            die('sadasdas');
+        } */
+
+        for ($i=0; $i < $paragraph->count(); $i++) {
+            // echo '+++++++++++++++++++++++++++++++<br/>';
+
+            /* paragraph özelliklerini alma başla */
+            $alignment = $paragraph[$i]->getAttribute('Alignment');
+            switch ($alignment) {
+                case '1':
+                    $alignment = 'center';
+                    break;
+
+                case '2':
+                    $alignment = 'right';
+                    break;
+
+                case '3':
+                    $alignment = 'justify';
+                    break;
+                
+                default:
+                    $alignment = 'left';
+                    break;
+            }
+            $tabset = $paragraph[$i]->getAttribute('TabSet');
+            $tabset = explode(',', $tabset);
+            $line = -1;
+
+            /* var_dump('special');
+            var_dump($alignment);
+            var_dump($tabset);
+            var_dump('special end'); */
+            /* paragraph özelliklerini alma bitiş */
+
+            /* content element başla */
+            $contentEl = $paragraph[$i]->getElementsByTagName('content');
+            /* var_dump($contentEl);
+            var_dump($contentEl->count()); */
+
+            for ($j=0; $j < $contentEl->count(); $j++) {
+                $start = $contentEl->item($j)->getAttribute('startOffset');
+                $end = $contentEl->item($j)->getAttribute('length');
+                $size = $contentEl->item($j)->getAttribute('size') ?? 12;
+                $bold = $contentEl->item($j)->getAttribute('bold') == true ? 'font-weight:bold;' : '';
+                $content = $this->pdfReplaceSpace(mb_substr($cdata, $start, $end));
+
+                /* if($start == 126) {
+                    var_dump($content);
+                    dd(mb_substr($cdata, $start, $end));
+                } */
+
+                $arrayItems[$start] = [
+                    'start' => $start,
+                    'end' => $end,
+                    'content' => $content,
+                    'size' => $size,
+                    'total' => $start + $end,
+                ];
+            }
+            /* content element bitiş */
+
+            /* field element başla */
+            $fieldEl = $paragraph[$i]->getElementsByTagName('field');
+            for ($k=0; $k < $fieldEl->count(); $k++) {
+                $start = $fieldEl->item($k)->getAttribute('startOffset');
+                $end = $fieldEl->item($k)->getAttribute('length');
+                $size = $fieldEl->item($k)->getAttribute('size') ?? 12;
+                $bold = $fieldEl->item($k)->getAttribute('bold') == true ? 'font-weight:bold;' : '';
+                $content = $this->pdfReplaceSpace(mb_substr($cdata, $start, $end));
+
+                $arrayItems[$start] = [
+                    'start' => $start,
+                    'end' => $end,
+                    'content' => $content,
+                    'size' => $size,
+                    'total' => $start + $end,
+                ];
+            }
+            /* field element bitiş */
+
+            /* space element başla */
+            $spaceEl = $paragraph[$i]->getElementsByTagName('space');
+            for ($l=0; $l < $spaceEl->count(); $l++) {
+                // $line++;
+                $start = $spaceEl->item($l)->getAttribute('startOffset');
+                $end = $spaceEl->item($l)->getAttribute('length');
+                $size = $spaceEl->item($l)->getAttribute('size') ?? 12;
+                $bold = $spaceEl->item($l)->getAttribute('bold') == true ? 'font-weight:bold;' : '';
+                $content = $this->pdfReplaceSpace(mb_substr($cdata, $start, $end));
+
+                $arrayItems[$start] = [
+                    'start' => $start,
+                    'end' => $end,
+                    'content' => $content,
+                    'size' => $size,
+                    'total' => $start + $end,
+                ];
+            }
+            /* space element bitiş */
+
+            /* tab element başla */
+            $tabEl = $paragraph[$i]->getElementsByTagName('tab');
+            for ($m=0; $m < $tabEl->count(); $m++) {
+                $line++;
+                $start = $tabEl->item($m)->getAttribute('startOffset');
+                $end = $tabEl->item($m)->getAttribute('length');
+                $size = $tabEl->item($m)->getAttribute('size') ?? 12;
+                $bold = $tabEl->item($m)->getAttribute('bold') == true ? 'font-weight:bold;' : '';
+                $width = explode('.', $tabset[$line]);
+
+                /* $width[0] = 1.8 * $width[0];
+                $content = '<span style="width:'.$width[0].'px;text-align:right;display: inline-block">';
+                $content .= $this->pdfReplaceSpace(mb_substr($cdata, $start, $end));
+                $content .= '</span>'; */
+                
+                $width[0] = round($width[0] / 13);
+                // $content = '<span style="white-space: nowrap">';
+                /* manual aralık başla */
+                $width[0] = $line < 1 ? 3 : 38;
+                // dd($width[0]);
+                /* manual aralık bitiş */
+
+                $content = '<span>';
+                // $content .= $this->pdfReplaceSpace(mb_substr($cdata, $start, $end)).$width[0].str_repeat('_', $width[0]);
+                $content .= $this->pdfReplaceSpace(mb_substr($cdata, $start, $end)).str_repeat('_', $width[0]);
+                $content .= '</span>';
+
+                // dd($content);
+
+                $arrayItems[$start] = [
+                    'start' => $start,
+                    'end' => $end,
+                    'content' => $content,
+                    'size' => $size,
+                    'total' => $start + $end,
+                ];
+            }
+            /* tab element bitiş */
+
+            ksort($arrayItems);
+
+            $size = intval($size) > 0 ? intval($size) + 3 : 15;
+            $bold = '';
+
+            // dd($arrayItems);
+            $html .= "<div style='font-size:".$size.";margin:15px 0 15px 0; text-align:".$alignment.";".$bold."'>";
+            foreach ($arrayItems as $itemKey => $itemVal) {
+                /* var_dump($itemVal['start']);echo '<br>';
+                var_dump($itemVal['content']);echo '<br>';
+                var_dump('---------');echo '<br>'; */
+
+                /* if($itemVal['start'] == 126) {
+                    var_dump($itemVal['content']);
+                    dd($itemVal['content']);
+                } */
+                
+                $html .= $itemVal['content'];
+            }
+            $html .= "</div>";
+
+            $arrayItems = [];
+        }
+
+        // $html .= "</div></pre>";
+        $html .= "</div>";
+        
+        /* echo $html;
+        echo '<br></br><br></br><br></br><br></br><br></br>'; */
+        // dd($html);
+
+        return $html;
     }
 }

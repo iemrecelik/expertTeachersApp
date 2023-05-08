@@ -313,8 +313,6 @@ export default {
         this.triggerUpdateOrder();
       }
     });
-
-    
   },
   components: {
     [formTitleName + '-create-component']: createComponent,

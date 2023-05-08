@@ -79,7 +79,7 @@
                   </li>
                 </ul>
               </div>
-            </div>
+            </div>  
 
             <div class="row" :key="key" v-for="(dc_doc,key) in lawsuit.dc_documents">
               <div class="col-12">
@@ -238,7 +238,8 @@ export default {
         show: false,
         component: '',
         datas: {},
-      }
+      },
+      lawsuits: []
     }
   },
   props: {
@@ -434,6 +435,13 @@ export default {
       $('[data-toggle="tooltip"]').tooltip({
         trigger: "hover",
       });
+    },
+    lawsuitsBySort: function() {
+      this.teacher.lawsuits.forEach(lawsuit => {
+        lawsuit.dc_documents.forEach(document => {
+          console.log(document);
+        });
+      });
     }
   },
   filters: {
@@ -459,6 +467,8 @@ export default {
       this.setSucceed('');
       this.setErrors('');
     });
+
+    this.lawsuitsBySort();
   },
   components: {
     [formTitleName + '-upload-law-files-component']: uploadLawFilesComponent,

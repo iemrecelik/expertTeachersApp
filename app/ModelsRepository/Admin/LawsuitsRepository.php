@@ -1,16 +1,17 @@
 <?php
 
 namespace App\ModelsRepository\Admin;
+
 use App\ModelsRepository\GlobalRepository;
 
 trait LawsuitsRepository
 {
     use GlobalRepository;
     
-    //Repository content...
     public static function boot()
     {
         parent::boot();
+        
         static::creating(function($model)
         {
             $user = auth()->user();
@@ -22,6 +23,7 @@ trait LawsuitsRepository
             $model->updated_by = $user->id;
             $model->updated_by_name = null;
         });
+
         static::updating(function($model)
         {
             $user = auth()->user();

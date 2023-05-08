@@ -1,5 +1,5 @@
 <template>
-<div class="modal-content">
+<div class="modal-content" v-if="documentShow">
   <div class="modal-header">
     <h5 class="modal-title">Evrak Detayı</h5>
     <button class="btn btn-sm btn-danger ml-3"
@@ -41,15 +41,32 @@
 
   <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade show active" id="home" role="tabpanel" aria-labelledby="home-tab">
-      
       <div v-if="items.dc_show_content" class="modal-body" v-html="items.dc_show_content"></div>
-      <div v-else class="modal-body p-5">
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['pdf', 'PDF'])" 
+        class="pdf-viewer modal-body p-5"
+      >
+        <iframe :src="'/storage/upload/images/raw'+items.dc_files.dc_file_path" 
+          width="100%" 
+          height="100%">
+        </iframe>
+      </div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['udf', 'UDF', 'tif', 'TIF'])"
+        class="modal-body p-5"
+      >
         <a type="button" 
-            :href="'/storage/upload/images/raw'+items.dc_files.dc_file_path"
-            target="_blank"
-          >
-            {{ $t('messages.readDocumentLinkClick') }}
-          </a>
+          :href="'/storage/upload/images/raw'+items.dc_files.dc_file_path"
+          target="_blank"
+        >
+          {{ $t('messages.readDocumentLinkClick') }}
+        </a>
+      </div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['tif', 'TIF'])"
+        class="img-viewer modal-body p-5"
+      >
+        <!-- <img :src="'/storage/upload/images/raw'+items.dc_files.dc_file_path" 
+          width="100%"
+          height="100%"
+        > -->
       </div>
 
       <div class="pl-5">
@@ -60,7 +77,7 @@
           </div>
         </div>
         
-        <div class="row" v-if="items.dc_attach_files">
+        <div class="row" v-if="items.dc_attach_files.length > 0">
           <div class="col-12" v-for="dc_att_file in items.dc_attach_files">
             <a v-if="fileExtensionControl(dc_att_file.dc_att_file_path)" :href="'/storage/upload/images/raw'+dc_att_file.dc_att_file_path"
               download
@@ -75,6 +92,31 @@
           </div>
         </div>
         <div v-else><b>DOSYA YOK</b></div>
+
+      </div>
+
+      <div class="pl-5 pt-3">
+        
+        <div class="row">
+          <div class="col-12">
+            <u>İLİŞKİLENDİRİLMİŞ YAZILAR:</u>
+          </div>
+        </div>
+        
+        <div class="row">
+          <div class="col-12">
+            <div v-if="belongDocuments.length > 0">
+              <ul>
+                <li v-for="doc in belongDocuments">
+                  {{ doc.dc_number }}
+                </li>
+              </ul>
+            </div>
+            <div v-else>
+              <b>İLİŞKİLENDİRİLMİŞ YAZI YOK</b>
+            </div>
+          </div>
+        </div>
 
       </div>
 
@@ -105,13 +147,31 @@
       v-for="(item, key) in items.dc_ralatives"
     >
       <div v-if="item.dc_show_content" class="modal-body" v-html="item.dc_show_content"></div>
-      <div v-else class="modal-body p-5">
+      <div v-else-if="showFileExtCtrl(item.dc_files.dc_file_path, ['pdf', 'PDF'])" 
+        class="pdf-viewer modal-body p-5"
+      >
+        <iframe :src="'/storage/upload/images/raw'+item.dc_files.dc_file_path" 
+          width="100%" 
+          height="100%">
+        </iframe>
+      </div>
+      <div v-else-if="showFileExtCtrl(item.dc_files.dc_file_path, ['udf', 'UDF', 'tif', 'TIF'])"
+        class="modal-body p-5"
+      >
         <a type="button" 
-            :href="'/storage/upload/images/raw'+item.dc_files.dc_file_path"
-            target="_blank"
-          >
-            {{ $t('messages.readDocumentLinkClick') }}
-          </a>
+          :href="'/storage/upload/images/raw'+item.dc_files.dc_file_path"
+          target="_blank"
+        >
+          {{ $t('messages.readDocumentLinkClick') }}
+        </a>
+      </div>
+      <div v-else-if="showFileExtCtrl(items.dc_files.dc_file_path, ['tif', 'TIF'])"
+        class="img-viewer modal-body p-5"
+      >
+        <!-- <img :src="'/storage/upload/images/raw'+items.dc_files.dc_file_path" 
+          width="100%"
+          height="100%"
+        > -->
       </div>
 
       <div class="pl-5">
@@ -162,14 +222,31 @@
     </div>
 
   </div>
-
-  
 </div>
+
+<div class="modal-content" v-else>
+
+  <div class="modal-header">
+    <h5 class="modal-title" id="formModalLongTitle"></h5>
+    <button type="button" class="close" 
+    data-dismiss="modal" aria-label="Close">
+      <span aria-hidden="true">&times;</span>
+    </button>
+  </div>
+
+  <div class="modal-body">
+    <error-msg-list-component></error-msg-list-component>
+  </div>
+
+  <div class="modal-footer">
+  </div>
+
+</div><!-- div.modal-content -->
 </template>
 
 <script>
 
-import { mapState } from 'vuex';
+import { mapState, mapMutations } from 'vuex';
 
 export default {
   name: 'ShowComponent',
@@ -177,8 +254,10 @@ export default {
     return {
       datas: this.ppdatas,
       items: {},
+      belongDocuments: [],
       dcContent: this.ppDcContent,
       markInstance: null,
+      documentShow: true
     }
   },
   props: {
@@ -200,6 +279,10 @@ export default {
     },
   },
   methods: {
+    ...mapMutations([
+      'setErrors',
+      'setSucceed',
+    ]),
     fileExtensionControl(val) {
       if(val) {
         let ext = val.split('.').pop();
@@ -213,6 +296,18 @@ export default {
         }
         return blank;
       }
+    },
+    showFileExtCtrl(path, ctrlExt) {
+      let ext = path.split('.').pop();
+      let bool = false;
+
+      if(ctrlExt.indexOf(ext) > -1) {
+        bool = true;
+      }else {
+        bool = false;
+      }
+
+      return bool;
     },
     splitFileName(val) {
       if(val) {
@@ -245,11 +340,19 @@ export default {
   },
   created() {
     $.get(this.showUrl, (data) => {
-      this.items = data;
-      this.formShow = true;
+      this.items = data.document;
+      this.belongDocuments = data.belongDocuments;
+      this.documentShow = true;
     })
-    .fail(function(error) {
-      console.log(error);
+    .fail((error) => {
+      this.setErrors([
+        [error.responseJSON.message]
+      ]);
+
+      this.documentShow = false;
+
+      /* let el = this.$parent.modalSelector;
+      $(el).modal('hide'); */
     })
     .then((res) => {
       this.markSearch();
@@ -260,9 +363,13 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 mark{
     background: rgb(255, 251, 0);
     color: black;
+}
+
+div.pdf-viewer, div.img-viewer {
+  height: 1000px;
 }
 </style>

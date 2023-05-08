@@ -254,7 +254,14 @@ export default {
       mainStatus: 0,
       categoryArr: [],
       teacherArr: null,
+      datas: this.ppdatas
     }
+  },
+  props: {
+    ppdatas: {
+      type: Object,
+      required: true,
+    },
   },
   computed: {
     ...mapState([
@@ -342,7 +349,12 @@ export default {
 		},
   },
   created() {
-    this.getCategoryAndList();
+    // this.getCategoryAndList();
+  },
+  mounted() {
+    this.categoryList = this.datas.category;
+    this.list = this.datas.list;
+    this.users = this.datas.users;
   },
   components: {
     Treeselect
