@@ -14,11 +14,11 @@ use App\Http\Requests\Admin\DocumentManagement\UpdateDcCommentRequest;
 class CommentController extends Controller
 {
     public function __construct() {
-        /*$this->middleware(['permission:show module comment'])->only('index');
-        $this->middleware(['permission:create comment'])->only('store');
-        $this->middleware(['permission:edit comment'])->only('edit');
-        $this->middleware(['permission:edit comment'])->only('update');
-        $this->middleware(['permission:delete comment'])->only('destroy');*/
+        $this->middleware(['permission:show module document comment'])->only('index');
+        $this->middleware(['permission:create document comment'])->only('store');
+        $this->middleware(['permission:edit document comment'])->only('edit');
+        $this->middleware(['permission:edit document comment'])->only('update');
+        $this->middleware(['permission:delete document comment'])->only('destroy');
     }
 
     /**
@@ -306,8 +306,8 @@ class CommentController extends Controller
             +++ 129- mebbis den öğretmen çekerken hata mesajı düzeltilecek.
             129- öğretmen profilinde evrak eklerken hatalar ekrana yazılsın.
             130- dava ekleme de eklenen yazının detayını göstermiyor. (pdf olduğu için detay göstermiyor.)
-            131- evrak güncelleme ve silme yaparken arşivdeki dosya silinsin.
-            132- evrak notlarının izinleri iptal edildi. Düzeltilecek.
+            +++ 131- evrak güncelleme ve silme yaparken arşivdeki dosya silinsin.
+            +++ 132- evrak notlarının izinleri iptal edildi. Düzeltilecek.
             +++ 133- evrak ekleme yaparken manuel de evrağın içeriğini kaydetmiyor.
             +++ 134- evrak bilgisini gösterirken pdf ve manuel girilmiş evrak lar gösterilmesin.
             +++ 135- tif dosyalarını evrak gösterde göstersin
@@ -320,14 +320,16 @@ class CommentController extends Controller
             +++ 142- dava listesinde kaydeden ve kayıt tarihi filtresi eklenecek
             +++ 143- roller eklenecek
             144- evrak eklerken evrak durumunu yanlış yapıyor.
-            145- tablolarda satır sayısı olacak tarayıcıda kısa yol linki oluşturdum.
+            145- tablolarda satır sayısı olacak tarayıcıda kısa yol linki oluşturdum(https://www.datatables.net/examples/api/counter_columns.html).
             xxx 146- evrağı dys de yazan kişiyi gösterme
             +++ 147- rol isimleri türkçe yapılacak
             148- evrak göstermede pdf lerin formatı düzeltilecek
             +++ 149- bazı dosyaları pdf e çeviremiyor (Hamza, uzman, baş)
             150- kullanıcı yönetiminde json parse hatası veriyor. Düzeltilecek.
             +++ 151- arşiv kaydetme butonu yapılacak
-            152- arşiv zaman ayarlı kaydetme eklenecek
+            +++ 152- arşiv zaman ayarlı kaydetme eklenecek
+            +++ 153- davalar eklerken bazı sayfalarda ekle butonu çıkmıyor.
+            154- evrak listelemede ikinci aramda en az bir alan doldurunuz hatasında html de bozulma oluyor.
         */
 
         $request->validate(

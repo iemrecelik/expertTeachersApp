@@ -687,4 +687,7 @@ div.law-info-card-list > div.row {
   margin: 6px 0px 0px 0px;
   border-bottom: 1px solid rgb(195 195 195);
 }
+tfoot tr th {
+  display: table-cell !important;
+}
 </style>
