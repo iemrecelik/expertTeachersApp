@@ -1602,7 +1602,9 @@ class DocumentsController extends Controller
         /* Günceleme süresini ve kişiyi ekleme bitiş */
 
         $dcArchive = DcArchives::where('dc_arc_number', $dcDocuments->dc_number)->first();
-        $dcArchive->delete();
+        if($dcArchive) {
+            $dcArchive->delete();
+        }
 
         return $dcDocuments;
     }
@@ -1818,7 +1820,9 @@ class DocumentsController extends Controller
         }
 
         $dcArchive = DcArchives::where('dc_arc_number', $document->dc_number)->first();
-        $dcArchive->delete();
+        if($dcArchive) {
+            $dcArchive->delete();
+        }
 
         $res = $document->delete();
 

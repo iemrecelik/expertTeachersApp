@@ -16,12 +16,12 @@
       <div class="row">
         <div class="col-10 offset-md-1">
           <record-need-documents-component></record-need-documents-component>
-          <div class="row">
+          <!-- <div class="row">
             <div class="alert alert-warning col-12" role="warning">
               <i class="fas fa-exclamation-triangle"></i>
               Şuan çalışma olduğundan evrak göstermede hata alabilirisiniz.
             </div>
-          </div>
+          </div> -->
         </div>
       </div>
 

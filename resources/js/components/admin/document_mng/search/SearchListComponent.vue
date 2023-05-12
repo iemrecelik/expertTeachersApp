@@ -248,7 +248,8 @@ export default {
     destroyTable() {
       if (typeof this.dataTable !== 'undefined') {
         this.dataTable.destroy();
-        $("#"+this.form+" tbody").empty();
+        // $("#"+this.form+" tbody").empty();
+        $("#"+this.form+" tbody").remove();
       }
     },
     loadDataTable() {
@@ -335,6 +336,9 @@ export default {
     $.fn.dataTable.ext.errMode =  (( settings, helpPage, message ) => { 
       this.setSucceed('');
       this.setErrors(settings.jqXHR.responseJSON.errors);
+      /* if(settings.jqXHR.responseJSON.errors) {
+        this.destroyTable();
+      } */
     });
   },
   components: {
