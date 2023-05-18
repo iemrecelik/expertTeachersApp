@@ -330,8 +330,12 @@ class CommentController extends Controller
             +++ 152- arşiv zaman ayarlı kaydetme eklenecek
             +++ 153- davalar eklerken bazı sayfalarda ekle butonu çıkmıyor.
             154- evrak listelemede ikinci aramda en az bir alan doldurunuz hatasında html de bozulma oluyor.
-            155- öğretmen detayında açılan davalarda tarihler düzeltilecek
+            +++ 155- öğretmen detayında açılan davalarda tarihler düzeltilecek
             156- evrak parçalamada xml den okuyarak yapılacak
+            157- 62024532 - evrak konusu yanlış geliyor 
+                / 3756372 - evrak göster dendiğinde tarih sağa gelmiyor. 
+                / 71439746 - Gönderilen bilgisi solda gösteriyor.
+                / 1773364 evrak dosyasını koyarken evrak durumunu yanlış yapıyor (gideni, gelen yapıyor).
         */
 
         $request->validate(

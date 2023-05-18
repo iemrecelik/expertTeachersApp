@@ -248,8 +248,8 @@ export default {
     destroyTable() {
       if (typeof this.dataTable !== 'undefined') {
         this.dataTable.destroy();
-        // $("#"+this.form+" tbody").empty();
-        $("#"+this.form+" tbody").remove();
+        $("#"+this.form+" tbody").empty();
+        // $("#"+this.form+" tbody").remove();
       }
     },
     loadDataTable() {
@@ -327,7 +327,7 @@ export default {
       if(this.dataTable)
         this.destroyTable();
 
-      this.loadDataTable(vals);
+      this.loadDataTable();
     }
   },
   mounted() {
@@ -336,9 +336,10 @@ export default {
     $.fn.dataTable.ext.errMode =  (( settings, helpPage, message ) => { 
       this.setSucceed('');
       this.setErrors(settings.jqXHR.responseJSON.errors);
-      /* if(settings.jqXHR.responseJSON.errors) {
-        this.destroyTable();
-      } */
+      if(settings.jqXHR.responseJSON.errors) {
+        // this.showTable();
+        // $("#"+this.form+" tbody").empty();
+      }
     });
   },
   components: {

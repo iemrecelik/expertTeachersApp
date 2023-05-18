@@ -91,7 +91,7 @@
                     <label>Durumu: </label> {{itemStatus(dc_doc.dc_item_status)}}
                   </div>
                   <div class="col-3">
-                    <label>Tarihi: </label> {{dc_doc.dc_date}}
+                    <label>Tarihi: </label> {{dc_doc.dc_date | dateSplice}}
                   </div>
                   <div class="col-3">
                     <a  type="button" class="btn btn-sm btn-primary"
@@ -437,17 +437,46 @@ export default {
       });
     },
     lawsuitsBySort: function() {
-      this.teacher.lawsuits.forEach(lawsuit => {
-        lawsuit.dc_documents.forEach(document => {
-          console.log(document);
+      for (let i = 0; i < this.teacher.lawsuits.length; i++) {
+        const lawsuit = this.teacher.lawsuits[i];
+
+
+
+        lawsuit.dc_documents.sort(function(firstD, secondD){
+          let firstDate = firstD.dc_date.split("|");
+          let secondDate = secondD.dc_date.split("|");
+          return firstDate[1] - secondDate[1];
         });
-      });
+
+
+
+        /* let dates = [];
+
+        for (let j = 0; j < lawsuit.dc_documents.length; j++) {
+          const document = lawsuit.dc_documents[j];
+          let date = document.dc_date.split("|");
+          let time = date[1];
+          date = date[0];
+
+
+          
+          console.log(date[0]);
+        } */
+        
+      }
     }
   },
   filters: {
     longTextSlice: function (value) {
       return value.slice(0, 45);
     },
+    dateSplice: function(value) {
+      let date = value.split("|");
+      return date[0];
+    }
+  },
+  created() {
+    this.lawsuitsBySort();
   },
   mounted() {
     $(this.modalSelector).on('show.bs.modal', (event) => {
@@ -467,8 +496,6 @@ export default {
       this.setSucceed('');
       this.setErrors('');
     });
-
-    this.lawsuitsBySort();
   },
   components: {
     [formTitleName + '-upload-law-files-component']: uploadLawFilesComponent,

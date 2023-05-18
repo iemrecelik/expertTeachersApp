@@ -364,7 +364,7 @@ class DocumentsController extends Controller
             }
         }
 
-        $msg = ['succeed' => __('messages.edit_success')];
+        $msg = ['succeed' => __('messages.add_success')];
         
         return redirect()->route('admin.document_mng.document.create')
                         ->with($msg);
@@ -1015,6 +1015,11 @@ class DocumentsController extends Controller
             $pattern = '/sayı\s*?:(.*-)([\d\/\(\)\.e]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
             preg_match($pattern, $result, $number);
 
+            if(count($number) < 1) {
+                $pattern = '/sayı\s*?:(.*-)([\d\/\(\)\.e]*)-E\.([0-9]{2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
+                preg_match($pattern, $result, $number);
+            }
+
             // dd($number);
 
             if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
@@ -1051,7 +1056,6 @@ class DocumentsController extends Controller
             // $pattern = '/sayı\s*?:(.*-|\.)([\d\/\(\)]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
             $pattern = '/sayı\s*?:(.*-)([\d\/\(\)\.e]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
             preg_match($pattern, $result, $number);
-
             // dd($number);
 
             if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
@@ -1061,6 +1065,13 @@ class DocumentsController extends Controller
                 $pattern = '/sayı\s*?:(.*[-|\/])([\d\/\(\)\.e]*)\t([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
                 preg_match($pattern, $result, $number);
             }
+
+            if(count($number) < 1 || $number[1] == '' || $number[2] == '' || $number[3] == '' ) {
+                $pattern = '/sayı\s*?:(.*-)([\d\/\(\)\.e ]*)\s([0-9]{1,2}[\., \/][0-9]{1,2}[\., \/][0-9]{4})\n/si';
+                preg_match($pattern, $result, $number);
+            }
+
+            // dd($number);
         }
 
         /* dd([

@@ -3,22 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Models\User;
+use App\Library\LogInfo;
 use App\Library\FileUpload;
+use App\Rules\ValidateTCNo;
 use Illuminate\Http\Request;
 use App\Library\ExcelProcess;
 use App\Models\Admin\Teachers;
+use App\Rules\ValidateMathTCNo;
 use App\Models\Admin\DcDocuments;
 use App\Models\Admin\Institutions;
+use App\Models\Admin\LawsuitFiles;
+use Illuminate\Support\Facades\DB;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Responsable\isAjaxResponse;
 use Illuminate\Validation\ValidationException;
 use App\Http\Requests\Admin\StoreTeachersRequest;
 use App\Http\Requests\Admin\UpdateTeachersRequest;
-use App\Models\Admin\LawsuitFiles;
-use App\Rules\ValidateTCNo;
-use Illuminate\Support\Facades\DB;
-use App\Library\LogInfo;
 
 
 class TeachersController extends Controller
@@ -939,32 +940,59 @@ class TeachersController extends Controller
         $date = explode('/', $request->input('thr_birth_day'));
         $date = empty($date[2]) ? 1000: $date[2];
 
-        $request->validate(
-            [
-                'thr_tc_no' => ['required', new ValidateTCNo(
-                    $request->thr_name ?? '', $request->thr_surname ?? '', $date ?? '' 
-                )],
-                'thr_name' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
-                'thr_surname' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
-                'thr_career_ladder' => 'required|numeric',
-                'inst_id' => 'required|integer',
-                'thr_gender' => 'required|in:0,1',
-                'thr_birth_day' => 'required',
-            ],
-            [
-                'thr_tc_no.required' => 'Tc alanı zorunludur.',
-                'thr_tc_no.digit' => 'Tc alanı sadece rakamlardan ve 11 tane olmalıdır.',
-                'thr_name.required' => 'İsim alanı zorunludur.',
-                'thr_name.regex' => 'İsim alanı sadece harflerden oluşmalıdır.',
-                'thr_surname.required' => 'Soy isim alanı zorunludur.',
-                'thr_surname.regex' => 'Soy isim alanı sadece harflerden oluşmalıdır.',
-                'thr_career_ladder.required' => 'Kariyer basamağı alanı zorunludur.',
-                'inst_id.required' => 'Kurum alanı zorunludur.',
-                'thr_birth_day.required' => 'Doğum Tarihi alanı zorunludur.',
-                'thr_gender.required' => 'Cinsiyet alanı zorunludur.',
-                'thr_gender.in' => 'Cinsiyet sadece erkek veya bayan olmalıdır.',
-            ],
-        );
+        if($request->input('inst_id') == 1) {
+            $request->validate(
+                [
+                    'thr_tc_no' => ['required', new ValidateTCNo(
+                        $request->thr_name ?? '', $request->thr_surname ?? '', $date ?? '' 
+                    )],
+                    'thr_name' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+                    'thr_surname' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+                    'thr_career_ladder' => 'required|numeric',
+                    'inst_id' => 'required|integer',
+                    'thr_gender' => 'required|in:0,1',
+                    'thr_birth_day' => 'required',
+                ],
+                [
+                    'thr_tc_no.required' => 'Tc alanı zorunludur.',
+                    'thr_tc_no.digit' => 'Tc alanı sadece rakamlardan ve 11 tane olmalıdır.',
+                    'thr_name.required' => 'İsim alanı zorunludur.',
+                    'thr_name.regex' => 'İsim alanı sadece harflerden oluşmalıdır.',
+                    'thr_surname.required' => 'Soy isim alanı zorunludur.',
+                    'thr_surname.regex' => 'Soy isim alanı sadece harflerden oluşmalıdır.',
+                    'thr_career_ladder.required' => 'Kariyer basamağı alanı zorunludur.',
+                    'inst_id.required' => 'Kurum alanı zorunludur.',
+                    'thr_birth_day.required' => 'Doğum Tarihi alanı zorunludur.',
+                    'thr_gender.required' => 'Cinsiyet alanı zorunludur.',
+                    'thr_gender.in' => 'Cinsiyet sadece erkek veya bayan olmalıdır.',
+                ],
+            );
+        }else {
+            $request->validate(
+                [
+                    'thr_tc_no' => ['required', new ValidateMathTCNo()],
+                    'thr_name' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+                    'thr_surname' => 'required|regex:/^[a-zA-ZğüşöçıİĞÜŞÖÇ ]+$/u',
+                    'thr_career_ladder' => 'required|numeric',
+                    'inst_id' => 'required|integer',
+                    'thr_gender' => 'required|in:0,1',
+                    'thr_birth_day' => 'required',
+                ],
+                [
+                    'thr_tc_no.required' => 'Tc alanı zorunludur.',
+                    'thr_tc_no.digit' => 'Tc alanı sadece rakamlardan ve 11 tane olmalıdır.',
+                    'thr_name.required' => 'İsim alanı zorunludur.',
+                    'thr_name.regex' => 'İsim alanı sadece harflerden oluşmalıdır.',
+                    'thr_surname.required' => 'Soy isim alanı zorunludur.',
+                    'thr_surname.regex' => 'Soy isim alanı sadece harflerden oluşmalıdır.',
+                    'thr_career_ladder.required' => 'Kariyer basamağı alanı zorunludur.',
+                    'inst_id.required' => 'Kurum alanı zorunludur.',
+                    'thr_birth_day.required' => 'Doğum Tarihi alanı zorunludur.',
+                    'thr_gender.required' => 'Cinsiyet alanı zorunludur.',
+                    'thr_gender.in' => 'Cinsiyet sadece erkek veya bayan olmalıdır.',
+                ],
+            );
+        }
 
         $params = $request->all();
 

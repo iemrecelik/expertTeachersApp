@@ -187,9 +187,9 @@
 							<button type="button" class="btn btn-primary" @click="addDcNumber">
 								Ekle
 							</button>
-							<button type="button" class="btn btn-primary ml-2" @click="addRelForm()">
+							<!-- <button type="button" class="btn btn-primary ml-2" @click="addRelForm()">
 								İlgi Formu Ekle
-							</button>
+							</button> -->
 						</div>
 					</div>
 
