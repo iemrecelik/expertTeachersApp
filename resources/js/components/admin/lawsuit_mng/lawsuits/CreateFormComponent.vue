@@ -67,7 +67,7 @@
   </div>
 
   <div class="row">
-    <div class="col-12">
+    <div class="col-11">
       <div class="form-group">
         <label for="addLawBrief">{{$t('messages.law_brief')}}: </label>
         <treeselect
@@ -86,15 +86,17 @@
           name="law_brief"
         />
       </div>
-      <!-- <form-form-component
-        :ppsettings="{
-          type: 'text', 
-          fieldName: 'law_brief', 
-          value: oldValue('law_brief')
-        }"
-      >
-      </form-form-component> -->
     </div>
+    <!-- <div class="col-2">
+      <div class="form-group">
+        <button type="button" 
+          class="btn btn-md btn-primary"
+        >
+          <i class="far fa-copy"></i>
+          Kopyala
+        </button>
+      </div>
+    </div> -->
   </div>
 
   <div class="row">

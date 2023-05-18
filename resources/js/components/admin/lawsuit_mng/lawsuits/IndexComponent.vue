@@ -53,7 +53,7 @@
                   <div class="col-3">
                     <div class="form-group">
                       <div class="form-group">
-                        <label for="addTeacherList">Tc Kimlik No: </label>
+                        <label for="addTeacherList">Tc No veya Ad Soyad: </label>
                         <treeselect
                           :id="'addTeacherList'"
                           :multiple="true"
